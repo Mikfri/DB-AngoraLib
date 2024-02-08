@@ -3,16 +3,86 @@ using System.ComponentModel.DataAnnotations;
 
 namespace DB_AngoraLib.Models
 {
+    
     public enum IsPublic
     {
-        Ja,
-        Nej
+        Yes,
+        No
     }
 
-    public enum Sex
+    public enum Gender
     {
-        Han,
-        Hun
+        Male,
+        Female
+    }
+
+    public enum Race
+    {
+        Angora,
+        Belgisk_Hare,
+        Belgisk_Kæmpe,
+        Beveren,
+
+        Hermelin,
+        Hollænder,
+        Hotot,
+
+        Lille_Chinchilla,
+        Lille_Havana,
+        Lille_Rex,
+        Lille_Satin,
+
+        Lux,
+        Løvehoved,
+
+        Rex,
+        Sallander,
+        Satin,
+        Satinangora,
+
+        Stor_Chinchilla,
+        Stor_Havana,
+    }
+
+    public enum Color
+    {
+        // Vildtanlægfarver
+        Vildtgrå,
+        Jerngrå,
+        Vildtsort,
+        Vildtgul,
+        Vildtbrun,
+        Vildtblå_PerleEgern,
+        Vildtrød_Harefarvet,
+        Rødbrun_Gråblå_Lux,
+        Gulrød_Bourgogne,
+        Orange,
+        Ræverød_NewZealandRed,
+        Lutino,
+        Lutino_Shadow,
+        Chinchilla,
+        Schwarzgrannen,
+
+        // Ensfarvede
+        Sort_Alaska,
+        Blå,
+        LyseBlå_BlåBeveren,
+        LilleEgern_Gråblå,
+        MarburgerEgern_Gråblå,
+        Gouwenaar,
+        Brun_Havana,
+        Beige,
+        Rødorange_Sachsengold,
+        Hvid,
+
+        // Ensfarvede m. slør
+        Rødbrun_Madagascar,
+        Gulbrun_Isabella,
+        Sallander,
+
+        // Ensfarvede m. stikkelhår
+        Sølv,
+        Stikkelhår_Trønder
     }
 
     public class Rabbit
@@ -21,35 +91,41 @@ namespace DB_AngoraLib.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
-        public int? Owner { get; set; }
+        public string? Owner { get; set; }
 
         [RegularExpression(@"^\d{3,}$", ErrorMessage = "Skal bestå af mindst 3 tal.")]  // todo: check op om det er rigtigt.. Hvad med over 4 tal??
-        public int LeftEarId { get; set; }
+        public string LeftEarId { get; set; }
 
         [RegularExpression(@"^\d{4}$", ErrorMessage = "Skal bestå af 4 tal!")]
         public string RightEarId { get; set; }
 
-        public string Name { get; set; }
+        public string NickName { get; set; }
 
         public DateOnly DateOfBirth { get; set; }
 
         public DateOnly? DateOfDeath { get; set; }
 
-        public Sex? Sex { get; set; }
+        public Gender? Gender { get; set; }
+
+        public Race? Race { get; set; }
+
+        public Color? Color { get; set; }
 
         public IsPublic? IsPublic { get; set; }
 
 
-        public Rabbit(int id, int leftEarId, int rightEarId, int? owner, string name, DateOnly dateOfBirth, DateOnly? dateOfDeath, Sex? sex, IsPublic? isPublic)
+        public Rabbit(int id, string leftEarId, string rightEarId, string? owner, string nickName, DateOnly dateOfBirth, DateOnly? dateOfDeath, Gender? gender, Race? race, Color? color, IsPublic? isPublic)
         {
             Id = id;
             LeftEarId = leftEarId;
             RightEarId = rightEarId;
             Owner = owner;
-            Name = name;
+            NickName = nickName;
             DateOfBirth = dateOfBirth;
             DateOfDeath = dateOfDeath;
-            Sex = sex;
+            Gender = gender;
+            Race = race;
+            Color = color;
             IsPublic = isPublic;
         }
         public Rabbit() { }
@@ -61,7 +137,7 @@ namespace DB_AngoraLib.Models
                 throw new ArgumentNullException("NULL: Kanin ID, skal udfyldes");
             }
 
-            if (LeftEarId < 1 || LeftEarId > 9999)
+            if (LeftEarId.Length < 1 || LeftEarId.Length < 4 )
             {
                 throw new ArgumentException($"Kanin ID, skal være imellem 1-4 numrer langt");
             }
