@@ -26,6 +26,7 @@ namespace DB_AngoraLib.Models
         Hermelin,
         Hollænder,
         Hotot,
+        Jamora,
 
         Lille_Chinchilla,
         Lille_Havana,
@@ -85,6 +86,21 @@ namespace DB_AngoraLib.Models
         Stikkelhår_Trønder
     }
 
+    public enum Pattern
+    {
+        Hotot,
+        TyskSchecke_TKS_LTS,
+        EngelskSchecke,
+        Dalmatiner,
+        Kappe,
+        RhinskSchecke,
+        Japaner,
+        Hollænder,
+        Tan_White_Otter,
+        Russer,
+        Zobel_Siameser,
+    }
+
     public class Rabbit
     {
         [Key]
@@ -93,13 +109,13 @@ namespace DB_AngoraLib.Models
 
         public string? Owner { get; set; }
 
-        [RegularExpression(@"^\d{3,}$", ErrorMessage = "Skal bestå af mindst 3 tal.")]  // todo: check op om det er rigtigt.. Hvad med over 4 tal??
+        [RegularExpression(@"^\d{3,4}$", ErrorMessage = "Kanin.Id: Min 3 tal, Max 4 tal")]
         public string LeftEarId { get; set; }
 
-        [RegularExpression(@"^\d{4}$", ErrorMessage = "Skal bestå af 4 tal!")]
+        [RegularExpression(@"^\d{4}$", ErrorMessage = "Kanin.AvlerNo: Skal bestå af 4 tal!")]
         public string RightEarId { get; set; }
 
-        public string NickName { get; set; }
+        public string? NickName { get; set; }
 
         public DateOnly DateOfBirth { get; set; }
 
@@ -111,10 +127,12 @@ namespace DB_AngoraLib.Models
 
         public Color? Color { get; set; }
 
+        public bool? ApprovedRaceColorCombination { get; set; } = true;
+
         public IsPublic? IsPublic { get; set; }
 
 
-        public Rabbit(int id, string leftEarId, string rightEarId, string? owner, string nickName, DateOnly dateOfBirth, DateOnly? dateOfDeath, Gender? gender, Race? race, Color? color, IsPublic? isPublic)
+        public Rabbit(int id, string leftEarId, string rightEarId, string? owner, string? nickName, DateOnly dateOfBirth, DateOnly? dateOfDeath, Gender? gender, Race? race, Color? color, bool? approvedRaceColor, IsPublic? isPublic)
         {
             Id = id;
             LeftEarId = leftEarId;
@@ -126,20 +144,26 @@ namespace DB_AngoraLib.Models
             Gender = gender;
             Race = race;
             Color = color;
+            ApprovedRaceColorCombination = approvedRaceColor;
             IsPublic = isPublic;
         }
         public Rabbit() { }
 
         public void ValidateLeftEarId()
         {
-            if (LeftEarId == null)
+            if (string.IsNullOrEmpty(LeftEarId))
             {
-                throw new ArgumentNullException("NULL: Kanin ID, skal udfyldes");
+                throw new ArgumentNullException("NULL: Kanin.Id, skal udfyldes");
             }
 
-            if (LeftEarId.Length < 1 || LeftEarId.Length < 4 )
+            if (!int.TryParse(LeftEarId, out int _))
             {
-                throw new ArgumentException($"Kanin ID, skal være imellem 1-4 numrer langt");
+                throw new ArgumentException("Kanin.Id, skal være numerisk");
+            }
+
+            if (LeftEarId.Length < 3 || LeftEarId.Length > 4)
+            {
+                throw new ArgumentException($"Kanin.Id, skal være imellem 3-4 numrer langt. Du har angivet {LeftEarId.Length} cifre");
             }
         }
     }
