@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace DB_AngoraLib.Models
 {
-    public class Photo
+    public class User
     {
-        public int Id { get; set; }
+
     }
 }

@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 
 namespace DB_AngoraLib.Models
 {
-    public class Photo
+    public class PhotoAlbum
     {
-        public int Id { get; set; }
+        public int PhotoId { get; set; }
+        public int RabbitId { get; set; }
+
     }
 }

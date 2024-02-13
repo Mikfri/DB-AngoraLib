@@ -2,8 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 
 namespace DB_AngoraLib.Models
-{
-    
+{    
     public enum IsPublic
     {
         Yes,
@@ -91,9 +90,9 @@ namespace DB_AngoraLib.Models
         Hotot,
         TyskSchecke_TKS_LTS,
         EngelskSchecke,
+        RhinskSchecke,
         Dalmatiner,
         Kappe,
-        RhinskSchecke,
         Japaner,
         Hollænder,
         Tan_White_Otter,
@@ -109,7 +108,7 @@ namespace DB_AngoraLib.Models
 
         public string? Owner { get; set; }
 
-        [RegularExpression(@"^\d{3,4}$", ErrorMessage = "Kanin.Id: Min 3 tal, Max 4 tal")]
+        [RegularExpression(@"^\d{3,4}$", ErrorMessage = "Kanin.Id: Min 3 tal. Max 4 tal")]
         public string LeftEarId { get; set; }
 
         [RegularExpression(@"^\d{4}$", ErrorMessage = "Kanin.AvlerNo: Skal bestå af 4 tal!")]
@@ -128,6 +127,8 @@ namespace DB_AngoraLib.Models
         public Color? Color { get; set; }
 
         public bool? ApprovedRaceColorCombination { get; set; } = true;
+        public PhotoAlbum? PhotoAlbum { get; set; }
+        public Trimming? Trimming { get; set; }
 
         public IsPublic? IsPublic { get; set; }
 
@@ -149,11 +150,13 @@ namespace DB_AngoraLib.Models
         }
         public Rabbit() { }
 
+
+        //----: VALIDATION METHODS
         public void ValidateLeftEarId()
         {
             if (string.IsNullOrEmpty(LeftEarId))
             {
-                throw new ArgumentNullException("NULL: Kanin.Id, skal udfyldes");
+                throw new ArgumentNullException("Kanin.Id: Skal have en værdi");
             }
 
             if (!int.TryParse(LeftEarId, out int _))
@@ -163,8 +166,19 @@ namespace DB_AngoraLib.Models
 
             if (LeftEarId.Length < 3 || LeftEarId.Length > 4)
             {
-                throw new ArgumentException($"Kanin.Id, skal være imellem 3-4 numrer langt. Du har angivet {LeftEarId.Length} cifre");
+                throw new ArgumentException($"Kanin.Id: Skal være imellem 3-4 numrer langt. Du har angivet {LeftEarId.Length} cifre");
             }
         }
+
+        public bool ValidateRace(string race)
+        {
+            if (!Enum.TryParse(race, true, out Race _)) // true (gør små og store bogstaver ignoreres)
+            {
+                throw new ArgumentException($"Ugyldig race! Vælg fra listen");
+            }
+
+            return true;
+        }
+
     }
 }

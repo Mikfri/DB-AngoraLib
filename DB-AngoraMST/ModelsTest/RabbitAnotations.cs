@@ -1,4 +1,5 @@
 using DB_AngoraLib.Models;
+using DB_AngoraLib.Services;
 using System.ComponentModel.DataAnnotations;
 
 namespace DB_AngoraMST.ModelsTest
@@ -6,46 +7,77 @@ namespace DB_AngoraMST.ModelsTest
     [TestClass]
     public class RabbitAnotations
     {
-        private Rabbit validAngoraRabbit = new() { Id = 1, RightEarId = "5053", LeftEarId = "001", Race = Race.Angora };
-        private Rabbit notApprovedRaceColorAngora = new() { Id = 2, Race = Race.Angora, Color = Color.Chinchilla };
+        // Arrange
+        private ValidatorService validatorService = new ValidatorService(); 
 
-        //[TestMethod]
-        //public void LeftEarId_ShouldPassValidation()
-        //{
-        //    // Arrange
-        //    var validationContext = new ValidationContext(validAngoraRabbit) { MemberName = nameof(Rabbit.LeftEarId) };
-        //    var validationResults = new List<ValidationResult>();
+        private Rabbit rabbit = new() { Id = 1, RightEarId = "5053", LeftEarId = "001", Race = Race.Angora };
 
-        //    // Act
-        //    bool isValid = Validator.TryValidateProperty(validAngoraRabbit.LeftEarId, validationContext, validationResults);
 
-        //    // Assert
-        //    Assert.IsTrue(isValid, "Expected LeftEarId to pass validation");
-        //    Assert.AreEqual(0, validationResults.Count, "Expected no validation errors"); 
-        //}
-
+        //////////////// LeftEarId
         [TestMethod]
-        [DataRow("123")] //3 tegn GYLDIG
-        public void TestValidLeftEarId(string lefttEarId)
+        [DataRow("123")]    //3 tal GYLDIG
+        [DataRow("1234")]   //4 tal GYLDIG
+        public void ValidLeftEarIdTest(string lefttEarId)
         {
-            validAngoraRabbit.LeftEarId = lefttEarId;
-            validAngoraRabbit.ValidateLeftEarId();
+            rabbit.LeftEarId = lefttEarId;
+            rabbit.ValidateLeftEarId();
         }
 
-        //[TestMethod]
-        //public void LeftEarId_ShouldFailValidation()
-        //{
-        //    // Arrange
-        //    var validationContext = new ValidationContext(notApprovedRaceColorAngora) { MemberName = nameof(Rabbit.LeftEarId) };
-        //    var validationResults = new List<ValidationResult>();
+        [TestMethod]
+        [DataRow("12")]     //2 tal UGYLDIG
+        [DataRow("12345")]  //5 tal UGYLDIG
+        [DataRow("abc")]    //3 tegn UGYLDIG
+        [DataRow("abcd")]   //4 tegn UGYLDIG
+        public void UnValidLeftEarIdTest(string lefttEarId)
+        {
+            rabbit.LeftEarId = lefttEarId;
+            Assert.ThrowsException<ArgumentException>(rabbit.ValidateLeftEarId);
+        }
 
-        //    // Act
-        //    bool isValid = Validator.TryValidateProperty(notApprovedRaceColorAngora.LeftEarId, validationContext, validationResults);
+        //////////////// Race
+        [TestMethod]
+        [DataRow("Angora")]    // Race GYLDIG
+        [DataRow("Satin")]     // Race GYLDIG
+        [DataRow("saTin")]     // Race GYLDIG
+        public void ValidRaceTest(string race)
+        {
+            // Arrange
+            var rabbit = new Rabbit();
 
-        //    // Assert
-        //    Assert.IsFalse(isValid, "Expected LeftEarId to fail validation.");
-        //    Assert.AreEqual(1, validationResults.Count, "Expected one validation error.");
-        //    Assert.AreEqual("Skal bestå af 3 til 4 tal.", validationResults[0].ErrorMessage, "Expected specific validation error message.");
-        //}
+            // Act & Assert
+            Assert.IsTrue(rabbit.ValidateRace(race), $"Forventede {race} som gyldig race");
+        }
+
+        [TestMethod]
+        [DataRow("Angorra")]   // Race UGYLDIG
+        [DataRow("Rexx")]      // Race UGYLDIG
+        public void UnValidRaceTest(string race)
+        {
+            // Act & Assert
+            Assert.ThrowsException<ArgumentException>(() => rabbit.ValidateRace(race));
+        }
+
+        [TestMethod]
+        [DataRow(Race.Angora, Color.Hvid)]            // Gyldig kombination
+        [DataRow(Race.Satinangora, Color.Hvid)]       // Gyldig kombination
+        public void ValidColorForRaceTest(Race race, Color color)
+        {
+            bool isColorValid = validatorService.IsColorValidForRace(race, color);
+
+            Assert.IsTrue(isColorValid);
+        }
+
+        [TestMethod]
+        [DataRow(Race.Angora, Color.Chinchilla)]      // Ugyldig kombination
+        [DataRow(Race.Satin, Color.Hvid)]           // Ugyldig kombination
+        public void UnValidColorForRaceTest(Race race, Color color)
+        {
+            // Act
+            bool isColorValid = validatorService.IsColorValidForRace(race, color);
+
+            // Assert
+            Assert.IsFalse(isColorValid);
+        }
+
     }
 }

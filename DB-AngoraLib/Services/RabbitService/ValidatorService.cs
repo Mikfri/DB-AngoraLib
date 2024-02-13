@@ -8,11 +8,11 @@ using System.Threading.Tasks;
 namespace DB_AngoraLib.Services
 {
     
-    public class ServiceRaceColorValidator
+    public class ValidatorService
     {
         private readonly Dictionary<Race, List<Color>> NotApprovedColorsByRace;
 
-        public ServiceRaceColorValidator()
+        public ValidatorService()
         {
             NotApprovedColorsByRace = new Dictionary<Race, List<Color>>();
 
