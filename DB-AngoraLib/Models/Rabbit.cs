@@ -150,35 +150,5 @@ namespace DB_AngoraLib.Models
         }
         public Rabbit() { }
 
-
-        //----: VALIDATION METHODS
-        public void ValidateLeftEarId()
-        {
-            if (string.IsNullOrEmpty(LeftEarId))
-            {
-                throw new ArgumentNullException("Kanin.Id: Skal have en værdi");
-            }
-
-            if (!int.TryParse(LeftEarId, out int _))
-            {
-                throw new ArgumentException("Kanin.Id, skal være numerisk");
-            }
-
-            if (LeftEarId.Length < 3 || LeftEarId.Length > 4)
-            {
-                throw new ArgumentException($"Kanin.Id: Skal være imellem 3-4 numrer langt. Du har angivet {LeftEarId.Length} cifre");
-            }
-        }
-
-        public bool ValidateRace(string race)
-        {
-            if (!Enum.TryParse(race, true, out Race _)) // true (gør små og store bogstaver ignoreres)
-            {
-                throw new ArgumentException($"Ugyldig race! Vælg fra listen");
-            }
-
-            return true;
-        }
-
     }
 }

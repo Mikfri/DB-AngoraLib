@@ -35,5 +35,36 @@ namespace DB_AngoraLib.Services
             // Hvis racen ikke findes i NotApprovedColorsByRace, betragt farven som godkendt
             return true;
         }
+
+        public bool ValidateLeftEarId(string leftEarId)
+        {
+            if (string.IsNullOrEmpty(leftEarId))
+            {
+                throw new ArgumentNullException("Kanin.Id: Skal have en værdi");
+            }
+
+            if (!int.TryParse(leftEarId, out int _))
+            {
+                throw new ArgumentException("Kanin.Id, skal være numerisk");
+            }
+
+            if (leftEarId.Length < 3 || leftEarId.Length > 4)
+            {
+                throw new ArgumentException($"Kanin.Id: Skal være imellem 3-4 numrer langt. Du har angivet {leftEarId.Length} cifre");
+            }
+
+            return true;
+        }
+
+        public bool ValidateRace(string race)
+        {
+            if (!Enum.TryParse(race, true, out Race _)) // true (gør små og store bogstaver ignoreres)
+            {
+                throw new ArgumentException($"Ugyldig race! Vælg fra listen");
+            }
+
+            return true;
+        }
+
     }
 }
