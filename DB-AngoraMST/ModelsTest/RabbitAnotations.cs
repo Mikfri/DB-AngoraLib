@@ -1,5 +1,5 @@
 using DB_AngoraLib.Models;
-using DB_AngoraLib.Services;
+using DB_AngoraLib.Services.ValidationService;
 using System.ComponentModel.DataAnnotations;
 
 namespace DB_AngoraMST.ModelsTest
@@ -15,11 +15,12 @@ namespace DB_AngoraMST.ModelsTest
 
         //////////////// LeftEarId
         [TestMethod]
-        [DataRow("123")]    //3 tal GYLDIG
-        [DataRow("1234")]   //4 tal GYLDIG
+        [DataRow("123")]    // 3 tal GYLDIG
+        [DataRow("1234")]   // 4 tal GYLDIG
         public void LeftEarId_ValidTest(string leftEarId)
         {
-            Assert.IsTrue(validatorService.ValidateLeftEarId(leftEarId));
+            rabbit.LeftEarId = leftEarId;
+            validatorService.ValidateLeftEarId(rabbit);
         }
 
         [TestMethod]
@@ -29,7 +30,8 @@ namespace DB_AngoraMST.ModelsTest
         [DataRow("abcd")]   //4 tegn UGYLDIG
         public void LeftEarId_InvalidTest(string leftEarId)
         {
-            Assert.ThrowsException<ArgumentException>(() => validatorService.ValidateLeftEarId(leftEarId));
+            rabbit.LeftEarId = leftEarId;
+            Assert.ThrowsException<ArgumentException>(() => validatorService.ValidateLeftEarId(rabbit));
         }
 
         //////////////// Race
@@ -39,7 +41,8 @@ namespace DB_AngoraMST.ModelsTest
         [DataRow("saTin")]     // Race GYLDIG
         public void Race_ValidTest(string race)
         {
-            Assert.IsTrue(validatorService.ValidateRace(race));
+            rabbit.Race = Enum.Parse<Race>(race, true);
+            validatorService.ValidateRace(rabbit);
         }
 
         [TestMethod]
@@ -47,7 +50,8 @@ namespace DB_AngoraMST.ModelsTest
         [DataRow("Rexx")]      // Race UGYLDIG
         public void Race_InvalidTest(string race)
         {
-            Assert.ThrowsException<ArgumentException>(() => validatorService.ValidateRace(race));
+            // Act & Assert
+            Assert.ThrowsException<ArgumentException>(() => validatorService.ValidateRace(new Rabbit { Race = Enum.Parse<Race>(race, true) }));
         }
 
         //////////////// Race && Color

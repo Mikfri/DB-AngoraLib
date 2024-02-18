@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DB_AngoraLib.Services
+namespace DB_AngoraLib.Services.ValidationService
 {
-    
+
     public class ValidatorService
     {
         private readonly Dictionary<Race, List<Color>> NotApprovedColorsByRace;
@@ -36,8 +36,10 @@ namespace DB_AngoraLib.Services
             return true;
         }
 
-        public bool ValidateLeftEarId(string leftEarId)
+        public void ValidateLeftEarId(Rabbit rabbit)
         {
+            string leftEarId = rabbit.LeftEarId;
+
             if (string.IsNullOrEmpty(leftEarId))
             {
                 throw new ArgumentNullException("Kanin.Id: Skal have en værdi");
@@ -52,18 +54,22 @@ namespace DB_AngoraLib.Services
             {
                 throw new ArgumentException($"Kanin.Id: Skal være imellem 3-4 numrer langt. Du har angivet {leftEarId.Length} cifre");
             }
-
-            return true;
         }
 
-        public bool ValidateRace(string race)
+        public void ValidateRace(Rabbit rabbit)
         {
-            if (!Enum.TryParse(race, true, out Race _)) // true (gør små og store bogstaver ignoreres)
+            Race? race = rabbit.Race;
+
+            if (!Enum.IsDefined(typeof(Race), race))
             {
                 throw new ArgumentException($"Ugyldig race! Vælg fra listen");
             }
+        }
 
-            return true;
+        public void ValidateRabbit(Rabbit rabbit)
+        {
+            ValidateLeftEarId(rabbit);
+            ValidateRace(rabbit);
         }
 
     }

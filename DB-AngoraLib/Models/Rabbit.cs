@@ -148,7 +148,7 @@ namespace DB_AngoraLib.Models
             ApprovedRaceColorCombination = approvedRaceColor;
             IsPublic = isPublic;
         }
-        public Rabbit() { }
+        public Rabbit() { } 
 
     }
 }
