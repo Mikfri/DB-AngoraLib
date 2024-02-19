@@ -24,16 +24,55 @@ namespace DB_AngoraLib.Services.ValidationService
             NotApprovedColorsByRace[Race.Lille_Rex] = new List<Color> { Color.Vildtrød_Harefarvet, Color.Gulrød_Bourgogne, Color.Ræverød_NewZealandRed, Color.LyseBlå_BlåBeveren, Color.LilleEgern_Gråblå, Color.MarburgerEgern_Gråblå, Color.Gouwenaar, Color.Jerngrå, };
         }
 
-        public bool IsColorValidForRace(Race race, Color color)
+        //public bool IsColorValidForRace(Race race, Color color)
+        //{
+        //    if (NotApprovedColorsByRace.TryGetValue(race, out var notApprovedColors))
+        //    {
+        //        // Kontroller om den valgte farve er godkendt for racen
+        //        return !notApprovedColors.Contains(color);
+        //    }
+        //    // Hvis racen ikke findes i NotApprovedColorsByRace, betragt farven som godkendt
+        //    return true;
+        //}
+
+        public bool ValidateRaceAndColorCombo(Rabbit rabbit)
         {
-            // Hent farver, der ikke er godkendt for den givne race
-            if (NotApprovedColorsByRace.TryGetValue(race, out var notApprovedColors))
+            Race? race = rabbit.Race;
+            Color? color = rabbit.Color;
+
+            if (race.HasValue && NotApprovedColorsByRace.TryGetValue(race.Value, out var notApprovedColors))
             {
-                // Kontroller om den valgte farve er godkendt for racen
-                return !notApprovedColors.Contains(color);
+                bool noColorAndRace = !color.HasValue || !notApprovedColors.Contains(color.Value);
+
+                if (noColorAndRace)
+                {
+                    rabbit.ApprovedRaceColorCombination = false;
+                }
+
+                return noColorAndRace; //fordi jeg har gjort race og color nullable
             }
-            // Hvis racen ikke findes i NotApprovedColorsByRace, betragt farven som godkendt
+
             return true;
+        }
+
+        public void ValidateRace(Rabbit rabbit)
+        {
+            Race? race = rabbit.Race;
+
+            if (!Enum.IsDefined(typeof(Race), race))
+            {
+                throw new ArgumentException("Ugyldig race! Vælg fra listen");
+            }
+        }
+
+        public void ValidateColor(Rabbit rabbit)
+        {
+            Color? color = rabbit.Color;
+
+            if (!Enum.IsDefined(typeof(Color), color))
+            {
+                throw new ArgumentException("Ugyldig farve! Vælg fra listen");
+            }
         }
 
         public void ValidateLeftEarId(Rabbit rabbit)
@@ -55,21 +94,13 @@ namespace DB_AngoraLib.Services.ValidationService
                 throw new ArgumentException($"Kanin.Id: Skal være imellem 3-4 numrer langt. Du har angivet {leftEarId.Length} cifre");
             }
         }
-
-        public void ValidateRace(Rabbit rabbit)
-        {
-            Race? race = rabbit.Race;
-
-            if (!Enum.IsDefined(typeof(Race), race))
-            {
-                throw new ArgumentException($"Ugyldig race! Vælg fra listen");
-            }
-        }
-
+        
         public void ValidateRabbit(Rabbit rabbit)
         {
             ValidateLeftEarId(rabbit);
             ValidateRace(rabbit);
+            ValidateColor(rabbit);
+            ValidateRaceAndColorCombo(rabbit);
         }
 
     }

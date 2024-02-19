@@ -106,9 +106,13 @@ namespace DB_AngoraLib.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
-        public string? Owner { get; set; }
 
-        [RegularExpression(@"^\d{3,4}$", ErrorMessage = "Kanin.Id: Min 3 tal. Max 4 tal")]
+        [ForeignKey("User")]
+        public string? Owner { get; set; }
+        public virtual User user { get; set; } // virtual -> lazy loading (færre DB requests)
+
+
+        [RegularExpression(@"^\d{3,4}$", ErrorMessage = "Kanin.Id: Min 3 tal. Max 4 tal")] //todo: max 4 tal? Følg op
         public string LeftEarId { get; set; }
 
         [RegularExpression(@"^\d{4}$", ErrorMessage = "Kanin.AvlerNo: Skal bestå af 4 tal!")]
@@ -126,9 +130,7 @@ namespace DB_AngoraLib.Models
 
         public Color? Color { get; set; }
 
-        public bool? ApprovedRaceColorCombination { get; set; } = true;
-        public PhotoAlbum? PhotoAlbum { get; set; }
-        public Trimming? Trimming { get; set; }
+        public bool? ApprovedRaceColorCombination { get; set; }
 
         public IsPublic? IsPublic { get; set; }
 

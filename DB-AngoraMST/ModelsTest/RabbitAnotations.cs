@@ -10,7 +10,7 @@ namespace DB_AngoraMST.ModelsTest
         // Arrange
         private ValidatorService validatorService = new ValidatorService(); 
 
-        private Rabbit rabbit = new() { Id = 1, RightEarId = "5053", LeftEarId = "001", Race = Race.Angora };
+        private Rabbit rabbit = new() { Id = 1, RightEarId = "5053", LeftEarId = "001", Race = Race.Angora, Color = Color.Blå, };
 
 
         //////////////// LeftEarId
@@ -54,15 +54,20 @@ namespace DB_AngoraMST.ModelsTest
             Assert.ThrowsException<ArgumentException>(() => validatorService.ValidateRace(new Rabbit { Race = Enum.Parse<Race>(race, true) }));
         }
 
-        //////////////// Race && Color
+        /////////////// Race && Color
         [TestMethod]
         [DataRow(Race.Angora, Color.Hvid)]           // Kombi GYLDIG
         [DataRow(Race.Satinangora, Color.Hvid)]       // Kombi GYLDIG
         public void ColorForRace_ValidTest(Race race, Color color)
         {
-            bool isColorValid = validatorService.IsColorValidForRace(race, color);
+            // Arrange
+            Rabbit rabbit = new Rabbit { Race = race, Color = color };
 
-            Assert.IsTrue(isColorValid);
+            // Act
+            bool validRaceColorCombo = validatorService.ValidateRaceAndColorCombo(rabbit);
+
+            // Assert
+            Assert.IsTrue(validRaceColorCombo);
         }
 
         [TestMethod]
@@ -70,11 +75,14 @@ namespace DB_AngoraMST.ModelsTest
         [DataRow(Race.Satin, Color.Hvid)]           // Kombi UGYLDIG
         public void ColorForRace_InvalidTest(Race race, Color color)
         {
+            // Arrange
+            Rabbit rabbit = new Rabbit { Race = race, Color = color };
+
             // Act
-            bool isColorValid = validatorService.IsColorValidForRace(race, color);
+            bool validRaceColorCombo = validatorService.ValidateRaceAndColorCombo(rabbit);
 
             // Assert
-            Assert.IsFalse(isColorValid);
+            Assert.IsFalse(validRaceColorCombo);
         }
 
     }

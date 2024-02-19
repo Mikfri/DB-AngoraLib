@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DB_AngoraLib.Models
 {
-    public class RabbitComment
+    public class Comment
     {
         public int Id { get; set; }
         public DateOnly CommentDate { get; set; }

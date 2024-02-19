@@ -14,7 +14,9 @@ namespace DB_AngoraLib.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
+        [ForeignKey("Rabbit")]
         public int RabbitId { get; set; }
+        public Rabbit Rabbit { get; set; }
 
         public DateOnly DateTrimmed { get; set; }
 

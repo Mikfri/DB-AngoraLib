@@ -13,6 +13,5 @@ namespace DB_AngoraLib.Models
         public DateOnly DateMeasured { get; set; }
         public int DaysAfterBirth { get; set; }
         public int WeightInGram { get; set; }
-
     }
 }
