@@ -41,7 +41,7 @@ namespace DB_AngoraLib.Services.ValidationService
                     rabbit.ApprovedRaceColorCombination = false;
                 }
 
-                return notApprovedRaceColorCombo;
+                return notApprovedRaceColorCombo;   // aka false
             }
 
             return true;
@@ -49,11 +49,11 @@ namespace DB_AngoraLib.Services.ValidationService
 
         public void ValidateRace(Rabbit rabbit)
         {
-            string raceStr = rabbit.Race.ToString(); // Konverter enum-værdi til streng
+            string raceStr = rabbit.Race.ToString();
 
             if (string.IsNullOrEmpty(raceStr))
             {
-                throw new ArgumentNullException("Kanin.Race: Race må ikke være null");
+                throw new ArgumentNullException("Kanin.Race: Feldtet skal udfyldes");
             }
 
             if (!Enum.IsDefined(typeof(Race), rabbit.Race))
@@ -64,7 +64,7 @@ namespace DB_AngoraLib.Services.ValidationService
 
         public void ValidateColor(Rabbit rabbit)
         {
-            Color? color = rabbit.Color;
+            Color color = rabbit.Color;
 
             if (!Enum.IsDefined(typeof(Color), color))
             {
@@ -80,7 +80,7 @@ namespace DB_AngoraLib.Services.ValidationService
 
             if (string.IsNullOrEmpty(rightEarId))
             {
-                throw new ArgumentNullException("Kanin.AvlerNo: Skal have en værdi");
+                throw new ArgumentNullException("Kanin.AvlerNo: Feldtet skal udfyldes");
             }
 
             if (!fourNumbersDigit.IsMatch(rightEarId))
@@ -97,35 +97,38 @@ namespace DB_AngoraLib.Services.ValidationService
 
             if (string.IsNullOrEmpty(leftEarId))
             {
-                throw new ArgumentNullException("Kanin.Id: Skal have en værdi");
+                throw new ArgumentNullException("Kanin.Id: Feldtet skal udfyldes");
             }
 
             if (!threeToFiveNumbersDigit.IsMatch(leftEarId))
             {
-                throw new ArgumentException("Kanin.Id, skal være 4 numeriske tal");
+                throw new ArgumentException("Kanin.Id, skal være imellem 3 og 5 numeriske tal");
             }
         }
 
         public void ValidateGender(Rabbit rabbit)
         {
-            string genderStr = rabbit.Gender.ToString(); // Konverter enum-værdi til streng
+            string genderStr = rabbit.Gender.ToString();
 
-            
+            if (string.IsNullOrEmpty(genderStr))
+            {
+                throw new ArgumentNullException("Kanin.Køn: Feldtet skal udfyldes");
+            }
 
             if (!Enum.IsDefined(typeof(Gender), rabbit.Gender))
             {
-                throw new ArgumentException("Kanin.Gender: Vælg et gyldigt køn (Han/Hun)");
+                throw new ArgumentException("Kanin.Køn: Vælg et gyldigt køn (Han/Hun)");
             }
         }
 
-
         public void ValidateRabbit(Rabbit rabbit)
         {
-            ValidateLeftEarId(rabbit);
             ValidateRightEarId(rabbit);
+            ValidateLeftEarId(rabbit);
             ValidateRace(rabbit);
             ValidateColor(rabbit);
             ValidateRaceAndColorCombo(rabbit);
+            ValidateGender(rabbit);
         }
 
     }

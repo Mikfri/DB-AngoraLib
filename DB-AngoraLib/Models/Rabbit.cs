@@ -11,8 +11,8 @@ namespace DB_AngoraLib.Models
 
     public enum Gender
     {
-        Han = 1,
-        Hun,        //nu har 'Hun' automatisk value = 2
+        Hun,    // NiceToHave: ♂
+        Han,    // NiceToHave: ♀
     }
 
     public enum Race
@@ -109,7 +109,7 @@ namespace DB_AngoraLib.Models
 
         [ForeignKey("User")]
         public string? Owner { get; set; }
-        public virtual User user { get; set; } // virtual -> lazy loading (færre DB requests)
+        public virtual User User { get; set; } // virtual -> lazy loading (færre DB requests)
 
 
         [RegularExpression(@"^\d{4}$", ErrorMessage = "Kanin.AvlerNo: Skal bestå af 4 tal!")]
@@ -130,14 +130,16 @@ namespace DB_AngoraLib.Models
         public DateOnly? DateOfDeath { get; set; }
 
         public Gender Gender { get; set; } 
+        public int? FatherId { get; set; }
+        public int? MotherId { get; set; }
         public IsPublic? IsPublic { get; set; }
 
 
-        public Rabbit(int id, string? owner, User user, string rightEarId, string leftEarId, string? nickName, Race race, Color color, bool? approvedRaceColorCombination, DateOnly dateOfBirth, DateOnly? dateOfDeath, Gender gender, IsPublic? isPublic)
+        public Rabbit(int id, string? owner, User user, string rightEarId, string leftEarId, string? nickName, Race race, Color color, bool? approvedRaceColorCombination, DateOnly dateOfBirth, DateOnly? dateOfDeath, Gender gender, int? fatherId, int? motherId, IsPublic? isPublic)
         {
             Id = id;
             Owner = owner;
-            this.user = user;
+            User = user;
             RightEarId = rightEarId;
             LeftEarId = leftEarId;
             NickName = nickName;
@@ -147,6 +149,8 @@ namespace DB_AngoraLib.Models
             DateOfBirth = dateOfBirth;
             DateOfDeath = dateOfDeath;
             Gender = gender;
+            FatherId = fatherId;
+            MotherId = motherId;
             IsPublic = isPublic;
         }
 

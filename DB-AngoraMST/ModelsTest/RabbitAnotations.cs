@@ -157,7 +157,7 @@ namespace DB_AngoraMST.ModelsTest
         [DataRow("Han")]   // Gender GYLDIG
         [DataRow("01")]   // Gender GYLDIG
         [DataRow("Hun")]
-        [DataRow("02")]
+        [DataRow("00")]
         public void Gender_ValidTest(string gender)
         {
             rabbit.Gender = Enum.Parse<Gender>(gender, true);
