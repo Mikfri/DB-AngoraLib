@@ -82,44 +82,98 @@ namespace DB_AngoraMST.ModelsTest
         }
 
         [TestMethod]
+        [DataRow(null)]     // NULL UGYLDIG
+        public void Race_NullTest(string race)
+        {
+            Assert.ThrowsException<ArgumentNullException>(() =>
+            {
+                rabbit.Race = Enum.Parse<Race>(race, true);
+                validatorService.ValidateRace(rabbit);
+            });
+        }
+
+        [TestMethod]
         [DataRow("Angorra")]   // Race UGYLDIG
-        [DataRow("Rexx")]      // Race UGYLDIG
+        [DataRow("Rexx")]   
         public void Race_InvalidTest(string race)
         {
-            // Act & Assert
-            Assert.ThrowsException<ArgumentException>(() => validatorService.ValidateRace(new Rabbit { Race = Enum.Parse<Race>(race, true) }));
+            Assert.ThrowsException<ArgumentException>(() =>
+            {
+                rabbit.Race = Enum.Parse<Race>(race, true);
+                validatorService.ValidateRace(rabbit);
+            });
+            //Assert.ThrowsException<ArgumentException>(() => validatorService.ValidateRace(new Rabbit { Race = Enum.Parse<Race>(race, true) })); // Alternativt
+        }
+
+
+        //////////////// Color
+        [TestMethod]
+        [DataRow("Hvid")]   // Color GYLDIG
+        [DataRow("hvId")]
+        [DataRow("Gouwenaar")]
+        public void Color_ValidTest(string color)
+        {
+            rabbit.Color = Enum.Parse<Color>(color, true);
+            validatorService.ValidateColor(rabbit);
+        }
+
+        [TestMethod]
+        [DataRow("Rød")]    // Color UGYLDIG
+        [DataRow("Lilla")]
+        public void Color_InvalidTest(string color)
+        {
+            Assert.ThrowsException<ArgumentException>(() =>
+            {
+                rabbit.Color = Enum.Parse<Color>(color, true);
+                validatorService.ValidateColor(rabbit);
+            });
         }
 
         /////////////// Race && Color
         [TestMethod]
         [DataRow(Race.Angora, Color.Hvid)]           // Kombi GYLDIG
-        [DataRow(Race.Satinangora, Color.Hvid)]       // Kombi GYLDIG
+        [DataRow(Race.Satinangora, Color.Hvid)]
         public void ColorForRace_ValidTest(Race race, Color color)
         {
-            // Arrange
             Rabbit rabbit = new Rabbit { Race = race, Color = color };
-
-            // Act
             bool validRaceColorCombo = validatorService.ValidateRaceAndColorCombo(rabbit);
-
-            // Assert
             Assert.IsTrue(validRaceColorCombo);
         }
 
         [TestMethod]
         [DataRow(Race.Angora, Color.Chinchilla)]    // Kombi UGYLDIG
-        [DataRow(Race.Satin, Color.Hvid)]           // Kombi UGYLDIG
+        [DataRow(Race.Satin, Color.Hvid)]
         public void ColorForRace_InvalidTest(Race race, Color color)
         {
-            // Arrange
             Rabbit rabbit = new Rabbit { Race = race, Color = color };
 
-            // Act
             bool validRaceColorCombo = validatorService.ValidateRaceAndColorCombo(rabbit);
 
-            // Assert
             Assert.IsFalse(validRaceColorCombo);
         }
 
+        //////////////// Gender
+        [TestMethod]
+        [DataRow("Han")]   // Gender GYLDIG
+        [DataRow("01")]   // Gender GYLDIG
+        [DataRow("Hun")]
+        [DataRow("02")]
+        public void Gender_ValidTest(string gender)
+        {
+            rabbit.Gender = Enum.Parse<Gender>(gender, true);
+            validatorService.ValidateGender(rabbit);
+        }
+
+        [TestMethod]
+        [DataRow("Hann")]    // Gender UGYLDIG
+        [DataRow("03")]
+        public void Gender_InvalidTest(string gender)
+        {
+            Assert.ThrowsException<ArgumentException>(() =>
+            {
+                rabbit.Gender = Enum.Parse<Gender>(gender, true);
+                validatorService.ValidateGender(rabbit);
+            });
+        }
     }
 }

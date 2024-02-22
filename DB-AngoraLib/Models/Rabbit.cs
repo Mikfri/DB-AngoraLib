@@ -5,14 +5,14 @@ namespace DB_AngoraLib.Models
 {    
     public enum IsPublic
     {
-        Yes,
-        No
+        No,
+        Yes        
     }
 
     public enum Gender
     {
-        Male,
-        Female
+        Han = 1,
+        Hun,        //nu har 'Hun' automatisk value = 2
     }
 
     public enum Race
@@ -112,44 +112,44 @@ namespace DB_AngoraLib.Models
         public virtual User user { get; set; } // virtual -> lazy loading (færre DB requests)
 
 
-        [RegularExpression(@"^\d{3,5}$", ErrorMessage = "Kanin.Id: Min 3 tal. Max 5 tal")] //todo: max 4 tal? Følg op
-        public string LeftEarId { get; set; }
-
         [RegularExpression(@"^\d{4}$", ErrorMessage = "Kanin.AvlerNo: Skal bestå af 4 tal!")]
         public string RightEarId { get; set; }
 
+        [RegularExpression(@"^\d{3,5}$", ErrorMessage = "Kanin.Id: Min 3 tal. Max 5 tal")]
+        public string LeftEarId { get; set; }        
+
         public string? NickName { get; set; }
+        public Race Race { get; set; }
+
+        public Color Color { get; set; }
+
+        public bool? ApprovedRaceColorCombination { get; set; }
 
         public DateOnly DateOfBirth { get; set; }
 
         public DateOnly? DateOfDeath { get; set; }
 
-        public Gender? Gender { get; set; }
-
-        public Race? Race { get; set; }
-
-        public Color? Color { get; set; }
-
-        public bool? ApprovedRaceColorCombination { get; set; }
-
+        public Gender Gender { get; set; } 
         public IsPublic? IsPublic { get; set; }
 
 
-        public Rabbit(int id, string leftEarId, string rightEarId, string? owner, string? nickName, DateOnly dateOfBirth, DateOnly? dateOfDeath, Gender? gender, Race? race, Color? color, bool? approvedRaceColor, IsPublic? isPublic)
+        public Rabbit(int id, string? owner, User user, string rightEarId, string leftEarId, string? nickName, Race race, Color color, bool? approvedRaceColorCombination, DateOnly dateOfBirth, DateOnly? dateOfDeath, Gender gender, IsPublic? isPublic)
         {
             Id = id;
-            LeftEarId = leftEarId;
-            RightEarId = rightEarId;
             Owner = owner;
+            this.user = user;
+            RightEarId = rightEarId;
+            LeftEarId = leftEarId;
             NickName = nickName;
+            Race = race;
+            Color = color;
+            ApprovedRaceColorCombination = approvedRaceColorCombination;
             DateOfBirth = dateOfBirth;
             DateOfDeath = dateOfDeath;
             Gender = gender;
-            Race = race;
-            Color = color;
-            ApprovedRaceColorCombination = approvedRaceColor;
             IsPublic = isPublic;
         }
+
         public Rabbit() { } 
 
     }
