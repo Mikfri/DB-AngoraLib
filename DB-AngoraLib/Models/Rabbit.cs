@@ -112,7 +112,7 @@ namespace DB_AngoraLib.Models
         public virtual User user { get; set; } // virtual -> lazy loading (færre DB requests)
 
 
-        [RegularExpression(@"^\d{3,4}$", ErrorMessage = "Kanin.Id: Min 3 tal. Max 4 tal")] //todo: max 4 tal? Følg op
+        [RegularExpression(@"^\d{3,5}$", ErrorMessage = "Kanin.Id: Min 3 tal. Max 5 tal")] //todo: max 4 tal? Følg op
         public string LeftEarId { get; set; }
 
         [RegularExpression(@"^\d{4}$", ErrorMessage = "Kanin.AvlerNo: Skal bestå af 4 tal!")]

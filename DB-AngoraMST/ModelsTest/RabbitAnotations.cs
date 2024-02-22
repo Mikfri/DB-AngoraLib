@@ -17,6 +17,7 @@ namespace DB_AngoraMST.ModelsTest
         [TestMethod]
         [DataRow("123")]    // 3 tal GYLDIG
         [DataRow("1234")]   // 4 tal GYLDIG
+        [DataRow("12345")]  // 5 tal GYLDIG
         public void LeftEarId_ValidTest(string leftEarId)
         {
             rabbit.LeftEarId = leftEarId;
@@ -24,14 +25,49 @@ namespace DB_AngoraMST.ModelsTest
         }
 
         [TestMethod]
+        [DataRow(null)]   // NULL UGYLDIG
+        public void LeftEarId_NullTest(string leftEarId)
+        {
+            rabbit.LeftEarId = leftEarId;
+            Assert.ThrowsException<ArgumentNullException>(() => validatorService.ValidateLeftEarId(rabbit));
+        }
+
+        [TestMethod]
         [DataRow("12")]     //2 tal UGYLDIG
-        [DataRow("12345")]  //5 tal UGYLDIG
+        [DataRow("123456")] //6 tal UGYLDIG
         [DataRow("abc")]    //3 tegn UGYLDIG
         [DataRow("abcd")]   //4 tegn UGYLDIG
         public void LeftEarId_InvalidTest(string leftEarId)
         {
             rabbit.LeftEarId = leftEarId;
             Assert.ThrowsException<ArgumentException>(() => validatorService.ValidateLeftEarId(rabbit));
+        }
+
+        //////////////// RightEarId
+        [TestMethod]
+        [DataRow("1234")]   // 4 tal GYLDIG
+        public void rightEarId_ValidTest(string rightEarId)
+        {
+            rabbit.RightEarId = rightEarId;
+            validatorService.ValidateRightEarId(rabbit);
+        }
+
+        [TestMethod]
+        [DataRow(null)]   // NULL UGYLDIG
+        public void rightEarId_NullTest(string rightEarId)
+        {
+            rabbit.RightEarId = rightEarId;
+            Assert.ThrowsException<ArgumentNullException>(() => validatorService.ValidateRightEarId(rabbit));
+        }
+
+        [TestMethod]
+        [DataRow("123")]    // 3 tal UGYLDIG
+        [DataRow("abcd")]   // 4 tegn UGYLDIG
+        [DataRow("12345")]  // 5 tal UGYLDIG
+        public void rightEarId_InvalidTest(string rightEarId)
+        {
+            rabbit.RightEarId = rightEarId;
+            Assert.ThrowsException<ArgumentException>(() => validatorService.ValidateRightEarId(rabbit));
         }
 
         //////////////// Race

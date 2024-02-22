@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace DB_AngoraLib.Services.ValidationService
@@ -24,16 +25,7 @@ namespace DB_AngoraLib.Services.ValidationService
             NotApprovedColorsByRace[Race.Lille_Rex] = new List<Color> { Color.Vildtrød_Harefarvet, Color.Gulrød_Bourgogne, Color.Ræverød_NewZealandRed, Color.LyseBlå_BlåBeveren, Color.LilleEgern_Gråblå, Color.MarburgerEgern_Gråblå, Color.Gouwenaar, Color.Jerngrå, };
         }
 
-        //public bool IsColorValidForRace(Race race, Color color)
-        //{
-        //    if (NotApprovedColorsByRace.TryGetValue(race, out var notApprovedColors))
-        //    {
-        //        // Kontroller om den valgte farve er godkendt for racen
-        //        return !notApprovedColors.Contains(color);
-        //    }
-        //    // Hvis racen ikke findes i NotApprovedColorsByRace, betragt farven som godkendt
-        //    return true;
-        //}
+        
 
         public bool ValidateRaceAndColorCombo(Rabbit rabbit)
         {
@@ -79,25 +71,40 @@ namespace DB_AngoraLib.Services.ValidationService
         {
             string leftEarId = rabbit.LeftEarId;
 
+            Regex threeToFiveNumbersDigit = new Regex(@"^\d{3,5}$");
+
             if (string.IsNullOrEmpty(leftEarId))
             {
                 throw new ArgumentNullException("Kanin.Id: Skal have en værdi");
             }
 
-            if (!int.TryParse(leftEarId, out int _))
+            if (!threeToFiveNumbersDigit.IsMatch(leftEarId))
             {
-                throw new ArgumentException("Kanin.Id, skal være numerisk");
-            }
-
-            if (leftEarId.Length < 3 || leftEarId.Length > 4)
-            {
-                throw new ArgumentException($"Kanin.Id: Skal være imellem 3-4 numrer langt. Du har angivet {leftEarId.Length} cifre");
+                throw new ArgumentException("Kanin.Id, skal være 4 numeriske tal");
             }
         }
-        
+
+        public void ValidateRightEarId(Rabbit rabbit)
+        {
+            string rightEarId = rabbit.RightEarId;
+
+            Regex fourNumbersDigit = new Regex(@"^\d{4}$");
+
+            if (string.IsNullOrEmpty(rightEarId))
+            {
+                throw new ArgumentNullException("Kanin.Id: Skal have en værdi");
+            }
+
+            if (!fourNumbersDigit.IsMatch(rightEarId))
+            {
+                throw new ArgumentException("Kanin.Id, skal være 4 numeriske tal");
+            }
+        }
+
         public void ValidateRabbit(Rabbit rabbit)
         {
             ValidateLeftEarId(rabbit);
+            ValidateRightEarId(rabbit);
             ValidateRace(rabbit);
             ValidateColor(rabbit);
             ValidateRaceAndColorCombo(rabbit);
