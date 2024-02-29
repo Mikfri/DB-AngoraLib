@@ -2,17 +2,17 @@
 using System.ComponentModel.DataAnnotations;
 
 namespace DB_AngoraLib.Models
-{    
+{
     public enum IsPublic
     {
         No,
-        Yes        
+        Yes
     }
 
     public enum Gender
     {
-        Hun,    // NiceToHave: ♂
-        Han,    // NiceToHave: ♀
+        Hun,    // NiceToHave: ♂    0.1
+        Han,    // NiceToHave: ♀    1.0
     }
 
     public enum Race
@@ -82,7 +82,10 @@ namespace DB_AngoraLib.Models
 
         // Ensfarvede m. stikkelhår
         Sølv,
-        Stikkelhår_Trønder
+        Stikkelhår_Trønder,
+
+        // Endnu ikke godkendte farver i DK
+        Elfenben,
     }
 
     public enum Pattern
@@ -102,18 +105,12 @@ namespace DB_AngoraLib.Models
 
     public class Rabbit
     {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id { get; set; }
-
-
-        [ForeignKey("User")] //todo: Undersøg om dette istedet bør/kan sættes op under DbContext for seperation of concerns
-        public string? Owner { get; set; }
-        public virtual User User { get; set; } // virtual -> lazy loading (færre DB requests)
-
         public string RightEarId { get; set; }
 
-        public string LeftEarId { get; set; }        
+        public string LeftEarId { get; set; }
+
+        public string? Owner { get; set; }
+        public virtual User User { get; set; } // virtual -> lazy loading (færre DB requests)
 
         public string? NickName { get; set; }
 
@@ -121,25 +118,23 @@ namespace DB_AngoraLib.Models
 
         public Color Color { get; set; }
 
-        public bool ApprovedRaceColorCombination { get; set; }
+        public bool? ApprovedRaceColorCombination { get; set; }
 
         public DateOnly DateOfBirth { get; set; }
 
         public DateOnly? DateOfDeath { get; set; }
 
         public Gender Gender { get; set; }
-        public int? MotherId { get; set; }
+        public int? MotherId { get; set; }      // todo: Skal kædes til kaninens comp-key. ala: "4977-206"
         public int? FatherId { get; set; }
         public IsPublic? IsPublic { get; set; }
 
 
-        public Rabbit(int id, string? owner, User user, string rightEarId, string leftEarId, string? nickName, Race race, Color color, bool approvedRaceColorCombination, DateOnly dateOfBirth, DateOnly? dateOfDeath, Gender gender, int? motherId, int? fatherId, IsPublic? isPublic)
+        public Rabbit(string rightEarId, string leftEarId, string? owner, string? nickName, Race race, Color color, bool? approvedRaceColorCombination, DateOnly dateOfBirth, DateOnly? dateOfDeath, Gender gender, int? motherId, int? fatherId, IsPublic? isPublic)
         {
-            Id = id;
-            Owner = owner;
-            User = user;
             RightEarId = rightEarId;
             LeftEarId = leftEarId;
+            Owner = owner;
             NickName = nickName;
             Race = race;
             Color = color;
@@ -152,7 +147,7 @@ namespace DB_AngoraLib.Models
             IsPublic = isPublic;
         }
 
-        public Rabbit() { } 
+        public Rabbit() { }
 
     }
 }

@@ -8,9 +8,9 @@ namespace DB_AngoraMST.ModelsTest
     public class RabbitClassMST
     {
         // Arrange
-        private ValidatorService validatorService = new ValidatorService(); 
+        private RabbitValidator rabbitValidator = new RabbitValidator(); 
 
-        private Rabbit rabbit = new() { Id = 1, RightEarId = "5053", LeftEarId = "001", Race = Race.Angora, Color = Color.Blå, };
+        private Rabbit rabbit = new() { RightEarId = "5053", LeftEarId = "001", Race = Race.Angora, Color = Color.Blå, };
 
 
         //////////////// LeftEarId
@@ -21,7 +21,7 @@ namespace DB_AngoraMST.ModelsTest
         public void LeftEarId_ValidTest(string leftEarId)
         {
             rabbit.LeftEarId = leftEarId;
-            validatorService.ValidateLeftEarId(rabbit);
+            rabbitValidator.ValidateLeftEarId(rabbit);
         }
 
         [TestMethod]
@@ -29,7 +29,7 @@ namespace DB_AngoraMST.ModelsTest
         public void LeftEarId_NullTest(string leftEarId)
         {
             rabbit.LeftEarId = leftEarId;
-            Assert.ThrowsException<ArgumentNullException>(() => validatorService.ValidateLeftEarId(rabbit));
+            Assert.ThrowsException<ArgumentNullException>(() => rabbitValidator.ValidateLeftEarId(rabbit));
         }
 
         [TestMethod]
@@ -40,7 +40,7 @@ namespace DB_AngoraMST.ModelsTest
         public void LeftEarId_InvalidTest(string leftEarId)
         {
             rabbit.LeftEarId = leftEarId;
-            Assert.ThrowsException<ArgumentException>(() => validatorService.ValidateLeftEarId(rabbit));
+            Assert.ThrowsException<ArgumentException>(() => rabbitValidator.ValidateLeftEarId(rabbit));
         }
 
         //////////////// RightEarId
@@ -49,7 +49,7 @@ namespace DB_AngoraMST.ModelsTest
         public void rightEarId_ValidTest(string rightEarId)
         {
             rabbit.RightEarId = rightEarId;
-            validatorService.ValidateRightEarId(rabbit);
+            rabbitValidator.ValidateRightEarId(rabbit);
         }
 
         [TestMethod]
@@ -57,7 +57,7 @@ namespace DB_AngoraMST.ModelsTest
         public void rightEarId_NullTest(string rightEarId)
         {
             rabbit.RightEarId = rightEarId;
-            Assert.ThrowsException<ArgumentNullException>(() => validatorService.ValidateRightEarId(rabbit));
+            Assert.ThrowsException<ArgumentNullException>(() => rabbitValidator.ValidateRightEarId(rabbit));
         }
 
         [TestMethod]
@@ -67,7 +67,7 @@ namespace DB_AngoraMST.ModelsTest
         public void rightEarId_InvalidTest(string rightEarId)
         {
             rabbit.RightEarId = rightEarId;
-            Assert.ThrowsException<ArgumentException>(() => validatorService.ValidateRightEarId(rabbit));
+            Assert.ThrowsException<ArgumentException>(() => rabbitValidator.ValidateRightEarId(rabbit));
         }
 
         //////////////// Race
@@ -78,7 +78,7 @@ namespace DB_AngoraMST.ModelsTest
         public void Race_ValidTest(string race)
         {
             rabbit.Race = Enum.Parse<Race>(race, true);
-            validatorService.ValidateRace(rabbit);
+            rabbitValidator.ValidateRace(rabbit);
         }
 
         [TestMethod]
@@ -88,7 +88,7 @@ namespace DB_AngoraMST.ModelsTest
             Assert.ThrowsException<ArgumentNullException>(() =>
             {
                 rabbit.Race = Enum.Parse<Race>(race, true);
-                validatorService.ValidateRace(rabbit);
+                rabbitValidator.ValidateRace(rabbit);
             });
         }
 
@@ -97,12 +97,12 @@ namespace DB_AngoraMST.ModelsTest
         [DataRow("Rexx")]   
         public void Race_InvalidTest(string race)
         {
-            Assert.ThrowsException<ArgumentException>(() =>
-            {
-                rabbit.Race = Enum.Parse<Race>(race, true);
-                validatorService.ValidateRace(rabbit);
-            });
-            //Assert.ThrowsException<ArgumentException>(() => validatorService.ValidateRace(new Rabbit { Race = Enum.Parse<Race>(race, true) })); // Alternativt
+            //Assert.ThrowsException<ArgumentException>(() =>
+            //{
+            //    rabbit.Race = Enum.Parse<Race>(race, true);
+            //    rabbitValidator.ValidateRace(rabbit);
+            //});
+            Assert.ThrowsException<ArgumentException>(() => rabbitValidator.ValidateRace(new Rabbit { Race = Enum.Parse<Race>(race, true) })); // Alternativt
         }
 
 
@@ -114,7 +114,7 @@ namespace DB_AngoraMST.ModelsTest
         public void Color_ValidTest(string color)
         {
             rabbit.Color = Enum.Parse<Color>(color, true);
-            validatorService.ValidateColor(rabbit);
+            rabbitValidator.ValidateColor(rabbit);
         }
 
         [TestMethod]
@@ -125,7 +125,7 @@ namespace DB_AngoraMST.ModelsTest
             Assert.ThrowsException<ArgumentException>(() =>
             {
                 rabbit.Color = Enum.Parse<Color>(color, true);
-                validatorService.ValidateColor(rabbit);
+                rabbitValidator.ValidateColor(rabbit);
             });
         }
 
@@ -136,7 +136,7 @@ namespace DB_AngoraMST.ModelsTest
         public void ColorForRace_ValidTest(Race race, Color color)
         {
             Rabbit rabbit = new Rabbit { Race = race, Color = color };
-            bool validRaceColorCombo = validatorService.ValidateRaceAndColorCombo(rabbit);
+            validRaceColorCombo = rabbitValidator.ValidateRaceAndColorCombo(rabbit);
             Assert.IsTrue(validRaceColorCombo);
         }
 
@@ -147,7 +147,7 @@ namespace DB_AngoraMST.ModelsTest
         {
             Rabbit rabbit = new Rabbit { Race = race, Color = color };
 
-            bool validRaceColorCombo = validatorService.ValidateRaceAndColorCombo(rabbit);
+            validRaceColorCombo = rabbitValidator.ValidateRaceAndColorCombo(rabbit);
 
             Assert.IsFalse(validRaceColorCombo);
         }
@@ -161,7 +161,7 @@ namespace DB_AngoraMST.ModelsTest
         public void Gender_ValidTest(string gender)
         {
             rabbit.Gender = Enum.Parse<Gender>(gender, true);
-            validatorService.ValidateGender(rabbit);
+            rabbitValidator.ValidateGender(rabbit);
         }
 
         [TestMethod]
@@ -172,7 +172,7 @@ namespace DB_AngoraMST.ModelsTest
             Assert.ThrowsException<ArgumentException>(() =>
             {
                 rabbit.Gender = Enum.Parse<Gender>(gender, true);
-                validatorService.ValidateGender(rabbit);
+                rabbitValidator.ValidateGender(rabbit);
             });
         }
     }

@@ -16,7 +16,7 @@ namespace DB_AngoraMST.ServicesTest
         [TestInitialize]
         public void Initialize()
         {
-            _rabbitService = new RabbitService(repo, vs);                     
+
         }
 
         private readonly Rabbit _badRabbit = new() { NickName = "Pippi", };

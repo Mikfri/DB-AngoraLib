@@ -12,7 +12,7 @@ namespace DB_AngoraLib.Services.RabbitService
         Task<Rabbit> GetRabbitByIdAsync(int id);
         Task<List<Rabbit>> GetAllRabbitsAsync();
         Task<List<Rabbit>> GetAllRabbitsByOwnerAsync(string userId);
-        Task AddRabbitAsync(Rabbit rabbit);
+        Task AddRabbitAsync(Rabbit rabbit, User user);
         Task UpdateRabbitAsync(Rabbit rabbit);
         Task DeleteRabbitAsync(int Id);
     }

@@ -10,7 +10,7 @@ namespace DB_AngoraLib.Repository
 {
     public class GRepository<T> : IGRepository<T> where T : class
     {
-        public virtual async Task<IEnumerable<T>> GetObjectsAsync()
+        public virtual async Task<IEnumerable<T>> GetAllObjectsAsync()
         {
             using (var context = new DB_AngoraContext())
             {

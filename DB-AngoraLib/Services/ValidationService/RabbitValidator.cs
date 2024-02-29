@@ -9,11 +9,11 @@ using System.Threading.Tasks;
 namespace DB_AngoraLib.Services.ValidationService
 {
 
-    public class ValidatorService
+    public class RabbitValidator
     {
         private readonly Dictionary<Race, List<Color>> NotApprovedColorsByRace;
 
-        public ValidatorService()
+        public RabbitValidator()
         {
             NotApprovedColorsByRace = new Dictionary<Race, List<Color>>();
 
@@ -105,6 +105,12 @@ namespace DB_AngoraLib.Services.ValidationService
             }
         }
 
+        public void ValidateUniqueRabbitId(Rabbit rabbit)
+        {
+            //var rabbit = // todo: finnish
+        }
+
+
         public void ValidateGender(Rabbit rabbit)
         {
             string genderStr = rabbit.Gender.ToString();
@@ -122,8 +128,11 @@ namespace DB_AngoraLib.Services.ValidationService
 
         public void ValidateRabbit(Rabbit rabbit)
         {
+            //Key validations
             ValidateRightEarId(rabbit);
             ValidateLeftEarId(rabbit);
+            ValidateUniqueRabbitId(rabbit);
+
             ValidateRace(rabbit);
             ValidateColor(rabbit);
             ValidateRaceAndColorCombo(rabbit);
