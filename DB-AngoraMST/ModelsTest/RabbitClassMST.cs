@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations;
 namespace DB_AngoraMST.ModelsTest
 {
     [TestClass]
-    public class RabbitAnotations
+    public class RabbitClassMST
     {
         // Arrange
         private ValidatorService validatorService = new ValidatorService(); 

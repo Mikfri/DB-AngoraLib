@@ -26,8 +26,7 @@ namespace DB_AngoraLib.Services.ValidationService
         }
 
 
-
-        public bool ValidateRaceAndColorCombo(Rabbit rabbit)
+        public void ValidateRaceAndColorCombo(Rabbit rabbit)
         {
             Race race = rabbit.Race;
             Color color = rabbit.Color;
@@ -40,11 +39,11 @@ namespace DB_AngoraLib.Services.ValidationService
                 {
                     rabbit.ApprovedRaceColorCombination = false;
                 }
-
-                return notApprovedRaceColorCombo;   // aka false
             }
-
-            return true;
+            else
+            {
+                rabbit.ApprovedRaceColorCombination = true;
+            }
         }
 
         public void ValidateRace(Rabbit rabbit)

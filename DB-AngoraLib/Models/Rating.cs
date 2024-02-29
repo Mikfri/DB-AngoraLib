@@ -22,8 +22,8 @@ namespace DB_AngoraLib.Models
         public int WeightPoint { get; set; }
         public string? WeightNotice { get; set; } = null;
         public int BodyPoint { get; set; }
-        public string? BodyNotice { get; set; } = null;
+        public string? BodyNotice { get; set; }
         public int FurPoint { get; set; }
-        public string? FurNotice { get; set; } = null;
+        public string? FurNotice { get; set; }
     }
 }

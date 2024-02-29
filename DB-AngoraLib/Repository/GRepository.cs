@@ -18,6 +18,14 @@ namespace DB_AngoraLib.Repository
             }
         }
 
+        public async Task<T> GetObjectByIdAsync(int id)
+        {
+            using (var context = new DB_AngoraContext())
+            {
+                return await context.Set<T>().FindAsync(id);
+            }
+        }
+
         public virtual async Task AddObjectAsync(T obj)
         {
             using (var context = new DB_AngoraContext())
@@ -48,15 +56,7 @@ namespace DB_AngoraLib.Repository
 
                 context.SaveChanges();
             }
-        }
-
-        public async Task<T> GetObjectByIdAsync(int id)
-        {
-            using (var context = new DB_AngoraContext())
-            {
-                return await context.Set<T>().FindAsync(id);
-            }
-        }
+        }        
 
         public async Task UpdateObjectAsync(T obj)
         {

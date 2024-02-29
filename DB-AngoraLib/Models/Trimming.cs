@@ -20,8 +20,6 @@ namespace DB_AngoraLib.Models
 
         public DateOnly DateTrimmed { get; set; }
 
-        public int? DaysSinceLastTrim { get; set; } // todo: en værdi som løbende ændrer sig ud fra DateTrimmed
-
         public int FirstSortmentWeightGram { get; set; }
 
         public int SecondSortmentWeightGram { get; set; }

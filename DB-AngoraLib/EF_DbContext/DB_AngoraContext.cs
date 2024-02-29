@@ -12,10 +12,11 @@ namespace DB_AngoraLib.EF_DbContext
     {
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
-            options.UseSqlServer(@"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=DB-Angora_Db; Integrated Security=True; Connect Timeout=30; Encrypt=False");
+            options.UseSqlServer(@"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=DB-Angora_DB; Integrated Security=True; Connect Timeout=30; Encrypt=False");
         }
 
         public DbSet<Rabbit> Rabbits { get; set; }
+        public DbSet<User> Users { get; set; }
 
     }
 }
