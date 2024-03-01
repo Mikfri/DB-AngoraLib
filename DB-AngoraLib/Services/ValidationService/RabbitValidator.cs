@@ -31,20 +31,24 @@ namespace DB_AngoraLib.Services.ValidationService
             Race race = rabbit.Race;
             Color color = rabbit.Color;
 
+            Console.WriteLine($"Selected: {race} - {color}");
+
             if (NotApprovedColorsByRace.TryGetValue(race, out var selectedColor))
             {
-                bool notApprovedRaceColorCombo = !selectedColor.Contains(color);
+                Console.WriteLine($"NotApprovedColorsByRace: {string.Join(", ", selectedColor)}");
+                bool approvedRaceColorCombo = !selectedColor.Contains(color);
 
-                if (notApprovedRaceColorCombo)
-                {
-                    rabbit.ApprovedRaceColorCombination = false;
-                }
+                rabbit.ApprovedRaceColorCombination = approvedRaceColorCombo;
+                Console.WriteLine($"Setting ApprovedRaceColorCombination to {approvedRaceColorCombo}");
             }
             else
             {
-                rabbit.ApprovedRaceColorCombination = true;
+                rabbit.ApprovedRaceColorCombination = false;
+                Console.WriteLine("Setting ApprovedRaceColorCombination to false");
             }
         }
+
+
 
         public void ValidateRace(Rabbit rabbit)
         {
@@ -103,12 +107,7 @@ namespace DB_AngoraLib.Services.ValidationService
             {
                 throw new ArgumentException("Kanin.Id, skal være imellem 3 og 5 numeriske tal");
             }
-        }
-
-        public void ValidateUniqueRabbitId(Rabbit rabbit)
-        {
-            //var rabbit = // todo: finnish
-        }
+        }        
 
 
         public void ValidateGender(Rabbit rabbit)
@@ -131,7 +130,6 @@ namespace DB_AngoraLib.Services.ValidationService
             //Key validations
             ValidateRightEarId(rabbit);
             ValidateLeftEarId(rabbit);
-            ValidateUniqueRabbitId(rabbit);
 
             ValidateRace(rabbit);
             ValidateColor(rabbit);

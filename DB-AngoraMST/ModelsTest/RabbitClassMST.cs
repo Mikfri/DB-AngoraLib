@@ -133,11 +133,12 @@ namespace DB_AngoraMST.ModelsTest
         [TestMethod]
         [DataRow(Race.Angora, Color.Hvid)]           // Kombi GYLDIG
         [DataRow(Race.Satinangora, Color.Hvid)]
+        //[DataRow(Race.Satinangora, Color.Gouwenaar)]
         public void ColorForRace_ValidTest(Race race, Color color)
         {
             Rabbit rabbit = new Rabbit { Race = race, Color = color };
-            validRaceColorCombo = rabbitValidator.ValidateRaceAndColorCombo(rabbit);
-            Assert.IsTrue(validRaceColorCombo);
+            rabbitValidator.ValidateRaceAndColorCombo(rabbit);
+            Assert.IsTrue(rabbit.ApprovedRaceColorCombination);
         }
 
         [TestMethod]
@@ -146,16 +147,14 @@ namespace DB_AngoraMST.ModelsTest
         public void ColorForRace_InvalidTest(Race race, Color color)
         {
             Rabbit rabbit = new Rabbit { Race = race, Color = color };
-
-            validRaceColorCombo = rabbitValidator.ValidateRaceAndColorCombo(rabbit);
-
-            Assert.IsFalse(validRaceColorCombo);
+            rabbitValidator.ValidateRaceAndColorCombo(rabbit);
+            Assert.IsFalse(rabbit.ApprovedRaceColorCombination);
         }
 
         //////////////// Gender
         [TestMethod]
         [DataRow("Han")]   // Gender GYLDIG
-        [DataRow("01")]   // Gender GYLDIG
+        [DataRow("01")]    // Gender GYLDIG (svarer til "Han")
         [DataRow("Hun")]
         [DataRow("00")]
         public void Gender_ValidTest(string gender)

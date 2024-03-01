@@ -19,14 +19,17 @@ namespace DB_AngoraLib.EF_DbContext
         {
             // Konfigurer sammensat nøgle for Rabbit
             modelBuilder.Entity<Rabbit>()
-                .HasKey(r => new { r.RightEarId, r.LeftEarId });
+                .HasKey(r => r.Id);
 
             // Konfigurer Foreign Key for Rabbit -> User
             modelBuilder.Entity<Rabbit>()
                 .HasOne(r => r.User)
-                .WithMany(u => u.Rabbits)
+                .WithMany()
                 .HasForeignKey(r => r.Owner)
-                .OnDelete(DeleteBehavior.Restrict);  // Juster dette efter dine sletningskrav
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<User>()
+                .HasKey(u => u.Id);
         }
 
 
