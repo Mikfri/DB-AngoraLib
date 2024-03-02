@@ -48,7 +48,8 @@ namespace DB_AngoraLib.Services.RabbitService
             return await _dbRepository.GetObjectByIdAsync(rabbitId);
         }
 
-        public async Task<Rabbit> GetRabbitByEarIdAsync(string rightEarId, string leftEarId)
+        //-------: GET BY EAR TAGs METODER
+        public async Task<Rabbit> GetRabbitByEarTagsAsync(string rightEarId, string leftEarId)
         {
             Expression<Func<Rabbit, bool>> filter = r => r.RightEarId == rightEarId && r.LeftEarId == leftEarId;
             return await _dbRepository.GetObjectAsync(filter);
@@ -65,47 +66,50 @@ namespace DB_AngoraLib.Services.RabbitService
 
 
         //---------------------: ADD
-        //public async Task AddRabbitAsync(Rabbit rabbit, User user)
+        //public async Task AddRabbitAsync(Rabbit rabbit, User thisUser)
         //{
         //    _validatorService.ValidateRabbit(rabbit);
-        //    rabbit.Owner = user.BreederRegNo;
+        //    rabbit.Owner = thisUser.BreederRegNo;
         //    await _dbRepository.AddObjectAsync(rabbit);
         //}
 
-        public async Task AddRabbitAsync(Rabbit newRabbit, User user)
+        public async Task AddRabbitAsync(Rabbit newRabbit, User thisUser)
         {
             _validatorService.ValidateRabbit(newRabbit);
 
-            // Check om kaninen med det givne id allerede eksisterer
-            var existingRabbit = await GetRabbitByIdAsync(newRabbit.Id);
+            // Check om kaninen med de givne øremærker allerede eksisterer
+            var existingRabbit = await GetRabbitByEarTagsAsync(newRabbit.RightEarId, newRabbit.LeftEarId);
             if (existingRabbit != null)
             {
-                throw new InvalidOperationException("A rabbit with the same id already exists.");
+                throw new InvalidOperationException("A rabbit with the same ear tags already exists.");
             }
 
-            newRabbit.Owner = user.BreederRegNo;
+            newRabbit.Owner = thisUser.BreederRegNo;
             await _dbRepository.AddObjectAsync(newRabbit);
         }
 
         //---------------------: UPDATE
-        public async Task UpdateRabbitAsync(Rabbit rabbitId, User userId)
+        public async Task UpdateRabbitAsync(Rabbit rabbitId, User thisUser)
         {
-            if (rabbitId.Owner != userId.BreederRegNo)
+            if (rabbitId.Owner != thisUser.BreederRegNo)
             {
-
+                throw new InvalidOperationException("You are not the owner of this rabbit.");
             }
             _validatorService.ValidateRabbit(rabbitId);
             await _dbRepository.UpdateObjectAsync(rabbitId);
         }
 
         //---------------------: DELETE
-        public async Task DeleteRabbitAsync(int rabbitId, User userId)
+        public async Task DeleteRabbitAsync(Rabbit rabbitToDelete, User thisUser)
         {
-            var rabbitToDelete = await GetRabbitByIdAsync(rabbitId);
+            if (rabbitToDelete.Owner != thisUser.BreederRegNo)
             {
-                await _dbRepository.DeleteObjectAsync(rabbitToDelete);
+                throw new InvalidOperationException("You are not the owner of this rabbit.");
             }
+
+            await _dbRepository.DeleteObjectAsync(rabbitToDelete);
         }
+
 
     }
 }

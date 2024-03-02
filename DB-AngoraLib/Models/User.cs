@@ -26,8 +26,9 @@ namespace DB_AngoraLib.Models
         public bool? IsAdmin { get; set; }
         public string? Image {  get; set; }
 
-        public User(string breederRegNo, string firstName, string lastName, string roadName, int zipCode, string city, string email, string phone, string password, bool? isAdmin, string? image)
+        public User(int id, string breederRegNo, string firstName, string lastName, string roadName, int zipCode, string city, string email, string phone, string password, bool? isAdmin, string? image)
         {
+            Id = id;
             BreederRegNo = breederRegNo;
             FirstName = firstName;
             LastName = lastName;

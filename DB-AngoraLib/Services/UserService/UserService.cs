@@ -30,7 +30,7 @@ namespace DB_AngoraLib.Services.UserService
             return await _dbRepository.GetObjectByIdAsync(userId);
         }
 
-        public async Task<User> GetUserByUsernameAsync(string breederRegNo)
+        public async Task<User> GetUserByBreederRegNoAsync(string breederRegNo)
         {
             return await _dbRepository.GetObjectAsync(u => u.BreederRegNo == breederRegNo);
         }

@@ -11,10 +11,10 @@ namespace DB_AngoraLib.Services.RabbitService
     {
         Task<List<Rabbit>> GetAllRabbitsAsync();
         Task<Rabbit> GetRabbitByIdAsync(int rabbitId);
-        Task<Rabbit> GetRabbitByEarIdAsync(string rightEarId, string leftEarId);
+        Task<Rabbit> GetRabbitByEarTagsAsync(string rightEarId, string leftEarId);
         Task<List<Rabbit>> GetAllRabbitsByOwnerAsync(int userId);
-        Task AddRabbitAsync(Rabbit newRabbit, User userId);
-        Task UpdateRabbitAsync(Rabbit rabbitId, User userId);
-        Task DeleteRabbitAsync(int rabbitId, User userId);
+        Task AddRabbitAsync(Rabbit newRabbit, User thisUser);
+        Task UpdateRabbitAsync(Rabbit rabbitId, User thisUser);
+        Task DeleteRabbitAsync(Rabbit rabbitToDelete, User thisUser);
     }
 }

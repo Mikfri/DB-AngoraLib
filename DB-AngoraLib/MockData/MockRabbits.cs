@@ -9,7 +9,7 @@ namespace DB_AngoraLib.MockData
 {
     public class MockRabbits
     {
-        private static List<Rabbit> _rabbits = new List<Rabbit>()
+        private static List<Rabbit> _rabbitsList = new List<Rabbit>()
         {
 
             ///////////////////////// Ida's kaniner
@@ -303,7 +303,7 @@ namespace DB_AngoraLib.MockData
         };
 
         public static List<Rabbit> GetMockRabbits()
-        { return _rabbits; }
+        { return _rabbitsList; }
 
     }
 }

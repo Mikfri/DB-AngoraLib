@@ -35,7 +35,7 @@ namespace DB_AngoraLib.Services.ValidationService
 
             if (NotApprovedColorsByRace.TryGetValue(race, out var selectedColor))
             {
-                Console.WriteLine($"NotApprovedColorsByRace: {string.Join(", ", selectedColor)}");
+                Console.WriteLine($"NotApprovedColorsFor_{race}: {string.Join(", ", selectedColor)}");
                 bool approvedRaceColorCombo = !selectedColor.Contains(color);
 
                 rabbit.ApprovedRaceColorCombination = approvedRaceColorCombo;

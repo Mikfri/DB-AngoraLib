@@ -6,7 +6,7 @@ namespace DB_AngoraLib.Services.UserService
     {
         Task<List<User>> GetAllUsersAsync();
         Task<User> GetUserByIdAsync(int userId);
-        Task<User> GetUserByUsernameAsync(string breederRegNo);
+        Task<User> GetUserByBreederRegNoAsync(string breederRegNo);
         Task AddUserAsync(User newUser);
         Task UpdateUserAsync(User user);
         Task DeleteUserAsync(User user);
