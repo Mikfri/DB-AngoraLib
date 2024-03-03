@@ -47,8 +47,12 @@ namespace DB_AngoraMST.ServicesTest
                 // Set properties for the new rabbit
             };
 
+            // Set the current user for the test
+            var currentUser = new User { /* user properties */ };
+            UserService.SetCurrentUser(currentUser);
+
             // Act
-            await rabbitService.AddRabbitAsync(newRabbit, userService.GetCurrentUser());
+            await rabbitService.AddRabbitAsync(newRabbit, UserService.GetCurrentUser());
 
             // Assert
             using (var context = new DB_AngoraContext(options))
@@ -57,6 +61,9 @@ namespace DB_AngoraMST.ServicesTest
                 Assert.IsNotNull(addedRabbit);
                 // Add more assertions based on your expectations
             }
+
+            // Clear the current user after the test
+            UserService.ClearCurrentUser();
         }
 
         // Add more tests as needed

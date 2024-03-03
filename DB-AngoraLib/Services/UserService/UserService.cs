@@ -14,12 +14,31 @@ namespace DB_AngoraLib.Services.UserService
         //public IReadOnlyList<Rabbit> Rabbits => _rabbits.AsReadOnly();
 
         private readonly IGRepository<User> _dbRepository;
+        private static User _currentUser;
 
         public UserService(IGRepository<User> dbRepository)
         {
             _dbRepository = dbRepository;
         }
 
+        //------------------------- CURRENT USER METHODS ------------------
+        public static void SetCurrentUser(User user)
+        {
+            _currentUser = user;
+        }
+
+        public static void ClearCurrentUser()
+        {
+            _currentUser = null;
+        }
+
+        public static User GetCurrentUser()
+        {
+            return _currentUser;
+        }
+
+
+        //------------------------- USER METHODS -------------------------
         public async Task<List<User>> GetAllUsersAsync()
         {
             return (await _dbRepository.GetAllObjectsAsync()).ToList();
