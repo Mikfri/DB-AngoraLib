@@ -11,69 +11,54 @@ namespace DB_AngoraLib.Repository
 {
     public class GRepository<T> : IGRepository<T> where T : class
     {
+        private readonly DB_AngoraContext _dbContext;
+
+        public GRepository(DbContextOptions<DB_AngoraContext> options)
+        {
+            _dbContext = new DB_AngoraContext(options);
+        }
+
         public virtual async Task<IEnumerable<T>> GetAllObjectsAsync()
         {
-            using (var context = new DB_AngoraContext())
-            {
-                return await context.Set<T>().AsNoTracking().ToListAsync();
-            }
+            return await _dbContext.Set<T>().AsNoTracking().ToListAsync();
         }
 
         public async Task SaveObjects(List<T> objs)
         {
-            using (var context = new DB_AngoraContext())
+            foreach (T obj in objs)
             {
-                foreach (T obj in objs)
-                {
-                    context.Set<T>().Add(obj);
-                    context.SaveChanges();
-                }
-
-                context.SaveChanges();
+                _dbContext.Set<T>().Add(obj);
             }
+
+            await _dbContext.SaveChangesAsync();
         }
 
         public async Task<T> GetObjectAsync(Expression<Func<T, bool>> filter)
         {
-            using (var context = new DB_AngoraContext())
-            {
-                return await context.Set<T>().Where(filter).FirstOrDefaultAsync();
-            }
+            return await _dbContext.Set<T>().Where(filter).FirstOrDefaultAsync();
         }
 
         public virtual async Task AddObjectAsync(T obj)
         {
-            using (var context = new DB_AngoraContext())
-            {
-                context.Set<T>().Add(obj);
-                await context.SaveChangesAsync();
-            }
+            _dbContext.Set<T>().Add(obj);
+            await _dbContext.SaveChangesAsync();
         }
 
         public async Task<T> GetObjectByIdAsync(int id)
         {
-            using (var context = new DB_AngoraContext())
-            {
-                return await context.Set<T>().FindAsync(id);
-            }
-        }        
+            return await _dbContext.Set<T>().FindAsync(id);
+        }
 
         public async Task UpdateObjectAsync(T obj)
         {
-            using (var context = new DB_AngoraContext())
-            {
-                context.Set<T>().Update(obj);
-                await context.SaveChangesAsync();
-            }
+            _dbContext.Set<T>().Update(obj);
+            await _dbContext.SaveChangesAsync();
         }
 
         public async Task DeleteObjectAsync(T obj)
         {
-            using (var context = new DB_AngoraContext())
-            {
-                context.Set<T>().Remove(obj);
-                await context.SaveChangesAsync();
-            }
+            _dbContext.Set<T>().Remove(obj);
+            await _dbContext.SaveChangesAsync();
         }
     }
 }

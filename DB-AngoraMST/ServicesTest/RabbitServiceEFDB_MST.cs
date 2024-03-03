@@ -13,29 +13,28 @@ using System.Threading.Tasks;
 namespace DB_AngoraMST.ServicesTest
 {
     [TestClass]
-    public class RabbitServiceDB_MST
+    public class RabbitServiceEFDB_MST
     {
-        private RabbitService rabbitService;
-        private DbContextOptions<DB_AngoraContext> options;
+        private static RabbitService rabbitService;
+        private static DbContextOptions<DB_AngoraContext> options;
+        private static UserService userService;
 
-        [TestInitialize]
-        public void Initialize()
+        private static void ConfigureEFDatabase()
         {
-            // Configure options for in-memory database
             options = new DbContextOptionsBuilder<DB_AngoraContext>()
-                .UseInMemoryDatabase(databaseName: "TestDatabase")
+                .UseSqlServer(DBSecrets.ConnectionStringSimply)
                 .Options;
 
-            // Initialize RabbitService with the in-memory database context
             using (var context = new DB_AngoraContext(options))
             {
-                context.Database.EnsureCreated(); // Ensure database is created
+                context.Database.EnsureDeleted();
+                context.Database.EnsureCreated();
             }
 
             var dbContext = new DB_AngoraContext(options);
-            var userRepository = new GRepository<User>(dbContext);
-            var rabbitRepository = new GRepository<Rabbit>(dbContext);
-            var userService = new UserService(userRepository);
+            var userRepository = new GRepository<User>(options); // Brug options her
+            var rabbitRepository = new GRepository<Rabbit>(options); // Brug options her
+            userService = new UserService(userRepository);
             rabbitService = new RabbitService(rabbitRepository, userService, new RabbitValidator());
         }
 
@@ -49,7 +48,7 @@ namespace DB_AngoraMST.ServicesTest
             };
 
             // Act
-            await rabbitService.AddRabbitAsync(newRabbit, user);
+            await rabbitService.AddRabbitAsync(newRabbit, userService.GetCurrentUser());
 
             // Assert
             using (var context = new DB_AngoraContext(options))

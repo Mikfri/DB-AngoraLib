@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 namespace DB_AngoraMST.ServicesTest
 {
     [TestClass]
-    public class RabbitServiceMST
+    public class RabbitServiceMoq_MST
     {
         private static Mock<IGRepository<Rabbit>> mockRepository;
         private static Mock<IUserService> mockUserService;
