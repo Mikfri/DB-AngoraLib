@@ -110,7 +110,7 @@ namespace DB_AngoraLib.Models
         public string LeftEarId { get; set; }
 
         public string? Owner { get; set; }
-        public virtual User User { get; set; } // virtual -> lazy loading (færre DB requests)
+        public User User { get; set; } // public virtual -> lazy loading (færre DB requests)
 
         public string? NickName { get; set; }
         public Race Race { get; set; }
@@ -143,5 +143,9 @@ namespace DB_AngoraLib.Models
 
         public Rabbit() { }
 
+        public override string ToString()
+        {
+            return $"Id: {Id}, RightEarId: {RightEarId}, LeftEarId: {LeftEarId}, Owner: {Owner}, NickName: {NickName}, Race: {Race}, Color: {Color}, ApprovedRaceColorCombination: {ApprovedRaceColorCombination}, DateOfBirth: {DateOfBirth}, Gender: {Gender}";
+        }
     }
 }

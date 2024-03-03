@@ -31,20 +31,20 @@ namespace DB_AngoraLib.Services.ValidationService
             Race race = rabbit.Race;
             Color color = rabbit.Color;
 
-            Console.WriteLine($"Selected: {race} - {color}");
+            //Console.WriteLine($"Selected: {race} - {color}");
 
             if (NotApprovedColorsByRace.TryGetValue(race, out var selectedColor))
             {
-                Console.WriteLine($"NotApprovedColorsFor_{race}: {string.Join(", ", selectedColor)}");
+                //Console.WriteLine($"NotApprovedColorsFor_{race}: {string.Join(", ", selectedColor)}");
                 bool approvedRaceColorCombo = !selectedColor.Contains(color);
 
                 rabbit.ApprovedRaceColorCombination = approvedRaceColorCombo;
-                Console.WriteLine($"Setting ApprovedRaceColorCombination to {approvedRaceColorCombo}");
+                //Console.WriteLine($"Setting ApprovedRaceColorCombination to {approvedRaceColorCombo}");
             }
             else
             {
                 rabbit.ApprovedRaceColorCombination = false;
-                Console.WriteLine("Setting ApprovedRaceColorCombination to false");
+                //Console.WriteLine("Setting ApprovedRaceColorCombination to false");
             }
         }
 

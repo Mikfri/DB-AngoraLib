@@ -26,6 +26,8 @@ namespace DB_AngoraLib.Services.RabbitService
             _validatorService = validatorService;
         }
 
+        public RabbitService() { }
+
         //public void ValidateUniqueRabbitId(Rabbit rabbit)
         //{
         //    var existingRabbit = _dbRepository.GetObjectByIdAsync(Rabbit rabbit).Result;
@@ -48,14 +50,6 @@ namespace DB_AngoraLib.Services.RabbitService
             return await _dbRepository.GetObjectByIdAsync(rabbitId);
         }
 
-        //-------: GET BY EAR TAGs METODER
-        public async Task<Rabbit> GetRabbitByEarTagsAsync(string rightEarId, string leftEarId)
-        {
-            Expression<Func<Rabbit, bool>> filter = r => r.RightEarId == rightEarId && r.LeftEarId == leftEarId;
-            return await _dbRepository.GetObjectAsync(filter);
-        }
-
-
         //-------: GET BY OWNER METODER
         public async Task<List<Rabbit>> GetAllRabbitsByOwnerAsync(int userId)
         {
@@ -64,29 +58,66 @@ namespace DB_AngoraLib.Services.RabbitService
             return rabbits.Where(rabbit => rabbit.Owner == user.BreederRegNo).ToList();
         }
 
+        //-------: GET BY EAR TAGs METODER
+        public async Task<Rabbit> GetRabbitByEarTagsAsync(string rightEarId, string leftEarId)
+        {
+            Expression<Func<Rabbit, bool>> filter = r => r.RightEarId == rightEarId && r.LeftEarId == leftEarId;
 
-        //---------------------: ADD
-        //public async Task AddRabbitAsync(Rabbit rabbit, User thisUser)
+            Console.WriteLine($"Trying to get rabbit by ear tags with RightEarId: {rightEarId}, LeftEarId: {leftEarId}");
+
+            var rabbit = await _dbRepository.GetObjectAsync(filter);
+
+            if (rabbit != null)
+            {
+                Console.WriteLine($"Found rabbit with RightEarId: {rabbit.RightEarId}, LeftEarId: {rabbit.LeftEarId}");
+            }
+            else
+            {
+                Console.WriteLine("No rabbit found with the given ear tags.");
+            }
+
+            return rabbit;
+        }
+
+        //public async Task<Rabbit> GetRabbitByEarTagsAsync(string rightEarId, string leftEarId)
         //{
-        //    _validatorService.ValidateRabbit(rabbit);
-        //    rabbit.Owner = thisUser.BreederRegNo;
-        //    await _dbRepository.AddObjectAsync(rabbit);
+        //    Expression<Func<Rabbit, bool>> filter = r => r.RightEarId == rightEarId && r.LeftEarId == leftEarId;
+        //    return await _dbRepository.GetObjectAsync(filter);
         //}
 
+        //---------------------: ADD
         public async Task AddRabbitAsync(Rabbit newRabbit, User thisUser)
         {
+            Console.WriteLine($"Trying to add rabbit with RightEarId: {newRabbit.RightEarId}, LeftEarId: {newRabbit.LeftEarId}");
             _validatorService.ValidateRabbit(newRabbit);
 
             // Check om kaninen med de givne øremærker allerede eksisterer
             var existingRabbit = await GetRabbitByEarTagsAsync(newRabbit.RightEarId, newRabbit.LeftEarId);
             if (existingRabbit != null)
             {
+                Console.WriteLine($"Found existing rabbit with RightEarId: {existingRabbit.RightEarId}, LeftEarId: {existingRabbit.LeftEarId}");
                 throw new InvalidOperationException("A rabbit with the same ear tags already exists.");
             }
 
             newRabbit.Owner = thisUser.BreederRegNo;
             await _dbRepository.AddObjectAsync(newRabbit);
+            Console.WriteLine($"Rabbit added successfully with RightEarId: {newRabbit.RightEarId}, LeftEarId: {newRabbit.LeftEarId}");
         }
+
+        //public async Task AddRabbitAsync(Rabbit newRabbit, User thisUser)
+        //{
+        //    _validatorService.ValidateRabbit(newRabbit);
+
+        //    // Check om kaninen med de givne øremærker allerede eksisterer
+        //    var existingRabbit = await GetRabbitByEarTagsAsync(newRabbit.RightEarId, newRabbit.LeftEarId);
+        //    if (existingRabbit != null)
+        //    {
+        //        throw new InvalidOperationException("A rabbit with the same ear tags already exists.");
+        //    }
+
+        //    newRabbit.Owner = thisUser.BreederRegNo;
+        //    await _dbRepository.AddObjectAsync(newRabbit);
+        //}
 
         //---------------------: UPDATE
         public async Task UpdateRabbitAsync(Rabbit rabbitId, User thisUser)

@@ -31,7 +31,7 @@ namespace DB_AngoraLib.MockData
 
             new Rabbit(
             "5095",
-            "002",
+            "001",
             "5095",
             "Kaliba",
             Race.Angora,

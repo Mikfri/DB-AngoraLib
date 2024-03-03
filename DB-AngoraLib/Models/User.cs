@@ -11,7 +11,7 @@ namespace DB_AngoraLib.Models
     public class User
     {
         public int Id { get; set; }
-        public string BreederRegNo { get; set; }// string! udelanske systemer(tyske heraf) benytter bogstaver.
+        public string BreederRegNo { get; set; }    // string! udelanske systemer(tyske heraf) benytter bogstaver.
 
         public string FirstName { get; set; }
         public string LastName { get; set; }
