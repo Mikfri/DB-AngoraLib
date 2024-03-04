@@ -10,10 +10,7 @@ namespace DB_AngoraLib.EF_DbContext
 {
     public class DB_AngoraContext : DbContext
     {
-        public DB_AngoraContext(DbContextOptions<DB_AngoraContext> options)
-        : base(options)
-        {
-        }
+        public DB_AngoraContext(DbContextOptions<DB_AngoraContext> options) : base(options) {  }
 
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {

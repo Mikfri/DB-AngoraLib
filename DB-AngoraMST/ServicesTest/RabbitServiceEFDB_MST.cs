@@ -21,9 +21,9 @@ namespace DB_AngoraMST.ServicesTest
 
         private static void ConfigureEFDatabase()
         {
-            options = new DbContextOptionsBuilder<DB_AngoraContext>()
-                .UseSqlServer(DBSecrets.ConnectionStringSimply)
-                .Options;
+            //options = new DbContextOptionsBuilder<DB_AngoraContext>()
+            //    .UseSqlServer(DBSecrets.ConnectionStringSimply)
+            //    .Options;
 
             using (var context = new DB_AngoraContext(options))
             {
