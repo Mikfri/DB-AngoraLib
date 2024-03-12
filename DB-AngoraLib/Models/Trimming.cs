@@ -19,6 +19,16 @@ namespace DB_AngoraLib.Models
         public Rabbit Rabbit { get; set; }
 
         public DateOnly DateTrimmed { get; set; }
+        public int DaysSinceLastTrim
+        {
+            get      //Derrived property
+            {
+                DateTime dateNow = DateTime.Now;
+                DateTime dateTrimmed = new DateTime(DateTrimmed.Year, DateTrimmed.Month, DateTrimmed.Day);
+
+                return (int)(dateNow - dateTrimmed).TotalDays;
+            }
+        }
 
         public int FirstSortmentWeightGram { get; set; }
 
@@ -31,6 +41,6 @@ namespace DB_AngoraLib.Models
         public float? HairLengthCm { get; set; }
 
         public float? WoolDensity { get; set; }
-        
+
     }
 }
