@@ -109,8 +109,9 @@ namespace DB_AngoraLib.Models
         public string RightEarId { get; set; }
         public string LeftEarId { get; set; }
 
-        public string? Owner { get; set; }
-        public User User { get; set; } // public virtual -> lazy loading (færre DB requests)
+        public string? OwnerId { get; set; }
+        [ForeignKey("OwnerId")]
+        public User Owner { get; set; } // public virtual -> lazy loading (færre DB requests)
 
         public string? NickName { get; set; }
         public Race Race { get; set; }
@@ -119,16 +120,25 @@ namespace DB_AngoraLib.Models
         public DateOnly DateOfBirth { get; set; }
         public DateOnly? DateOfDeath { get; set; }
         public Gender Gender { get; set; }
-        public int? MotherId { get; set; }      // todo: Skal kædes til kaninens comp-key. ala: "4977-206"
+
+        public int? MotherId { get; set; }
+        [ForeignKey("MotherId")]
+        public virtual Rabbit Mother { get; set; }
+
         public int? FatherId { get; set; }
+        [ForeignKey("FatherId")]
+        public virtual Rabbit Father { get; set; }
+
         public IsPublic? IsPublic { get; set; }
 
+        public virtual ICollection<Litter> Litters { get; set; }
 
-        public Rabbit(string rightEarId, string leftEarId, string? owner, string? nickName, Race race, Color color, /*bool? approvedRaceColorCombination,*/ DateOnly dateOfBirth, DateOnly? dateOfDeath, Gender gender, int? motherId, int? fatherId, IsPublic? isPublic)
+
+        public Rabbit(string rightEarId, string leftEarId, string? ownerId, string? nickName, Race race, Color color, /*bool? approvedRaceColorCombination,*/ DateOnly dateOfBirth, DateOnly? dateOfDeath, Gender gender, int? motherId, int? fatherId, IsPublic? isPublic)
         {
             RightEarId = rightEarId;
             LeftEarId = leftEarId;
-            Owner = owner;
+            OwnerId = ownerId;
             NickName = nickName;
             Race = race;
             Color = color;

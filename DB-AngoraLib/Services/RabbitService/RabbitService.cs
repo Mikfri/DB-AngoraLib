@@ -55,7 +55,7 @@ namespace DB_AngoraLib.Services.RabbitService
         {
             var user = await _userService.GetUserByIdAsync(userId);
             var rabbits = await _dbRepository.GetAllObjectsAsync();
-            return rabbits.Where(rabbit => rabbit.Owner == user.BreederRegNo).ToList();
+            return rabbits.Where(rabbit => rabbit.OwnerId == user.BreederRegNo).ToList();
         }
 
         //-------: GET BY EAR TAGs METODER
@@ -99,7 +99,7 @@ namespace DB_AngoraLib.Services.RabbitService
                 throw new InvalidOperationException("A rabbit with the same ear tags already exists.");
             }
 
-            newRabbit.Owner = thisUser.BreederRegNo;
+            newRabbit.OwnerId = thisUser.BreederRegNo;
             await _dbRepository.AddObjectAsync(newRabbit);
             Console.WriteLine($"Rabbit added successfully with RightEarId: {newRabbit.RightEarId}, LeftEarId: {newRabbit.LeftEarId}");
         }
@@ -122,7 +122,7 @@ namespace DB_AngoraLib.Services.RabbitService
         //---------------------: UPDATE
         public async Task UpdateRabbitAsync(Rabbit rabbitId, User thisUser)
         {
-            if (rabbitId.Owner != thisUser.BreederRegNo)
+            if (rabbitId.OwnerId != thisUser.BreederRegNo)
             {
                 throw new InvalidOperationException("You are not the owner of this rabbit.");
             }
@@ -133,7 +133,7 @@ namespace DB_AngoraLib.Services.RabbitService
         //---------------------: DELETE
         public async Task DeleteRabbitAsync(Rabbit rabbitToDelete, User thisUser)
         {
-            if (rabbitToDelete.Owner != thisUser.BreederRegNo)
+            if (rabbitToDelete.OwnerId != thisUser.BreederRegNo)
             {
                 throw new InvalidOperationException("You are not the owner of this rabbit.");
             }
