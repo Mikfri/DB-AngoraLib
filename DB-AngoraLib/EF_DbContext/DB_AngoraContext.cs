@@ -14,24 +14,37 @@ namespace DB_AngoraLib.EF_DbContext
 
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
-            options.UseSqlServer(@"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=DB-Angora_DB; Integrated Security=True; Connect Timeout=30; Encrypt=False");
+            options.UseSqlServer(
+                @"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=DB-Angora_DB; Integrated Security=True; Connect Timeout=30; Encrypt=False");
         }
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // Konfigurer sammensat nøgle for Rabbit
-            modelBuilder.Entity<Rabbit>()
-                .HasKey(r => r.Id);
-
-            // Konfigurer Foreign Key for Rabbit -> User
-            modelBuilder.Entity<Rabbit>()
-                .HasOne(r => r.User)
-                .WithMany()
-                .HasForeignKey(r => r.Owner) // eller hvad du nu ønsker at navngive det
-                .OnDelete(DeleteBehavior.Restrict);
-
+            //------------------- PK SETUP -------------------
+            // Configure primary key for User
             modelBuilder.Entity<User>()
-                .HasKey(u => u.BreederRegNo); // Brug BreederRegNo som primærnøgle
+                .HasKey(u => u.BreederRegNo);
+
+            // Configure composite key for Rabbit
+            modelBuilder.Entity<Rabbit>()
+                .HasKey(r => new { r.RightEarId, r.LeftEarId });
+
+            //------------------- FK SETUP -------------------
+            // Configure Foreign Key for Rabbit -> User
+            modelBuilder.Entity<Rabbit>()
+                .HasOne(r => r.Owner)
+                .WithMany(u => u.Rabbits)
+                .HasForeignKey(r => r.OwnerId);
+
+            // Configure self-referencing relationships for Rabbit -> Mother and Rabbit -> Father
+            modelBuilder.Entity<Rabbit>()
+                .HasOne(r => r.Mother)
+                .WithMany()
+                .HasForeignKey(r => r.MotherId);
+
+            modelBuilder.Entity<Rabbit>()
+                .HasOne(r => r.Father)
+                .WithMany()
+                .HasForeignKey(r => r.FatherId);
         }
 
 

@@ -105,12 +105,10 @@ namespace DB_AngoraLib.Models
 
     public class Rabbit
     {
-        public int Id { get; set; }
         public string RightEarId { get; set; }
         public string LeftEarId { get; set; }
 
         public string? OwnerId { get; set; }
-        [ForeignKey("OwnerId")]
         public User Owner { get; set; } // public virtual -> lazy loading (færre DB requests)
 
         public string? NickName { get; set; }

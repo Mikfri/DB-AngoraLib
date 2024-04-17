@@ -96,7 +96,7 @@ namespace DB_AngoraLib.Services.ValidationService
         {
             string leftEarId = rabbit.LeftEarId;
 
-            Regex threeToFiveNumbersDigit = new Regex(@"^\d{3,5}$");
+            Regex threeToFiveNumbersDigit = new Regex(@"^\d{3,5}$"); // 3-5 numeriske tal
 
             if (string.IsNullOrEmpty(leftEarId))
             {

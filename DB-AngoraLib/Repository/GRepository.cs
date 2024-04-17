@@ -13,9 +13,9 @@ namespace DB_AngoraLib.Repository
     {
         private readonly DB_AngoraContext _dbContext;
 
-        public GRepository(DbContextOptions<DB_AngoraContext> options)
+        public GRepository(DB_AngoraContext dbContext)
         {
-            _dbContext = new DB_AngoraContext(options);
+            _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
         }
 
         public virtual async Task<IEnumerable<T>> GetAllObjectsAsync()
@@ -40,10 +40,18 @@ namespace DB_AngoraLib.Repository
 
         public virtual async Task AddObjectAsync(T obj)
         {
-            _dbContext.Set<T>().Add(obj);
-            await _dbContext.SaveChangesAsync();
+            try
+            {
+                _dbContext.Set<T>().Add(obj);
+                await _dbContext.SaveChangesAsync();
+            }
+            catch (DbUpdateException ex)
+            {
+                // Log the error or rethrow, or handle as necessary
+                throw new Exception("An error occurred while adding the object to the database.", ex);
+            }
         }
-
+        
         public async Task<T> GetObjectByIdAsync(int id)
         {
             return await _dbContext.Set<T>().FindAsync(id);

@@ -12,7 +12,6 @@ namespace DB_AngoraLib.MockData
         private static List<User> _usersList = new List<User>()
         {
             new User(
-            1,
             "5095",
             "Ida",
             "Friborg",
@@ -26,7 +25,6 @@ namespace DB_AngoraLib.MockData
             null),
 
             new User(
-            2,
             "5053",
             "Maja",
             "Hulstrøm",

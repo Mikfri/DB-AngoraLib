@@ -10,7 +10,6 @@ namespace DB_AngoraLib.Models
 {
     public class User
     {
-        public int Id { get; set; }
         public string BreederRegNo { get; set; }    // string! udelanske systemer(tyske heraf) benytter bogstaver.
 
         public string FirstName { get; set; }
@@ -26,9 +25,11 @@ namespace DB_AngoraLib.Models
         public bool? IsAdmin { get; set; }
         public string? Image {  get; set; }
 
-        public User(int id, string breederRegNo, string firstName, string lastName, string roadName, int zipCode, string city, string email, string phone, string password, bool? isAdmin, string? image)
+        public ICollection<Rabbit> Rabbits { get; set; }
+
+
+        public User(string breederRegNo, string firstName, string lastName, string roadName, int zipCode, string city, string email, string phone, string password, bool? isAdmin, string? image)
         {
-            Id = id;
             BreederRegNo = breederRegNo;
             FirstName = firstName;
             LastName = lastName;
