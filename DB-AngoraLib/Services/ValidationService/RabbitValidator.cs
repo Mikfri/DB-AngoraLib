@@ -130,13 +130,13 @@ namespace DB_AngoraLib.Services.ValidationService
             if ((string.IsNullOrEmpty(rabbit.MotherRightEarId) && !string.IsNullOrEmpty(rabbit.MotherLeftEarId)) ||
                 (!string.IsNullOrEmpty(rabbit.MotherRightEarId) && string.IsNullOrEmpty(rabbit.MotherLeftEarId)))
             {
-                throw new ArgumentException("Begge ører ID er nødvendige for at specificere moderen");
+                throw new ArgumentException("Kanin.ModerId: Begge ører ID er nødvendige for at specificere moderen");
             }
 
             if ((string.IsNullOrEmpty(rabbit.FatherRightEarId) && !string.IsNullOrEmpty(rabbit.FatherLeftEarId)) ||
                 (!string.IsNullOrEmpty(rabbit.FatherRightEarId) && string.IsNullOrEmpty(rabbit.FatherLeftEarId)))
             {
-                throw new ArgumentException("Begge ører ID er nødvendige for at specificere faderen");
+                throw new ArgumentException("Kanin.FaderId: Begge ører ID er nødvendige for at specificere faderen");
             }
         }
 

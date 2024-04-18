@@ -63,13 +63,13 @@ namespace DB_AngoraLib.Services.RabbitService
         {
             Expression<Func<Rabbit, bool>> filter = r => r.RightEarId == rightEarId && r.LeftEarId == leftEarId;
 
-            Console.WriteLine($"Trying to get rabbit by ear tags with RightEarId: {rightEarId}, LeftEarId: {leftEarId}");
+            Console.WriteLine($"Checking for existing Rabbit with ear tags: RightEarId: {rightEarId}, LeftEarId: {leftEarId}");
 
             var rabbit = await _dbRepository.GetObjectAsync(filter);
 
             if (rabbit != null)
             {
-                Console.WriteLine($"Found rabbit with RightEarId: {rabbit.RightEarId}, LeftEarId: {rabbit.LeftEarId}");
+                Console.WriteLine($"A Rabbit with this ear-tag already exists!\nRabbitName: {rabbit.NickName}, OwnerId: {rabbit.OwnerId}, OwnerName: {rabbit.Owner.FirstName} {rabbit.Owner.LastName}");
             }
             else
             {
@@ -95,29 +95,14 @@ namespace DB_AngoraLib.Services.RabbitService
             var existingRabbit = await GetRabbitByEarTagsAsync(newRabbit.RightEarId, newRabbit.LeftEarId);
             if (existingRabbit != null)
             {
-                Console.WriteLine($"Found existing rabbit with RightEarId: {existingRabbit.RightEarId}, LeftEarId: {existingRabbit.LeftEarId}");
                 throw new InvalidOperationException("A rabbit with the same ear tags already exists.");
             }
 
             newRabbit.OwnerId = thisUser.BreederRegNo;
             await _dbRepository.AddObjectAsync(newRabbit);
-            Console.WriteLine($"Rabbit added successfully with RightEarId: {newRabbit.RightEarId}, LeftEarId: {newRabbit.LeftEarId}");
+            Console.WriteLine($"Rabbit added successfully with RightEarId: {newRabbit.RightEarId}, LeftEarId: {newRabbit.LeftEarId}, OwnerId: {newRabbit.OwnerId}");
         }
-
-        //public async Task AddRabbitAsync(Rabbit newRabbit, User thisUser)
-        //{
-        //    _validatorService.ValidateRabbit(newRabbit);
-
-        //    // Check om kaninen med de givne øremærker allerede eksisterer
-        //    var existingRabbit = await GetRabbitByEarTagsAsync(newRabbit.RightEarId, newRabbit.LeftEarId);
-        //    if (existingRabbit != null)
-        //    {
-        //        throw new InvalidOperationException("A rabbit with the same ear tags already exists.");
-        //    }
-
-        //    newRabbit.Owner = thisUser.BreederRegNo;
-        //    await _dbRepository.AddObjectAsync(newRabbit);
-        //}
+                
 
         //---------------------: UPDATE
         public async Task UpdateRabbitAsync(Rabbit rabbitId, User thisUser)

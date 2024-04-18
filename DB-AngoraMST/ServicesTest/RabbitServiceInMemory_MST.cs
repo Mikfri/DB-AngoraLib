@@ -75,8 +75,8 @@ namespace DB_AngoraMST.ServicesTest
             IsPublic.No);
 
             // Get a rabbit from the mock data
-            var newRabbit = await _context.Rabbits.FirstAsync();
-            Assert.IsNotNull(newRabbit);
+            var existingRabbit = await _context.Rabbits.FirstAsync();
+            Assert.IsNotNull(existingRabbit);
 
             // Set the current user for the test
             var currentUser = await _context.Users.FirstAsync();
@@ -88,7 +88,10 @@ namespace DB_AngoraMST.ServicesTest
             // Assert
             var addedRabbit = await _context.Rabbits.FindAsync(newUniqRabbit.RightEarId, newUniqRabbit.LeftEarId);
             Assert.IsNotNull(addedRabbit);
-            // Add more assertions based on your expectations
+
+            // Act & Assert
+            await Assert.ThrowsExceptionAsync<InvalidOperationException>(
+                () => _rabbitService.AddRabbitAsync(existingRabbit, currentUser));
         }
 
         // Add more tests as needed
