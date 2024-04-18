@@ -121,13 +121,13 @@ namespace DB_AngoraLib.Models
 
         public string? MotherRightEarId { get; set; }
         public string? MotherLeftEarId { get; set; }
-        [ForeignKey("MotherRightEarId, MotherLeftEarId")]
-        public virtual Rabbit Mother { get; set; }
+        //[ForeignKey("MotherRightEarId, MotherLeftEarId")] // Overflødigt, da vi sætter det op i DbContext
+        public virtual Rabbit? Mother { get; set; }
 
         public string? FatherRightEarId { get; set; }
         public string? FatherLeftEarId { get; set; }
-        [ForeignKey("FatherRightEarId, FatherLeftEarId")]
-        public virtual Rabbit Father { get; set; }
+        //[ForeignKey("FatherRightEarId, FatherLeftEarId")] // Uden dette gøres klassen u-afhængig af DbContext
+        public virtual Rabbit? Father { get; set; }
 
         public IsPublic? IsPublic { get; set; }
 

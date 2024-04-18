@@ -13,13 +13,13 @@ namespace DB_AngoraLib.Models
 
         public string MotherRightEarId { get; set; }
         public string MotherLeftEarId { get; set; }
-        [ForeignKey("MotherRightEarId, MotherLeftEarId")]
-        public virtual Rabbit Mother { get; set; }
+        public virtual Rabbit? Mother { get; set; }
 
         public string FatherRightEarId { get; set; }
         public string FatherLeftEarId { get; set; }
-        [ForeignKey("FatherRightEarId, FatherLeftEarId")]
-        public virtual Rabbit Father { get; set; }
+        public virtual Rabbit? Father { get; set; }
         public virtual ICollection<Rabbit> Rabbits { get; set; }
+
+        public Litter() { }
     }
 }

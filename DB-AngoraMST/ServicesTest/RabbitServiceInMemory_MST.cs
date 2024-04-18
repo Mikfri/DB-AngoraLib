@@ -54,9 +54,26 @@ namespace DB_AngoraMST.ServicesTest
         }
 
         [TestMethod]
-        public async Task AddRabbitAsync_ShouldAddNewRabbitToDatabase()
+        public async Task AddRabbitAsync_TEST()
         {
             // Arrange
+
+            var newUniqRabbit = new Rabbit(
+            "5095",                 // RightEarId
+            "004",                  // LeftEarId
+            "5095",                 // Owner            
+            "Yvonne",               // Nickname
+            Race.Angora,
+            Color.Jerngrå,
+            new DateOnly(2020, 06, 12), // Format: yyyy-MM-dd
+            new DateOnly(2022, 07, 22), // Format: yyyy-MM-dd
+            Gender.Hun,
+            null,                   // MotherRightEarId
+            null,                   // MotherLeftEarId
+            null,                   // FatherRightEarId
+            null,                   // FatherLeftEarId
+            IsPublic.No);
+
             // Get a rabbit from the mock data
             var newRabbit = await _context.Rabbits.FirstAsync();
             Assert.IsNotNull(newRabbit);
@@ -66,10 +83,10 @@ namespace DB_AngoraMST.ServicesTest
             Assert.IsNotNull(currentUser);
 
             // Act
-            await _rabbitService.AddRabbitAsync(newRabbit, currentUser);
+            await _rabbitService.AddRabbitAsync(newUniqRabbit, currentUser);
 
             // Assert
-            var addedRabbit = await _context.Rabbits.FindAsync(newRabbit.RightEarId, newRabbit.LeftEarId);
+            var addedRabbit = await _context.Rabbits.FindAsync(newUniqRabbit.RightEarId, newUniqRabbit.LeftEarId);
             Assert.IsNotNull(addedRabbit);
             // Add more assertions based on your expectations
         }
