@@ -125,6 +125,21 @@ namespace DB_AngoraLib.Services.ValidationService
             }
         }
 
+        public void ValidateParentIds(Rabbit rabbit)
+        {
+            if ((string.IsNullOrEmpty(rabbit.MotherRightEarId) && !string.IsNullOrEmpty(rabbit.MotherLeftEarId)) ||
+                (!string.IsNullOrEmpty(rabbit.MotherRightEarId) && string.IsNullOrEmpty(rabbit.MotherLeftEarId)))
+            {
+                throw new ArgumentException("Begge ører ID er nødvendige for at specificere moderen");
+            }
+
+            if ((string.IsNullOrEmpty(rabbit.FatherRightEarId) && !string.IsNullOrEmpty(rabbit.FatherLeftEarId)) ||
+                (!string.IsNullOrEmpty(rabbit.FatherRightEarId) && string.IsNullOrEmpty(rabbit.FatherLeftEarId)))
+            {
+                throw new ArgumentException("Begge ører ID er nødvendige for at specificere faderen");
+            }
+        }
+
         public void ValidateRabbit(Rabbit rabbit)
         {
             //Key validations
@@ -135,6 +150,7 @@ namespace DB_AngoraLib.Services.ValidationService
             ValidateColor(rabbit);
             ValidateRaceAndColorCombo(rabbit);
             ValidateGender(rabbit);
+            ValidateParentIds(rabbit);
         }
 
     }

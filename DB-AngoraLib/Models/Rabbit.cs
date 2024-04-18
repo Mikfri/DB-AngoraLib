@@ -119,12 +119,14 @@ namespace DB_AngoraLib.Models
         public DateOnly? DateOfDeath { get; set; }
         public Gender Gender { get; set; }
 
-        public int? MotherId { get; set; }
-        [ForeignKey("MotherId")]
+        public string? MotherRightEarId { get; set; }
+        public string? MotherLeftEarId { get; set; }
+        [ForeignKey("MotherRightEarId, MotherLeftEarId")]
         public virtual Rabbit Mother { get; set; }
 
-        public int? FatherId { get; set; }
-        [ForeignKey("FatherId")]
+        public string? FatherRightEarId { get; set; }
+        public string? FatherLeftEarId { get; set; }
+        [ForeignKey("FatherRightEarId, FatherLeftEarId")]
         public virtual Rabbit Father { get; set; }
 
         public IsPublic? IsPublic { get; set; }
@@ -132,7 +134,7 @@ namespace DB_AngoraLib.Models
         public virtual ICollection<Litter> Litters { get; set; }
 
 
-        public Rabbit(string rightEarId, string leftEarId, string? ownerId, string? nickName, Race race, Color color, /*bool? approvedRaceColorCombination,*/ DateOnly dateOfBirth, DateOnly? dateOfDeath, Gender gender, int? motherId, int? fatherId, IsPublic? isPublic)
+        public Rabbit(string rightEarId, string leftEarId, string? ownerId, string? nickName, Race race, Color color, /*bool? approvedRaceColorCombination,*/ DateOnly dateOfBirth, DateOnly? dateOfDeath, Gender gender, string? motherRightEarId, string? motherLeftEarId, string? fatherRightEarId, string? fatherLeftEarId, IsPublic? isPublic)
         {
             RightEarId = rightEarId;
             LeftEarId = leftEarId;
@@ -144,8 +146,12 @@ namespace DB_AngoraLib.Models
             DateOfBirth = dateOfBirth;
             DateOfDeath = dateOfDeath;
             Gender = gender;
-            MotherId = motherId;
-            FatherId = fatherId;
+
+            MotherRightEarId = motherRightEarId;
+            MotherLeftEarId = motherLeftEarId;
+            FatherRightEarId = fatherRightEarId;
+            FatherLeftEarId = fatherLeftEarId;
+
             IsPublic = isPublic;
         }
 
@@ -153,7 +159,7 @@ namespace DB_AngoraLib.Models
 
         public override string ToString()
         {
-            return $"Id: {Id}, RightEarId: {RightEarId}, LeftEarId: {LeftEarId}, Owner: {Owner}, NickName: {NickName}, Race: {Race}, Color: {Color}, ApprovedRaceColorCombination: {ApprovedRaceColorCombination}, DateOfBirth: {DateOfBirth}, Gender: {Gender}";
+            return $"RightEarId: {RightEarId}, LeftEarId: {LeftEarId}, Owner: {Owner}, NickName: {NickName}, Race: {Race}, Color: {Color}, ApprovedRaceColorCombination: {ApprovedRaceColorCombination}, DateOfBirth: {DateOfBirth}, Gender: {Gender}";
         }
     }
 }

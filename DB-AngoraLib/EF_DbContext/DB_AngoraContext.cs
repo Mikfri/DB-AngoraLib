@@ -12,11 +12,12 @@ namespace DB_AngoraLib.EF_DbContext
     {
         public DB_AngoraContext(DbContextOptions<DB_AngoraContext> options) : base(options) {  }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder options)
-        {
-            options.UseSqlServer(
-                @"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=DB-Angora_DB; Integrated Security=True; Connect Timeout=30; Encrypt=False");
-        }
+        //protected override void OnConfiguring(DbContextOptionsBuilder options)
+        //{
+        //    options.UseSqlServer(
+        //        @"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=DB-Angora_DB; Integrated Security=True; Connect Timeout=30; Encrypt=False");
+        //}
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             //------------------- PK SETUP -------------------
@@ -39,17 +40,29 @@ namespace DB_AngoraLib.EF_DbContext
             modelBuilder.Entity<Rabbit>()
                 .HasOne(r => r.Mother)
                 .WithMany()
-                .HasForeignKey(r => r.MotherId);
+                .HasForeignKey(r => new { r.MotherRightEarId, r.MotherLeftEarId });
 
             modelBuilder.Entity<Rabbit>()
                 .HasOne(r => r.Father)
                 .WithMany()
-                .HasForeignKey(r => r.FatherId);
+                .HasForeignKey(r => new { r.FatherRightEarId, r.FatherLeftEarId });
+
+            // Configure Foreign Key for Litter -> Mother and Litter -> Father
+            modelBuilder.Entity<Litter>()
+                .HasOne(l => l.Mother)
+                .WithMany()
+                .HasForeignKey(l => new { l.MotherRightEarId, l.MotherLeftEarId });
+
+            modelBuilder.Entity<Litter>()
+                .HasOne(l => l.Father)
+                .WithMany()
+                .HasForeignKey(l => new { l.FatherRightEarId, l.FatherLeftEarId });
         }
 
 
         public DbSet<Rabbit> Rabbits { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<Litter> Litters { get; set; }
 
     }
 }
