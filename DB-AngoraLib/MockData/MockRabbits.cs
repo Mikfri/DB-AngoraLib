@@ -27,6 +27,8 @@ namespace DB_AngoraLib.MockData
             Gender.Hun,
             null,                   // Mother.Id
             null,                   // Father.Id
+            null,                   // Father.Id
+            null,                   // Father.Id
             IsPublic.No),
 
             new Rabbit(
@@ -40,6 +42,8 @@ namespace DB_AngoraLib.MockData
             new DateOnly(2019, 02, 27),
             null,
             Gender.Hun,
+            null,
+            null,
             null,
             null,
             IsPublic.No),
@@ -57,6 +61,8 @@ namespace DB_AngoraLib.MockData
             Gender.Hun,
             null,
             null,
+            null,
+            null,
             IsPublic.No),
 
             new Rabbit(
@@ -72,6 +78,8 @@ namespace DB_AngoraLib.MockData
             Gender.Hun,
             null,
             null,
+            null,
+            null,
             IsPublic.No),
 
             new Rabbit(
@@ -85,6 +93,8 @@ namespace DB_AngoraLib.MockData
             new DateOnly(2021, 04, 05),
             null,
             Gender.Han,
+            null,
+            null,
             null,
             null,
             IsPublic.No),
@@ -103,6 +113,8 @@ namespace DB_AngoraLib.MockData
             Gender.Han,
             null,
             null,
+            null,
+            null,
             IsPublic.No),
 
             new Rabbit(
@@ -116,6 +128,8 @@ namespace DB_AngoraLib.MockData
             new DateOnly(2023, 05, 30),
             null,
             Gender.Hun,
+            null,
+            null,
             null,
             null,
             IsPublic.No),
@@ -133,6 +147,8 @@ namespace DB_AngoraLib.MockData
             Gender.Han,
             null,
             null,
+            null,
+            null,
             IsPublic.No),
 
             new Rabbit(
@@ -146,6 +162,8 @@ namespace DB_AngoraLib.MockData
             new DateOnly(2024, 10, 15),
             null,
             Gender.Hun,
+            null,
+            null,
             null,
             null,
             IsPublic.No),
@@ -163,6 +181,8 @@ namespace DB_AngoraLib.MockData
             Gender.Hun,
             null,
             null,
+            null,
+            null,
             IsPublic.No),
 
             new Rabbit(
@@ -176,6 +196,8 @@ namespace DB_AngoraLib.MockData
             new DateOnly(2024, 10, 15),
             null,
             Gender.Hun,
+            null,
+            null,
             null,
             null,
             IsPublic.No),
@@ -193,6 +215,8 @@ namespace DB_AngoraLib.MockData
             Gender.Han,
             null,
             null,
+            null,
+            null,
             IsPublic.No),
 
             new Rabbit(
@@ -206,6 +230,8 @@ namespace DB_AngoraLib.MockData
             new DateOnly(2023, 08, 17),
             null,
             Gender.Hun,
+            null,
+            null,
             null,
             null,
             IsPublic.No),
@@ -223,6 +249,8 @@ namespace DB_AngoraLib.MockData
             Gender.Hun,
             null,
             null,
+            null,
+            null,
             IsPublic.No),
 
             new Rabbit(
@@ -236,6 +264,8 @@ namespace DB_AngoraLib.MockData
             new DateOnly(2022, 02, 02),
             null,
             Gender.Han,
+            null,
+            null,
             null,
             null,
             IsPublic.No),
@@ -253,6 +283,8 @@ namespace DB_AngoraLib.MockData
             Gender.Hun,
             null,
             null,
+            null,
+            null,
             IsPublic.No),
 
             new Rabbit(
@@ -266,6 +298,8 @@ namespace DB_AngoraLib.MockData
             new DateOnly(2023, 05, 30),
             null,
             Gender.Hun,
+            null,
+            null,
             null,
             null,
             IsPublic.No),
@@ -283,6 +317,8 @@ namespace DB_AngoraLib.MockData
             Gender.Han,
             null,
             null,
+            null,
+            null,
             IsPublic.No),
 
             new Rabbit(
@@ -298,8 +334,9 @@ namespace DB_AngoraLib.MockData
             Gender.Hun,
             null,
             null,
+            null,
+            null,
             IsPublic.No),
-
         };
 
         public static List<Rabbit> GetMockRabbits()
