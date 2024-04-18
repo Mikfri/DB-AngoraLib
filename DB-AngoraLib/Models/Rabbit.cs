@@ -109,7 +109,7 @@ namespace DB_AngoraLib.Models
         public string LeftEarId { get; set; }
 
         public string? OwnerId { get; set; }
-        public User Owner { get; set; } // public virtual -> lazy loading (færre DB requests)
+        public User? Owner { get; set; } // public virtual -> lazy loading (færre DB requests)
 
         public string? NickName { get; set; }
         public Race Race { get; set; }
@@ -117,6 +117,14 @@ namespace DB_AngoraLib.Models
         public bool? ApprovedRaceColorCombination { get; set; }
         public DateOnly DateOfBirth { get; set; }
         public DateOnly? DateOfDeath { get; set; }
+        public bool IsJuvenile
+        {
+            get
+            {
+                var ageInWeeks = (DateTime.Now.Date - DateOfBirth.ToDateTime(TimeOnly.MinValue)).TotalDays / 7;
+                return ageInWeeks >= 8 && ageInWeeks <= 14;
+            }
+        }
         public Gender Gender { get; set; }
 
         public string? MotherRightEarId { get; set; }
@@ -131,7 +139,7 @@ namespace DB_AngoraLib.Models
 
         public IsPublic? IsPublic { get; set; }
 
-        public virtual ICollection<Litter> Litters { get; set; }
+        public virtual ICollection<Litter>? Litters { get; set; } // Litters er en liste af Kaninens kuld
 
 
         public Rabbit(string rightEarId, string leftEarId, string? ownerId, string? nickName, Race race, Color color, /*bool? approvedRaceColorCombination,*/ DateOnly dateOfBirth, DateOnly? dateOfDeath, Gender gender, string? motherRightEarId, string? motherLeftEarId, string? fatherRightEarId, string? fatherLeftEarId, IsPublic? isPublic)

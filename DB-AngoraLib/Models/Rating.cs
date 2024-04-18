@@ -10,13 +10,10 @@ namespace DB_AngoraLib.Models
 {
     public class Rating
     {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id { get; set; }
-
-        [ForeignKey("Rabbit")]
-        public int RabbitId { get; set; }
-        public Rabbit Rabbit { get; set; }
+     
+        public string RightEarId{ get; set; }
+        public string LeftEarId{ get; set; }
+        public Rabbit RatedRabbit { get; set; }
 
         public DateOnly DateRated { get; set; }
         public int WeightPoint { get; set; }
@@ -25,5 +22,7 @@ namespace DB_AngoraLib.Models
         public string? BodyNotice { get; set; }
         public int FurPoint { get; set; }
         public string? FurNotice { get; set; }
+
+        public int? TotalPoint { get; set; }
     }
 }

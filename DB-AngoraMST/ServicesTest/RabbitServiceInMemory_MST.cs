@@ -94,6 +94,5 @@ namespace DB_AngoraMST.ServicesTest
                 () => _rabbitService.AddRabbitAsync(existingRabbit, currentUser));
         }
 
-        // Add more tests as needed
     }
 }

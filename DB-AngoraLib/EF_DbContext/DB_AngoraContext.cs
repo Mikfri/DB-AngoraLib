@@ -52,19 +52,17 @@ namespace DB_AngoraLib.EF_DbContext
                 .HasOne(l => l.Mother)
                 .WithMany()
                 .HasForeignKey(l => new { l.MotherRightEarId, l.MotherLeftEarId })
-                .OnDelete(DeleteBehavior.NoAction); // Change this
+                .OnDelete(DeleteBehavior.NoAction);
 
             modelBuilder.Entity<Litter>()
                 .HasOne(l => l.Father)
                 .WithMany()
                 .HasForeignKey(l => new { l.FatherRightEarId, l.FatherLeftEarId })
-                .OnDelete(DeleteBehavior.NoAction); // And this
+                .OnDelete(DeleteBehavior.NoAction);
         }
-
 
         public DbSet<Rabbit> Rabbits { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<Litter> Litters { get; set; }
-
     }
 }
