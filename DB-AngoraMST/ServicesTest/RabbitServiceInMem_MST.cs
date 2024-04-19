@@ -31,20 +31,20 @@ namespace DB_AngoraMST.ServicesTest
                 .Options;
 
             #region ------------- MED SECRET SETUP -------------
-            // Setup mock IConfiguration
-            var mockConfigurationSection = new Mock<IConfigurationSection>();
-            mockConfigurationSection.SetupGet(m => m[It.Is<string>(s => s == "DefaultConnection")]).Returns("YourConnectionString");
+            //// Setup mock IConfiguration
+            //var mockConfigurationSection = new Mock<IConfigurationSection>();
+            //mockConfigurationSection.SetupGet(m => m[It.Is<string>(s => s == "DefaultConnection")]).Returns("YourConnectionString");
 
-            var mockConfiguration = new Mock<IConfiguration>();
-            mockConfiguration.Setup(a => a.GetSection(It.Is<string>(s => s == "ConnectionStrings"))).Returns(mockConfigurationSection.Object);
+            //var mockConfiguration = new Mock<IConfiguration>();
+            //mockConfiguration.Setup(a => a.GetSection(It.Is<string>(s => s == "ConnectionStrings"))).Returns(mockConfigurationSection.Object);
 
-            _context = new DB_AngoraContext(options, mockConfiguration.Object);
-            _context.Database.EnsureCreated();
+            //_context = new DB_AngoraContext(options, mockConfiguration.Object);
+            //_context.Database.EnsureCreated();
             #endregion
 
             #region ------------- UDEN SECRET SETUP -------------
-            //_context = new DB_AngoraContext(options);
-            //_context.Database.EnsureCreated();
+            _context = new DB_AngoraContext(options);
+            _context.Database.EnsureCreated();
             #endregion
 
             // Add mock data to in-memory database

@@ -13,34 +13,34 @@ namespace DB_AngoraLib.EF_DbContext
     {
 
         #region //---------------- BASIC SETUP FØR SECRET SETUP ----------------
-        //public DB_AngoraContext(DbContextOptions<DB_AngoraContext> options) : base(options) { }
+        public DB_AngoraContext(DbContextOptions<DB_AngoraContext> options) : base(options) { }
 
-        //public DB_AngoraContext() { }
-
-        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        //{
-        //    if (!optionsBuilder.IsConfigured)
-        //    {
-        //        optionsBuilder.UseSqlServer(
-        //              @"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=DB-Angora_DB; Integrated Security=True; Connect Timeout=30; Encrypt=False");
-        //    }
-        //}
-        #endregion
-        private readonly IConfiguration _configuration;
-
-        public DB_AngoraContext(DbContextOptions<DB_AngoraContext> options, IConfiguration configuration) : base(options)
-        {
-            _configuration = configuration;
-        }
         public DB_AngoraContext() { }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer(_configuration.GetConnectionString("SECRETConnection"));
+                optionsBuilder.UseSqlServer(
+                      @"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=DB-Angora_DB; Integrated Security=True; Connect Timeout=30; Encrypt=False");
             }
         }
+        #endregion
+        //private readonly IConfiguration _configuration;
+
+        //public DB_AngoraContext(DbContextOptions<DB_AngoraContext> options, IConfiguration configuration) : base(options)
+        //{
+        //    _configuration = configuration;
+        //}
+        //public DB_AngoraContext() { }
+
+        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        //{
+        //    if (!optionsBuilder.IsConfigured)
+        //    {
+        //        optionsBuilder.UseSqlServer(_configuration.GetConnectionString("SECRETConnection"));
+        //    }
+        //}
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
