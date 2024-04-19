@@ -6,7 +6,9 @@ using DB_AngoraLib.Services.RabbitService;
 using DB_AngoraLib.Services.UserService;
 using DB_AngoraLib.Services.ValidationService;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -28,8 +30,22 @@ namespace DB_AngoraMST.ServicesTest
                 .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
                 .Options;
 
-            _context = new DB_AngoraContext(options);
+            #region ------------- MED SECRET SETUP -------------
+            // Setup mock IConfiguration
+            var mockConfigurationSection = new Mock<IConfigurationSection>();
+            mockConfigurationSection.SetupGet(m => m[It.Is<string>(s => s == "DefaultConnection")]).Returns("YourConnectionString");
+
+            var mockConfiguration = new Mock<IConfiguration>();
+            mockConfiguration.Setup(a => a.GetSection(It.Is<string>(s => s == "ConnectionStrings"))).Returns(mockConfigurationSection.Object);
+
+            _context = new DB_AngoraContext(options, mockConfiguration.Object);
             _context.Database.EnsureCreated();
+            #endregion
+
+            #region ------------- UDEN SECRET SETUP -------------
+            //_context = new DB_AngoraContext(options);
+            //_context.Database.EnsureCreated();
+            #endregion
 
             // Add mock data to in-memory database
             var mockUsers = MockUsers.GetMockUsers();
@@ -45,6 +61,7 @@ namespace DB_AngoraMST.ServicesTest
             var validatorService = new RabbitValidator();
             _rabbitService = new RabbitService(rabbitRepository, _userService, validatorService);
         }
+
 
         [TestCleanup]
         public void Cleanup()
