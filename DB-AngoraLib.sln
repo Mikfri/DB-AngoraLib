@@ -5,7 +5,9 @@ VisualStudioVersion = 17.8.34330.188
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DB-AngoraLib", "DB-AngoraLib\DB-AngoraLib.csproj", "{E08A5AEE-D65E-4565-8F8F-A1D54F7F0B4A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DB-AngoraMST", "DB-AngoraMST\DB-AngoraMST.csproj", "{2257EE06-621C-4F86-B4F7-62020D8200B7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DB-AngoraMST", "DB-AngoraMST\DB-AngoraMST.csproj", "{2257EE06-621C-4F86-B4F7-62020D8200B7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DB-AngoraCnsl", "DB-AngoraCnsl\DB-AngoraCnsl.csproj", "{C9BC493F-3346-45E0-ADBB-FD12A506A4C9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{2257EE06-621C-4F86-B4F7-62020D8200B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2257EE06-621C-4F86-B4F7-62020D8200B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2257EE06-621C-4F86-B4F7-62020D8200B7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C9BC493F-3346-45E0-ADBB-FD12A506A4C9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C9BC493F-3346-45E0-ADBB-FD12A506A4C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C9BC493F-3346-45E0-ADBB-FD12A506A4C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C9BC493F-3346-45E0-ADBB-FD12A506A4C9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

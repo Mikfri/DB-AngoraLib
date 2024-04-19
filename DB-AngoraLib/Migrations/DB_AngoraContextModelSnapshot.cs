@@ -124,9 +124,6 @@ namespace DB_AngoraLib.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Image")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<bool?>("IsAdmin")
                         .HasColumnType("bit");
 

@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DB_AngoraLib.Migrations
 {
     [DbContext(typeof(DB_AngoraContext))]
-    [Migration("20240419091304_DB_AngoraMig_01")]
+    [Migration("20240419192524_DB_AngoraMig_01")]
     partial class DB_AngoraMig_01
     {
         /// <inheritdoc />
@@ -125,9 +125,6 @@ namespace DB_AngoraLib.Migrations
 
                     b.Property<string>("FirstName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Image")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool?>("IsAdmin")

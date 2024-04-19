@@ -24,8 +24,7 @@ namespace DB_AngoraLib.Migrations
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Phone = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    IsAdmin = table.Column<bool>(type: "bit", nullable: true),
-                    Image = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    IsAdmin = table.Column<bool>(type: "bit", nullable: true)
                 },
                 constraints: table =>
                 {
