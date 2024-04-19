@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace DB_AngoraLib.Migrations
 {
     /// <inheritdoc />
-    public partial class DB_Angora_01 : Migration
+    public partial class DB_AngoraMig_01 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -46,25 +46,11 @@ namespace DB_AngoraLib.Migrations
                     DateOfBirth = table.Column<DateOnly>(type: "date", nullable: false),
                     DateOfDeath = table.Column<DateOnly>(type: "date", nullable: true),
                     Gender = table.Column<int>(type: "int", nullable: false),
-                    MotherRightEarId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    MotherLeftEarId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    FatherRightEarId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    FatherLeftEarId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     IsPublic = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Rabbits", x => new { x.RightEarId, x.LeftEarId });
-                    table.ForeignKey(
-                        name: "FK_Rabbits_Rabbits_FatherRightEarId_FatherLeftEarId",
-                        columns: x => new { x.FatherRightEarId, x.FatherLeftEarId },
-                        principalTable: "Rabbits",
-                        principalColumns: new[] { "RightEarId", "LeftEarId" });
-                    table.ForeignKey(
-                        name: "FK_Rabbits_Rabbits_MotherRightEarId_MotherLeftEarId",
-                        columns: x => new { x.MotherRightEarId, x.MotherLeftEarId },
-                        principalTable: "Rabbits",
-                        principalColumns: new[] { "RightEarId", "LeftEarId" });
                     table.ForeignKey(
                         name: "FK_Rabbits_Users_OwnerId",
                         column: x => x.OwnerId,
@@ -73,7 +59,7 @@ namespace DB_AngoraLib.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Litters",
+                name: "RabbitParents",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -81,71 +67,44 @@ namespace DB_AngoraLib.Migrations
                     MotherRightEarId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     MotherLeftEarId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     FatherRightEarId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    FatherLeftEarId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                    FatherLeftEarId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ChildRightEarId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ChildLeftEarId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Litters", x => x.Id);
+                    table.PrimaryKey("PK_RabbitParents", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Litters_Rabbits_FatherRightEarId_FatherLeftEarId",
+                        name: "FK_RabbitParents_Rabbits_ChildRightEarId_ChildLeftEarId",
+                        columns: x => new { x.ChildRightEarId, x.ChildLeftEarId },
+                        principalTable: "Rabbits",
+                        principalColumns: new[] { "RightEarId", "LeftEarId" },
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_RabbitParents_Rabbits_FatherRightEarId_FatherLeftEarId",
                         columns: x => new { x.FatherRightEarId, x.FatherLeftEarId },
                         principalTable: "Rabbits",
                         principalColumns: new[] { "RightEarId", "LeftEarId" });
                     table.ForeignKey(
-                        name: "FK_Litters_Rabbits_MotherRightEarId_MotherLeftEarId",
+                        name: "FK_RabbitParents_Rabbits_MotherRightEarId_MotherLeftEarId",
                         columns: x => new { x.MotherRightEarId, x.MotherLeftEarId },
                         principalTable: "Rabbits",
                         principalColumns: new[] { "RightEarId", "LeftEarId" });
                 });
 
-            migrationBuilder.CreateTable(
-                name: "LitterRabbit",
-                columns: table => new
-                {
-                    LittersId = table.Column<int>(type: "int", nullable: false),
-                    RabbitsRightEarId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    RabbitsLeftEarId = table.Column<string>(type: "nvarchar(450)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_LitterRabbit", x => new { x.LittersId, x.RabbitsRightEarId, x.RabbitsLeftEarId });
-                    table.ForeignKey(
-                        name: "FK_LitterRabbit_Litters_LittersId",
-                        column: x => x.LittersId,
-                        principalTable: "Litters",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_LitterRabbit_Rabbits_RabbitsRightEarId_RabbitsLeftEarId",
-                        columns: x => new { x.RabbitsRightEarId, x.RabbitsLeftEarId },
-                        principalTable: "Rabbits",
-                        principalColumns: new[] { "RightEarId", "LeftEarId" },
-                        onDelete: ReferentialAction.Cascade);
-                });
+            migrationBuilder.CreateIndex(
+                name: "IX_RabbitParents_ChildRightEarId_ChildLeftEarId",
+                table: "RabbitParents",
+                columns: new[] { "ChildRightEarId", "ChildLeftEarId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_LitterRabbit_RabbitsRightEarId_RabbitsLeftEarId",
-                table: "LitterRabbit",
-                columns: new[] { "RabbitsRightEarId", "RabbitsLeftEarId" });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Litters_FatherRightEarId_FatherLeftEarId",
-                table: "Litters",
+                name: "IX_RabbitParents_FatherRightEarId_FatherLeftEarId",
+                table: "RabbitParents",
                 columns: new[] { "FatherRightEarId", "FatherLeftEarId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Litters_MotherRightEarId_MotherLeftEarId",
-                table: "Litters",
-                columns: new[] { "MotherRightEarId", "MotherLeftEarId" });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Rabbits_FatherRightEarId_FatherLeftEarId",
-                table: "Rabbits",
-                columns: new[] { "FatherRightEarId", "FatherLeftEarId" });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Rabbits_MotherRightEarId_MotherLeftEarId",
-                table: "Rabbits",
+                name: "IX_RabbitParents_MotherRightEarId_MotherLeftEarId",
+                table: "RabbitParents",
                 columns: new[] { "MotherRightEarId", "MotherLeftEarId" });
 
             migrationBuilder.CreateIndex(
@@ -158,10 +117,7 @@ namespace DB_AngoraLib.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "LitterRabbit");
-
-            migrationBuilder.DropTable(
-                name: "Litters");
+                name: "RabbitParents");
 
             migrationBuilder.DropTable(
                 name: "Rabbits");

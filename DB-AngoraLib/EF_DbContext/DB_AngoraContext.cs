@@ -36,33 +36,24 @@ namespace DB_AngoraLib.EF_DbContext
                 .WithMany(u => u.Rabbits)
                 .HasForeignKey(r => r.OwnerId);
 
-            // Configure self-referencing relationships for Rabbit -> Mother and Rabbit -> Father
-            modelBuilder.Entity<Rabbit>()
-                .HasOne(r => r.Mother)
-                .WithMany()
-                .HasForeignKey(r => new { r.MotherRightEarId, r.MotherLeftEarId });
-
-            modelBuilder.Entity<Rabbit>()
-                .HasOne(r => r.Father)
-                .WithMany()
-                .HasForeignKey(r => new { r.FatherRightEarId, r.FatherLeftEarId });
-
-            // Configure Foreign Key for Litter -> Mother and Litter -> Father
-            modelBuilder.Entity<Litter>()
-                .HasOne(l => l.Mother)
-                .WithMany()
-                .HasForeignKey(l => new { l.MotherRightEarId, l.MotherLeftEarId })
+            // Configure composite key for RabbitParents
+            // Configure Foreign Key for RabbitParents -> Mother
+            modelBuilder.Entity<RabbitParents>()
+                .HasOne(rp => rp.Mother)
+                .WithMany(r => r.MotherChildren)
+                .HasForeignKey(rp => new { rp.MotherRightEarId, rp.MotherLeftEarId })
                 .OnDelete(DeleteBehavior.NoAction);
 
-            modelBuilder.Entity<Litter>()
-                .HasOne(l => l.Father)
-                .WithMany()
-                .HasForeignKey(l => new { l.FatherRightEarId, l.FatherLeftEarId })
+            // Configure Foreign Key for RabbitParents -> Father
+            modelBuilder.Entity<RabbitParents>()
+                .HasOne(rp => rp.Father)
+                .WithMany(r => r.FatherChildren)
+                .HasForeignKey(rp => new { rp.FatherRightEarId, rp.FatherLeftEarId })
                 .OnDelete(DeleteBehavior.NoAction);
         }
 
         public DbSet<Rabbit> Rabbits { get; set; }
         public DbSet<User> Users { get; set; }
-        public DbSet<Litter> Litters { get; set; }
+        public DbSet<RabbitParents> RabbitParents { get; set; }
     }
 }

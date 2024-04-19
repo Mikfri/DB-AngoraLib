@@ -67,11 +67,7 @@ namespace DB_AngoraMST.ServicesTest
             Color.Jerngrå,
             new DateOnly(2020, 06, 12), // Format: yyyy-MM-dd
             new DateOnly(2022, 07, 22), // Format: yyyy-MM-dd
-            Gender.Hun,
-            null,                   // MotherRightEarId
-            null,                   // MotherLeftEarId
-            null,                   // FatherRightEarId
-            null,                   // FatherLeftEarId
+            Gender.Hun,           
             IsPublic.No);
 
             // Get a rabbit from the mock data

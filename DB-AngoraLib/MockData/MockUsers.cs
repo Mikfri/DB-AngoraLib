@@ -21,8 +21,7 @@ namespace DB_AngoraLib.MockData
             "IdaFribor87@gmail.com",
             "27586455",
             "Ida123",
-            true,
-            null),
+            true),
 
             new User(
             "5053",
@@ -34,8 +33,7 @@ namespace DB_AngoraLib.MockData
             "MajaJoensen89@gmail.com",
             "28733085",
             "Maja123",
-            false,
-            null),
+            false),
 
         };
 

@@ -126,23 +126,15 @@ namespace DB_AngoraLib.Models
             }
         }
         public Gender Gender { get; set; }
-
-        public string? MotherRightEarId { get; set; }
-        public string? MotherLeftEarId { get; set; }
-        //[ForeignKey("MotherRightEarId, MotherLeftEarId")] // Overflødigt, da vi sætter det op i DbContext
-        public virtual Rabbit? Mother { get; set; }
-
-        public string? FatherRightEarId { get; set; }
-        public string? FatherLeftEarId { get; set; }
-        //[ForeignKey("FatherRightEarId, FatherLeftEarId")] // Uden dette gøres klassen u-afhængig af DbContext
-        public virtual Rabbit? Father { get; set; }
-
         public IsPublic? IsPublic { get; set; }
 
-        public virtual ICollection<Litter>? Litters { get; set; } // Litters er en liste af Kaninens kuld
+        public virtual ICollection<RabbitParents> Parents { get; set; }
+        public virtual ICollection<RabbitParents> MotherChildren { get; set; } // Er null hvis, Rabbit er far/Han
+        public virtual ICollection<RabbitParents> FatherChildren { get; set; } // Er null hvis, Rabbit er mor/Hun
 
 
-        public Rabbit(string rightEarId, string leftEarId, string? ownerId, string? nickName, Race race, Color color, /*bool? approvedRaceColorCombination,*/ DateOnly dateOfBirth, DateOnly? dateOfDeath, Gender gender, string? motherRightEarId, string? motherLeftEarId, string? fatherRightEarId, string? fatherLeftEarId, IsPublic? isPublic)
+
+        public Rabbit(string rightEarId, string leftEarId, string? ownerId, string? nickName, Race race, Color color, /*bool? approvedRaceColorCombination,*/ DateOnly dateOfBirth, DateOnly? dateOfDeath, Gender gender, IsPublic? isPublic)
         {
             RightEarId = rightEarId;
             LeftEarId = leftEarId;
@@ -154,11 +146,6 @@ namespace DB_AngoraLib.Models
             DateOfBirth = dateOfBirth;
             DateOfDeath = dateOfDeath;
             Gender = gender;
-
-            MotherRightEarId = motherRightEarId;
-            MotherLeftEarId = motherLeftEarId;
-            FatherRightEarId = fatherRightEarId;
-            FatherLeftEarId = fatherLeftEarId;
 
             IsPublic = isPublic;
         }

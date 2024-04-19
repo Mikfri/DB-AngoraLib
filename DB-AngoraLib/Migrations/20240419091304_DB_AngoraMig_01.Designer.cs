@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DB_AngoraLib.Migrations
 {
     [DbContext(typeof(DB_AngoraContext))]
-    [Migration("20240418163259_DB_Angora_01")]
-    partial class DB_Angora_01
+    [Migration("20240419091304_DB_AngoraMig_01")]
+    partial class DB_AngoraMig_01
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,39 +24,6 @@ namespace DB_AngoraLib.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("DB_AngoraLib.Models.Litter", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("FatherLeftEarId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("FatherRightEarId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("MotherLeftEarId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("MotherRightEarId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("FatherRightEarId", "FatherLeftEarId");
-
-                    b.HasIndex("MotherRightEarId", "MotherLeftEarId");
-
-                    b.ToTable("Litters");
-                });
 
             modelBuilder.Entity("DB_AngoraLib.Models.Rabbit", b =>
                 {
@@ -78,23 +45,11 @@ namespace DB_AngoraLib.Migrations
                     b.Property<DateOnly?>("DateOfDeath")
                         .HasColumnType("date");
 
-                    b.Property<string>("FatherLeftEarId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("FatherRightEarId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<int>("Gender")
                         .HasColumnType("int");
 
                     b.Property<int?>("IsPublic")
                         .HasColumnType("int");
-
-                    b.Property<string>("MotherLeftEarId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("MotherRightEarId")
-                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("NickName")
                         .HasColumnType("nvarchar(max)");
@@ -109,11 +64,50 @@ namespace DB_AngoraLib.Migrations
 
                     b.HasIndex("OwnerId");
 
+                    b.ToTable("Rabbits");
+                });
+
+            modelBuilder.Entity("DB_AngoraLib.Models.RabbitParents", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ChildLeftEarId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ChildRightEarId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("FatherLeftEarId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("FatherRightEarId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("MotherLeftEarId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("MotherRightEarId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ChildRightEarId", "ChildLeftEarId");
+
                     b.HasIndex("FatherRightEarId", "FatherLeftEarId");
 
                     b.HasIndex("MotherRightEarId", "MotherLeftEarId");
 
-                    b.ToTable("Rabbits");
+                    b.ToTable("RabbitParents");
                 });
 
             modelBuilder.Entity("DB_AngoraLib.Models.User", b =>
@@ -163,37 +157,36 @@ namespace DB_AngoraLib.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("LitterRabbit", b =>
+            modelBuilder.Entity("DB_AngoraLib.Models.Rabbit", b =>
                 {
-                    b.Property<int>("LittersId")
-                        .HasColumnType("int");
+                    b.HasOne("DB_AngoraLib.Models.User", "Owner")
+                        .WithMany("Rabbits")
+                        .HasForeignKey("OwnerId");
 
-                    b.Property<string>("RabbitsRightEarId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("RabbitsLeftEarId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("LittersId", "RabbitsRightEarId", "RabbitsLeftEarId");
-
-                    b.HasIndex("RabbitsRightEarId", "RabbitsLeftEarId");
-
-                    b.ToTable("LitterRabbit");
+                    b.Navigation("Owner");
                 });
 
-            modelBuilder.Entity("DB_AngoraLib.Models.Litter", b =>
+            modelBuilder.Entity("DB_AngoraLib.Models.RabbitParents", b =>
                 {
+                    b.HasOne("DB_AngoraLib.Models.Rabbit", "Child")
+                        .WithMany("Parents")
+                        .HasForeignKey("ChildRightEarId", "ChildLeftEarId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("DB_AngoraLib.Models.Rabbit", "Father")
-                        .WithMany()
+                        .WithMany("FatherChildren")
                         .HasForeignKey("FatherRightEarId", "FatherLeftEarId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("DB_AngoraLib.Models.Rabbit", "Mother")
-                        .WithMany()
+                        .WithMany("MotherChildren")
                         .HasForeignKey("MotherRightEarId", "MotherLeftEarId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
+
+                    b.Navigation("Child");
 
                     b.Navigation("Father");
 
@@ -202,38 +195,11 @@ namespace DB_AngoraLib.Migrations
 
             modelBuilder.Entity("DB_AngoraLib.Models.Rabbit", b =>
                 {
-                    b.HasOne("DB_AngoraLib.Models.User", "Owner")
-                        .WithMany("Rabbits")
-                        .HasForeignKey("OwnerId");
+                    b.Navigation("FatherChildren");
 
-                    b.HasOne("DB_AngoraLib.Models.Rabbit", "Father")
-                        .WithMany()
-                        .HasForeignKey("FatherRightEarId", "FatherLeftEarId");
+                    b.Navigation("MotherChildren");
 
-                    b.HasOne("DB_AngoraLib.Models.Rabbit", "Mother")
-                        .WithMany()
-                        .HasForeignKey("MotherRightEarId", "MotherLeftEarId");
-
-                    b.Navigation("Father");
-
-                    b.Navigation("Mother");
-
-                    b.Navigation("Owner");
-                });
-
-            modelBuilder.Entity("LitterRabbit", b =>
-                {
-                    b.HasOne("DB_AngoraLib.Models.Litter", null)
-                        .WithMany()
-                        .HasForeignKey("LittersId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("DB_AngoraLib.Models.Rabbit", null)
-                        .WithMany()
-                        .HasForeignKey("RabbitsRightEarId", "RabbitsLeftEarId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("Parents");
                 });
 
             modelBuilder.Entity("DB_AngoraLib.Models.User", b =>

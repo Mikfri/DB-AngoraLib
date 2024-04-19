@@ -39,10 +39,19 @@ namespace DB_AngoraLib.Services.RabbitService
         //}
 
         //---------------------: GET METODER
+        //-------: ADMIN METODER
+
         public async Task<List<Rabbit>> GetAllRabbitsAsync()
         {
             var rabbits = await _dbRepository.GetAllObjectsAsync();
             return rabbits.ToList();
+        }
+
+        public async Task<List<Rabbit>> GetAllRabbits_ByBreederRegAsync(string breederRegNo)
+        {
+            var user = await _userService.GetUserByBreederRegNoAsync(breederRegNo);
+            var rabbits = await _dbRepository.GetAllObjectsAsync();
+            return rabbits.Where(rabbit => rabbit.OwnerId == user.BreederRegNo).ToList();
         }
 
         public async Task<Rabbit> GetRabbitByIdAsync(int rabbitId)
@@ -50,12 +59,31 @@ namespace DB_AngoraLib.Services.RabbitService
             return await _dbRepository.GetObjectByIdAsync(rabbitId);
         }
 
-        //-------: GET BY OWNER METODER
-        public async Task<List<Rabbit>> GetAllRabbitsByOwnerAsync(int userId)
+        //-------: USER METODER
+        /// <summary>
+        /// Henter alle kaniner ejet af den aktuelle bruger.
+        /// IKKE ASYNKRON - fordi den opererer på Rabbits navigationsegenskaben,
+        /// som antages at være allerede indlæst i hukommelsen.
+        /// Hvis Rabbits samlingen ikke er indlæst, vil denne metode returnere en tom liste.
+        /// </summary>
+        /// <param name="currentUser">Den aktuelle bruger.</param>
+        /// <returns>En liste af kaniner ejet af den aktuelle bruger.</returns>
+        public List<Rabbit> GetAllRabbits_ByCurrentUser(User currentUser)
         {
-            var user = await _userService.GetUserByIdAsync(userId);
-            var rabbits = await _dbRepository.GetAllObjectsAsync();
-            return rabbits.Where(rabbit => rabbit.OwnerId == user.BreederRegNo).ToList();
+            return currentUser.Rabbits.ToList();
+        }
+
+        public List<Rabbit> GetRabbitsByProperties(User currentUser, Race race, Color color, Gender gender, IsPublic isPublic, string rightEarId, string leftEarId)
+        {
+            return currentUser.Rabbits
+                .Where(rabbit => 
+                       rabbit.Race == race
+                    && rabbit.Color == color
+                    && rabbit.Gender == gender
+                    && rabbit.IsPublic == isPublic
+                    && rabbit.RightEarId == rightEarId
+                    && rabbit.LeftEarId == leftEarId)
+                .ToList();
         }
 
         //-------: GET BY EAR TAGs METODER

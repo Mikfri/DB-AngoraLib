@@ -23,12 +23,12 @@ namespace DB_AngoraLib.Models
         public string Phone { get; set; }
         public string Password { get; set; }
         public bool? IsAdmin { get; set; }
-        public string? Image {  get; set; }
+        //public string? Image {  get; set; }
 
         public ICollection<Rabbit> Rabbits { get; set; }
 
 
-        public User(string breederRegNo, string firstName, string lastName, string roadName, int zipCode, string city, string email, string phone, string password, bool? isAdmin, string? image)
+        public User(string breederRegNo, string firstName, string lastName, string roadName, int zipCode, string city, string email, string phone, string password, bool? isAdmin)
         {
             BreederRegNo = breederRegNo;
             FirstName = firstName;
@@ -40,7 +40,7 @@ namespace DB_AngoraLib.Models
             Phone = phone;
             Password = password;
             IsAdmin = isAdmin;
-            Image = image;
+            //Image = image;
         }
 
         public User() { }        
