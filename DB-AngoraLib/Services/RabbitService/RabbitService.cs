@@ -53,7 +53,7 @@ namespace DB_AngoraLib.Services.RabbitService
             var rabbits = await _dbRepository.GetAllObjectsAsync();
             return rabbits.Where(rabbit => rabbit.OwnerId == user.BreederRegNo).ToList();
         }
-        
+
         /// <summary>
         /// Denne metode behøver IKKE at være asynkron.
         /// Den opererer på data, der allerede er indlæst i hukommelsen 
@@ -69,16 +69,20 @@ namespace DB_AngoraLib.Services.RabbitService
         /// <param name="rightEarId"></param>
         /// <param name="leftEarId"></param>
         /// <returns></returns>
-        public List<Rabbit> GetRabbitsByProperties(User currentUser, Race race, Color color, Gender gender, IsPublic isPublic, string rightEarId, string leftEarId)
+        public List<Rabbit> GetRabbitsByProperties(User currentUser, string rightEarId, string leftEarId, string nickName, Race race, Color color, Gender gender, IsPublic isPublic, bool? isJuvenile, DateOnly? dateOfBirth, DateOnly? dateOfDeath)
         {
             return currentUser.Rabbits
-                .Where(rabbit => 
-                       rabbit.Race == race
+                .Where(rabbit =>
+                       rabbit.RightEarId == rightEarId
+                    && rabbit.LeftEarId == leftEarId
+                    && (nickName == null || rabbit.NickName == nickName)
+                    && rabbit.Race == race
                     && rabbit.Color == color
                     && rabbit.Gender == gender
                     && rabbit.IsPublic == isPublic
-                    && rabbit.RightEarId == rightEarId
-                    && rabbit.LeftEarId == leftEarId)
+                    && (isJuvenile == null || rabbit.IsJuvenile == isJuvenile)
+                    && (dateOfBirth == null || rabbit.DateOfBirth == dateOfBirth)
+                    && (dateOfDeath == null || rabbit.DateOfDeath == dateOfDeath))
                 .ToList();
         }
 
@@ -125,9 +129,9 @@ namespace DB_AngoraLib.Services.RabbitService
                 
 
         //---------------------: UPDATE
-        public async Task UpdateRabbitAsync(Rabbit rabbitId, User thisUser)
+        public async Task UpdateRabbitAsync(User currentUser, Rabbit rabbitId)
         {
-            if (rabbitId.OwnerId != thisUser.BreederRegNo)
+            if (rabbitId.OwnerId != currentUser.BreederRegNo)
             {
                 throw new InvalidOperationException("You are not the owner of this rabbit.");
             }
@@ -136,9 +140,9 @@ namespace DB_AngoraLib.Services.RabbitService
         }
 
         //---------------------: DELETE
-        public async Task DeleteRabbitAsync(Rabbit rabbitToDelete, User thisUser)
+        public async Task DeleteRabbitAsync(User currentUser, Rabbit rabbitToDelete)
         {
-            if (rabbitToDelete.OwnerId != thisUser.BreederRegNo)
+            if (rabbitToDelete.OwnerId != currentUser.BreederRegNo)
             {
                 throw new InvalidOperationException("You are not the owner of this rabbit.");
             }

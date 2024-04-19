@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 namespace DB_AngoraMST.ServicesTest
 {
     [TestClass]
-    public class RabbitServiceInMemory_MST
+    public class RabbitServiceInMem_MST
     {
         private RabbitService _rabbitService;
         private UserService _userService;
@@ -61,7 +61,7 @@ namespace DB_AngoraMST.ServicesTest
             var newUniqRabbit = new Rabbit(
             "5095",                 // RightEarId
             "004",                  // LeftEarId
-            "5095",                 // Owner            
+            "5095",                 // Owner
             "Yvonne",               // Nickname
             Race.Angora,
             Color.Jerngrå,
@@ -90,5 +90,72 @@ namespace DB_AngoraMST.ServicesTest
                 () => _rabbitService.AddRabbit_ToCurrentUserAsync(currentUser, existingRabbit));
         }
 
+
+        [TestMethod]
+        public void GetRabbitsByProperties_TEST()
+        {
+            // Arrange
+            var currentUser = _context.Users.First();
+            var race = Race.Angora;
+            var color = Color.Blå;
+            var gender = Gender.Hun;
+            var isPublic = IsPublic.No;
+            var rightEarId = "5095";
+            var leftEarId = "002";
+            var nickName = "Sov";
+            var isJuvenile = (bool?)null;
+            var dateOfBirth = (DateOnly?)null;
+            var dateOfDeath = (DateOnly?)null;
+
+            // Act
+            var result = _rabbitService.GetRabbitsByProperties(currentUser, rightEarId, leftEarId, nickName, race, color, gender, isPublic, isJuvenile, dateOfBirth, dateOfDeath);
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(1, result.Count);
+            var rabbit = result.First();
+            Assert.AreEqual(rightEarId, rabbit.RightEarId);
+            Assert.AreEqual(leftEarId, rabbit.LeftEarId);
+            Assert.AreEqual(nickName, rabbit.NickName);
+            Assert.AreEqual(race, rabbit.Race);
+            Assert.AreEqual(color, rabbit.Color);
+            Assert.AreEqual(gender, rabbit.Gender);
+            Assert.AreEqual(isPublic, rabbit.IsPublic);
+        }
+
+        [TestMethod]
+        public async Task UpdateRabbitAsync_TEST()
+        {
+            // Arrange
+            var currentUser = _context.Users.First();
+            var existingRabbit = await _context.Rabbits.FirstAsync();
+            existingRabbit.NickName = "New Nickname";
+            existingRabbit.Color = Color.Hvid;
+
+            // Act
+            await _rabbitService.UpdateRabbitAsync(currentUser, existingRabbit);
+
+            // Assert
+            var updatedRabbit = await _context.Rabbits.FindAsync(existingRabbit.RightEarId, existingRabbit.LeftEarId);
+            Assert.IsNotNull(updatedRabbit);
+            Assert.AreEqual("New Nickname", updatedRabbit.NickName);
+            Assert.AreEqual(Color.Hvid, updatedRabbit.Color);
+        }
+
+        [TestMethod]
+        public async Task DeleteRabbitAsync_TEST()
+        {
+            // Arrange
+            var currentUser = _context.Users.First();
+            var existingRabbit = await _context.Rabbits.FirstAsync();
+            var initialCount = _context.Rabbits.Count();
+
+            // Act
+            await _rabbitService.DeleteRabbitAsync(currentUser, existingRabbit);
+
+            // Assert
+            var finalCount = _context.Rabbits.Count();
+            Assert.AreEqual(initialCount - 1, finalCount);
+        }
     }
 }
