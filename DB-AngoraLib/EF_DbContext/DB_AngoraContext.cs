@@ -22,7 +22,7 @@ namespace DB_AngoraLib.EF_DbContext
         //    if (!optionsBuilder.IsConfigured)
         //    {
         //        optionsBuilder.UseSqlServer(
-        //            @"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=DB-Angora_DB; Integrated Security=True; Connect Timeout=30; Encrypt=False");
+        //              @"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=DB-Angora_DB; Integrated Security=True; Connect Timeout=30; Encrypt=False");
         //    }
         //}
         #endregion
@@ -38,7 +38,7 @@ namespace DB_AngoraLib.EF_DbContext
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer(_configuration.GetConnectionString("DefaultConnection"));
+                optionsBuilder.UseSqlServer(_configuration.GetConnectionString("SECRETConnection"));
             }
         }
 
