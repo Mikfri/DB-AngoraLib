@@ -10,10 +10,9 @@ namespace DB_AngoraLib.Services.RabbitService
     public interface IRabbitService
     {
         Task<List<Rabbit>> GetAllRabbitsAsync();
-        Task<Rabbit> GetRabbitByIdAsync(int rabbitId);
         Task<Rabbit> GetRabbitByEarTagsAsync(string rightEarId, string leftEarId);
-        Task<List<Rabbit>> GetAllRabbitsByOwnerAsync(int userId);
-        Task AddRabbitAsync(Rabbit newRabbit, User thisUser);
+        List<Rabbit> GetRabbitsByProperties(User currentUser, Race race, Color color, Gender gender, IsPublic isPublic, string rightEarId, string leftEarId);
+        Task AddRabbit_ToCurrentUserAsync(User currentUser, Rabbit newRabbit);   
         Task UpdateRabbitAsync(Rabbit rabbitId, User thisUser);
         Task DeleteRabbitAsync(Rabbit rabbitToDelete, User thisUser);
     }

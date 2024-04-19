@@ -54,7 +54,7 @@ namespace DB_AngoraMST.ServicesTest
         }
 
         [TestMethod]
-        public async Task AddRabbitAsync_TEST()
+        public async Task AddRabbit_ToCurrentUserAsync_TEST()
         {
             // Arrange
 
@@ -79,7 +79,7 @@ namespace DB_AngoraMST.ServicesTest
             Assert.IsNotNull(currentUser);
 
             // Act
-            await _rabbitService.AddRabbitAsync(newUniqRabbit, currentUser);
+            await _rabbitService.AddRabbit_ToCurrentUserAsync(currentUser, newUniqRabbit);
 
             // Assert
             var addedRabbit = await _context.Rabbits.FindAsync(newUniqRabbit.RightEarId, newUniqRabbit.LeftEarId);
@@ -87,7 +87,7 @@ namespace DB_AngoraMST.ServicesTest
 
             // Act & Assert
             await Assert.ThrowsExceptionAsync<InvalidOperationException>(
-                () => _rabbitService.AddRabbitAsync(existingRabbit, currentUser));
+                () => _rabbitService.AddRabbit_ToCurrentUserAsync(currentUser, existingRabbit));
         }
 
     }

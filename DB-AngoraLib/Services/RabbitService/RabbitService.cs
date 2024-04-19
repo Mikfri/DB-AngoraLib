@@ -53,26 +53,22 @@ namespace DB_AngoraLib.Services.RabbitService
             var rabbits = await _dbRepository.GetAllObjectsAsync();
             return rabbits.Where(rabbit => rabbit.OwnerId == user.BreederRegNo).ToList();
         }
-
-        public async Task<Rabbit> GetRabbitByIdAsync(int rabbitId)
-        {
-            return await _dbRepository.GetObjectByIdAsync(rabbitId);
-        }
-
-        //-------: USER METODER
+        
         /// <summary>
-        /// Henter alle kaniner ejet af den aktuelle bruger.
-        /// IKKE ASYNKRON - fordi den opererer på Rabbits navigationsegenskaben,
-        /// som antages at være allerede indlæst i hukommelsen.
-        /// Hvis Rabbits samlingen ikke er indlæst, vil denne metode returnere en tom liste.
+        /// Denne metode behøver IKKE at være asynkron.
+        /// Den opererer på data, der allerede er indlæst i hukommelsen 
+        /// (dvs., currentUser.Rabbits), så der er ingen asynkrone operationer,
+        /// der skal vente på. Derfor kan metoden returnere resultatet
+        /// direkte som en List<Rabbit> i stedet for en Task<List<Rabbit>>.
         /// </summary>
-        /// <param name="currentUser">Den aktuelle bruger.</param>
-        /// <returns>En liste af kaniner ejet af den aktuelle bruger.</returns>
-        public List<Rabbit> GetAllRabbits_ByCurrentUser(User currentUser)
-        {
-            return currentUser.Rabbits.ToList();
-        }
-
+        /// <param name="currentUser"></param>
+        /// <param name="race"></param>
+        /// <param name="color"></param>
+        /// <param name="gender"></param>
+        /// <param name="isPublic"></param>
+        /// <param name="rightEarId"></param>
+        /// <param name="leftEarId"></param>
+        /// <returns></returns>
         public List<Rabbit> GetRabbitsByProperties(User currentUser, Race race, Color color, Gender gender, IsPublic isPublic, string rightEarId, string leftEarId)
         {
             return currentUser.Rabbits
@@ -107,14 +103,10 @@ namespace DB_AngoraLib.Services.RabbitService
             return rabbit;
         }
 
-        //public async Task<Rabbit> GetRabbitByEarTagsAsync(string rightEarId, string leftEarId)
-        //{
-        //    Expression<Func<Rabbit, bool>> filter = r => r.RightEarId == rightEarId && r.LeftEarId == leftEarId;
-        //    return await _dbRepository.GetObjectAsync(filter);
-        //}
+        
 
         //---------------------: ADD
-        public async Task AddRabbitAsync(Rabbit newRabbit, User thisUser)
+        public async Task AddRabbit_ToCurrentUserAsync(User currentUser, Rabbit newRabbit)
         {
             Console.WriteLine($"Trying to add rabbit with RightEarId: {newRabbit.RightEarId}, LeftEarId: {newRabbit.LeftEarId}");
             _validatorService.ValidateRabbit(newRabbit);
@@ -126,7 +118,7 @@ namespace DB_AngoraLib.Services.RabbitService
                 throw new InvalidOperationException("A rabbit with the same ear tags already exists.");
             }
 
-            newRabbit.OwnerId = thisUser.BreederRegNo;
+            newRabbit.OwnerId = currentUser.BreederRegNo;
             await _dbRepository.AddObjectAsync(newRabbit);
             Console.WriteLine($"Rabbit added successfully with RightEarId: {newRabbit.RightEarId}, LeftEarId: {newRabbit.LeftEarId}, OwnerId: {newRabbit.OwnerId}");
         }
