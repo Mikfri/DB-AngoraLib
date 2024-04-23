@@ -1,4 +1,5 @@
-﻿using DB_AngoraLib.EF_DbContext;
+﻿using DB_AngoraLib.DTOs;
+using DB_AngoraLib.EF_DbContext;
 using DB_AngoraLib.MockData;
 using DB_AngoraLib.Models;
 using DB_AngoraLib.Repository;
@@ -74,39 +75,45 @@ namespace DB_AngoraMST.Services_InMemTest
         public async Task AddRabbit_ToCurrentUserAsync_TEST()
         {
             // Arrange
-
-            var newUniqRabbit = new Rabbit(
-            "5095",                 // RightEarId
-            "004",                  // LeftEarId
-            "5095",                 // Owner
-            "Yvonne",               // Nickname
-            Race.Angora,
-            Color.Jerngrå,
-            new DateOnly(2020, 06, 12), // Format: yyyy-MM-dd
-            new DateOnly(2022, 07, 22), // Format: yyyy-MM-dd
-            Gender.Hun,           
-            IsPublic.No);
-
-            // Get a rabbit from the mock data
-            var existingRabbit = await _context.Rabbits.FirstAsync();
-            Assert.IsNotNull(existingRabbit);
+            var newUniqRabbit = new RabbitDTO
+            {
+                RightEarId = "5095",
+                LeftEarId = "004",
+                NickName = "Yvonne",
+                Race = Race.Angora,
+                Color = Color.Jerngrå,
+                DateOfBirth = new DateOnly(2020, 06, 12),
+                DateOfDeath = null,
+                Gender = Gender.Hun,
+                IsPublic = IsPublic.No
+            };
+                        
 
             // Set the current user for the test
             var currentUser = await _context.Users.FirstAsync();
             Assert.IsNotNull(currentUser);
 
+            // Create a UserKeyDTO from the User
+            var currentUserKeyDto = new UserKeyDTO { BreederRegNo = currentUser.BreederRegNo };
+
             // Act
-            await _rabbitService.AddRabbit_ToCurrentUserAsync(currentUser, newUniqRabbit);
+            await _rabbitService.AddRabbit_ToCurrentUserAsync(currentUserKeyDto, newUniqRabbit);
 
             // Assert
             var addedRabbit = await _context.Rabbits.FindAsync(newUniqRabbit.RightEarId, newUniqRabbit.LeftEarId);
             Assert.IsNotNull(addedRabbit);
 
+            // Get a rabbit from the mock data
+            var existingRabbit = await _context.Rabbits.FirstAsync();
+            Assert.IsNotNull(existingRabbit);
+
             // Act & Assert
+            var existingRabbitDto = new RabbitDTO { RightEarId = existingRabbit.RightEarId, LeftEarId = existingRabbit.LeftEarId };
             await Assert.ThrowsExceptionAsync<InvalidOperationException>(
-                () => _rabbitService.AddRabbit_ToCurrentUserAsync(currentUser, existingRabbit));
+                () => _rabbitService.AddRabbit_ToCurrentUserAsync(currentUserKeyDto, existingRabbitDto));
         }
-                
+
+
 
         [TestMethod]
         public async Task UpdateRabbitAsync_TEST()

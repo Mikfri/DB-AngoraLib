@@ -48,9 +48,9 @@ namespace DB_AngoraLib.Services.RabbitService
             return rabbits.ToList();
         }
 
-        public async Task<List<Rabbit>> GetAllRabbits_ByBreederRegAsync(string breederRegNo)
+        public async Task<List<Rabbit>> GetAllRabbits_ByBreederRegAsync(UserKeyDTO userKeyDto)
         {
-            var user = await _userService.GetUserByBreederRegNoAsync(breederRegNo);
+            var user = await _userService.GetUserByBreederRegNoAsync(userKeyDto);
             var rabbits = await _dbRepository.GetAllObjectsAsync();
             return rabbits.Where(rabbit => rabbit.OwnerId == user.BreederRegNo).ToList();
         }
