@@ -109,7 +109,7 @@ namespace DB_AngoraLib.Models
         public string LeftEarId { get; set; }
 
         public string? OwnerId { get; set; }
-        public User? Owner { get; set; } // public virtual -> lazy loading (færre DB requests)
+        public User? User { get; set; } // public virtual -> lazy loading (færre DB requests)
 
         public string? NickName { get; set; }
         public Race Race { get; set; }
@@ -129,9 +129,10 @@ namespace DB_AngoraLib.Models
         public IsPublic? IsPublic { get; set; }
 
         public virtual ICollection<Photo> Photos { get; set; }
+        public virtual ICollection<Rating> Ratings { get; set; }
         public virtual ICollection<RabbitParents> Parents { get; set; }
-        public virtual ICollection<RabbitParents> MotheredChildren { get; set; } // Er null hvis, Rabbit er far/Han
-        public virtual ICollection<RabbitParents> FatheredChildren { get; set; } // Er null hvis, Rabbit er mor/Hun
+        public virtual ICollection<RabbitParents> MotheredChildren { get; set; } // Er altid null hvis, Rabbit er far/Han
+        public virtual ICollection<RabbitParents> FatheredChildren { get; set; } // Er altid null hvis, Rabbit er mor/Hun
 
 
 
@@ -155,7 +156,7 @@ namespace DB_AngoraLib.Models
 
         public override string ToString()
         {
-            return $"RightEarId: {RightEarId}, LeftEarId: {LeftEarId}, Owner: {Owner}, NickName: {NickName}, Race: {Race}, Color: {Color}, ApprovedRaceColorCombination: {ApprovedRaceColorCombination}, DateOfBirth: {DateOfBirth}, Gender: {Gender}";
+            return $"RightEarId: {RightEarId}, LeftEarId: {LeftEarId}, Owner: {User}, NickName: {NickName}, Race: {Race}, Color: {Color}, ApprovedRaceColorCombination: {ApprovedRaceColorCombination}, DateOfBirth: {DateOfBirth}, Gender: {Gender}";
         }
     }
 }

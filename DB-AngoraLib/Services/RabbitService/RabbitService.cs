@@ -98,7 +98,7 @@ namespace DB_AngoraLib.Services.RabbitService
 
             if (rabbit != null)
             {
-                Console.WriteLine($"A Rabbit with this ear-tag already exists!\nRabbitName: {rabbit.NickName}, OwnerId: {rabbit.OwnerId}, OwnerName: {rabbit.Owner.FirstName} {rabbit.Owner.LastName}");
+                Console.WriteLine($"A Rabbit with this ear-tag already exists!\nRabbitName: {rabbit.NickName}, OwnerId: {rabbit.OwnerId}, OwnerName: {rabbit.User.FirstName} {rabbit.User.LastName}");
             }
             else
             {

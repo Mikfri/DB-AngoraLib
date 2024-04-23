@@ -14,7 +14,7 @@ namespace DB_AngoraLib.Models
 
         public string RightEarId{ get; set; }
         public string LeftEarId{ get; set; }
-        public Rabbit RatedRabbit { get; set; }
+        public Rabbit Rabbit { get; set; }
 
         public DateOnly DateRated { get; set; }
         public int WeightPoint { get; set; }

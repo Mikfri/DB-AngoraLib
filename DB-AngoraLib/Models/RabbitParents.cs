@@ -12,15 +12,15 @@ namespace DB_AngoraLib.Models
 
         public string MotherRightEarId { get; set; }
         public string MotherLeftEarId { get; set; }
-        public virtual Rabbit Mother { get; set; }
+        public virtual Rabbit RabbitMother { get; set; }
 
         public string FatherRightEarId { get; set; }
         public string FatherLeftEarId { get; set; }
-        public virtual Rabbit Father { get; set; }
+        public virtual Rabbit RabbitFather { get; set; }
 
         public string ChildRightEarId { get; set; }
         public string ChildLeftEarId { get; set; }
-        public virtual Rabbit Child { get; set; }
+        public virtual Rabbit RabbitChild { get; set; }
     }
 
 }

@@ -56,21 +56,27 @@ namespace DB_AngoraLib.EF_DbContext
             //------------------- FK SETUP -------------------
             // Configure Foreign Key for Rabbit -> User
             modelBuilder.Entity<Rabbit>()
-                .HasOne(r => r.Owner)
-                .WithMany(u => u.Rabbits)
-                .HasForeignKey(r => r.OwnerId);
+                .HasOne(r => r.User)       // En Rabbit har en User
+                .WithMany(u => u.Rabbits)   // En User har mange Rabbits
+                .HasForeignKey(r => r.OwnerId); // En Rabbit har en OwnerId
+
+            // Configure Foreign Key for Rating -> Rabbit
+            modelBuilder.Entity<Rating>()
+                .HasOne(r => r.Rabbit) // En Rating har en Rabbit
+                .WithMany(rb => rb.Ratings) // En Rabbit har mange Ratings
+                .HasForeignKey(r => new { r.RightEarId, r.LeftEarId });
 
             // Configure composite key for RabbitParents
             // Configure Foreign Key for RabbitParents -> Mother
             modelBuilder.Entity<RabbitParents>()
-                .HasOne(rp => rp.Mother)
+                .HasOne(rp => rp.RabbitMother)
                 .WithMany(r => r.MotheredChildren)
                 .HasForeignKey(rp => new { rp.MotherRightEarId, rp.MotherLeftEarId })
                 .OnDelete(DeleteBehavior.NoAction);
 
             // Configure Foreign Key for RabbitParents -> Father
             modelBuilder.Entity<RabbitParents>()
-                .HasOne(rp => rp.Father)
+                .HasOne(rp => rp.RabbitFather)
                 .WithMany(r => r.FatheredChildren)
                 .HasForeignKey(rp => new { rp.FatherRightEarId, rp.FatherLeftEarId })
                 .OnDelete(DeleteBehavior.NoAction);
