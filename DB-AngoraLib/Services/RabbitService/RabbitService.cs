@@ -56,6 +56,7 @@ namespace DB_AngoraLib.Services.RabbitService
 
         /// <summary>
         /// Denne metode behøver IKKE at være asynkron.
+        /// Benytter <User> classen ICollection<Rabbit>.
         /// Den opererer på data, der allerede er indlæst i hukommelsen 
         /// (dvs., currentUser.Rabbits), så der er ingen asynkrone operationer,
         /// der skal vente på. Derfor kan metoden returnere resultatet

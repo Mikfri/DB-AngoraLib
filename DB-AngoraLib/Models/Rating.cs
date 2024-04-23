@@ -10,7 +10,8 @@ namespace DB_AngoraLib.Models
 {
     public class Rating
     {
-     
+        public int Id { get; set; }
+
         public string RightEarId{ get; set; }
         public string LeftEarId{ get; set; }
         public Rabbit RatedRabbit { get; set; }

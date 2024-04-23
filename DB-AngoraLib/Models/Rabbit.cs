@@ -128,9 +128,10 @@ namespace DB_AngoraLib.Models
         public Gender Gender { get; set; }
         public IsPublic? IsPublic { get; set; }
 
+        public virtual ICollection<Photo> Photos { get; set; }
         public virtual ICollection<RabbitParents> Parents { get; set; }
-        public virtual ICollection<RabbitParents> MotherChildren { get; set; } // Er null hvis, Rabbit er far/Han
-        public virtual ICollection<RabbitParents> FatherChildren { get; set; } // Er null hvis, Rabbit er mor/Hun
+        public virtual ICollection<RabbitParents> MotheredChildren { get; set; } // Er null hvis, Rabbit er far/Han
+        public virtual ICollection<RabbitParents> FatheredChildren { get; set; } // Er null hvis, Rabbit er mor/Hun
 
 
 

@@ -64,14 +64,14 @@ namespace DB_AngoraLib.EF_DbContext
             // Configure Foreign Key for RabbitParents -> Mother
             modelBuilder.Entity<RabbitParents>()
                 .HasOne(rp => rp.Mother)
-                .WithMany(r => r.MotherChildren)
+                .WithMany(r => r.MotheredChildren)
                 .HasForeignKey(rp => new { rp.MotherRightEarId, rp.MotherLeftEarId })
                 .OnDelete(DeleteBehavior.NoAction);
 
             // Configure Foreign Key for RabbitParents -> Father
             modelBuilder.Entity<RabbitParents>()
                 .HasOne(rp => rp.Father)
-                .WithMany(r => r.FatherChildren)
+                .WithMany(r => r.FatheredChildren)
                 .HasForeignKey(rp => new { rp.FatherRightEarId, rp.FatherLeftEarId })
                 .OnDelete(DeleteBehavior.NoAction);
         }
@@ -79,5 +79,7 @@ namespace DB_AngoraLib.EF_DbContext
         public DbSet<Rabbit> Rabbits { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<RabbitParents> RabbitParents { get; set; }
+        public DbSet<Photo> Photos { get; set; }
+
     }
 }
