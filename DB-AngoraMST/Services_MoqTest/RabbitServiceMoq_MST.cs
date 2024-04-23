@@ -12,7 +12,7 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DB_AngoraMST.ServicesTest
+namespace DB_AngoraMST.Services_MoqTest
 {
     [TestClass]
     public class RabbitServiceMoq_MST
@@ -100,7 +100,7 @@ namespace DB_AngoraMST.ServicesTest
         //    // Assert
         //    Assert.IsNull(result);
         //}
-                
+
 
         ////------------------------- ADD METHODS TESTS -------------------------
         //[TestMethod]    // todo: virker ikke helt korrekt..

@@ -54,38 +54,7 @@ namespace DB_AngoraLib.Services.RabbitService
             return rabbits.Where(rabbit => rabbit.OwnerId == user.BreederRegNo).ToList();
         }
 
-        /// <summary>
-        /// Denne metode behøver IKKE at være asynkron.
-        /// Benytter <User> classen ICollection<Rabbit>.
-        /// Den opererer på data, der allerede er indlæst i hukommelsen 
-        /// (dvs., currentUser.Rabbits), så der er ingen asynkrone operationer,
-        /// der skal vente på. Derfor kan metoden returnere resultatet
-        /// direkte som en List<Rabbit> i stedet for en Task<List<Rabbit>>.
-        /// </summary>
-        /// <param name="currentUser"></param>
-        /// <param name="race"></param>
-        /// <param name="color"></param>
-        /// <param name="gender"></param>
-        /// <param name="isPublic"></param>
-        /// <param name="rightEarId"></param>
-        /// <param name="leftEarId"></param>
-        /// <returns></returns>
-        public List<Rabbit> GetRabbitsByProperties(User currentUser, string rightEarId, string leftEarId, string nickName, Race race, Color color, Gender gender, IsPublic isPublic, bool? isJuvenile, DateOnly? dateOfBirth, DateOnly? dateOfDeath)
-        {
-            return currentUser.Rabbits
-                .Where(rabbit =>
-                       rabbit.RightEarId == rightEarId
-                    && rabbit.LeftEarId == leftEarId
-                    && (nickName == null || rabbit.NickName == nickName)
-                    && rabbit.Race == race
-                    && rabbit.Color == color
-                    && rabbit.Gender == gender
-                    && rabbit.IsPublic == isPublic
-                    && (isJuvenile == null || rabbit.IsJuvenile == isJuvenile)
-                    && (dateOfBirth == null || rabbit.DateOfBirth == dateOfBirth)
-                    && (dateOfDeath == null || rabbit.DateOfDeath == dateOfDeath))
-                .ToList();
-        }
+               
 
         //-------: GET BY EAR TAGs METODER
         public async Task<Rabbit> GetRabbitByEarTagsAsync(string rightEarId, string leftEarId)

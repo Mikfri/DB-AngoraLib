@@ -12,7 +12,7 @@ namespace DB_AngoraLib.EF_DbContext
     public class DB_AngoraContext : DbContext
     {
 
-        #region //---------------- BASIC SETUP FØR SECRET SETUP ----------------
+        #region //---------------- UDEN: SECRET SETUP ----------------
         public DB_AngoraContext(DbContextOptions<DB_AngoraContext> options) : base(options) { }
 
         public DB_AngoraContext() { }
@@ -26,6 +26,7 @@ namespace DB_AngoraLib.EF_DbContext
             }
         }
         #endregion
+        #region //---------------- MED: SECRET SETUP ----------------
         //private readonly IConfiguration _configuration;
 
         //public DB_AngoraContext(DbContextOptions<DB_AngoraContext> options, IConfiguration configuration) : base(options)
@@ -41,6 +42,7 @@ namespace DB_AngoraLib.EF_DbContext
         //        optionsBuilder.UseSqlServer(_configuration.GetConnectionString("SECRETConnection"));
         //    }
         //}
+        #endregion
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -60,30 +62,26 @@ namespace DB_AngoraLib.EF_DbContext
                 .WithMany(u => u.Rabbits)   // En User har mange Rabbits
                 .HasForeignKey(r => r.OwnerId); // En Rabbit har en OwnerId
 
-            // Configure Foreign Key for Rating -> Rabbit
             modelBuilder.Entity<Rating>()
                 .HasOne(r => r.Rabbit) // En Rating har en Rabbit
                 .WithMany(rb => rb.Ratings) // En Rabbit har mange Ratings
                 .HasForeignKey(r => new { r.RightEarId, r.LeftEarId });
 
-            // Configure composite key for RabbitParents
-            // Configure Foreign Key for RabbitParents -> Mother
             modelBuilder.Entity<RabbitParents>()
-                .HasOne(rp => rp.RabbitMother)
+                .HasOne(rp => rp.RabbitMother)      // En RabbitParent har en RabbitMother
                 .WithMany(r => r.MotheredChildren)
                 .HasForeignKey(rp => new { rp.MotherRightEarId, rp.MotherLeftEarId })
                 .OnDelete(DeleteBehavior.NoAction);
 
-            // Configure Foreign Key for RabbitParents -> Father
             modelBuilder.Entity<RabbitParents>()
                 .HasOne(rp => rp.RabbitFather)
                 .WithMany(r => r.FatheredChildren)
                 .HasForeignKey(rp => new { rp.FatherRightEarId, rp.FatherLeftEarId })
                 .OnDelete(DeleteBehavior.NoAction);
         }
-
-        public DbSet<Rabbit> Rabbits { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<Rabbit> Rabbits { get; set; }
+        public DbSet<Rating> Ratings { get; set; }
         public DbSet<RabbitParents> RabbitParents { get; set; }
         public DbSet<Photo> Photos { get; set; }
 

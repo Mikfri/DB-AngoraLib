@@ -6,19 +6,18 @@ using DB_AngoraLib.Services.RabbitService;
 using DB_AngoraLib.Services.UserService;
 using DB_AngoraLib.Services.ValidationService;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
-namespace DB_AngoraMST.ServicesTest
+namespace DB_AngoraMST.Services_InMemTest
 {
     [TestClass]
-    public class RabbitServiceInMem_MST
+    public class UserService_MST
     {
-        private RabbitService _rabbitService;
+        //private RabbitService _rabbitService;
         private UserService _userService;
         private DB_AngoraContext _context;
 
@@ -59,9 +58,8 @@ namespace DB_AngoraMST.ServicesTest
 
             var rabbitRepository = new GRepository<Rabbit>(_context);
             var validatorService = new RabbitValidator();
-            _rabbitService = new RabbitService(rabbitRepository, _userService, validatorService);
+            //_rabbitService = new RabbitService(rabbitRepository, _userService, validatorService);
         }
-
 
         [TestCleanup]
         public void Cleanup()
@@ -71,45 +69,7 @@ namespace DB_AngoraMST.ServicesTest
         }
 
         [TestMethod]
-        public async Task AddRabbit_ToCurrentUserAsync_TEST()
-        {
-            // Arrange
-
-            var newUniqRabbit = new Rabbit(
-            "5095",                 // RightEarId
-            "004",                  // LeftEarId
-            "5095",                 // Owner
-            "Yvonne",               // Nickname
-            Race.Angora,
-            Color.Jerngrå,
-            new DateOnly(2020, 06, 12), // Format: yyyy-MM-dd
-            new DateOnly(2022, 07, 22), // Format: yyyy-MM-dd
-            Gender.Hun,           
-            IsPublic.No);
-
-            // Get a rabbit from the mock data
-            var existingRabbit = await _context.Rabbits.FirstAsync();
-            Assert.IsNotNull(existingRabbit);
-
-            // Set the current user for the test
-            var currentUser = await _context.Users.FirstAsync();
-            Assert.IsNotNull(currentUser);
-
-            // Act
-            await _rabbitService.AddRabbit_ToCurrentUserAsync(currentUser, newUniqRabbit);
-
-            // Assert
-            var addedRabbit = await _context.Rabbits.FindAsync(newUniqRabbit.RightEarId, newUniqRabbit.LeftEarId);
-            Assert.IsNotNull(addedRabbit);
-
-            // Act & Assert
-            await Assert.ThrowsExceptionAsync<InvalidOperationException>(
-                () => _rabbitService.AddRabbit_ToCurrentUserAsync(currentUser, existingRabbit));
-        }
-
-
-        [TestMethod]
-        public void GetRabbitsByProperties_TEST()
+        public void GetCurrentUsersRabbitCollection_TEST()
         {
             // Arrange
             var currentUser = _context.Users.First();
@@ -125,7 +85,7 @@ namespace DB_AngoraMST.ServicesTest
             var dateOfDeath = (DateOnly?)null;
 
             // Act
-            var result = _rabbitService.GetRabbitsByProperties(currentUser, rightEarId, leftEarId, nickName, race, color, gender, isPublic, isJuvenile, dateOfBirth, dateOfDeath);
+            var result = _userService.GetCurrentUsersRabbitCollection_ByProperties(currentUser, rightEarId, leftEarId, nickName, race, color, gender, isPublic, isJuvenile, dateOfBirth, dateOfDeath);
 
             // Assert
             Assert.IsNotNull(result);
@@ -138,41 +98,6 @@ namespace DB_AngoraMST.ServicesTest
             Assert.AreEqual(color, rabbit.Color);
             Assert.AreEqual(gender, rabbit.Gender);
             Assert.AreEqual(isPublic, rabbit.IsPublic);
-        }
-
-        [TestMethod]
-        public async Task UpdateRabbitAsync_TEST()
-        {
-            // Arrange
-            var currentUser = _context.Users.First();
-            var existingRabbit = await _context.Rabbits.FirstAsync();
-            existingRabbit.NickName = "New Nickname";
-            existingRabbit.Color = Color.Hvid;
-
-            // Act
-            await _rabbitService.UpdateRabbitAsync(currentUser, existingRabbit);
-
-            // Assert
-            var updatedRabbit = await _context.Rabbits.FindAsync(existingRabbit.RightEarId, existingRabbit.LeftEarId);
-            Assert.IsNotNull(updatedRabbit);
-            Assert.AreEqual("New Nickname", updatedRabbit.NickName);
-            Assert.AreEqual(Color.Hvid, updatedRabbit.Color);
-        }
-
-        [TestMethod]
-        public async Task DeleteRabbitAsync_TEST()
-        {
-            // Arrange
-            var currentUser = _context.Users.First();
-            var existingRabbit = await _context.Rabbits.FirstAsync();
-            var initialCount = _context.Rabbits.Count();
-
-            // Act
-            await _rabbitService.DeleteRabbitAsync(currentUser, existingRabbit);
-
-            // Assert
-            var finalCount = _context.Rabbits.Count();
-            Assert.AreEqual(initialCount - 1, finalCount);
         }
     }
 }
