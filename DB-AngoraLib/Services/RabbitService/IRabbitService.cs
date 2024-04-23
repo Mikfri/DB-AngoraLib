@@ -1,4 +1,5 @@
-﻿using DB_AngoraLib.Models;
+﻿using DB_AngoraLib.DTOs;
+using DB_AngoraLib.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +12,7 @@ namespace DB_AngoraLib.Services.RabbitService
     {
         Task<List<Rabbit>> GetAllRabbitsAsync();
         Task<Rabbit> GetRabbitByEarTagsAsync(string rightEarId, string leftEarId);
-        Task AddRabbit_ToCurrentUserAsync(User currentUser, Rabbit newRabbit);
+        Task AddRabbit_ToCurrentUserAsync(UserKeyDTO userKeyDTO, RabbitDTO newRabbit);
         Task UpdateRabbitAsync(User currentUser, Rabbit rabbitId);
         Task DeleteRabbitAsync(User currentUser, Rabbit rabbitToDelete);
     }

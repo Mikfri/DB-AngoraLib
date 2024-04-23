@@ -1,4 +1,5 @@
-﻿using DB_AngoraLib.EF_DbContext;
+﻿using DB_AngoraLib.DTOs;
+using DB_AngoraLib.EF_DbContext;
 using DB_AngoraLib.Models;
 using DB_AngoraLib.Repository;
 using DB_AngoraLib.Services.UserService;
@@ -77,12 +78,44 @@ namespace DB_AngoraLib.Services.RabbitService
             return rabbit;
         }
 
-        
+
 
         //---------------------: ADD
-        public async Task AddRabbit_ToCurrentUserAsync(User currentUser, Rabbit newRabbit)
+        //public async Task AddRabbit_ToCurrentUserAsync(User currentUser, Rabbit newRabbit)
+        //{
+        //    Console.WriteLine($"Trying to add rabbit with RightEarId: {newRabbit.RightEarId}, LeftEarId: {newRabbit.LeftEarId}");
+        //    _validatorService.ValidateRabbit(newRabbit);
+
+        //    // Check om kaninen med de givne øremærker allerede eksisterer
+        //    var existingRabbit = await GetRabbitByEarTagsAsync(newRabbit.RightEarId, newRabbit.LeftEarId);
+        //    if (existingRabbit != null)
+        //    {
+        //        throw new InvalidOperationException("A rabbit with the same ear tags already exists.");
+        //    }
+
+        //    newRabbit.OwnerId = currentUser.BreederRegNo;
+        //    await _dbRepository.AddObjectAsync(newRabbit);
+        //    Console.WriteLine($"Rabbit added successfully with RightEarId: {newRabbit.RightEarId}, LeftEarId: {newRabbit.LeftEarId}, OwnerId: {newRabbit.OwnerId}");
+        //}
+
+        public async Task AddRabbit_ToCurrentUserAsync(UserKeyDTO currentUserKeyDto, RabbitDTO newRabbitDto)
         {
-            Console.WriteLine($"Trying to add rabbit with RightEarId: {newRabbit.RightEarId}, LeftEarId: {newRabbit.LeftEarId}");
+            Console.WriteLine($"Trying to add rabbit with RightEarId: {newRabbitDto.RightEarId}, LeftEarId: {newRabbitDto.LeftEarId}");
+
+            // Convert RabbitDto to Rabbit
+            var newRabbit = new Rabbit
+            {
+                RightEarId = newRabbitDto.RightEarId,
+                LeftEarId = newRabbitDto.LeftEarId,
+                NickName = newRabbitDto.NickName,
+                Race = newRabbitDto.Race,
+                Color = newRabbitDto.Color,
+                DateOfBirth = newRabbitDto.DateOfBirth,
+                Gender = newRabbitDto.Gender,
+                IsPublic = newRabbitDto.IsPublic
+                // ... set other properties as needed
+            };
+
             _validatorService.ValidateRabbit(newRabbit);
 
             // Check om kaninen med de givne øremærker allerede eksisterer
@@ -92,11 +125,14 @@ namespace DB_AngoraLib.Services.RabbitService
                 throw new InvalidOperationException("A rabbit with the same ear tags already exists.");
             }
 
+            // Find the corresponding User object
+            var currentUser = await _userService.GetUserByBreederRegNoAsync(currentUserKeyDto);
+
             newRabbit.OwnerId = currentUser.BreederRegNo;
             await _dbRepository.AddObjectAsync(newRabbit);
             Console.WriteLine($"Rabbit added successfully with RightEarId: {newRabbit.RightEarId}, LeftEarId: {newRabbit.LeftEarId}, OwnerId: {newRabbit.OwnerId}");
         }
-                
+
 
         //---------------------: UPDATE
         public async Task UpdateRabbitAsync(User currentUser, Rabbit rabbitId)

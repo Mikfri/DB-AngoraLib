@@ -1,4 +1,5 @@
-﻿using DB_AngoraLib.Models;
+﻿using DB_AngoraLib.DTOs;
+using DB_AngoraLib.Models;
 using DB_AngoraLib.Repository;
 using System;
 using System.Collections.Generic;
@@ -63,9 +64,9 @@ namespace DB_AngoraLib.Services.UserService
             return (await _dbRepository.GetAllObjectsAsync()).ToList();
         }
 
-        public async Task<User> GetUserByBreederRegNoAsync(string breederRegNo)
+        public async Task<User> GetUserByBreederRegNoAsync(UserKeyDTO userKeyDto)
         {
-            return await _dbRepository.GetObjectAsync(u => u.BreederRegNo == breederRegNo);
+            return await _dbRepository.GetObjectAsync(u => u.BreederRegNo == userKeyDto.BreederRegNo);
         }
 
         public async Task AddUserAsync(User newUser)
