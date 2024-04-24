@@ -24,8 +24,7 @@ namespace DB_AngoraLib.MockData
             //null,                   //ApprovedRaceColorCombination
             new DateOnly(2020, 06, 12), // Format: yyyy-MM-dd
             new DateOnly(2022, 07, 22), // Format: yyyy-MM-dd
-            Gender.Hun,
-         
+            Gender.Hun,         
             IsPublic.No),
 
             new Rabbit(
@@ -231,7 +230,7 @@ namespace DB_AngoraLib.MockData
             Race.Satinangora,
             Color.Vildtbrun,
             new DateOnly(2020, 04, 10),
-            null,
+            new DateOnly(2024, 04, 23),
             Gender.Han,
             IsPublic.No),
 

@@ -31,17 +31,19 @@ namespace DB_AngoraLib.Services.UserService
         /// der skal vente på. Derfor kan metoden returnere resultatet
         /// direkte som en List<Rabbit> i stedet for en Task<List<Rabbit>>.
         /// </summary>
-        public List<Rabbit> GetCurrentUsersRabbitCollection_ByProperties(User currentUser, string rightEarId, string leftEarId, string nickName, Race race, Color color, Gender gender, IsPublic isPublic, bool? isJuvenile, DateOnly? dateOfBirth, DateOnly? dateOfDeath)
+        public async Task<List<Rabbit>> GetCurrentUsersRabbitCollection_ByProperties(User_KeyDTO userKeyDto, string rightEarId = null, string leftEarId = null, string nickName = null, Race? race = null, Color? color = null, Gender? gender = null, IsPublic? isPublic = null, bool? isJuvenile = null, DateOnly? dateOfBirth = null, DateOnly? dateOfDeath = null)
         {
+            var currentUser = await _dbRepository.GetObjectAsync(u => u.BreederRegNo == userKeyDto.BreederRegNo);
+
             return currentUser.Rabbits
                 .Where(rabbit =>
-                       rabbit.RightEarId == rightEarId
-                    && rabbit.LeftEarId == leftEarId
+                       (rightEarId == null || rabbit.RightEarId == rightEarId)
+                    && (leftEarId == null || rabbit.LeftEarId == leftEarId)
                     && (nickName == null || rabbit.NickName == nickName)
-                    && rabbit.Race == race
-                    && rabbit.Color == color
-                    && rabbit.Gender == gender
-                    && rabbit.IsPublic == isPublic
+                    && (race == null || rabbit.Race == race)
+                    && (color == null || rabbit.Color == color)
+                    && (gender == null || rabbit.Gender == gender)
+                    && (isPublic == null || rabbit.IsPublic == isPublic)
                     && (isJuvenile == null || rabbit.IsJuvenile == isJuvenile)
                     && (dateOfBirth == null || rabbit.DateOfBirth == dateOfBirth)
                     && (dateOfDeath == null || rabbit.DateOfDeath == dateOfDeath))
@@ -64,7 +66,7 @@ namespace DB_AngoraLib.Services.UserService
             return (await _dbRepository.GetAllObjectsAsync()).ToList();
         }
 
-        public async Task<User> GetUserByBreederRegNoAsync(UserKeyDTO userKeyDto)
+        public async Task<User> GetUserByBreederRegNoAsync(User_KeyDTO userKeyDto)
         {
             return await _dbRepository.GetObjectAsync(u => u.BreederRegNo == userKeyDto.BreederRegNo);
         }

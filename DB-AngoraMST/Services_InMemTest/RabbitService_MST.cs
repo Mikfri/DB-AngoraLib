@@ -75,7 +75,7 @@ namespace DB_AngoraMST.Services_InMemTest
         public async Task AddRabbit_ToCurrentUserAsync_TEST()
         {
             // Arrange
-            var newUniqRabbit = new RabbitDTO
+            var newUniqRabbit = new Rabbit_BasicsDTO
             {
                 RightEarId = "5095",
                 LeftEarId = "004",
@@ -94,7 +94,7 @@ namespace DB_AngoraMST.Services_InMemTest
             Assert.IsNotNull(currentUser);
 
             // Create a UserKeyDTO from the User
-            var currentUserKeyDto = new UserKeyDTO { BreederRegNo = currentUser.BreederRegNo };
+            var currentUserKeyDto = new User_KeyDTO { BreederRegNo = currentUser.BreederRegNo };
 
             // Act
             await _rabbitService.AddRabbit_ToCurrentUserAsync(currentUserKeyDto, newUniqRabbit);
@@ -108,7 +108,7 @@ namespace DB_AngoraMST.Services_InMemTest
             Assert.IsNotNull(existingRabbit);
 
             // Act & Assert
-            var existingRabbitDto = new RabbitDTO { RightEarId = existingRabbit.RightEarId, LeftEarId = existingRabbit.LeftEarId };
+            var existingRabbitDto = new Rabbit_BasicsDTO { RightEarId = existingRabbit.RightEarId, LeftEarId = existingRabbit.LeftEarId };
             await Assert.ThrowsExceptionAsync<InvalidOperationException>(
                 () => _rabbitService.AddRabbit_ToCurrentUserAsync(currentUserKeyDto, existingRabbitDto));
         }

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace DB_AngoraLib.DTOs
 {
-    public record RabbitDTO
+    public record Rabbit_BasicsDTO
     {
         public string RightEarId { get; init; }
         public string LeftEarId { get; init; }
@@ -20,6 +20,7 @@ namespace DB_AngoraLib.DTOs
         public bool? ApprovedRaceColorCombination { get; init; }
         public DateOnly DateOfBirth { get; init; }
         public DateOnly? DateOfDeath { get; init; }
+        public bool IsJuvenile { get; init; }
         public Gender Gender { get; init; }
         public IsPublic? IsPublic { get; init; }
     }

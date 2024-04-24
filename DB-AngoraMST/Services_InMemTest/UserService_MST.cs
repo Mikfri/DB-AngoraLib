@@ -1,4 +1,5 @@
-﻿using DB_AngoraLib.EF_DbContext;
+﻿using DB_AngoraLib.DTOs;
+using DB_AngoraLib.EF_DbContext;
 using DB_AngoraLib.MockData;
 using DB_AngoraLib.Models;
 using DB_AngoraLib.Repository;
@@ -69,10 +70,32 @@ namespace DB_AngoraMST.Services_InMemTest
         }
 
         [TestMethod]
-        public void GetCurrentUsersRabbitCollection_TEST()
+        public async Task GetCurrentUsersRabbitCollection_WithoutProperties_TEST()
         {
             // Arrange
             var currentUser = _context.Users.First();
+            var userKeyDto = new User_KeyDTO { BreederRegNo = currentUser.BreederRegNo };
+
+            // Act
+            var result = await _userService.GetCurrentUsersRabbitCollection_ByProperties(userKeyDto, null, null, null, null, null, null, null, null, null, null);
+
+            // Debug: Print the names of the returned rabbits
+            foreach (var rabbit in result)
+            {
+                Console.WriteLine(rabbit.NickName);
+            }
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(5, result.Count); // Assuming the first user has 5 rabbits
+        }
+
+        [TestMethod]
+        public async Task GetCurrentUsersRabbitCollection_WithPropertiesTEST()
+        {
+            // Arrange
+            var currentUser = _context.Users.First();
+            var userKeyDto = new User_KeyDTO { BreederRegNo = currentUser.BreederRegNo };
             var race = Race.Angora;
             var color = Color.Blå;
             var gender = Gender.Hun;
@@ -85,7 +108,7 @@ namespace DB_AngoraMST.Services_InMemTest
             var dateOfDeath = (DateOnly?)null;
 
             // Act
-            var result = _userService.GetCurrentUsersRabbitCollection_ByProperties(currentUser, rightEarId, leftEarId, nickName, race, color, gender, isPublic, isJuvenile, dateOfBirth, dateOfDeath);
+            var result = await _userService.GetCurrentUsersRabbitCollection_ByProperties(userKeyDto, rightEarId, leftEarId, nickName, race, color, gender, isPublic, isJuvenile, dateOfBirth, dateOfDeath);
 
             // Assert
             Assert.IsNotNull(result);

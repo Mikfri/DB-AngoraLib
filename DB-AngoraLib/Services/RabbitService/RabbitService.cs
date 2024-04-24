@@ -48,7 +48,7 @@ namespace DB_AngoraLib.Services.RabbitService
             return rabbits.ToList();
         }
 
-        public async Task<List<Rabbit>> GetAllRabbits_ByBreederRegAsync(UserKeyDTO userKeyDto)
+        public async Task<List<Rabbit>> GetAllRabbits_ByBreederRegAsync(User_KeyDTO userKeyDto)
         {
             var user = await _userService.GetUserByBreederRegNoAsync(userKeyDto);
             var rabbits = await _dbRepository.GetAllObjectsAsync();
@@ -98,7 +98,7 @@ namespace DB_AngoraLib.Services.RabbitService
         //    Console.WriteLine($"Rabbit added successfully with RightEarId: {newRabbit.RightEarId}, LeftEarId: {newRabbit.LeftEarId}, OwnerId: {newRabbit.OwnerId}");
         //}
 
-        public async Task AddRabbit_ToCurrentUserAsync(UserKeyDTO currentUserKeyDto, RabbitDTO newRabbitDto)
+        public async Task AddRabbit_ToCurrentUserAsync(User_KeyDTO currentUserKeyDto, Rabbit_BasicsDTO newRabbitDto)
         {
             Console.WriteLine($"Trying to add rabbit with RightEarId: {newRabbitDto.RightEarId}, LeftEarId: {newRabbitDto.LeftEarId}");
 
