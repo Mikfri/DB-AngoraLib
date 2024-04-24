@@ -111,9 +111,10 @@ namespace DB_AngoraLib.Services.RabbitService
                 Race = newRabbitDto.Race,
                 Color = newRabbitDto.Color,
                 DateOfBirth = newRabbitDto.DateOfBirth,
+                DateOfDeath = newRabbitDto.DateOfDeath,
                 Gender = newRabbitDto.Gender,
                 IsPublic = newRabbitDto.IsPublic
-                // ... set other properties as needed
+                // ... evt flere..
             };
 
             _validatorService.ValidateRabbit(newRabbit);
