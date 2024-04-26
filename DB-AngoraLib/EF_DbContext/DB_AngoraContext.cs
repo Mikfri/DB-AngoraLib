@@ -1,4 +1,6 @@
 ﻿using DB_AngoraLib.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -9,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace DB_AngoraLib.EF_DbContext
 {
-    public class DB_AngoraContext : DbContext
+    public class DB_AngoraContext : IdentityDbContext<User>
     {
 
         #region //---------------- UDEN: SECRET SETUP ----------------
@@ -47,6 +49,13 @@ namespace DB_AngoraLib.EF_DbContext
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             //------------------- PK SETUP -------------------
+            // Configure primary key for IdentityUser
+            modelBuilder.Entity<IdentityUserClaim<string>>().HasKey(p => p.Id);
+            modelBuilder.Entity<IdentityUserLogin<string>>().HasKey(p => new { p.LoginProvider, p.ProviderKey });
+            modelBuilder.Entity<IdentityUserRole<string>>().HasKey(p => new { p.UserId, p.RoleId });
+            modelBuilder.Entity<IdentityUserToken<string>>().HasKey(p => new { p.UserId, p.LoginProvider, p.Name });
+            modelBuilder.Entity<IdentityRoleClaim<string>>().HasKey(p => p.Id);
+
             // Configure primary key for User
             modelBuilder.Entity<User>()
                 .HasKey(u => u.BreederRegNo);

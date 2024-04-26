@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Identity;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -8,25 +9,20 @@ using System.Threading.Tasks;
 
 namespace DB_AngoraLib.Models
 {
-    public class User
+    public class User : IdentityUser
     {
-        public string BreederRegNo { get; set; }    // string! udelanske systemer(tyske heraf) benytter bogstaver.
+        public string BreederRegNo { get => Id; set => Id = value; }
 
         public string FirstName { get; set; }
         public string LastName { get; set; }
 
-        public string RoadNameAndNo { get; set; }    // todo: class address måske?
+        public string RoadNameAndNo { get; set; }
         public int ZipCode { get; set; }
         public string City { get; set; }
 
-        public string Email { get; set; }
-        public string Phone { get; set; }
-        public string Password { get; set; }
         public bool? IsAdmin { get; set; }
-        //public string? Image {  get; set; }
 
         public ICollection<Rabbit> Rabbits { get; set; }
-
 
         public User(string breederRegNo, string firstName, string lastName, string roadName, int zipCode, string city, string email, string phone, string password, bool? isAdmin)
         {
@@ -37,13 +33,11 @@ namespace DB_AngoraLib.Models
             ZipCode = zipCode;
             City = city;
             Email = email;
-            Phone = phone;
-            Password = password;
+            UserName = email; // IdentityUser uses UserName for login
+            PhoneNumber = phone;
             IsAdmin = isAdmin;
-            //Image = image;
         }
 
-        public User() { }        
-
+        public User() { }
     }
 }

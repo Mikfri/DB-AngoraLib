@@ -42,20 +42,24 @@ namespace DB_AngoraLib.Services.RabbitService
         //---------------------: GET METODER
         //-------: ADMIN METODER
 
-        public async Task<List<Rabbit>> GetAllRabbitsAsync()
+        public async Task<List<Rabbit>> GetAllRabbitsAsync()     // reeeally though? Skal vi bruge denne metode, udover test?
         {
             var rabbits = await _dbRepository.GetAllObjectsAsync();
             return rabbits.ToList();
         }
 
-        public async Task<List<Rabbit>> GetAllRabbits_ByBreederRegAsync(User_KeyDTO userKeyDto)
+        public async Task<List<Rabbit>> GetAllRabbits_ByBreederRegAsync(string breederRegNo)
         {
-            var user = await _userService.GetUserByBreederRegNoAsync(userKeyDto);
+            var user = await _userService.GetUserByBreederRegNoAsync(new User_KeyDTO { BreederRegNo = breederRegNo });
+            if (user == null)
+            {
+                return null;
+            }
             var rabbits = await _dbRepository.GetAllObjectsAsync();
             return rabbits.Where(rabbit => rabbit.OwnerId == user.BreederRegNo).ToList();
         }
 
-               
+
 
         //-------: GET BY EAR TAGs METODER
         public async Task<Rabbit> GetRabbitByEarTagsAsync(string rightEarId, string leftEarId)
@@ -144,6 +148,36 @@ namespace DB_AngoraLib.Services.RabbitService
             }
             _validatorService.ValidateRabbit(rabbitId);
             await _dbRepository.UpdateObjectAsync(rabbitId);
+        }
+
+        public async Task RequestRabbitTransfer(string rightEarId, string leftEarId, string newBreederRegNo)
+        {
+            // Check if the new owner exists in the database
+            var newOwner = await _userService.GetUserByBreederRegNoAsync(new User_KeyDTO { BreederRegNo = newBreederRegNo });
+            if (newOwner == null)
+            {
+                throw new Exception("New owner not found");
+            }
+
+            // Find the rabbit to transfer
+            var rabbit = await GetRabbitByEarTagsAsync(rightEarId, leftEarId);
+            if (rabbit == null)
+            {
+                throw new Exception("Rabbit not found");
+            }
+
+            // Create a new transfer request
+            var transferRequest = new RabbitTransferRequest
+            {
+                RabbitRightEarId = rightEarId,
+                RabbitLeftEarId = leftEarId,
+                CurrentOwnerId = rabbit.OwnerId,
+                NewOwnerId = newBreederRegNo,
+                IsAccepted = false
+            };
+
+            // Save the transfer request to the database
+            //await _transferRequestRepository.AddObjectAsync(transferRequest);
         }
 
         //---------------------: DELETE
