@@ -29,32 +29,19 @@ namespace DB_AngoraMST.Services_InMemTest
             // Setup in-memory database
             var options = new DbContextOptionsBuilder<DB_AngoraContext>()
                 .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-                .Options;
+                .Options;            
 
-            #region ------------- MED SECRET SETUP -------------
-            //// Setup mock IConfiguration
-            //var mockConfigurationSection = new Mock<IConfigurationSection>();
-            //mockConfigurationSection.SetupGet(m => m[It.Is<string>(s => s == "DefaultConnection")]).Returns("YourConnectionString");
-
-            //var mockConfiguration = new Mock<IConfiguration>();
-            //mockConfiguration.Setup(a => a.GetSection(It.Is<string>(s => s == "ConnectionStrings"))).Returns(mockConfigurationSection.Object);
-
-            //_context = new DB_AngoraContext(options, mockConfiguration.Object);
-            //_context.Database.EnsureCreated();
-            #endregion
-
-            #region ------------- UDEN SECRET SETUP -------------
             _context = new DB_AngoraContext(options);
             _context.Database.EnsureCreated();
-            #endregion
 
-            // Add mock data to in-memory database
+            // ----- MOCK DATA SETUP -----
             var mockUsers = MockUsers.GetMockUsers();
             _context.Users.AddRange(mockUsers);
             var mockRabbits = MockRabbits.GetMockRabbits();
             _context.Rabbits.AddRange(mockRabbits);
             _context.SaveChanges();
 
+            // ----- SERVICES SETUP -----
             var userRepository = new GRepository<User>(_context);
             _userService = new UserService(userRepository);
 
