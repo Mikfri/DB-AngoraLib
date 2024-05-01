@@ -37,7 +37,6 @@ namespace DB_AngoraLib.Models
             PhoneNumber = phone;
             IsAdmin = isAdmin;
         }
-
         public User() { }
     }
 }

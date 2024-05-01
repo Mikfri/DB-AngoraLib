@@ -1,4 +1,5 @@
-﻿using DB_AngoraLib.Models;
+﻿using DB_AngoraLib.MockData;
+using DB_AngoraLib.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -68,12 +69,24 @@ namespace DB_AngoraLib.EF_DbContext
                 .WithMany(r => r.FatheredChildren)
                 .HasForeignKey(rp => new { rp.FatherRightEarId, rp.FatherLeftEarId })
                 .OnDelete(DeleteBehavior.NoAction);
+
+
+            // Tilføj mock data
+            var passwordHasher = new PasswordHasher<User>();
+            var mockUsers = new MockUsers(passwordHasher);
+
+            var users = mockUsers.GetMockUsers();
+            modelBuilder.Entity<User>().HasData(users);
+
+            var mockRabbits = MockRabbits.GetMockRabbits();
+            modelBuilder.Entity<Rabbit>().HasData(mockRabbits);
+
+            base.OnModelCreating(modelBuilder);
         }
         public DbSet<User> Users { get; set; }
         public DbSet<Rabbit> Rabbits { get; set; }
         public DbSet<Rating> Ratings { get; set; }
         public DbSet<RabbitParents> RabbitParents { get; set; }
         public DbSet<Photo> Photos { get; set; }
-
     }
 }
