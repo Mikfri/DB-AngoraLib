@@ -35,11 +35,11 @@ namespace DB_AngoraMST.Services_InMemTest
             _context.Database.EnsureCreated();
 
             // Add mock data to in-memory database
-            var mockUsers = MockUsers.GetMockUsers();
-            _context.Users.AddRange(mockUsers);
-            var mockRabbits = MockRabbits.GetMockRabbits();
-            _context.Rabbits.AddRange(mockRabbits);
-            _context.SaveChanges();
+            //var mockUsers = MockUsers.GetMockUsers();
+            //_context.Users.AddRange(mockUsers);
+            //var mockRabbits = MockRabbits.GetMockRabbits();
+            //_context.Rabbits.AddRange(mockRabbits);
+            //_context.SaveChanges();
 
             var userRepository = new GRepository<User>(_context);
             _userService = new UserService(userRepository);
