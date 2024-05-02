@@ -81,7 +81,7 @@ namespace DB_AngoraMST.Services_InMemTest
             Assert.IsNotNull(currentUser);
 
             // Create a UserKeyDTO from the User
-            var currentUserKeyDto = new User_KeyDTO { BreederRegNo = currentUser.BreederRegNo };
+            var currentUserKeyDto = new User_KeyDTO { BreederRegNo = currentUser.Id };
 
             // Act
             await _rabbitService.AddRabbit_ToCurrentUserAsync(currentUserKeyDto, newUniqRabbit);

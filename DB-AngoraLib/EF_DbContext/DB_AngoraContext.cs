@@ -15,10 +15,17 @@ namespace DB_AngoraLib.EF_DbContext
     public class DB_AngoraContext : IdentityDbContext<User>
     {
 
-        public DB_AngoraContext(DbContextOptions<DB_AngoraContext> options) : base(options) { }
-
+        public DB_AngoraContext(DbContextOptions<DB_AngoraContext> options) : base(options)
+        {
+            Users = Set<User>();
+            Rabbits = Set<Rabbit>();
+            Ratings = Set<Rating>();
+            RabbitParents = Set<RabbitParents>();
+            Photos = Set<Photo>();
+        }
+                
+        #region ConnectionString
         //public DB_AngoraContext() { }
-
         //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         //{
         //    if (!optionsBuilder.IsConfigured)
@@ -27,20 +34,18 @@ namespace DB_AngoraLib.EF_DbContext
         //              @"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=DB-Angora_DB; Integrated Security=True; Connect Timeout=30; Encrypt=False");
         //    }
         //}
+        #endregion
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            //------------------- PK SETUP -------------------
-            // Configure primary key for IdentityUser
-            modelBuilder.Entity<IdentityUserClaim<string>>().HasKey(p => p.Id);
-            modelBuilder.Entity<IdentityUserLogin<string>>().HasKey(p => new { p.LoginProvider, p.ProviderKey });
-            modelBuilder.Entity<IdentityUserRole<string>>().HasKey(p => new { p.UserId, p.RoleId });
-            modelBuilder.Entity<IdentityUserToken<string>>().HasKey(p => new { p.UserId, p.LoginProvider, p.Name });
-            modelBuilder.Entity<IdentityRoleClaim<string>>().HasKey(p => p.Id);
+            //// Dette ændrer default navnet på tabellen fra AspNetUsers Id til BreederRegNo
+            //modelBuilder.Entity<IdentityUser>(
+            //    iu => iu.Property(c => c.Id).HasColumnName("BreederRegNo")
+            //    );
 
             // Configure primary key for User
             modelBuilder.Entity<User>()
-                .HasKey(u => u.BreederRegNo);
+                .HasKey(u => u.Id);
 
             // Configure composite key for Rabbit
             modelBuilder.Entity<Rabbit>()
@@ -83,10 +88,12 @@ namespace DB_AngoraLib.EF_DbContext
 
             base.OnModelCreating(modelBuilder);
         }
-        public DbSet<User> Users { get; set; }
+        public new DbSet<User> Users { get; set; }
         public DbSet<Rabbit> Rabbits { get; set; }
         public DbSet<Rating> Ratings { get; set; }
         public DbSet<RabbitParents> RabbitParents { get; set; }
         public DbSet<Photo> Photos { get; set; }
+
+
     }
 }

@@ -11,8 +11,6 @@ namespace DB_AngoraLib.Models
 {
     public class User : IdentityUser
     {
-        public string BreederRegNo { get => Id; set => Id = value; }
-
         public string FirstName { get; set; }
         public string LastName { get; set; }
 
@@ -26,7 +24,7 @@ namespace DB_AngoraLib.Models
 
         public User(string breederRegNo, string firstName, string lastName, string roadName, int zipCode, string city, string email, string phone, string password, bool? isAdmin)
         {
-            BreederRegNo = breederRegNo;
+            Id = breederRegNo;
             FirstName = firstName;
             LastName = lastName;
             RoadNameAndNo = roadName;

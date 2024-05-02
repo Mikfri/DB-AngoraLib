@@ -33,6 +33,8 @@ namespace DB_AngoraMST.Services_InMemTest
             _context = new DB_AngoraContext(options);
             _context.Database.EnsureCreated();
 
+            // todo: få mine mockusers og mockrabbits til at virke i mine MST Services efter korregering af DB_AngoraContext
+
             // Add mock data to in-memory database
             //var mockUsers = MockUsers.GetMockUsers();
             //_context.Users.AddRange(mockUsers);
@@ -60,7 +62,7 @@ namespace DB_AngoraMST.Services_InMemTest
         {
             // Arrange
             var currentUser = _context.Users.First();
-            var userKeyDto = new User_KeyDTO { BreederRegNo = currentUser.BreederRegNo };
+            var userKeyDto = new User_KeyDTO { BreederRegNo = currentUser.Id };
 
             // Act
             var result = await _userService.GetCurrentUsersRabbitCollection_ByProperties(userKeyDto, null, null, null, null, null, null, null, null, null, null);
@@ -81,7 +83,7 @@ namespace DB_AngoraMST.Services_InMemTest
         {
             // Arrange
             var currentUser = _context.Users.First();
-            var userKeyDto = new User_KeyDTO { BreederRegNo = currentUser.BreederRegNo };
+            var userKeyDto = new User_KeyDTO { BreederRegNo = currentUser.Id };
             var race = Race.Angora;
             var color = Color.Blå;
             var gender = Gender.Hun;

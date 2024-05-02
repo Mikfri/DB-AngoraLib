@@ -56,7 +56,7 @@ namespace DB_AngoraLib.Services.RabbitService
                 return null;
             }
             var rabbits = await _dbRepository.GetAllObjectsAsync();
-            return rabbits.Where(rabbit => rabbit.OwnerId == user.BreederRegNo).ToList();
+            return rabbits.Where(rabbit => rabbit.OwnerId == user.Id).ToList();
         }
 
 
@@ -133,7 +133,7 @@ namespace DB_AngoraLib.Services.RabbitService
             // Find the corresponding User object
             var currentUser = await _userService.GetUserByBreederRegNoAsync(currentUserKeyDto);
 
-            newRabbit.OwnerId = currentUser.BreederRegNo;
+            newRabbit.OwnerId = currentUser.Id;
             await _dbRepository.AddObjectAsync(newRabbit);
             Console.WriteLine($"Rabbit added successfully with RightEarId: {newRabbit.RightEarId}, LeftEarId: {newRabbit.LeftEarId}, OwnerId: {newRabbit.OwnerId}");
         }
@@ -142,7 +142,7 @@ namespace DB_AngoraLib.Services.RabbitService
         //---------------------: UPDATE
         public async Task UpdateRabbitAsync(User currentUser, Rabbit rabbitId)
         {
-            if (rabbitId.OwnerId != currentUser.BreederRegNo)
+            if (rabbitId.OwnerId != currentUser.Id)
             {
                 throw new InvalidOperationException("You are not the owner of this rabbit.");
             }
@@ -183,7 +183,7 @@ namespace DB_AngoraLib.Services.RabbitService
         //---------------------: DELETE
         public async Task DeleteRabbitAsync(User currentUser, Rabbit rabbitToDelete)
         {
-            if (rabbitToDelete.OwnerId != currentUser.BreederRegNo)
+            if (rabbitToDelete.OwnerId != currentUser.Id)
             {
                 throw new InvalidOperationException("You are not the owner of this rabbit.");
             }
