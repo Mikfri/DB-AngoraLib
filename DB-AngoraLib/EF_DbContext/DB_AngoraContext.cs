@@ -45,8 +45,8 @@ namespace DB_AngoraLib.EF_DbContext
 
             // Configure primary key for User
             modelBuilder.Entity<User>()
-                .HasKey(u => u.Id);
-
+                .HasKey(u => u.BreederRegNo);
+                        
             // Configure composite key for Rabbit
             modelBuilder.Entity<Rabbit>()
                 .HasKey(r => new { r.RightEarId, r.LeftEarId });
@@ -56,7 +56,8 @@ namespace DB_AngoraLib.EF_DbContext
             modelBuilder.Entity<Rabbit>()
                 .HasOne(r => r.User)       // En Rabbit har en User
                 .WithMany(u => u.Rabbits)   // En User har mange Rabbits
-                .HasForeignKey(r => r.OwnerId); // En Rabbit har en OwnerId
+                .HasForeignKey(r => r.OwnerId) // En Rabbit har en OwnerId
+                .IsRequired(false);
 
             modelBuilder.Entity<Rating>()
                 .HasOne(r => r.Rabbit) // En Rating har en Rabbit
@@ -88,7 +89,7 @@ namespace DB_AngoraLib.EF_DbContext
 
             base.OnModelCreating(modelBuilder);
         }
-        public new DbSet<User> Users { get; set; }
+        //public DbSet<User> Users { get; set; }
         public DbSet<Rabbit> Rabbits { get; set; }
         public DbSet<Rating> Ratings { get; set; }
         public DbSet<RabbitParents> RabbitParents { get; set; }

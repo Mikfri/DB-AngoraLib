@@ -54,28 +54,35 @@ namespace DB_AngoraLib.Services.UserService
         {
             var currentUser = await _dbRepository.GetObjectAsync(u => u.Id == userKeyDto.BreederRegNo);
 
-            return currentUser.Rabbits
-                .Where(rabbit =>
-                       (rightEarId == null || rabbit.RightEarId == rightEarId)
-                    && (leftEarId == null || rabbit.LeftEarId == leftEarId)
-                    && (nickName == null || rabbit.NickName == nickName)
-                    && (race == null || rabbit.Race == race)
-                    && (color == null || rabbit.Color == color)
-                    && (gender == null || rabbit.Gender == gender)
-                    && (isPublic == null || rabbit.IsPublic == isPublic)
-                    && (isJuvenile == null || rabbit.IsJuvenile == isJuvenile)
-                    && (dateOfBirth == null || rabbit.DateOfBirth == dateOfBirth)
-                    && (dateOfDeath == null || rabbit.DateOfDeath == dateOfDeath))
-                .Select(rabbit => new Rabbit_PreviewDTO
-                {
-                    RightEarId = rabbit.RightEarId,
-                    LeftEarId = rabbit.LeftEarId,
-                    NickName = rabbit.NickName,
-                    Race = rabbit.Race,
-                    Color = rabbit.Color,
-                    Gender = rabbit.Gender
-                })
-                .ToList();
+            // Check if currentUser and currentUser.Rabbits is not null before calling Where
+            if (currentUser != null && currentUser.Rabbits != null)
+            {
+                return currentUser.Rabbits
+                    .Where(rabbit =>
+                           (rightEarId == null || rabbit.RightEarId == rightEarId)
+                        && (leftEarId == null || rabbit.LeftEarId == leftEarId)
+                        && (nickName == null || rabbit.NickName == nickName)
+                        && (race == null || rabbit.Race == race)
+                        && (color == null || rabbit.Color == color)
+                        && (gender == null || rabbit.Gender == gender)
+                        && (isPublic == null || rabbit.IsPublic == isPublic)
+                        && (isJuvenile == null || rabbit.IsJuvenile == isJuvenile)
+                        && (dateOfBirth == null || rabbit.DateOfBirth == dateOfBirth)
+                        && (dateOfDeath == null || rabbit.DateOfDeath == dateOfDeath))
+                    .Select(rabbit => new Rabbit_PreviewDTO
+                    {
+                        RightEarId = rabbit.RightEarId,
+                        LeftEarId = rabbit.LeftEarId,
+                        NickName = rabbit.NickName,
+                        Race = rabbit.Race,
+                        Color = rabbit.Color,
+                        Gender = rabbit.Gender
+                    })
+                    .ToList();
+            }
+
+            // If currentUser or currentUser.Rabbits is null, return an empty list
+            return new List<Rabbit_PreviewDTO>();
         }
 
         public async Task UpdateUserAsync(User user)

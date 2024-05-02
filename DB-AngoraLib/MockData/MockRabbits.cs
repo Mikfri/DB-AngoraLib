@@ -17,7 +17,7 @@ namespace DB_AngoraLib.MockData
             new Rabbit(
             "5095",                 // RightEarId
             "002",                  // LeftEarId
-            "5095",                 // Owner            
+            "5095",                 // User.Id
             "Sov",                  // Nickname
             Race.Angora,
             Color.Blå,

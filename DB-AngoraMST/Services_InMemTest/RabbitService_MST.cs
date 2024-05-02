@@ -29,19 +29,11 @@ namespace DB_AngoraMST.Services_InMemTest
             // Setup in-memory database
             var options = new DbContextOptionsBuilder<DB_AngoraContext>()
                 .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-                .Options;            
+                .Options;
 
             _context = new DB_AngoraContext(options);
             _context.Database.EnsureCreated();
 
-            // ----- MOCK DATA SETUP -----
-            //var mockUsers = MockUsers.GetMockUsers();
-            //_context.Users.AddRange(mockUsers);
-            var mockRabbits = MockRabbits.GetMockRabbits();
-            _context.Rabbits.AddRange(mockRabbits);
-            _context.SaveChanges();
-
-            // ----- SERVICES SETUP -----
             var userRepository = new GRepository<User>(_context);
             _userService = new UserService(userRepository);
 
@@ -81,7 +73,7 @@ namespace DB_AngoraMST.Services_InMemTest
             Assert.IsNotNull(currentUser);
 
             // Create a UserKeyDTO from the User
-            var currentUserKeyDto = new User_KeyDTO { BreederRegNo = currentUser.Id };
+            var currentUserKeyDto = new User_KeyDTO { BreederRegNo = currentUser.BreederRegNo };
 
             // Act
             await _rabbitService.AddRabbit_ToCurrentUserAsync(currentUserKeyDto, newUniqRabbit);
@@ -100,6 +92,19 @@ namespace DB_AngoraMST.Services_InMemTest
                 () => _rabbitService.AddRabbit_ToCurrentUserAsync(currentUserKeyDto, existingRabbitDto));
         }
 
+        [TestMethod]
+        public async Task GetAllRabbits_ByBreederRegAsync_Test()
+        {
+            // Arrange
+            var breederRegNo = "1234"; // Replace with the actual breeder registration number
+            var expectedRabbitsCount = 5; // Replace with the actual number of rabbits for the breeder
+
+            // Act
+            var rabbits = await _rabbitService.GetAllRabbits_ByBreederRegAsync(breederRegNo);
+
+            // Assert
+            Assert.AreEqual(expectedRabbitsCount, rabbits.Count);
+        }
 
 
         [TestMethod]

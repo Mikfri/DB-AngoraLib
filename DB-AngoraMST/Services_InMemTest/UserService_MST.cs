@@ -6,6 +6,7 @@ using DB_AngoraLib.Repository;
 using DB_AngoraLib.Services.RabbitService;
 using DB_AngoraLib.Services.UserService;
 using DB_AngoraLib.Services.ValidationService;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -29,18 +30,9 @@ namespace DB_AngoraMST.Services_InMemTest
             var options = new DbContextOptionsBuilder<DB_AngoraContext>()
                 .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
                 .Options;
-            
+
             _context = new DB_AngoraContext(options);
             _context.Database.EnsureCreated();
-
-            // todo: få mine mockusers og mockrabbits til at virke i mine MST Services efter korregering af DB_AngoraContext
-
-            // Add mock data to in-memory database
-            //var mockUsers = MockUsers.GetMockUsers();
-            //_context.Users.AddRange(mockUsers);
-            var mockRabbits = MockRabbits.GetMockRabbits();
-            _context.Rabbits.AddRange(mockRabbits);
-            _context.SaveChanges();
 
             var userRepository = new GRepository<User>(_context);
             _userService = new UserService(userRepository);
@@ -58,11 +50,41 @@ namespace DB_AngoraMST.Services_InMemTest
         }
 
         [TestMethod]
+        public async Task GetAllUsersAsync_TEST()
+        {
+            // Arrange
+            var expectedUsersCount = 2; // Replace with the actual number of mock users
+
+            // Act
+            var users = await _userService.GetAllUsersAsync();
+
+            // Assert
+            Assert.AreEqual(expectedUsersCount, users.Count);
+        }
+
+        [TestMethod]
+        public async Task GetUserByBreederRegNoAsync_Test()
+        {
+            // Arrange
+            var expectedUser = _context.Users.First();
+            var userKeyDto = new User_KeyDTO { BreederRegNo = expectedUser.BreederRegNo };
+
+            // Act
+            var actualUser = await _userService.GetUserByBreederRegNoAsync(userKeyDto);
+
+            // Assert
+            Assert.IsNotNull(actualUser);
+            Assert.AreEqual("5095", actualUser.Id);
+            Assert.AreEqual("Ida", actualUser.FirstName);
+            Assert.AreEqual(expectedUser.LastName, actualUser.LastName);
+        }
+
+        [TestMethod]
         public async Task GetCurrentUsersRabbitCollection_WithoutProperties_TEST()
         {
             // Arrange
             var currentUser = _context.Users.First();
-            var userKeyDto = new User_KeyDTO { BreederRegNo = currentUser.Id };
+            var userKeyDto = new User_KeyDTO { BreederRegNo = currentUser.BreederRegNo };
 
             // Act
             var result = await _userService.GetCurrentUsersRabbitCollection_ByProperties(userKeyDto, null, null, null, null, null, null, null, null, null, null);
@@ -83,7 +105,7 @@ namespace DB_AngoraMST.Services_InMemTest
         {
             // Arrange
             var currentUser = _context.Users.First();
-            var userKeyDto = new User_KeyDTO { BreederRegNo = currentUser.Id };
+            var userKeyDto = new User_KeyDTO { BreederRegNo = currentUser.BreederRegNo };
             var race = Race.Angora;
             var color = Color.Blå;
             var gender = Gender.Hun;
