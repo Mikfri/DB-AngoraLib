@@ -85,6 +85,10 @@ namespace DB_AngoraMST.Services_InMemTest
             Assert.AreEqual(expectedUser.LastName, actualUser.LastName);
         }
 
+        /// <summary>
+        /// Denne test påvirkes af RabbitService_MST.AddRabbit_ToCurrentUserAsync_TEST og UpdateRabbitAsync_TEST
+        /// </summary>
+        /// <returns></returns>
         [TestMethod]
         public async Task GetCurrentUsersRabbitCollection_WithoutProperties_TEST()
         {
@@ -138,7 +142,7 @@ namespace DB_AngoraMST.Services_InMemTest
             var rabbit = result.First();
             Assert.AreEqual(rightEarId, rabbit.RightEarId);
             Assert.AreEqual(leftEarId, rabbit.LeftEarId);
-            //Assert.AreEqual(nickName, rabbit.NickName);
+            Assert.AreEqual(nickName, rabbit.NickName);
             Assert.AreEqual(race, rabbit.Race);
             Assert.AreEqual(color, rabbit.Color);
             Assert.AreEqual(gender, rabbit.Gender);

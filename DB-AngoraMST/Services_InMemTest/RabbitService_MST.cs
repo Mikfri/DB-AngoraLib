@@ -148,13 +148,13 @@ namespace DB_AngoraMST.Services_InMemTest
             // Arrange
             var currentUser = _context.Users.First();
             var existingRabbit = await _context.Rabbits.FirstAsync();
-            var initialCount = _context.Rabbits.Count();
+            var initialCount = _context.Rabbits.Count();    // Første optælling
 
             // Act
             await _rabbitService.DeleteRabbitAsync(currentUser, existingRabbit);
 
             // Assert
-            var finalCount = _context.Rabbits.Count();
+            var finalCount = _context.Rabbits.Count();      // Anden optælling
             Assert.AreEqual(initialCount - 1, finalCount);
         }
     }

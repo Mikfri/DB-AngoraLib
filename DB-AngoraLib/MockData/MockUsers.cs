@@ -35,7 +35,6 @@ namespace DB_AngoraLib.MockData
             "28733085",
             "Maja123",
             false),
-
         };
 
         public static List<User> GetMockUsers()

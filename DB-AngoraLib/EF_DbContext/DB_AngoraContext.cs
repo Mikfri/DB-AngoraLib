@@ -20,13 +20,16 @@ namespace DB_AngoraLib.EF_DbContext
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            //------------------- PK SETUP -------------------
-            // Configure primary key for IdentityUser
-            modelBuilder.Entity<IdentityUserClaim<string>>().HasKey(p => p.Id);
-            modelBuilder.Entity<IdentityUserLogin<string>>().HasKey(p => new { p.LoginProvider, p.ProviderKey });
-            modelBuilder.Entity<IdentityUserRole<string>>().HasKey(p => new { p.UserId, p.RoleId });
-            modelBuilder.Entity<IdentityUserToken<string>>().HasKey(p => new { p.UserId, p.LoginProvider, p.Name });
-            modelBuilder.Entity<IdentityRoleClaim<string>>().HasKey(p => p.Id);
+            #region IdentityUser PK setup - syntaks
+            ////------------------- PK SETUP -------------------
+            //// Irellevant, da IdentityUser allerede selv sætter disse op
+            //// Configure primary key for IdentityUser
+            //modelBuilder.Entity<IdentityUserClaim<string>>().HasKey(p => p.Id);
+            //modelBuilder.Entity<IdentityUserLogin<string>>().HasKey(p => new { p.LoginProvider, p.ProviderKey });
+            //modelBuilder.Entity<IdentityUserRole<string>>().HasKey(p => new { p.UserId, p.RoleId });
+            //modelBuilder.Entity<IdentityUserToken<string>>().HasKey(p => new { p.UserId, p.LoginProvider, p.Name });
+            //modelBuilder.Entity<IdentityRoleClaim<string>>().HasKey(p => p.Id);
+            #endregion
 
             // Configure primary key for User
             modelBuilder.Entity<User>()
@@ -68,11 +71,11 @@ namespace DB_AngoraLib.EF_DbContext
             //var users = mockUsers.GetMockUsers();               // users er en liste af mockUsers
             //modelBuilder.Entity<User>().HasData(users);         // Tilføj users til User tabel
 
-            //var mockRabbits = MockRabbits.GetMockRabbits();
+            //var mockRabbits = MockRabbits.GetMockRabbits();     
             //modelBuilder.Entity<Rabbit>().HasData(mockRabbits);
 
             //var mockUsers = MockUsers.GetMockUsers();           
-            //modelBuilder.Entity<User>().HasData(mockUsers);       //todo: hvis vi fjerne den automatiske gen af MockUser og Rabbits og istedet objekterne MST via Mock virker ICollections
+            //modelBuilder.Entity<User>().HasData(mockUsers);     //todo: hvis vi fjerne den automatiske gen af MockUser og Rabbits og istedet objekterne MST via Mock virker ICollections
 
             base.OnModelCreating(modelBuilder);
         }
