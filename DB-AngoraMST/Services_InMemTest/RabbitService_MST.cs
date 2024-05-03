@@ -98,15 +98,25 @@ namespace DB_AngoraMST.Services_InMemTest
                 () => _rabbitService.AddRabbit_ToCurrentUserAsync(currentUserKeyDto, existingRabbitDto));
         }
 
+        /// <summary>
+        /// Påvirkes af RabbitService_MST.AddRabbit_ToCurrentUserAsync_TEST
+        /// </summary>
+        /// <returns></returns>
         [TestMethod]
         public async Task GetAllRabbits_ByBreederRegAsync_Test()
         {
             // Arrange
-            var breederRegNo = "5095"; // Replace with the actual breeder registration number
-            var expectedRabbitsCount = 5; // Replace with the actual number of rabbits for the breeder
+            var breederRegNo = "5053";      // Replace with the actual breeder registration number
+            var expectedRabbitsCount = 14;  // Replace with the actual number of rabbits for the breeder
 
             // Act
             var rabbits = await _rabbitService.GetAllRabbits_ByBreederRegAsync(breederRegNo);
+
+            // Debug: Print the names of the returned rabbits
+            foreach (var rabbit in rabbits)
+            {
+                Console.WriteLine(rabbit.NickName);
+            }
 
             // Assert
             Assert.AreEqual(expectedRabbitsCount, rabbits.Count);
