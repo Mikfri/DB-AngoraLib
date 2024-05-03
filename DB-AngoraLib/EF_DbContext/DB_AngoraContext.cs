@@ -73,14 +73,16 @@ namespace DB_AngoraLib.EF_DbContext
 
 
             // Tilføj mock data
-            var passwordHasher = new PasswordHasher<User>();
-            var mockUsers = new MockUsers(passwordHasher);
+            //var passwordHasher = new PasswordHasher<User>();    // Tilføj passwordHasher
+            //var mockUsers = new MockUsers(passwordHasher);      // Tilføj mockUsers med passwordHasher
+            //var users = mockUsers.GetMockUsers();               // users er en liste af mockUsers
+            //modelBuilder.Entity<User>().HasData(users);         // Tilføj users til User tabel
 
-            var users = mockUsers.GetMockUsers();
-            modelBuilder.Entity<User>().HasData(users);
+            //var mockRabbits = MockRabbits.GetMockRabbits();
+            //modelBuilder.Entity<Rabbit>().HasData(mockRabbits);
 
-            var mockRabbits = MockRabbits.GetMockRabbits();
-            modelBuilder.Entity<Rabbit>().HasData(mockRabbits);
+            //var mockUsers = MockUsers.GetMockUsers();           
+            //modelBuilder.Entity<User>().HasData(mockUsers);       //todo: hvis vi fjerne den automatiske gen af MockUser og Rabbits og istedet objekterne MST via Mock virker ICollections
 
             base.OnModelCreating(modelBuilder);
         }
