@@ -20,6 +20,9 @@ namespace DB_AngoraLib.Models
         public int ZipCode { get; set; }
         public string City { get; set; }
 
+        [NotMapped]
+        public string Password { get; set; }
+
         public bool? IsAdmin { get; set; }
 
         public ICollection<Rabbit> Rabbits { get; set; }
@@ -37,6 +40,7 @@ namespace DB_AngoraLib.Models
             UserName = email; // IdentityUser uses UserName for login
             NormalizedUserName = email.ToUpperInvariant();
             PhoneNumber = phone;
+            Password = password;
             IsAdmin = isAdmin;
         }
         public User() { }
