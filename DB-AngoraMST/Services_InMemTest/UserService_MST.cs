@@ -73,7 +73,7 @@ namespace DB_AngoraMST.Services_InMemTest
         {
             // Arrange
             var expectedUser = _context.Users.First();
-            var userKeyDto = new User_KeyDTO { BreederRegNo = expectedUser.BreederRegNo };
+            var userKeyDto = new User_KeyDTO { BreederRegNo = expectedUser.Id };
 
             // Act
             var actualUser = await _userService.GetUserByBreederRegNoAsync(userKeyDto);
@@ -90,7 +90,7 @@ namespace DB_AngoraMST.Services_InMemTest
         {
             // Arrange
             var currentUser = _context.Users.First();
-            var userKeyDto = new User_KeyDTO { BreederRegNo = currentUser.BreederRegNo };
+            var userKeyDto = new User_KeyDTO { BreederRegNo = currentUser.Id };
 
             // Act
             var result = await _userService.GetCurrentUsersRabbitCollection_ByProperties(userKeyDto, null, null, null, null, null, null, null, null, null, null);
@@ -107,7 +107,7 @@ namespace DB_AngoraMST.Services_InMemTest
         }
 
         /// <summary>
-        /// Denne test påvirkes af RabbitService_MST's UpdateRabbitAsync_TEST (NickName og Color)
+        /// Denne test påvirkes af RabbitService_MST's UpdateRabbitAsync_TEST
         /// </summary>
         /// <returns></returns>
         [TestMethod]
@@ -115,16 +115,16 @@ namespace DB_AngoraMST.Services_InMemTest
         {
             // Arrange
             var currentUser = _context.Users.First();
-            var userKeyDto = new User_KeyDTO { BreederRegNo = currentUser.BreederRegNo };
+            var userKeyDto = new User_KeyDTO { BreederRegNo = currentUser.Id };
 
             // Act
             var race = Race.Angora;
-            var color = Color.Blå;              // Hvid
-            var gender = Gender.Hun;
+            var color = Color.Chinchilla;
+            var gender = Gender.Han;
             var isPublic = IsPublic.No;
-            var rightEarId = "5095";
-            var leftEarId = "002";
-            var nickName = "Sov";               //"New Nickname"
+            var rightEarId = "4640";
+            var leftEarId = "105";
+            var nickName = "Ingolf";
             var isJuvenile = (bool?)null;
             var dateOfBirth = (DateOnly?)null;
             var dateOfDeath = (DateOnly?)null;

@@ -52,7 +52,7 @@ namespace DB_AngoraLib.Services.UserService
 
         public async Task<List<Rabbit_PreviewDTO>> GetCurrentUsersRabbitCollection_ByProperties(User_KeyDTO userKeyDto, string rightEarId = null, string leftEarId = null, string nickName = null, Race? race = null, Color? color = null, Gender? gender = null, IsPublic? isPublic = null, bool? isJuvenile = null, DateOnly? dateOfBirth = null, DateOnly? dateOfDeath = null)
         {
-            var currentUser = await _dbRepository.GetObjectAsync(u => u.BreederRegNo == userKeyDto.BreederRegNo);
+            var currentUser = await _dbRepository.GetObjectAsync(u => u.Id == userKeyDto.BreederRegNo);
 
             // Check if currentUser and currentUser.Rabbits is not null before calling Where
             if (currentUser != null && currentUser.Rabbits != null)
@@ -103,7 +103,7 @@ namespace DB_AngoraLib.Services.UserService
 
         public async Task<User> GetUserByBreederRegNoAsync(User_KeyDTO userKeyDto)
         {
-            return await _dbRepository.GetObjectAsync(u => u.BreederRegNo == userKeyDto.BreederRegNo);
+            return await _dbRepository.GetObjectAsync(u => u.Id == userKeyDto.BreederRegNo);
         }
 
         public async Task AddUserAsync(User newUser)

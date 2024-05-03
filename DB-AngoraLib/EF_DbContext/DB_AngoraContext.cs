@@ -30,7 +30,7 @@ namespace DB_AngoraLib.EF_DbContext
 
             // Configure primary key for User
             modelBuilder.Entity<User>()
-                .HasKey(u => u.BreederRegNo);
+                .HasKey(u => u.Id);
                         
             // Configure composite key for Rabbit
             modelBuilder.Entity<Rabbit>()
