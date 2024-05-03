@@ -34,6 +34,12 @@ namespace DB_AngoraMST.Services_InMemTest
             _context = new DB_AngoraContext(options);
             _context.Database.EnsureCreated();
 
+            //-----: Add mock data to in-memory database
+            var mockUsers = MockUsers.GetMockUsers();
+            _context.Users.AddRange(mockUsers);
+            var mockRabbits = MockRabbits.GetMockRabbits();
+            _context.Rabbits.AddRange(mockRabbits);
+            _context.SaveChanges();
             var userRepository = new GRepository<User>(_context);
             _userService = new UserService(userRepository);
 
@@ -96,7 +102,7 @@ namespace DB_AngoraMST.Services_InMemTest
         public async Task GetAllRabbits_ByBreederRegAsync_Test()
         {
             // Arrange
-            var breederRegNo = "1234"; // Replace with the actual breeder registration number
+            var breederRegNo = "5095"; // Replace with the actual breeder registration number
             var expectedRabbitsCount = 5; // Replace with the actual number of rabbits for the breeder
 
             // Act
