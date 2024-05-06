@@ -19,7 +19,7 @@ namespace DB_AngoraLib.MockData
             "Fynsvej 14",
             4060,
             "Kirke Såby",
-            "IdaFribor87@gmail.com",
+            "IdaFriborg87@gmail.com",
             "27586455",
             "Ida123!",
             true),
