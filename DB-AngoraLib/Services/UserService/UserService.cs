@@ -50,6 +50,22 @@ namespace DB_AngoraLib.Services.UserService
         //        .ToList();
         //}
 
+
+        /// <summary>
+        /// Login er tiltænkt for at kunne verificere brugere, der logger ind under en Cookie session,
+        /// og benyttes af andre metoder, der kræver brugerens verificering.
+        //public async Task<User> Login(UserLoginDTO userLoginDto)
+        //{
+        //    var user = await _dbRepository.GetObjectAsync(u => u.Email == userLoginDto.Email);
+
+        //    if (user == null || !BCrypt.Net.BCrypt.Verify(userLoginDto.Password, user.PasswordHash))
+        //    {
+        //        return null;
+        //    }
+
+        //    return user;
+        //}
+
         public async Task<List<Rabbit_PreviewDTO>> GetCurrentUsersRabbitCollection_ByProperties(User_KeyDTO userKeyDto, string rightEarId = null, string leftEarId = null, string nickName = null, Race? race = null, Color? color = null, Gender? gender = null, IsPublic? isPublic = null, bool? isJuvenile = null, DateOnly? dateOfBirth = null, DateOnly? dateOfDeath = null)
         {
             var currentUser = await _dbRepository.GetObjectAsync(u => u.Id == userKeyDto.BreederRegNo);

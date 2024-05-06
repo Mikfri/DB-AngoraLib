@@ -133,10 +133,17 @@ namespace DB_AngoraLib.Services.RabbitService
             // Find the corresponding User object
             var currentUser = await _userService.GetUserByBreederRegNoAsync(currentUserKeyDto);
 
+            // Check if the currentUser is null
+            if (currentUser == null)
+            {
+                throw new InvalidOperationException("No user found with the given BreederRegNo.");
+            }
+
             newRabbit.OwnerId = currentUser.Id;
             await _dbRepository.AddObjectAsync(newRabbit);
             Console.WriteLine($"Rabbit added successfully with RightEarId: {newRabbit.RightEarId}, LeftEarId: {newRabbit.LeftEarId}, OwnerId: {newRabbit.OwnerId}");
         }
+
 
 
         //---------------------: UPDATE

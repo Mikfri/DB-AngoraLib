@@ -41,6 +41,7 @@ namespace DB_AngoraLib.Models
             NormalizedUserName = email.ToUpperInvariant();
             PhoneNumber = phone;
             Password = password;
+            //PasswordHash = BCrypt.Net.BCrypt.HashPassword(password);
             IsAdmin = isAdmin;
         }
         public User() { }

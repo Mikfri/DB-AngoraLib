@@ -12,7 +12,7 @@ namespace DB_AngoraLib.DTOs
         public string RightEarId { get; init; }
         public string LeftEarId { get; init; }
 
-        public string? OwnerId { get; init; }
+        //public string? OwnerId { get; init; }
 
         public string? NickName { get; init; }
         public Race Race { get; init; }

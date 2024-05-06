@@ -6,7 +6,6 @@ using DB_AngoraLib.Repository;
 using DB_AngoraLib.Services.RabbitService;
 using DB_AngoraLib.Services.UserService;
 using DB_AngoraLib.Services.ValidationService;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -54,6 +53,25 @@ namespace DB_AngoraMST.Services_InMemTest
             _context.Database.EnsureDeleted();
             _context.Dispose();
         }
+
+        //[TestMethod]
+        //public async Task Login_Test()
+        //{
+        //    // Arrange
+        //    var userLoginDto = new UserLoginDTO
+        //    {
+        //        Email = "IdaFriborg87@gmail.com", // Replace with the actual email of a mock user
+        //        Password = "Ida123!" // Replace with the actual password of a mock user
+        //    };
+
+        //    // Act
+        //    var user = await _userService.Login(userLoginDto);
+
+        //    // Assert
+        //    Assert.IsNotNull(user);
+        //    Assert.AreEqual(userLoginDto.Email, user.Email);
+        //}
+
 
         [TestMethod]
         public async Task GetAllUsersAsync_TEST()
