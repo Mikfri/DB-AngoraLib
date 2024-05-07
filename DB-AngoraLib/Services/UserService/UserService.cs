@@ -1,6 +1,7 @@
 ﻿using DB_AngoraLib.DTOs;
 using DB_AngoraLib.Models;
 using DB_AngoraLib.Repository;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,34 +23,7 @@ namespace DB_AngoraLib.Services.UserService
         }
 
         //------------------------- USER METHODS -------------------------
-
-        /// <summary>
-        /// Denne metode behøver IKKE at være asynkron.
-        /// Benytter <User> classen ICollection<Rabbit>.
-        /// Den opererer på data, der allerede er indlæst i hukommelsen 
-        /// (dvs., currentUser.Rabbits), så der er ingen asynkrone operationer,
-        /// der skal vente på. Derfor kan metoden returnere resultatet
-        /// direkte som en List<Rabbit> i stedet for en Task<List<Rabbit>>.
-        /// </summary>
-        //public async Task<List<Rabbit>> GetCurrentUsersRabbitCollection_ByProperties(User_KeyDTO userKeyDto, string rightEarId = null, string leftEarId = null, string nickName = null, Race? race = null, Color? color = null, Gender? gender = null, IsPublic? isPublic = null, bool? isJuvenile = null, DateOnly? dateOfBirth = null, DateOnly? dateOfDeath = null)
-        //{
-        //    var currentUser = await _dbRepository.GetObjectAsync(u => u.BreederRegNo == userKeyDto.BreederRegNo);
-
-        //    return currentUser.Rabbits
-        //        .Where(rabbit =>
-        //               (rightEarId == null || rabbit.RightEarId == rightEarId)
-        //            && (leftEarId == null || rabbit.LeftEarId == leftEarId)
-        //            && (nickName == null || rabbit.NickName == nickName)
-        //            && (race == null || rabbit.Race == race)
-        //            && (color == null || rabbit.Color == color)
-        //            && (gender == null || rabbit.Gender == gender)
-        //            && (isPublic == null || rabbit.IsPublic == isPublic)
-        //            && (isJuvenile == null || rabbit.IsJuvenile == isJuvenile)
-        //            && (dateOfBirth == null || rabbit.DateOfBirth == dateOfBirth)
-        //            && (dateOfDeath == null || rabbit.DateOfDeath == dateOfDeath))
-        //        .ToList();
-        //}
-
+               
 
         /// <summary>
         /// Login er tiltænkt for at kunne verificere brugere, der logger ind under en Cookie session,
@@ -66,9 +40,25 @@ namespace DB_AngoraLib.Services.UserService
         //    return user;
         //}
 
+        /// <summary>
+        /// Benytter <User> classen ICollection<Rabbit>.
+        public async Task<List<Rabbit>> GetCurrentUsersRabbitCollection(string userId)
+        {
+            var currentUserCollection = await _dbRepository.GetDbSet()
+                .Include(u => u.Rabbits)
+                .FirstOrDefaultAsync(u => u.Id == userId);
+
+            return currentUserCollection?.Rabbits.ToList();
+        }
+
+        /// <summary>
+        /// Metoden her filtrere på de forskellige properties, der er angivet i parametrene. De behøves ikke være angivet.
+        /// NB: Metoden benytter ikke EF Core's Include()
+        /// </summary>       
         public async Task<List<Rabbit_PreviewDTO>> GetCurrentUsersRabbitCollection_ByProperties(User_KeyDTO userKeyDto, string rightEarId = null, string leftEarId = null, string nickName = null, Race? race = null, Color? color = null, Gender? gender = null, IsPublic? isPublic = null, bool? isJuvenile = null, DateOnly? dateOfBirth = null, DateOnly? dateOfDeath = null)
         {
             var currentUser = await _dbRepository.GetObjectAsync(u => u.Id == userKeyDto.BreederRegNo);
+            var currentUserId = currentUser.Id;
 
             // Check if currentUser and currentUser.Rabbits is not null before calling Where
             if (currentUser != null && currentUser.Rabbits != null)

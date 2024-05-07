@@ -18,6 +18,11 @@ namespace DB_AngoraLib.Repository
             _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
         }
 
+        public DbSet<T> GetDbSet()
+        {
+            return _dbContext.Set<T>();
+        }
+
         public virtual async Task<IEnumerable<T>> GetAllObjectsAsync()
         {
             return await _dbContext.Set<T>().AsNoTracking().ToListAsync();

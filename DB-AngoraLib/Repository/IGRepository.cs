@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -9,6 +10,7 @@ namespace DB_AngoraLib.Repository
 {
     public interface IGRepository<T> where T : class
     {
+        DbSet<T> GetDbSet();
         Task<IEnumerable<T>> GetAllObjectsAsync();
         Task SaveObjects(List<T> objs);
         Task<T> GetObjectAsync(Expression<Func<T, bool>> filter);
