@@ -19,8 +19,8 @@ namespace DB_AngoraMST.Services_InMemTest
     [TestClass]
     public class RabbitService_MST
     {
-        private RabbitService _rabbitService;
-        private UserService _userService;
+        private IRabbitService _rabbitService;
+        private IUserService _userService;
         private DB_AngoraContext _context;
 
         [TestInitialize]

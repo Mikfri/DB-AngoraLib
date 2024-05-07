@@ -79,7 +79,6 @@ namespace DB_AngoraLib.EF_DbContext
 
             base.OnModelCreating(modelBuilder);
         }
-        public DbSet<User> Users { get; set; }
         public DbSet<Rabbit> Rabbits { get; set; }
         public DbSet<Rating> Ratings { get; set; }
         public DbSet<RabbitParents> RabbitParents { get; set; }

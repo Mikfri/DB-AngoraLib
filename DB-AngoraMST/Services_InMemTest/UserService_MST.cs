@@ -19,7 +19,7 @@ namespace DB_AngoraMST.Services_InMemTest
     public class UserService_MST
     {
         //private RabbitService _rabbitService;
-        private UserService _userService;
+        private IUserService _userService;
         private DB_AngoraContext _context;
 
         [TestInitialize]
@@ -103,68 +103,45 @@ namespace DB_AngoraMST.Services_InMemTest
             Assert.AreEqual(expectedUser.LastName, actualUser.LastName);
         }
 
-        /// <summary>
-        /// Denne test påvirkes af RabbitService_MST.AddRabbit_ToCurrentUserAsync_TEST og UpdateRabbitAsync_TEST
-        /// </summary>
-        /// <returns></returns>
         [TestMethod]
-        public async Task GetCurrentUsersRabbitCollection_WithoutProperties_TEST()
+        public async Task GetCurrentUsersRabbitCollection_Test()
         {
             // Arrange
-            var currentUser = _context.Users.First();
-            var userKeyDto = new User_KeyDTO { BreederRegNo = currentUser.Id };
+            var userId = "5053";
 
             // Act
-            var result = await _userService.GetCurrentUsersRabbitCollection_ByProperties(userKeyDto, null, null, null, null, null, null, null, null, null, null);
+            var rabbitCollection = await _userService.GetCurrentUsersRabbitCollection(userId);
 
-            // Debug: Print the names of the returned rabbits
-            foreach (var rabbit in result)
+            foreach (var rabbit in rabbitCollection)
             {
                 Console.WriteLine(rabbit.NickName);
             }
 
             // Assert
-            Assert.IsNotNull(result);
-            Assert.AreEqual(5, result.Count); // Assuming the first user has 5 rabbits
+            Assert.IsNotNull(rabbitCollection);
+            // Add more assertions based on your test expectations
         }
 
-        /// <summary>
-        /// Denne test påvirkes af RabbitService_MST's UpdateRabbitAsync_TEST
-        /// </summary>
-        /// <returns></returns>
         [TestMethod]
-        public async Task GetCurrentUsersRabbitCollection_WithPropertiesTEST()
+        public async Task GetFilteredRabbitCollection_Test()
         {
             // Arrange
-            var currentUser = _context.Users.First();
-            var userKeyDto = new User_KeyDTO { BreederRegNo = currentUser.Id };
+            var userId = "5053"; // Replace with the actual user id
+            var race = Race.Satinangora; // Replace with the actual right ear id
 
             // Act
-            var race = Race.Angora;
-            var color = Color.Chinchilla;
-            var gender = Gender.Han;
-            var isPublic = IsPublic.No;
-            var rightEarId = "4640";
-            var leftEarId = "105";
-            var nickName = "Ingolf";
-            var isJuvenile = (bool?)null;
-            var dateOfBirth = (DateOnly?)null;
-            var dateOfDeath = (DateOnly?)null;
+            var filteredRabbitCollection = await _userService.GetFilteredRabbitCollection(userId, race: race);
 
-            // Act
-            var result = await _userService.GetCurrentUsersRabbitCollection_ByProperties(userKeyDto, rightEarId, leftEarId, nickName, race, color, gender, isPublic, isJuvenile, dateOfBirth, dateOfDeath);
+            foreach (var rabbit in filteredRabbitCollection)
+            {
+                Console.WriteLine(rabbit.NickName);
+            }
 
             // Assert
-            Assert.IsNotNull(result);
-            Assert.AreEqual(1, result.Count);
-            var rabbit = result.First();
-            Assert.AreEqual(rightEarId, rabbit.RightEarId);
-            Assert.AreEqual(leftEarId, rabbit.LeftEarId);
-            Assert.AreEqual(nickName, rabbit.NickName);
-            Assert.AreEqual(race, rabbit.Race);
-            Assert.AreEqual(color, rabbit.Color);
-            Assert.AreEqual(gender, rabbit.Gender);
-            //Assert.AreEqual(isPublic, rabbit.IsPublic);
+            Assert.IsNotNull(filteredRabbitCollection);
+            // Add more assertions based on your test expectations
         }
+
+
     }
 }

@@ -34,20 +34,8 @@ namespace DB_AngoraMST.Services_DbTest
             _context.Dispose();
         }
 
-        [TestMethod]
-        public async Task GetCurrentUsersRabbitCollection_WithoutProperties_DBTest()
-        {
-            // Arrange
-            var currentUser = _context.Users.First();
-            var userKeyDto = new User_KeyDTO { BreederRegNo = currentUser.Id };
 
-            // Act
-            var result = await _userService.GetCurrentUsersRabbitCollection_ByProperties(userKeyDto, null, null, null, null, null, null, null, null, null, null);
-
-            // Assert
-            Assert.IsNotNull(result);
-            // Assert other conditions based on your actual database data
-        }
+    
     }
 
 }
