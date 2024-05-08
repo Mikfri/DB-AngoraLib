@@ -245,6 +245,42 @@ namespace DB_AngoraLib.MockData
             null,
             Gender.Hun,
             IsPublic.No),
+
+            new Rabbit(
+            "5053",
+            "0120",
+            "5053",
+            "Ulla",
+            Race.Angora,
+            Color.Gulbrun_Isabella,
+            new DateOnly(2020, 03, 25),
+            new DateOnly(2021, 05, 31),
+            Gender.Hun,
+            IsPublic.No),
+
+            new Rabbit(
+            "3658",
+            "0819",
+            "5053",
+            "Karina",
+            Race.Angora,
+            Color.Hvid,
+            new DateOnly(2019, 05, 31),
+            new DateOnly(2023, 01, 31),
+            Gender.Hun,
+            IsPublic.No),
+
+            new Rabbit(
+            "5053",
+            "0523",
+            "5053",
+            "Charizard",
+            Race.Satinangora,
+            Color.Vildtrød_Harefarvet,
+            new DateOnly(2023, 08, 17),
+            null,
+            Gender.Han,
+            IsPublic.No),
         };
 
         public static List<Rabbit> GetMockRabbits()

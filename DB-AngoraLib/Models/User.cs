@@ -11,8 +11,6 @@ namespace DB_AngoraLib.Models
 {
     public class User : IdentityUser
     {
-        //public string BreederRegNo { get => Id; set => Id = value; }
-
         public string FirstName { get; set; }
         public string LastName { get; set; }
 

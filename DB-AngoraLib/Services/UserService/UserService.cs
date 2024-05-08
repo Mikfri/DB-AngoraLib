@@ -60,9 +60,9 @@ namespace DB_AngoraLib.Services.UserService
                     RightEarId = rabbit.RightEarId,
                     LeftEarId = rabbit.LeftEarId,
                     NickName = rabbit.NickName,
-                    Race = rabbit.Race, // Changed here
-                    Color = rabbit.Color, // Changed here
-                    Gender = rabbit.Gender // Changed here
+                    Race = rabbit.Race,
+                    Color = rabbit.Color,
+                    Gender = rabbit.Gender
                 })
                 .ToList();
         }

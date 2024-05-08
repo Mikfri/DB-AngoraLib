@@ -107,7 +107,7 @@ namespace DB_AngoraMST.Services_InMemTest
         {
             // Arrange
             var breederRegNo = "5053";      // Replace with the actual breeder registration number
-            var expectedRabbitsCount = 14;  // Replace with the actual number of rabbits for the breeder
+            var expectedRabbitsCount = 17;  // Replace with the actual number of rabbits for the breeder
 
             // Act
             var rabbits = await _rabbitService.GetAllRabbits_ByBreederRegAsync(breederRegNo);
