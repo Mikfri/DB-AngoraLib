@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace DB_AngoraLib.DTOs
 {
-    public record User_BasicsDTO
+    /// <summary>
+    /// Basis DTO for User, med alle dens properties + Email og Phone fra IdentityUser
+    /// </summary>
+    public record UserDTO
     {
         public string BreederRegNo { get; init; }
         public string FirstName { get; init; }

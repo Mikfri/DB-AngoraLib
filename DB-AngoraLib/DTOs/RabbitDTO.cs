@@ -20,10 +20,10 @@ namespace DB_AngoraLib.DTOs
         public string? NickName { get; init; }
         public Race Race { get; init; }
         public Color Color { get; init; }
-        public bool? ApprovedRaceColorCombination { get; init; }
+        //public bool? ApprovedRaceColorCombination { get; init; }
         public DateOnly DateOfBirth { get; init; }
         public DateOnly? DateOfDeath { get; init; }
-        public bool IsJuvenile { get; init; }
+        //public bool IsJuvenile { get; init; }
         public Gender Gender { get; init; }
         public IsPublic? IsPublic { get; init; }
     }
