@@ -10,12 +10,12 @@ namespace DB_AngoraLib.Repository
 {
     public interface IGRepository<T> where T : class
     {
-        DbSet<T> GetDbSet();
+        Task AddObjectAsync(T obj);
         Task<IEnumerable<T>> GetAllObjectsAsync();
         Task SaveObjects(List<T> objs);
+        DbSet<T> GetDbSet();
         Task<T> GetObjectAsync(Expression<Func<T, bool>> filter); //todo: overvej at istedet at benytte GetObjectByIdAsync
-        Task AddObjectAsync(T obj);
-        Task<T> GetObjectByStringIdAsync(string id);
+        Task<T> GetObjectByKEYAsync(string id);
         Task UpdateObjectAsync(T obj);
         Task DeleteObjectAsync(T obj);
     }

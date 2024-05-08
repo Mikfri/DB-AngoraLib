@@ -11,10 +11,10 @@ namespace DB_AngoraLib.Services.RoleService
 {
     public enum Roles
     {
-        Admin,
-        Moderator,
-        Breeder,
-        Guest
+        Admin = 0,
+        Moderator = 1,
+        Breeder = 2,
+        Guest = 3
     }
 
     public class RoleService : IRoleService
@@ -27,14 +27,14 @@ namespace DB_AngoraLib.Services.RoleService
             _roleManager = roleManager;
             _userManager = userManager;
         }
-                
+
 
         public async Task ModMethod_AssignRole(User user, Roles role)
         {
             if (role != Roles.Admin && role != Roles.Moderator)
             {
                 string roleName = role.ToString();
-                if (await _roleManager.RoleExistsAsync(roleName))
+                if (Enum.IsDefined(typeof(Roles), roleName))
                 {
                     await _userManager.AddToRoleAsync(user, roleName);
                 }
@@ -73,15 +73,15 @@ namespace DB_AngoraLib.Services.RoleService
         /// og derefter gemme ændringerne.
         /// </summary>
         /// <returns></returns>
-        public async Task AdminMethod_UpdateRoleAsync(string oldRoleName, string newRoleName)
-        {
-            var role = await _roleManager.FindByNameAsync(oldRoleName);
-            if (role != null)
-            {
-                role.Name = newRoleName;
-                await _roleManager.UpdateAsync(role);
-            }
-        }
+        //public async Task AdminMethod_UpdateRoleAsync(string oldRoleName, string newRoleName)
+        //{
+        //    var role = await _roleManager.FindByNameAsync(oldRoleName);
+        //    if (role != null)
+        //    {
+        //        role.Name = newRoleName;
+        //        await _roleManager.UpdateAsync(role);
+        //    }
+        //}
 
 
         /// <summary>
@@ -90,13 +90,13 @@ namespace DB_AngoraLib.Services.RoleService
         /// </summary>
         /// <param name="roleName">Enum baseret</param>
         /// <returns></returns>
-        public async Task DeleteRoleAsync(string roleName)
-        {
-            var role = await _roleManager.FindByNameAsync(roleName);
-            if (role != null)
-            {
-                await _roleManager.DeleteAsync(role);
-            }
-        }
+        //public async Task DeleteRoleAsync(string roleName)
+        //{
+        //    var role = await _roleManager.FindByNameAsync(roleName);
+        //    if (role != null)
+        //    {
+        //        await _roleManager.DeleteAsync(role);
+        //    }
+        //}
     }
 }

@@ -84,22 +84,26 @@ namespace DB_AngoraLib.Services.UserService
             await _dbRepository.DeleteObjectAsync(user);
         }
 
-        //-------: ADMIN METHODS ONLY
+        //-------: ADMIN/MOD METHODS ONLY
         public async Task<List<User>> GetAllUsersAsync()
         {
             return (await _dbRepository.GetAllObjectsAsync()).ToList();
         }
 
-        public async Task<User> GetUserBy
+        public async Task<User> GetUserByUserNameOrEmailAsync(string userNameOrEmail)
+        {
+            return await _dbRepository.GetDbSet()
+                .FirstOrDefaultAsync(u => u.UserName == userNameOrEmail || u.Email == userNameOrEmail);
+        }
 
         public async Task<User> GetUserByIdAsync(string userId)
         {
-            return await _dbRepository.GetObjectByStringIdAsync(userId);
+            return await _dbRepository.GetObjectByKEYAsync(userId);
         }
 
-        public async Task<User> GetUserByBreederRegNoAsync(User_BreederKeyDTO userKeyDto)
+        public async Task<User> GetUserByBreederRegNoAsync(string breederRegNo)
         {
-            return await _dbRepository.GetObjectAsync(u => u.BreederRegNo == userKeyDto.BreederRegNo);
+            return await _dbRepository.GetObjectAsync(u => u.BreederRegNo == breederRegNo);
         }
 
     }

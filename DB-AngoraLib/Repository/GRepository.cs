@@ -18,6 +18,21 @@ namespace DB_AngoraLib.Repository
             _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
         }
 
+
+        public virtual async Task AddObjectAsync(T obj)
+        {
+            try
+            {
+                _dbContext.Set<T>().Add(obj);
+                await _dbContext.SaveChangesAsync();
+            }
+            catch (DbUpdateException ex)
+            {
+                // Log the error or rethrow, or handle as necessary
+                throw new Exception("An error occurred while adding the object to the database.", ex);
+            }
+        }
+
         public DbSet<T> GetDbSet()
         {
             return _dbContext.Set<T>();
@@ -43,21 +58,12 @@ namespace DB_AngoraLib.Repository
             return await _dbContext.Set<T>().Where(filter).FirstOrDefaultAsync();
         }
 
-        public virtual async Task AddObjectAsync(T obj)
-        {
-            try
-            {
-                _dbContext.Set<T>().Add(obj);
-                await _dbContext.SaveChangesAsync();
-            }
-            catch (DbUpdateException ex)
-            {
-                // Log the error or rethrow, or handle as necessary
-                throw new Exception("An error occurred while adding the object to the database.", ex);
-            }
-        }
-        
-        public async Task<T> GetObjectByStringIdAsync(string id)
+        /// <summary>
+        /// Finder objektet ud fra dets KEY (string id)
+        /// </summary>
+        /// <param name="id">En string</param>
+        /// <returns></returns>
+        public async Task<T> GetObjectByKEYAsync(string id)
         {
             return await _dbContext.Set<T>().FindAsync(id);
         }

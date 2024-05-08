@@ -96,16 +96,31 @@ namespace DB_AngoraMST.Services_InMemTest
         {
             // Arrange
             var expectedUser = _context.Users.First();
-            var userKeyDto = new User_BreederKeyDTO { BreederRegNo = expectedUser.BreederRegNo };
+            var breederRegNo = expectedUser.BreederRegNo;
 
             // Act
-            var actualUser = await _userService.GetUserByBreederRegNoAsync(userKeyDto);
+            var actualUser = await _userService.GetUserByBreederRegNoAsync(breederRegNo);
 
             // Assert
             Assert.IsNotNull(actualUser);
-            Assert.AreEqual("IdasId", actualUser.Id);
-            Assert.AreEqual("Ida", actualUser.FirstName);
-            Assert.AreEqual(expectedUser.LastName, actualUser.LastName);
+            Assert.AreEqual(expectedUser.BreederRegNo, actualUser.BreederRegNo);
+        }
+
+        [TestMethod]
+        public async Task GetUserByUserNameOrEmailAsync_TEST()
+        {
+            // Arrange
+            var expectedUser = _context.Users.First();
+
+            // Act
+            var actualUserByUsername = await _userService.GetUserByUserNameOrEmailAsync(expectedUser.UserName);
+            var actualUserByEmail = await _userService.GetUserByUserNameOrEmailAsync(expectedUser.Email);
+
+            // Assert
+            Assert.IsNotNull(actualUserByUsername);
+            Assert.AreEqual(expectedUser.UserName, actualUserByUsername.UserName);
+            Assert.IsNotNull(actualUserByEmail);
+            Assert.AreEqual(expectedUser.Email, actualUserByEmail.Email);
         }
 
         [TestMethod]

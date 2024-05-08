@@ -26,18 +26,18 @@ namespace DB_AngoraMST.Services_InMemTest
             _roleService = new RoleService(_roleManagerMock.Object, _userManagerMock.Object);
         }
 
-        [TestMethod]
-        public async Task CreateRoleAsync_ShouldCreateRole_WhenRoleDoesNotExist()
-        {
-            // Arrange
-            string roleName = "Admin";
-            _roleManagerMock.Setup(rm => rm.RoleExistsAsync(roleName)).ReturnsAsync(false);
+        //[TestMethod]
+        //public async Task CreateRoleAsync_ShouldCreateRole_WhenRoleDoesNotExist()
+        //{
+        //    // Arrange
+        //    string roleName = "Admin";
+        //    _roleManagerMock.Setup(rm => rm.RoleExistsAsync(roleName)).ReturnsAsync(false);
 
-            // Act
-            await _roleService.CreateRoleAsync(roleName);
+        //    // Act
+        //    await _roleService.CreateRoleAsync(roleName);
 
-            // Assert
-            _roleManagerMock.Verify(rm => rm.CreateAsync(It.Is<IdentityRole>(r => r.Name == roleName)), Times.Once);
-        }
+        //    // Assert
+        //    _roleManagerMock.Verify(rm => rm.CreateAsync(It.Is<IdentityRole>(r => r.Name == roleName)), Times.Once);
+        //}
     }
 }

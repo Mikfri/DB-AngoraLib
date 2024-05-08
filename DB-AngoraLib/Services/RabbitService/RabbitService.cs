@@ -50,7 +50,7 @@ namespace DB_AngoraLib.Services.RabbitService
 
         public async Task<List<Rabbit>> GetAllRabbits_ByBreederRegAsync(string breederRegNo)
         {
-            var user = await _userService.GetUserByBreederRegNoAsync(new User_BreederKeyDTO { BreederRegNo = breederRegNo });
+            var user = await _userService.GetUserByBreederRegNoAsync(breederRegNo);
             if (user == null)
             {
                 return null;
@@ -158,10 +158,10 @@ namespace DB_AngoraLib.Services.RabbitService
             await _dbRepository.UpdateObjectAsync(rabbit);
         }
 
-        public async Task RequestRabbitTransfer(string rightEarId, string leftEarId, string newBreederRegNo)
+        public async Task RequestRabbitTransfer(string rightEarId, string leftEarId, string breederRegNo)
         {
             // Check if the new owner exists in the database
-            var newOwner = await _userService.GetUserByBreederRegNoAsync(new User_BreederKeyDTO { BreederRegNo = newBreederRegNo });
+            var newOwner = await _userService.GetUserByBreederRegNoAsync(breederRegNo);
             if (newOwner == null)
             {
                 throw new Exception("New owner not found");
@@ -180,7 +180,7 @@ namespace DB_AngoraLib.Services.RabbitService
                 RabbitRightEarId = rightEarId,
                 RabbitLeftEarId = leftEarId,
                 CurrentOwnerId = rabbit.OwnerId,
-                NewOwnerId = newBreederRegNo,
+                NewOwnerId = breederRegNo,
                 IsAccepted = false
             };
 

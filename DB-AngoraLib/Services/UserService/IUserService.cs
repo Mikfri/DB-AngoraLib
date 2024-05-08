@@ -7,8 +7,9 @@ namespace DB_AngoraLib.Services.UserService
     {
         //Task<User> Login(UserLoginDTO userLoginDto);
         Task<List<User>> GetAllUsersAsync();
-        Task<User> GetUserByBreederRegNoAsync(User_BreederKeyDTO userKeyDto);
+        Task<User> GetUserByBreederRegNoAsync(string breederRegNo);
         Task<User> GetUserByIdAsync(string userId);
+        Task<User> GetUserByUserNameOrEmailAsync(string userNameOrEmail);
         Task<List<Rabbit_PreviewDTO>> GetCurrentUsersRabbitCollection(string userId);
         Task<List<Rabbit_PreviewDTO>> GetFilteredRabbitCollection(string userId, string rightEarId = null, string leftEarId = null, string nickName = null, Race? race = null, Color? color = null, Gender? gender = null);
         Task UpdateUserAsync(User user);
