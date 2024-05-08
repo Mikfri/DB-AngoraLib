@@ -6,6 +6,7 @@ using DB_AngoraLib.Repository;
 using DB_AngoraLib.Services.RabbitService;
 using DB_AngoraLib.Services.UserService;
 using DB_AngoraLib.Services.ValidationService;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -22,9 +23,9 @@ namespace DB_AngoraMST.Services_InMemTest
         private IRabbitService _rabbitService;
         private IUserService _userService;
         private DB_AngoraContext _context;
+        private Mock<UserManager<User>> _userManagerMock;
 
-        [TestInitialize]
-        public void Setup()
+        public RabbitService_MST()
         {
             // Setup in-memory database
             var options = new DbContextOptionsBuilder<DB_AngoraContext>()
@@ -34,18 +35,27 @@ namespace DB_AngoraMST.Services_InMemTest
             _context = new DB_AngoraContext(options);
             _context.Database.EnsureCreated();
 
-            //-----: Add mock data to in-memory database
+            // Create UserManager
+            var userStoreMock = new Mock<IUserStore<User>>();
+            _userManagerMock = new Mock<UserManager<User>>(userStoreMock.Object, null, null, null, null, null, null, null, null);
+
+            var userRepository = new GRepository<User>(_context);
+            _userService = new UserService(userRepository, _userManagerMock.Object);
+
+            var rabbitRepository = new GRepository<Rabbit>(_context);
+            var validatorService = new RabbitValidator();
+            _rabbitService = new RabbitService(rabbitRepository, _userService, validatorService);
+        }
+
+        [TestInitialize]
+        public void Setup()
+        {
+            // Add mock data to in-memory database
             var mockUsers = MockUsers.GetMockUsers();
             _context.Users.AddRange(mockUsers);
             var mockRabbits = MockRabbits.GetMockRabbits();
             _context.Rabbits.AddRange(mockRabbits);
             _context.SaveChanges();
-            var userRepository = new GRepository<User>(_context);
-            _userService = new UserService(userRepository);
-
-            var rabbitRepository = new GRepository<Rabbit>(_context);
-            var validatorService = new RabbitValidator();
-            _rabbitService = new RabbitService(rabbitRepository, _userService, validatorService);
         }
 
 
@@ -60,7 +70,7 @@ namespace DB_AngoraMST.Services_InMemTest
         public async Task AddRabbit_ToCurrentUserAsync_TEST()
         {
             // Arrange
-            var newUniqRabbit = new Rabbit_BasicsDTO
+            var newUniqRabbit = new RabbitDTO
             {
                 RightEarId = "5095",
                 LeftEarId = "004",
@@ -72,17 +82,14 @@ namespace DB_AngoraMST.Services_InMemTest
                 Gender = Gender.Hun,
                 IsPublic = IsPublic.No
             };
-                        
-
+            
             // Set the current user for the test
             var currentUser = await _context.Users.FirstAsync();
             Assert.IsNotNull(currentUser);
-
-            // Create a UserKeyDTO from the User
-            var currentUserKeyDto = new User_KeyDTO { BreederRegNo = currentUser.Id };
+            
 
             // Act
-            await _rabbitService.AddRabbit_ToCurrentUserAsync(currentUserKeyDto, newUniqRabbit);
+            await _rabbitService.AddRabbit_ToCurrentUserAsync(currentUser.Id, newUniqRabbit);
 
             // Assert
             var addedRabbit = await _context.Rabbits.FindAsync(newUniqRabbit.RightEarId, newUniqRabbit.LeftEarId);
@@ -93,9 +100,9 @@ namespace DB_AngoraMST.Services_InMemTest
             Assert.IsNotNull(existingRabbit);
 
             // Act & Assert
-            var existingRabbitDto = new Rabbit_BasicsDTO { RightEarId = existingRabbit.RightEarId, LeftEarId = existingRabbit.LeftEarId };
+            var existingRabbitDto = new RabbitDTO { RightEarId = existingRabbit.RightEarId, LeftEarId = existingRabbit.LeftEarId };
             await Assert.ThrowsExceptionAsync<InvalidOperationException>(
-                () => _rabbitService.AddRabbit_ToCurrentUserAsync(currentUserKeyDto, existingRabbitDto));
+                () => _rabbitService.AddRabbit_ToCurrentUserAsync(currentUser.Id, existingRabbitDto));
         }
 
         /// <summary>
@@ -103,11 +110,11 @@ namespace DB_AngoraMST.Services_InMemTest
         /// </summary>
         /// <returns></returns>
         [TestMethod]
-        public async Task GetAllRabbits_ByBreederRegAsync_Test()
+        public async Task GetAllRabbits_ByBreederRegAsync_TEST()
         {
             // Arrange
-            var breederRegNo = "5053";      // Replace with the actual breeder registration number
-            var expectedRabbitsCount = 17;  // Replace with the actual number of rabbits for the breeder
+            var breederRegNo = "5053";
+            var expectedRabbitsCount = 17;
 
             // Act
             var rabbits = await _rabbitService.GetAllRabbits_ByBreederRegAsync(breederRegNo);

@@ -57,7 +57,7 @@ namespace DB_AngoraLib.Repository
             }
         }
         
-        public async Task<T> GetObjectByIdAsync(int id)
+        public async Task<T> GetObjectByStringIdAsync(string id)
         {
             return await _dbContext.Set<T>().FindAsync(id);
         }

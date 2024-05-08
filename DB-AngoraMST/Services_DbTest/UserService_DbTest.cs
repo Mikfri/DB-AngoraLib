@@ -14,19 +14,19 @@ namespace DB_AngoraMST.Services_DbTest
         private UserService _userService;
         private DB_AngoraContext _context;
 
-        [TestInitialize]
-        public void Setup()
-        {
-            // Setup actual database
-            var options = new DbContextOptionsBuilder<DB_AngoraContext>()
-                .UseSqlServer(@"Data Source=(localdb)\mssqllocaldb;Database=DB-Angora_DB;Trusted_Connection=True;TrustServerCertificate=True;MultipleActiveResultSets=true") // Replace with your actual connection string
-                .Options;
+        //[TestInitialize]
+        //public void Setup()
+        //{
+        //    // Setup actual database
+        //    var options = new DbContextOptionsBuilder<DB_AngoraContext>()
+        //        .UseSqlServer(@"Data Source=(localdb)\mssqllocaldb;Database=DB-Angora_DB;Trusted_Connection=True;TrustServerCertificate=True;MultipleActiveResultSets=true") // Replace with your actual connection string
+        //        .Options;
 
-            _context = new DB_AngoraContext(options);
+        //    _context = new DB_AngoraContext(options);
 
-            var userRepository = new GRepository<User>(_context);
-            _userService = new UserService(userRepository);
-        }
+        //    var userRepository = new GRepository<User>(_context);
+        //    _userService = new UserService(userRepository);
+        //}
 
         [TestCleanup]
         public void Cleanup()

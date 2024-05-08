@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DB_AngoraLib.DTOs
 {
-    public record User_KeyDTO
+    public record User_BreederKeyDTO
     {
         public string BreederRegNo { get; init; }
     }

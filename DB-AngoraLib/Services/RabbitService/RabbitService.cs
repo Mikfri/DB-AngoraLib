@@ -50,7 +50,7 @@ namespace DB_AngoraLib.Services.RabbitService
 
         public async Task<List<Rabbit>> GetAllRabbits_ByBreederRegAsync(string breederRegNo)
         {
-            var user = await _userService.GetUserByBreederRegNoAsync(new User_KeyDTO { BreederRegNo = breederRegNo });
+            var user = await _userService.GetUserByBreederRegNoAsync(new User_BreederKeyDTO { BreederRegNo = breederRegNo });
             if (user == null)
             {
                 return null;
@@ -102,7 +102,7 @@ namespace DB_AngoraLib.Services.RabbitService
         //    Console.WriteLine($"Rabbit added successfully with RightEarId: {newRabbit.RightEarId}, LeftEarId: {newRabbit.LeftEarId}, OwnerId: {newRabbit.OwnerId}");
         //}
 
-        public async Task AddRabbit_ToCurrentUserAsync(User_KeyDTO currentUserKeyDto, Rabbit_BasicsDTO newRabbitDto)
+        public async Task AddRabbit_ToCurrentUserAsync(string userId, RabbitDTO newRabbitDto)
         {
             Console.WriteLine($"Trying to add rabbit with RightEarId: {newRabbitDto.RightEarId}, LeftEarId: {newRabbitDto.LeftEarId}");
 
@@ -131,7 +131,7 @@ namespace DB_AngoraLib.Services.RabbitService
             }
 
             // Find the corresponding User object
-            var currentUser = await _userService.GetUserByBreederRegNoAsync(currentUserKeyDto);
+            var currentUser = await _userService.GetUserByIdAsync(userId);
 
             // Check if the currentUser is null
             if (currentUser == null)
@@ -147,20 +147,21 @@ namespace DB_AngoraLib.Services.RabbitService
 
 
         //---------------------: UPDATE
-        public async Task UpdateRabbitAsync(User currentUser, Rabbit rabbitId)
+        public async Task UpdateRabbitAsync(User currentUser, Rabbit rabbit)
         {
-            if (rabbitId.OwnerId != currentUser.Id)
+            if (rabbit.OwnerId != currentUser.Id)
             {
                 throw new InvalidOperationException("You are not the owner of this rabbit.");
             }
-            _validatorService.ValidateRabbit(rabbitId);
-            await _dbRepository.UpdateObjectAsync(rabbitId);
+
+            _validatorService.ValidateRabbit(rabbit);
+            await _dbRepository.UpdateObjectAsync(rabbit);
         }
 
         public async Task RequestRabbitTransfer(string rightEarId, string leftEarId, string newBreederRegNo)
         {
             // Check if the new owner exists in the database
-            var newOwner = await _userService.GetUserByBreederRegNoAsync(new User_KeyDTO { BreederRegNo = newBreederRegNo });
+            var newOwner = await _userService.GetUserByBreederRegNoAsync(new User_BreederKeyDTO { BreederRegNo = newBreederRegNo });
             if (newOwner == null)
             {
                 throw new Exception("New owner not found");

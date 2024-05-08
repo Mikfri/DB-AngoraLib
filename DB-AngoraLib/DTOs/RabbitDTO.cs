@@ -7,7 +7,10 @@ using System.Threading.Tasks;
 
 namespace DB_AngoraLib.DTOs
 {
-    public record Rabbit_BasicsDTO
+    /// <summary>
+    /// Basis DTO for Rabbit, med alle dens properties
+    /// </summary>
+    public record RabbitDTO
     {
         public string RightEarId { get; init; }
         public string LeftEarId { get; init; }

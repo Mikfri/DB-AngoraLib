@@ -21,8 +21,10 @@ namespace DB_AngoraLib.MockData
             "Kirke Såby",
             "IdaFriborg87@gmail.com",
             "27586455",
-            "Ida123!",
-            true),
+            "Ida123!")
+            {
+                Id = "IdasId"
+            },
 
             new User(
             "5053",
@@ -33,9 +35,26 @@ namespace DB_AngoraLib.MockData
             "Benløse",
             "MajaJoensen89@gmail.com",
             "28733085",
-            "Maja123!",
-            false),
+            "Maja123!")
+            {
+                Id = "MajasId"
+            },
+
+            new User(
+            null,
+            "Mikkel",
+            "Friborg",
+            "Fynsvej 14",
+            4060,
+            "Kirke Såby",
+            "Mikk.fri@gmail.com",
+            "81183394",
+            "Mikkel123!")
+            {
+                Id = "MikkelsId"
+            },
         };
+
         public static List<User> GetMockUsers()
         { return _usersList; }
     }

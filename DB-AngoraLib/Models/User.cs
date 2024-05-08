@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using DB_AngoraLib.Services.RoleService;
+using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -11,6 +12,9 @@ namespace DB_AngoraLib.Models
 {
     public class User : IdentityUser
     {
+        //FK relation som Rabbit kan benytte
+        public string? BreederRegNo { get; set; }    // unik property for Breeder role, med unik string
+
         public string FirstName { get; set; }
         public string LastName { get; set; }
 
@@ -18,6 +22,7 @@ namespace DB_AngoraLib.Models
         public int ZipCode { get; set; }
         public string City { get; set; }
 
+        
         [NotMapped]
         public string Password { get; set; }    // hack: For vi via MockUsers kan sætte password uden at det bliver hashet
 
@@ -25,9 +30,9 @@ namespace DB_AngoraLib.Models
 
         public ICollection<Rabbit> Rabbits { get; set; }
 
-        public User(string breederRegNo, string firstName, string lastName, string roadName, int zipCode, string city, string email, string phone, string password, bool? isAdmin)
+        public User(string? breederRegNo, string firstName, string lastName, string roadName, int zipCode, string city, string email, string phone, string password)
         {
-            Id = breederRegNo;
+            BreederRegNo = breederRegNo;
             FirstName = firstName;
             LastName = lastName;
             RoadNameAndNo = roadName;
@@ -40,7 +45,7 @@ namespace DB_AngoraLib.Models
             PhoneNumber = phone;
             Password = password;
             //PasswordHash = BCrypt.Net.BCrypt.HashPassword(password);
-            IsAdmin = isAdmin;
+            //IsAdmin = isAdmin;
         }
         public User() { }
     }

@@ -12,35 +12,24 @@ using System.Threading.Tasks;
 namespace DB_AngoraLib.Services.UserService
 {
     public class UserService : IUserService
-    {
+    {   
         private readonly IGRepository<User> _dbRepository;
         private readonly UserManager<User> _userManager;
-        private readonly RoleManager<IdentityRole> _roleManager;
 
-        public UserService(IGRepository<User> dbRepository, UserManager<User> userManager, RoleManager<IdentityRole> roleManager)
+        public UserService(IGRepository<User> dbRepository, UserManager<User> userManager)
         {
             _dbRepository = dbRepository;
             _userManager = userManager;
-            _roleManager = roleManager;
         }
 
         //------------------------- USER METHODS -------------------------
 
-
-        /// <summary>
-        /// Login er tiltænkt for at kunne verificere brugere, der logger ind under en Cookie session,
-        /// og benyttes af andre metoder, der kræver brugerens verificering.
-        //public async Task<User> Login(UserLoginDTO userLoginDto)
-        //{
-        //    var user = await _dbRepository.GetObjectAsync(u => u.Email == userLoginDto.Email);
-
-        //    if (user == null || !BCrypt.Net.BCrypt.Verify(userLoginDto.Password, user.PasswordHash))
-        //    {
-        //        return null;
-        //    }
-
-        //    return user;
-        //}
+        public async Task CreateBasicUserAsync(User newUser)
+        {
+            await _userManager.CreateAsync(newUser, newUser.Password);
+            await _userManager.AddToRoleAsync(newUser, "Guest");
+        }
+                
 
         /// <summary>
         /// Benytter <User> classen ICollection<Rabbit>.
@@ -101,14 +90,15 @@ namespace DB_AngoraLib.Services.UserService
             return (await _dbRepository.GetAllObjectsAsync()).ToList();
         }
 
-        public async Task<User> GetUserByBreederRegNoAsync(User_KeyDTO userKeyDto)
+        public async Task<User> GetUserByIdAsync(string userId)
         {
-            return await _dbRepository.GetObjectAsync(u => u.Id == userKeyDto.BreederRegNo);
+            return await _dbRepository.GetObjectByStringIdAsync(userId);
         }
 
-        public async Task AddUserAsync(User newUser)
+        public async Task<User> GetUserByBreederRegNoAsync(User_BreederKeyDTO userKeyDto)
         {
-            await _dbRepository.AddObjectAsync(newUser);
+            return await _dbRepository.GetObjectAsync(u => u.BreederRegNo == userKeyDto.BreederRegNo);
         }
+
     }
 }
