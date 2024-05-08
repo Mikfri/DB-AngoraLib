@@ -21,12 +21,9 @@ namespace DB_AngoraLib.Models
         public string RoadNameAndNo { get; set; }
         public int ZipCode { get; set; }
         public string City { get; set; }
-
         
         [NotMapped]
         public string Password { get; set; }    // hack: For vi via MockUsers kan sætte password uden at det bliver hashet
-
-        public bool? IsAdmin { get; set; }
 
         public ICollection<Rabbit> Rabbits { get; set; }
 
@@ -45,7 +42,6 @@ namespace DB_AngoraLib.Models
             PhoneNumber = phone;
             Password = password;
             //PasswordHash = BCrypt.Net.BCrypt.HashPassword(password);
-            //IsAdmin = isAdmin;
         }
         public User() { }
     }

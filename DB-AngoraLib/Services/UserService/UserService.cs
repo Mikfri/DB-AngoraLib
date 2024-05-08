@@ -90,6 +90,8 @@ namespace DB_AngoraLib.Services.UserService
             return (await _dbRepository.GetAllObjectsAsync()).ToList();
         }
 
+        public async Task<User> GetUserBy
+
         public async Task<User> GetUserByIdAsync(string userId)
         {
             return await _dbRepository.GetObjectByStringIdAsync(userId);

@@ -9,32 +9,39 @@ using System.Threading.Tasks;
 
 namespace DB_AngoraLib.Services.RoleService
 {
-    //public enum Role
-    //{
-    //    Admin,
-    //    Manager,
-    //    Breeder,
-    //    Guest
-    //}
+    public enum Roles
+    {
+        Admin,
+        Moderator,
+        Breeder,
+        Guest
+    }
 
     public class RoleService : IRoleService
     {
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly UserManager<User> _userManager;
-
+        
         public RoleService(RoleManager<IdentityRole> roleManager, UserManager<User> userManager)
         {
             _roleManager = roleManager;
             _userManager = userManager;
         }
+                
 
-        public async Task UpgradeUserToBreeder(User user, string breederRegNo)
+        public async Task ModMethod_AssignRole(User user, Roles role)
         {
-            user.BreederRegNo = breederRegNo;
-            await _userManager.UpdateAsync(user);
-            await _userManager.RemoveFromRoleAsync(user, "Guest");
-            await _userManager.AddToRoleAsync(user, "Breeder");
+            if (role != Roles.Admin && role != Roles.Moderator)
+            {
+                string roleName = role.ToString();
+                if (await _roleManager.RoleExistsAsync(roleName))
+                {
+                    await _userManager.AddToRoleAsync(user, roleName);
+                }
+            }
         }
+
+        //todo: Find ud af om vi istedet for _roleManager.RoleExistsAsync skal benytte min enum Roles, for lettere at tilgå rollerne
 
         /// <summary>
         /// Denne metode kan returnere en liste over alle eksisterende roller
@@ -45,15 +52,15 @@ namespace DB_AngoraLib.Services.RoleService
             return await _roleManager.Roles.ToListAsync();
         }
 
-        public async Task CreateRoleAsync(string roleName)
-        {
-            if (!await _roleManager.RoleExistsAsync(roleName))
-            {
-                await _roleManager.CreateAsync(new IdentityRole(roleName));
-            }
-        }
+        //public async Task AdminMethod_CreateRoleAsync(string roleName)
+        //{
+        //    if (!await _roleManager.RoleExistsAsync(roleName))
+        //    {
+        //        await _roleManager.CreateAsync(new IdentityRole(roleName));
+        //    }
+        //}
 
-        public async Task AssignRoleAsync(User user, string roleName)
+        public async Task AdminMethod_AssignRoleAsync(User user, string roleName)
         {
             if (await _roleManager.RoleExistsAsync(roleName))
             {
@@ -66,7 +73,7 @@ namespace DB_AngoraLib.Services.RoleService
         /// og derefter gemme ændringerne.
         /// </summary>
         /// <returns></returns>
-        public async Task UpdateRoleAsync(string oldRoleName, string newRoleName)
+        public async Task AdminMethod_UpdateRoleAsync(string oldRoleName, string newRoleName)
         {
             var role = await _roleManager.FindByNameAsync(oldRoleName);
             if (role != null)
