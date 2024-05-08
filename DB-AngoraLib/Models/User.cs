@@ -19,7 +19,7 @@ namespace DB_AngoraLib.Models
         public string City { get; set; }
 
         [NotMapped]
-        public string Password { get; set; }
+        public string Password { get; set; }    // hack: For vi via MockUsers kan sætte password uden at det bliver hashet
 
         public bool? IsAdmin { get; set; }
 

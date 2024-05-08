@@ -1,6 +1,7 @@
 ﻿using DB_AngoraLib.DTOs;
 using DB_AngoraLib.Models;
 using DB_AngoraLib.Repository;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -12,14 +13,15 @@ namespace DB_AngoraLib.Services.UserService
 {
     public class UserService : IUserService
     {
-        //private readonly List<Rabbit> _rabbits = new List<Rabbit>();
-        //public IReadOnlyList<Rabbit> Rabbits => _rabbits.AsReadOnly();
-
         private readonly IGRepository<User> _dbRepository;
+        private readonly UserManager<User> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
-        public UserService(IGRepository<User> dbRepository)
+        public UserService(IGRepository<User> dbRepository, UserManager<User> userManager, RoleManager<IdentityRole> roleManager)
         {
             _dbRepository = dbRepository;
+            _userManager = userManager;
+            _roleManager = roleManager;
         }
 
         //------------------------- USER METHODS -------------------------

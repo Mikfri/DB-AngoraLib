@@ -13,7 +13,7 @@ namespace DB_AngoraLib.Repository
         DbSet<T> GetDbSet();
         Task<IEnumerable<T>> GetAllObjectsAsync();
         Task SaveObjects(List<T> objs);
-        Task<T> GetObjectAsync(Expression<Func<T, bool>> filter);
+        Task<T> GetObjectAsync(Expression<Func<T, bool>> filter); //todo: overvej at istedet at benytte GetObjectByIdAsync
         Task AddObjectAsync(T obj);
         Task<T> GetObjectByIdAsync(int id);
         Task UpdateObjectAsync(T obj);
