@@ -17,12 +17,12 @@ namespace DB_AngoraLib.Services.RoleService
         Guest = 3
     }
 
-    public class RoleService : IRoleService
+    public class RoleServices : IRoleService
     {
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly UserManager<User> _userManager;
         
-        public RoleService(RoleManager<IdentityRole> roleManager, UserManager<User> userManager)
+        public RoleServices(RoleManager<IdentityRole> roleManager, UserManager<User> userManager)
         {
             _roleManager = roleManager;
             _userManager = userManager;
@@ -40,6 +40,18 @@ namespace DB_AngoraLib.Services.RoleService
                 }
             }
         }
+
+        //public async Task AssignRoleAsyncNonAdmin(User user, Roles role)
+        //{
+        //    if (role != Roles.Admin && role != Roles.Moderator)
+        //    {
+        //        string roleName = role.ToString();
+        //        if (await _roleManager.RoleExistsAsync(roleName))
+        //        {
+        //            await _userManager.AddToRoleAsync(user, roleName);
+        //        }
+        //    }
+        //}
 
         //todo: Find ud af om vi istedet for _roleManager.RoleExistsAsync skal benytte min enum Roles, for lettere at tilgå rollerne
 

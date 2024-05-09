@@ -24,12 +24,24 @@ namespace DB_AngoraLib.Services.UserService
 
         //------------------------- USER METHODS -------------------------
 
-        public async Task CreateBasicUserAsync(User newUser)
+        public async Task CreateBasicUserAsync(User_CreateBasicDTO newUserDto)
         {
-            await _userManager.CreateAsync(newUser, newUser.Password);
+            var newUser = new User
+            {
+                UserName = newUserDto.Email, // Assuming the username is the email
+                Email = newUserDto.Email,
+                PhoneNumber = newUserDto.Phone,
+                FirstName = newUserDto.FirstName,
+                LastName = newUserDto.LastName,
+                RoadNameAndNo = newUserDto.RoadNameAndNo,
+                City = newUserDto.City,
+                ZipCode = newUserDto.ZipCode,
+            };
+
+            await _userManager.CreateAsync(newUser, "DefaultPassword123!"); // Replace with actual password
             await _userManager.AddToRoleAsync(newUser, "Guest");
         }
-                
+
 
         /// <summary>
         /// Benytter <User> classen ICollection<Rabbit>.

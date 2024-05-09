@@ -15,7 +15,7 @@ namespace DB_AngoraMST.Services_InMemTest
     {
         private readonly Mock<RoleManager<IdentityRole>> _roleManagerMock;
         private readonly Mock<UserManager<User>> _userManagerMock;
-        private readonly RoleService _roleService;
+        private readonly RoleServices _roleService;
 
         public RoleService_MST()
         {
@@ -23,7 +23,7 @@ namespace DB_AngoraMST.Services_InMemTest
             _roleManagerMock = new Mock<RoleManager<IdentityRole>>(roleStoreMock.Object, null, null, null, null);
             var userStoreMock = new Mock<IUserStore<User>>();
             _userManagerMock = new Mock<UserManager<User>>(userStoreMock.Object, null, null, null, null, null, null, null, null);
-            _roleService = new RoleService(_roleManagerMock.Object, _userManagerMock.Object);
+            _roleService = new RoleServices(_roleManagerMock.Object, _userManagerMock.Object);
         }
 
         //[TestMethod]

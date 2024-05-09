@@ -44,7 +44,7 @@ namespace DB_AngoraMST.Services_InMemTest
 
             var rabbitRepository = new GRepository<Rabbit>(_context);
             var validatorService = new RabbitValidator();
-            _rabbitService = new RabbitService(rabbitRepository, _userService, validatorService);
+            _rabbitService = new RabbitServices(rabbitRepository, _userService, validatorService);
         }
 
         [TestInitialize]

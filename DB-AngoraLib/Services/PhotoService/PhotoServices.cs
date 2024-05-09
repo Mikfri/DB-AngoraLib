@@ -2,7 +2,7 @@
 using DB_AngoraLib.Repository;
 using SixLabors.ImageSharp;
 
-public class PhotoService
+public class PhotoServices
 {
     private readonly IGRepository<Photo> _photoRepository;
 

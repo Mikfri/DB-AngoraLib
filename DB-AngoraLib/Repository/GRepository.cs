@@ -59,9 +59,9 @@ namespace DB_AngoraLib.Repository
         }
 
         /// <summary>
-        /// Finder objektet ud fra dets KEY (string id)
+        /// Finder objektet ud fra dets string [KEY]. Ikke andre string properties.
         /// </summary>
-        /// <param name="id">En string</param>
+        /// <param name="id">string Id [KEY]</param>
         /// <returns></returns>
         public async Task<T> GetObjectByKEYAsync(string id)
         {

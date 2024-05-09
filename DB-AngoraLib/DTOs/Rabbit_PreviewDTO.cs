@@ -8,7 +8,11 @@ using System.Threading.Tasks;
 
 namespace DB_AngoraLib.DTOs
 {
-    public class Rabbit_PreviewDTO
+    /// <summary>
+    /// En DTO for Rabbit, som kun indeholder de properties, de mest nødvendige properties
+    /// for at en Breeder kan danne overblik over sine kaniner
+    /// </summary>
+    public record Rabbit_PreviewDTO
     {
         public string RightEarId { get; init; }
         public string LeftEarId { get; init; }

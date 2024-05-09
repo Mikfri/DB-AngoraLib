@@ -13,21 +13,20 @@ namespace DB_AngoraLib.Services.RabbitService
     //using IRabbitRepository = IGRepository<Rabbit>;
     //using RabbitList = List<Rabbit>;
 
-    public class RabbitService : IRabbitService
+    public class RabbitServices : IRabbitService
     {
         private readonly IGRepository<Rabbit> _dbRepository;
         private readonly IUserService _userService;
         private readonly RabbitValidator _validatorService;
 
-
-        public RabbitService(IGRepository<Rabbit> dbRepository, IUserService userService, RabbitValidator validatorService)
+        public RabbitServices(IGRepository<Rabbit> dbRepository, IUserService userService, RabbitValidator validatorService)
         {
             _dbRepository = dbRepository;
             _userService = userService;
             _validatorService = validatorService;
         }
 
-        public RabbitService() { }
+        public RabbitServices() { }
 
         //public void ValidateUniqueRabbitId(Rabbit rabbit)
         //{
@@ -58,7 +57,6 @@ namespace DB_AngoraLib.Services.RabbitService
             var rabbits = await _dbRepository.GetAllObjectsAsync();
             return rabbits.Where(rabbit => rabbit.OwnerId == user.Id).ToList();
         }
-
 
 
         //-------: GET BY EAR TAGs METODER
