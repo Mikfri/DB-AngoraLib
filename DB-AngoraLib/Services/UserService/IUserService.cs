@@ -10,8 +10,8 @@ namespace DB_AngoraLib.Services.UserService
         Task<User> GetUserByBreederRegNoAsync(string breederRegNo);
         Task<User> GetUserByIdAsync(string userId);
         Task<User> GetUserByUserNameOrEmailAsync(string userNameOrEmail);
-        Task<List<Rabbit_PreviewDTO>> GetCurrentUsersRabbitCollection(string userId);
-        Task<List<Rabbit_PreviewDTO>> GetFilteredRabbitCollection(string userId, string rightEarId = null, string leftEarId = null, string nickName = null, Race? race = null, Color? color = null, Gender? gender = null);
+        Task<List<Rabbit_PreviewDTO>> GetMyRabbitCollection(string userId);
+        Task<List<Rabbit_PreviewDTO>> GetMyRabbitCollection_Filtered(string userId, string rightEarId = null, string leftEarId = null, string nickName = null, Race? race = null, Color? color = null, Gender? gender = null);
         Task UpdateUserAsync(User user);
         Task DeleteUserAsync(User user);
     }

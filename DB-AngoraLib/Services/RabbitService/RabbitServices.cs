@@ -27,16 +27,7 @@ namespace DB_AngoraLib.Services.RabbitService
         }
 
         public RabbitServices() { }
-
-        //public void ValidateUniqueRabbitId(Rabbit rabbit)
-        //{
-        //    var existingRabbit = _dbRepository.GetObjectByIdAsync(Rabbit rabbit).Result;
-
-        //    if (existingRabbit != null)
-        //    {
-        //        throw new InvalidOperationException($"A Rabbit with the id {rabbit.RightEarId}-{rabbit.LeftEarId} already exists.");
-        //    }
-        //}
+                
 
         //---------------------: GET METODER
         //-------: ADMIN METODER
@@ -60,6 +51,12 @@ namespace DB_AngoraLib.Services.RabbitService
 
 
         //-------: GET BY EAR TAGs METODER
+        /// <summary>
+        /// Finder en Rabbit ud fra dens øremærkerne kombinationen
+        /// </summary>
+        /// <param name="rightEarId"></param>
+        /// <param name="leftEarId"></param>
+        /// <returns></returns>
         public async Task<Rabbit> GetRabbitByEarTagsAsync(string rightEarId, string leftEarId)
         {
             Expression<Func<Rabbit, bool>> filter = r => r.RightEarId == rightEarId && r.LeftEarId == leftEarId;
@@ -79,8 +76,14 @@ namespace DB_AngoraLib.Services.RabbitService
 
             return rabbit;
         }
-                
 
+        /// <summary>
+        /// Tilføjer en Rabbit til den nuværende bruger og tilføjer den til Collectionen
+        /// </summary>
+        /// <param name="userId">GUID fra brugeren</param>
+        /// <param name="newRabbitDto"></param>
+        /// <returns></returns>
+        /// <exception cref="InvalidOperationException"></exception>
         public async Task AddRabbit_ToCurrentUserAsync(string userId, RabbitDTO newRabbitDto)
         {
             //Console.WriteLine($"Trying to add rabbit with RightEarId: {newRabbitDto.RightEarId}, LeftEarId: {newRabbitDto.LeftEarId}");
@@ -103,20 +106,17 @@ namespace DB_AngoraLib.Services.RabbitService
 
             _validatorService.ValidateRabbit(newRabbit);
 
-            // Check om kaninen med de givne øremærker allerede eksisterer
             var existingRabbit = await GetRabbitByEarTagsAsync(newRabbit.RightEarId, newRabbit.LeftEarId);
             if (existingRabbit != null)
             {
                 throw new InvalidOperationException("A rabbit with the same ear tags already exists.");
             }
 
-            // Find the corresponding User object
             var currentUser = await _userService.GetUserByIdAsync(userId);
 
-            // Check if the currentUser is null
             if (currentUser == null)
             {
-                throw new InvalidOperationException("No user found with the given BreederRegNo.");
+                throw new InvalidOperationException("No user found with the given GUID");
             }
 
             newRabbit.OwnerId = currentUser.Id;

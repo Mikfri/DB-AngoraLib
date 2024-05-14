@@ -44,8 +44,11 @@ namespace DB_AngoraLib.Services.UserService
 
 
         /// <summary>
-        /// Benytter <User> classen ICollection<Rabbit>.
-        public async Task<List<Rabbit_PreviewDTO>> GetCurrentUsersRabbitCollection(string userId)
+        /// Finder den den pågældende brugers 'EF-Core Rabbit Collection' i DB og returnerer en liste af RabbitDTO'er
+        /// </summary>
+        /// <param name="userId">En GUID string</param>
+        /// <returns></returns>
+        public async Task<List<Rabbit_PreviewDTO>> GetMyRabbitCollection(string userId)
         {
             var currentUserCollection = await _dbRepository.GetDbSet()
                 .AsNoTracking()
@@ -70,9 +73,20 @@ namespace DB_AngoraLib.Services.UserService
                 .ToList();
         }
 
-        public async Task<List<Rabbit_PreviewDTO>> GetFilteredRabbitCollection(string userId, string rightEarId = null, string leftEarId = null, string nickName = null, Race? race = null, Color? color = null, Gender? gender = null)
+        /// <summary>
+        /// Finder den den pågældende brugers 'EF-Core Rabbit Collection', med mulighed for filtrering
+        /// </summary>
+        /// <param name="userId">GUID id</param>
+        /// <param name="rightEarId"></param>
+        /// <param name="leftEarId"></param>
+        /// <param name="nickName"></param>
+        /// <param name="race">enum Race</param>
+        /// <param name="color">enum Color</param>
+        /// <param name="gender">enum Gender</param>
+        /// <returns></returns>
+        public async Task<List<Rabbit_PreviewDTO>> GetMyRabbitCollection_Filtered(string userId, string rightEarId = null, string leftEarId = null, string nickName = null, Race? race = null, Color? color = null, Gender? gender = null)
         {
-            var rabbitCollection = await GetCurrentUsersRabbitCollection(userId);
+            var rabbitCollection = await GetMyRabbitCollection(userId);
 
             return rabbitCollection
                 .Where(rabbit =>

@@ -14,5 +14,6 @@ namespace DB_AngoraLib.Services.EmailService
         {
             // Implement your email sending logic here
         }
+
     }
 }

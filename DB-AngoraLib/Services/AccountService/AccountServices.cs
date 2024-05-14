@@ -22,7 +22,7 @@ namespace DB_AngoraLib.Services.AccountService
             _emailService = emailService;
         }
 
-        public async Task<IdentityResult> RegisterBasicUserAsync(User_CreateBasicDTO newUserDto, string password)
+        public async Task<IdentityResult> Register_BasicUserAsync(User_CreateBasicDTO newUserDto, string password)
         {
             var newUser = new User
             {
@@ -57,6 +57,7 @@ namespace DB_AngoraLib.Services.AccountService
             return result;
         }
 
+
         public async Task<IdentityResult> ChangePasswordAsync(User_ChangePasswordDTO userPwConfig)
         {
             var user = await _userManager.FindByIdAsync(userPwConfig.UserId);
@@ -67,8 +68,36 @@ namespace DB_AngoraLib.Services.AccountService
 
             return await _userManager.ChangePasswordAsync(user, userPwConfig.CurrentPassword, userPwConfig.NewPassword);
         }
+        public async Task GenerateAndSaveEmailConfirmationToken(User user)
+        {
+            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            await _userManager.ConfirmEmailAsync(user, token);
+        }
 
-        public async Task ResetPassword_SendEmailResetTokenAsync(string email)
+        /// <summary> //TODO: Vil alle feldter udfyldes i UserToken tabellen?
+        /// Benytter UserManager til at generere et password reset token og sender det til brugerens email.
+        /// Generere data i -UserTokens tabellen.
+        /// </summary>
+        /// <param name="email"></param>
+        /// <returns></returns>
+        public async Task ResetPassword_ResetTokenSendEmailAsync(string email)
+        {
+            var foundUser = await _userManager.FindByEmailAsync(email);
+            if (foundUser == null)
+            {
+                // Handle user not found error
+            }
+
+            var token = await _userManager.GeneratePasswordResetTokenAsync(foundUser);
+            await _emailService.SendEmailAsync(email, "Password Reset", $"Your password reset token is: {token}");
+        }
+
+        /// <summary>
+        /// Denne metode vil genere data i -UserTokens tabellen.
+        /// </summary>
+        /// <param name="email"></param>
+        /// <returns></returns>
+        public async Task SendEmailConfirmationAsync(string email)
         {
             var user = await _userManager.FindByEmailAsync(email);
             if (user == null)
@@ -76,8 +105,20 @@ namespace DB_AngoraLib.Services.AccountService
                 // Handle user not found error
             }
 
-            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-            await _emailService.SendEmailAsync(email, "Password Reset", $"Your password reset token is: {token}");
+            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            await _emailService.SendEmailAsync(email, "Email Confirmation", $"Your email confirmation token is: {token}");
+        }
+
+
+        public async Task ConfirmEmailAsync(string userId, string token)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                // Handle user not found error
+            }
+
+            await _userManager.ConfirmEmailAsync(user, token);
         }
 
 

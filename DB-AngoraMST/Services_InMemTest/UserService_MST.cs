@@ -130,7 +130,7 @@ namespace DB_AngoraMST.Services_InMemTest
             var userId = "5053";
 
             // Act
-            var rabbitCollection = await _userService.GetCurrentUsersRabbitCollection(userId);
+            var rabbitCollection = await _userService.GetMyRabbitCollection(userId);
 
             foreach (var rabbit in rabbitCollection)
             {
@@ -150,7 +150,7 @@ namespace DB_AngoraMST.Services_InMemTest
             var race = Race.Satinangora; // Replace with the actual right ear id
 
             // Act
-            var filteredRabbitCollection = await _userService.GetFilteredRabbitCollection(userId, race: race);
+            var filteredRabbitCollection = await _userService.GetMyRabbitCollection_Filtered(userId, race: race);
 
             foreach (var rabbit in filteredRabbitCollection)
             {
