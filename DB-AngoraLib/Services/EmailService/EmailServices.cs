@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DB_AngoraLib.Services.EmailService
 {
-    public class EmailServices
+    public class EmailServices : IEmailService
     {
         public EmailServices() { }
 
@@ -16,4 +16,5 @@ namespace DB_AngoraLib.Services.EmailService
         }
 
     }
+   
 }

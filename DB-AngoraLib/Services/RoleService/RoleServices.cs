@@ -21,7 +21,7 @@ namespace DB_AngoraLib.Services.RoleService
             _userManager = userManager;
         }
 
-        public async Task AddClaimToRole(string roleName, string claimType, string claimValue)
+        public async Task AdminMethod_AddClaimToRole(string roleName, string claimType, string claimValue)
         {
             var role = await _roleManager.FindByNameAsync(roleName);
             if (role != null)
@@ -35,6 +35,16 @@ namespace DB_AngoraLib.Services.RoleService
             }
         }
 
+        public async Task AdminMethod_RemoveClaimFromRole(string roleName, string claimType, string claimValue)
+        {
+            var role = await _roleManager.FindByNameAsync(roleName);
+            if (role != null)
+            {
+                var claim = new Claim(claimType, claimValue);
+                await _roleManager.RemoveClaimAsync(role, claim);
+            }
+        }
+
         public async Task AddClaimToUser(User user, string claimType, string claimValue)
         {
             var claim = new Claim(claimType, claimValue);
@@ -45,7 +55,7 @@ namespace DB_AngoraLib.Services.RoleService
             }
         }
 
-        public async Task ModMethod_AssignRole(User user, string roleName)
+        public async Task ModMethod_AssignUserToRole(User user, string roleName)
         {
             if (roleName != "Admin" && roleName != "Moderator")
             {
@@ -55,8 +65,18 @@ namespace DB_AngoraLib.Services.RoleService
                 }
             }
         }
+        public async Task ModMethod_RemoveUserFromRole(User user, string roleName)
+        {
+            if (roleName != "Admin" && roleName != "Moderator")
+            {
+                if (await _roleManager.RoleExistsAsync(roleName))
+                {
+                    await _userManager.RemoveFromRoleAsync(user, roleName);
+                }
+            }
+        }
 
-        public async Task ModMethod_AssignRole_WithRoleClaims(User user, string roleName)
+        public async Task ModMethod_AssignUserToRole_WithRoleClaims(User user, string roleName)
         {
             if (roleName != "Admin" && roleName != "Moderator")
             {
@@ -78,6 +98,8 @@ namespace DB_AngoraLib.Services.RoleService
                 }
             }
         }
+               
+
 
         public async Task<List<IdentityRole>> GetAllRolesAsync()
         {

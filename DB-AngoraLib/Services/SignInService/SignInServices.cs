@@ -13,21 +13,63 @@ using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
 
 namespace DB_AngoraLib.Services.SigninService
 {
-    public class SigninServices
+    public class SigninServices : ISigninService
     {
         private readonly SignInManager<User> _signInManager;
         private readonly UserManager<User> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
-        public SigninServices(SignInManager<User> signInManager, UserManager<User> userManager)
+        public SigninServices(SignInManager<User> signInManager, UserManager<User> userManager, RoleManager<IdentityRole> roleManager)
         {
             _signInManager = signInManager;
             _userManager = userManager;
+            _roleManager = roleManager;
         }
 
         //-----------------: ALMINDLIG LOGIN :-----------------
+
+        /// <summary>
+        /// IdentityUser SignInManager benyttes.. 
+        /// En Users RoleClaims opdateres, når brugeren logger ind.
+        /// </summary>
+        /// <param name="userName"></param>
+        /// <param name="password"></param>
+        /// <param name="rememberMe"></param>
+        /// <returns></returns>
         public async Task<SignInResult> LoginAsync(string userName, string password, bool rememberMe)
         {
-            return await _signInManager.PasswordSignInAsync(userName, password, rememberMe, false);
+            var result = await _signInManager.PasswordSignInAsync(userName, password, rememberMe, false);
+
+            if (result.Succeeded)
+            {
+                var user = await _userManager.FindByNameAsync(userName);
+                var roles = await _userManager.GetRolesAsync(user);
+
+                foreach (var roleName in roles)
+                {
+                    var role = await _roleManager.FindByNameAsync(roleName);
+                    var roleClaims = await _roleManager.GetClaimsAsync(role);
+
+                    var userClaims = await _userManager.GetClaimsAsync(user);
+
+                    // Remove any old role claims from the user
+                    foreach (var claim in userClaims)
+                    {
+                        if (roleClaims.Any(rc => rc.Type == claim.Type && rc.Value == claim.Value))
+                        {
+                            await _userManager.RemoveClaimAsync(user, claim);
+                        }
+                    }
+
+                    // Add the updated role claims to the user
+                    foreach (var claim in roleClaims)
+                    {
+                        await _userManager.AddClaimAsync(user, claim);
+                    }
+                }
+            }
+
+            return result;
         }
 
         public async Task LogoutAsync()

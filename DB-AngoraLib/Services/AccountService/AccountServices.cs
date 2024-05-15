@@ -8,27 +8,29 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Identity.Client;
+using System.Web;
 
 namespace DB_AngoraLib.Services.AccountService
 {
-    public class AccountServices
+    public class AccountServices : IAccountService
     {
         private readonly UserManager<User> _userManager;
-        private readonly EmailServices _emailService;
+        private readonly IEmailService _emailService;
 
-        public AccountServices(UserManager<User> userManager, EmailServices emailService)
+        public AccountServices(UserManager<User> userManager, IEmailService emailService)
         {
             _userManager = userManager;
             _emailService = emailService;
         }
 
-        public async Task<IdentityResult> Register_BasicUserAsync(User_CreateBasicDTO newUserDto, string password)
+        public async Task<IdentityResult> Register_BasicUserAsync(User_CreateBasicDTO newUserDto)
         {
             var newUser = new User
             {
-                UserName = newUserDto.Email, // Assuming the username is the email
                 Email = newUserDto.Email,
                 PhoneNumber = newUserDto.Phone,
+                UserName = newUserDto.Email, // Assuming the username is the email                
                 FirstName = newUserDto.FirstName,
                 LastName = newUserDto.LastName,
                 RoadNameAndNo = newUserDto.RoadNameAndNo,
@@ -36,7 +38,7 @@ namespace DB_AngoraLib.Services.AccountService
                 ZipCode = newUserDto.ZipCode,
             };
 
-            var result = await _userManager.CreateAsync(newUser, password);
+            var result = await _userManager.CreateAsync(newUser, newUserDto.Password);
 
             if (result.Succeeded)
             {
@@ -56,7 +58,35 @@ namespace DB_AngoraLib.Services.AccountService
 
             return result;
         }
+                
 
+        public async Task ConfirmEmail_SendEmailToUserAsync(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                throw new Exception("User not found");
+            }
+            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            var confirmationLink = $"https://yourwebsite.com/confirmemail?userid={user.Id}&token={HttpUtility.UrlEncode(token)}";
+            await _emailService.SendEmailAsync(email, "Email Confirmation", $"Please confirm your email by clicking on this link: {confirmationLink}");
+        }
+
+        public async Task ConfirmEmailAsync(string userId, string token)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                throw new Exception("User not found");
+            }
+
+            var result = await _userManager.ConfirmEmailAsync(user, token);
+
+            if (!result.Succeeded)
+            {
+                throw new Exception("Email confirmation failed");
+            }
+        }
 
         public async Task<IdentityResult> ChangePasswordAsync(User_ChangePasswordDTO userPwConfig)
         {
@@ -68,59 +98,42 @@ namespace DB_AngoraLib.Services.AccountService
 
             return await _userManager.ChangePasswordAsync(user, userPwConfig.CurrentPassword, userPwConfig.NewPassword);
         }
-        public async Task GenerateAndSaveEmailConfirmationToken(User user)
-        {
-            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-            await _userManager.ConfirmEmailAsync(user, token);
-        }
 
-        /// <summary> //TODO: Vil alle feldter udfyldes i UserToken tabellen?
-        /// Benytter UserManager til at generere et password reset token og sender det til brugerens email.
-        /// Generere data i -UserTokens tabellen.
-        /// </summary>
-        /// <param name="email"></param>
-        /// <returns></returns>
-        public async Task ResetPassword_ResetTokenSendEmailAsync(string email)
+        public async Task ResetPassword_SendResetTokenToUserEmailAsync(string email)
         {
             var foundUser = await _userManager.FindByEmailAsync(email);
             if (foundUser == null)
             {
-                // Handle user not found error
+                throw new Exception("User not found");
             }
 
             var token = await _userManager.GeneratePasswordResetTokenAsync(foundUser);
-            await _emailService.SendEmailAsync(email, "Password Reset", $"Your password reset token is: {token}");
+            var resetLink = $"https://yourwebsite.com/resetpassword?userid={foundUser.Id}&token={HttpUtility.UrlEncode(token)}";
+            await _emailService.SendEmailAsync(email, "Password Reset", $"You can reset your password by clicking on this link: {resetLink}");
         }
 
         /// <summary>
-        /// Denne metode vil genere data i -UserTokens tabellen.
+        /// Formular til brugeren på frontend, hvor brugeren indtaster ny password.
         /// </summary>
-        /// <param name="email"></param>
+        /// <param name="userId"></param>
+        /// <param name="token"></param>
+        /// <param name="newPassword"></param>
         /// <returns></returns>
-        public async Task SendEmailConfirmationAsync(string email)
-        {
-            var user = await _userManager.FindByEmailAsync(email);
-            if (user == null)
-            {
-                // Handle user not found error
-            }
-
-            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-            await _emailService.SendEmailAsync(email, "Email Confirmation", $"Your email confirmation token is: {token}");
-        }
-
-
-        public async Task ConfirmEmailAsync(string userId, string token)
+        /// <exception cref="Exception"></exception>
+        public async Task ResetPasswordAsync(string userId, string token, string newPassword)
         {
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
             {
-                // Handle user not found error
+                throw new Exception("User not found");
             }
 
-            await _userManager.ConfirmEmailAsync(user, token);
+            var result = await _userManager.ResetPasswordAsync(user, token, newPassword);
+            if (!result.Succeeded)
+            {
+                throw new Exception("Password reset failed");
+            }
         }
-
 
     }
 }

@@ -12,6 +12,12 @@ namespace DB_AngoraLib.DTOs
     /// </summary>
     public record User_CreateBasicDTO
     {
+        public string Email { get; init; }
+        public string Password { get; init; }
+
+        //[DataType(DataType.PhoneNumber)]
+        public string Phone { get; init; }
+
         public string FirstName { get; init; }
         public string LastName { get; init; }
         public string RoadNameAndNo { get; init; }
@@ -21,12 +27,9 @@ namespace DB_AngoraLib.DTOs
 
         public string City { get; init; }
 
-        //[DataType(DataType.EmailAddress)]
-        public string Email { get; init; }
+        
 
-        //[DataType(DataType.PhoneNumber)]
-        public string Phone { get; init; }
+        
 
-        public string Role { get; init; }
     }
 }
