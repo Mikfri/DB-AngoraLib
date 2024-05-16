@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Identity;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,15 +9,15 @@ namespace DB_AngoraLib.MockData
 {
     public class MockRoles
     {
-        private static readonly List<string> _rolesList = new List<string>
+        private static readonly List<IdentityRole> _rolesList = new List<IdentityRole>
         {
-            "Admin",
-            "Moderator",
-            "Breeder",
-            "Guest"
+            new IdentityRole { Id = "AdminRoleId", Name = "Admin" },
+            new IdentityRole { Id = "ModeratorRoleId", Name = "Moderator" },
+            new IdentityRole { Id = "BreederRoleId", Name = "Breeder" },
+            new IdentityRole { Id = "GuestRoleId", Name = "Guest" }
         };
 
-        public static List<string> GetMockRoles()
+        public static List<IdentityRole> GetMockRoles()
         {
             return _rolesList;
         }

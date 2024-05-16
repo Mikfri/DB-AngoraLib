@@ -84,7 +84,7 @@ namespace DB_AngoraLib.Services.RabbitService
         /// <param name="newRabbitDto"></param>
         /// <returns></returns>
         /// <exception cref="InvalidOperationException"></exception>
-        public async Task AddRabbit_ToCurrentUserAsync(string userId, RabbitDTO newRabbitDto)
+        public async Task<Rabbit> AddRabbit_ToMyCollectionAsync(string userId, RabbitDTO newRabbitDto)
         {
             //Console.WriteLine($"Trying to add rabbit with RightEarId: {newRabbitDto.RightEarId}, LeftEarId: {newRabbitDto.LeftEarId}");
 
@@ -122,6 +122,8 @@ namespace DB_AngoraLib.Services.RabbitService
             newRabbit.OwnerId = currentUser.Id;
             await _dbRepository.AddObjectAsync(newRabbit);
             Console.WriteLine($"Rabbit added successfully with RightEarId: {newRabbit.RightEarId}, LeftEarId: {newRabbit.LeftEarId}, OwnerId: {newRabbit.OwnerId}");
+            
+            return newRabbit;
         }
 
 

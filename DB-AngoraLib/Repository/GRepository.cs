@@ -29,10 +29,14 @@ namespace DB_AngoraLib.Repository
             catch (DbUpdateException ex)
             {
                 // Log the error or rethrow, or handle as necessary
-                throw new Exception("An error occurred while adding the object to the database.", ex);
+                throw new Exception("An error occurred while adding the object to the database:", ex);
             }
         }
 
+        /// <summary>
+        /// Returnerer en IQueryable af objekter af typen T.
+        /// </summary>
+        /// <returns></returns>
         public DbSet<T> GetDbSet()
         {
             return _dbContext.Set<T>();
@@ -53,6 +57,11 @@ namespace DB_AngoraLib.Repository
             await _dbContext.SaveChangesAsync();
         }
 
+        /// <summary>
+        /// Filtrerer og returnerer ÉT objekt ud fra et given filter.
+        /// </summary>
+        /// <param name="filter"></param>
+        /// <returns></returns>
         public async Task<T> GetObjectAsync(Expression<Func<T, bool>> filter)
         {
             return await _dbContext.Set<T>().Where(filter).FirstOrDefaultAsync();

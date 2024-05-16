@@ -67,7 +67,7 @@ namespace DB_AngoraMST.Services_InMemTest
         }
 
         [TestMethod]
-        public async Task AddRabbit_ToCurrentUserAsync_TEST()
+        public async Task AddRabbit_ToMyCollectionUserAsync_TEST()
         {
             // Arrange
             var newUniqRabbit = new RabbitDTO
@@ -89,7 +89,7 @@ namespace DB_AngoraMST.Services_InMemTest
             
 
             // Act
-            await _rabbitService.AddRabbit_ToCurrentUserAsync(currentUser.Id, newUniqRabbit);
+            await _rabbitService.AddRabbit_ToMyCollectionAsync(currentUser.Id, newUniqRabbit);
 
             // Assert
             var addedRabbit = await _context.Rabbits.FindAsync(newUniqRabbit.RightEarId, newUniqRabbit.LeftEarId);
@@ -102,11 +102,11 @@ namespace DB_AngoraMST.Services_InMemTest
             // Act & Assert
             var existingRabbitDto = new RabbitDTO { RightEarId = existingRabbit.RightEarId, LeftEarId = existingRabbit.LeftEarId };
             await Assert.ThrowsExceptionAsync<InvalidOperationException>(
-                () => _rabbitService.AddRabbit_ToCurrentUserAsync(currentUser.Id, existingRabbitDto));
+                () => _rabbitService.AddRabbit_ToMyCollectionAsync(currentUser.Id, existingRabbitDto));
         }
 
         /// <summary>
-        /// Påvirkes af RabbitService_MST.AddRabbit_ToCurrentUserAsync_TEST
+        /// Påvirkes af RabbitService_MST.AddRabbit_ToMyCollectionAsync_TEST
         /// </summary>
         /// <returns></returns>
         [TestMethod]
