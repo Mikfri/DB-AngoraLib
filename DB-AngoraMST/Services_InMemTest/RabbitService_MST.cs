@@ -13,6 +13,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using System;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace DB_AngoraMST.Services_InMemTest
@@ -47,17 +48,36 @@ namespace DB_AngoraMST.Services_InMemTest
             _rabbitService = new RabbitServices(rabbitRepository, _userService, validatorService);
         }
 
+        //[TestInitialize]
+        //public void Setup()
+        //{
+        //    // Add mock data to in-memory database
+        //    var mockUsers = MockUsers.GetMockUsers();
+        //    _context.Users.AddRange(mockUsers);
+        //    var mockRabbits = MockRabbits.GetMockRabbits();
+        //    _context.Rabbits.AddRange(mockRabbits);
+        //    _context.SaveChanges();
+        //}
         [TestInitialize]
         public void Setup()
         {
             // Add mock data to in-memory database
-            var mockUsers = MockUsers.GetMockUsers();
-            _context.Users.AddRange(mockUsers);
+            var mockUsersWithRoles = MockUsers.GetMockUsersWithRoles();
+            foreach (var mockUserWithRole in mockUsersWithRoles)
+            {
+                _context.Users.Add(mockUserWithRole.User);
+                var userClaims = MockUserClaims.GetMockUserClaimsForUser(mockUserWithRole);
+                _context.UserClaims.AddRange(userClaims.Select(uc => new IdentityUserClaim<string>
+                {
+                    UserId = mockUserWithRole.User.Id,
+                    ClaimType = uc.Type,
+                    ClaimValue = uc.Value
+                }));
+            }
             var mockRabbits = MockRabbits.GetMockRabbits();
             _context.Rabbits.AddRange(mockRabbits);
             _context.SaveChanges();
         }
-
 
         [TestCleanup]
         public void Cleanup()
@@ -67,7 +87,7 @@ namespace DB_AngoraMST.Services_InMemTest
         }
 
         [TestMethod]
-        public async Task AddRabbit_ToMyCollectionUserAsync_TEST()
+        public async Task AddRabbit_ToMyCollectionAsync_TEST()
         {
             // Arrange
             var newUniqRabbit = new RabbitDTO
@@ -131,7 +151,7 @@ namespace DB_AngoraMST.Services_InMemTest
 
 
         [TestMethod]
-        public async Task UpdateRabbitAsync_TEST()
+        public async Task UpdateMyRabbitAsync_TEST()
         {
             // Arrange
             var currentUser = _context.Users.First();
@@ -140,7 +160,7 @@ namespace DB_AngoraMST.Services_InMemTest
             existingRabbit.Color = Color.Hvid;
 
             // Act
-            await _rabbitService.UpdateRabbitAsync(currentUser, existingRabbit);
+            await _rabbitService.UpdateMyRabbitAsync(currentUser, existingRabbit);
 
             // Assert
             var updatedRabbit = await _context.Rabbits.FindAsync(existingRabbit.RightEarId, existingRabbit.LeftEarId);
@@ -150,7 +170,7 @@ namespace DB_AngoraMST.Services_InMemTest
         }
 
         [TestMethod]
-        public async Task DeleteRabbitAsync_TEST()
+        public async Task DeleteMyRabbitAsync_TEST()
         {
             // Arrange
             var currentUser = _context.Users.First();
@@ -158,11 +178,41 @@ namespace DB_AngoraMST.Services_InMemTest
             var initialCount = _context.Rabbits.Count();    // Første optælling
 
             // Act
-            await _rabbitService.DeleteRabbitAsync(currentUser, existingRabbit);
+            await _rabbitService.DeleteMyRabbitAsync(currentUser, existingRabbit);
 
             // Assert
             var finalCount = _context.Rabbits.Count();      // Anden optælling
             Assert.AreEqual(initialCount - 1, finalCount);
         }
+
+        [TestMethod]
+        public async Task DeleteRabbit_RBAC_Async_TEST()
+        {
+            // Arrange
+            var mockUser = _context.Users.First(); // Get the first user from the database
+            var mockRabbit = _context.Rabbits.First(); // Get the first rabbit from the database
+
+            // Get the user's claims from the database
+            var mockUserClaims = _context.UserClaims
+                .Where(uc => uc.UserId == mockUser.Id)
+                .Select(uc => new Claim(uc.ClaimType, uc.ClaimValue))
+                .ToList();
+
+            Console.WriteLine($"User: {mockUser.UserName}\nRabbit: {mockRabbit.NickName}");
+            foreach (var claim in mockUserClaims)
+            {
+                Console.WriteLine($"ClaimType: '{claim.Type}' | ClaimValue: '{claim.Value}'");
+            }
+
+            // Act
+            await _rabbitService.DeleteRabbit_RBAC_Async(mockUser, mockRabbit, mockUserClaims);
+
+            // Assert
+            // Verify that the rabbit was deleted from the database
+            var deletedRabbit = await _context.Rabbits
+                .FirstOrDefaultAsync(r => r.RightEarId == mockRabbit.RightEarId && r.LeftEarId == mockRabbit.LeftEarId);
+            Assert.IsNull(deletedRabbit);
+        }
+
     }
 }

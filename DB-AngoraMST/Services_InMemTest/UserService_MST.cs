@@ -41,12 +41,26 @@ namespace DB_AngoraMST.Services_InMemTest
             _userService = new UserService(userRepository, _userManagerMock.Object);
         }
 
+        //[TestInitialize]
+        //public void Setup()
+        //{
+        //    // Add mock data to in-memory database
+        //    var mockUsers = MockUsers.GetMockUsers();
+        //    _context.Users.AddRange(mockUsers);
+        //    var mockRabbits = MockRabbits.GetMockRabbits();
+        //    _context.Rabbits.AddRange(mockRabbits);
+        //    _context.SaveChanges();
+        //}
+
         [TestInitialize]
         public void Setup()
         {
             // Add mock data to in-memory database
-            var mockUsers = MockUsers.GetMockUsers();
-            _context.Users.AddRange(mockUsers);
+            var mockUsersWithRoles = MockUsers.GetMockUsersWithRoles();
+            foreach (var mockUserWithRole in mockUsersWithRoles)
+            {
+                _context.Users.Add(mockUserWithRole.User);
+            }
             var mockRabbits = MockRabbits.GetMockRabbits();
             _context.Rabbits.AddRange(mockRabbits);
             _context.SaveChanges();

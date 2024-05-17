@@ -6,6 +6,7 @@ using DB_AngoraLib.Services.UserService;
 using DB_AngoraLib.Services.ValidationService;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
+using System.Security.Claims;
 
 
 namespace DB_AngoraLib.Services.RabbitService
@@ -129,7 +130,7 @@ namespace DB_AngoraLib.Services.RabbitService
 
 
         //---------------------: UPDATE
-        public async Task UpdateRabbitAsync(User currentUser, Rabbit rabbit)
+        public async Task UpdateMyRabbitAsync(User currentUser, Rabbit rabbit)
         {
             if (rabbit.OwnerId != currentUser.Id)
             {
@@ -140,6 +141,49 @@ namespace DB_AngoraLib.Services.RabbitService
             await _dbRepository.UpdateObjectAsync(rabbit);
         }
 
+        public async Task UpdateRabbit_RBAC_Async(User currentUser, Rabbit rabbit, IList<Claim> userClaims)
+        {
+            var hasPermissionToUpdateOwn = userClaims.Any(c => c.Type == "Permission" && c.Value == "Update_Own_Rabbits");
+            var hasPermissionToUpdateAll = userClaims.Any(c => c.Type == "Permission" && c.Value == "CRUD_All_Rabbits");
+
+            if (!hasPermissionToUpdateAll && (!hasPermissionToUpdateOwn || currentUser.Id != rabbit.OwnerId))
+            {
+                throw new InvalidOperationException("You do not have permission to update this rabbit.");
+            }
+
+            _validatorService.ValidateRabbit(rabbit);
+            await _dbRepository.UpdateObjectAsync(rabbit);
+        }
+
+
+        //---------------------: DELETE
+        public async Task DeleteMyRabbitAsync(User currentUser, Rabbit rabbitToDelete)
+        {
+            if (rabbitToDelete.OwnerId != currentUser.Id)
+            {
+                throw new InvalidOperationException("You are not the owner of this rabbit.");
+            }
+
+            await _dbRepository.DeleteObjectAsync(rabbitToDelete);
+        }
+
+
+
+        public async Task DeleteRabbit_RBAC_Async(User currentUser, Rabbit rabbitToDelete, IList<Claim> userClaims)
+        {
+            var hasPermissionToDeleteOwn = userClaims.Any(c => c.Type == "Permission" && c.Value == "Delete_Own_Rabbits");
+            var hasPermissionToDeleteAll = userClaims.Any(c => c.Type == "Permission" && c.Value == "CRUD_All_Rabbits");
+
+            if (!hasPermissionToDeleteAll && (!hasPermissionToDeleteOwn || currentUser.Id != rabbitToDelete.OwnerId))
+            {
+                throw new InvalidOperationException("You do not have permission to delete this rabbit.");
+            }
+
+            await _dbRepository.DeleteObjectAsync(rabbitToDelete);
+        }
+
+
+        //---------------------: TRANSFER
         public async Task RequestRabbitTransfer(string rightEarId, string leftEarId, string breederRegNo)
         {
             // Check if the new owner exists in the database
@@ -169,18 +213,5 @@ namespace DB_AngoraLib.Services.RabbitService
             // Save the transfer request to the database
             //await _transferRequestRepository.AddObjectAsync(transferRequest);
         }
-
-        //---------------------: DELETE
-        public async Task DeleteRabbitAsync(User currentUser, Rabbit rabbitToDelete)
-        {
-            if (rabbitToDelete.OwnerId != currentUser.Id)
-            {
-                throw new InvalidOperationException("You are not the owner of this rabbit.");
-            }
-
-            await _dbRepository.DeleteObjectAsync(rabbitToDelete);
-        }
-
-
     }
 }

@@ -64,8 +64,12 @@ namespace DB_AngoraLib.MockData
             ),
         };
 
+        //public static List<MockUserWithRole> GetMockUsersWithRoles()
+        //{ return _usersWithRolesList; }
         public static List<MockUserWithRole> GetMockUsersWithRoles()
-        { return _usersWithRolesList; }
+        {
+            return _usersWithRolesList ?? new List<MockUserWithRole>();
+        }
 
         private static List<User> _usersList = new List<User>()
         {

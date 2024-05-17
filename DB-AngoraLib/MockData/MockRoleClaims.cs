@@ -20,6 +20,14 @@ namespace DB_AngoraLib.MockData
                 ClaimValue = "CRUD_All_Rabbits"
             },
 
+            // Claims for the Moderator role
+            new IdentityRoleClaim<string>
+            {
+                RoleId = MockRoles.GetMockRoles().First(r => r.Name == "Moderator").Id,
+                ClaimType = "Permission",
+                ClaimValue = "CRUD_All_Rabbits"
+            },
+
             // Claims for the Breeder role
             new IdentityRoleClaim<string>
             {
