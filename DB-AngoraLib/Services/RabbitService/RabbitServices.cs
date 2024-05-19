@@ -2,6 +2,7 @@
 using DB_AngoraLib.EF_DbContext;
 using DB_AngoraLib.Models;
 using DB_AngoraLib.Repository;
+using DB_AngoraLib.Services.HelperService;
 using DB_AngoraLib.Services.UserService;
 using DB_AngoraLib.Services.ValidationService;
 using Microsoft.EntityFrameworkCore;
@@ -141,38 +142,40 @@ namespace DB_AngoraLib.Services.RabbitService
             await _dbRepository.UpdateObjectAsync(rabbit);
         }
 
-        public async Task UpdateRabbit_RBAC_Async(User currentUser, Rabbit rabbit, IList<Claim> userClaims)
+        public async Task UpdateRabbit_RBAC_Async(User currentUser, string rightEarId, string leftEarId, Rabbit_UpdateDTO updatedRabbit, IList<Claim> userClaims)
         {
-            var hasPermissionToUpdateOwn = userClaims.Any(c => c.Type == "Permission" && c.Value == "Update_Own_Rabbits");
+            var hasPermissionToUpdateOwn = userClaims.Any(c => c.Type == "Permission" && c.Value == "CRUD_My_Rabbits");
             var hasPermissionToUpdateAll = userClaims.Any(c => c.Type == "Permission" && c.Value == "CRUD_All_Rabbits");
 
-            if (!hasPermissionToUpdateAll && (!hasPermissionToUpdateOwn || currentUser.Id != rabbit.OwnerId))
+            var rabbitToUpdate = await GetRabbitByEarTagsAsync(rightEarId, leftEarId);
+            if (rabbitToUpdate == null)
+            {
+                throw new InvalidOperationException("No rabbit found with the given ear tags.");
+            }
+
+            if (!hasPermissionToUpdateAll && (!hasPermissionToUpdateOwn || currentUser.Id != rabbitToUpdate.OwnerId))
             {
                 throw new InvalidOperationException("You do not have permission to update this rabbit.");
             }
 
-            _validatorService.ValidateRabbit(rabbit);
-            await _dbRepository.UpdateObjectAsync(rabbit);
+            // Copy all non-null properties from updatedRabbit to rabbitToUpdate
+            HelperServices.CopyPropertiesTo(updatedRabbit, rabbitToUpdate);
+
+            _validatorService.ValidateRabbit(rabbitToUpdate);
+            await _dbRepository.UpdateObjectAsync(rabbitToUpdate);
         }
 
 
-        //---------------------: DELETE
-        public async Task DeleteMyRabbitAsync(User currentUser, Rabbit rabbitToDelete)
+        public async Task DeleteRabbit_RBAC_Async(User currentUser, string rightEarId, string leftEarId, IList<Claim> userClaims)
         {
-            if (rabbitToDelete.OwnerId != currentUser.Id)
-            {
-                throw new InvalidOperationException("You are not the owner of this rabbit.");
-            }
-
-            await _dbRepository.DeleteObjectAsync(rabbitToDelete);
-        }
-
-
-
-        public async Task DeleteRabbit_RBAC_Async(User currentUser, Rabbit rabbitToDelete, IList<Claim> userClaims)
-        {
-            var hasPermissionToDeleteOwn = userClaims.Any(c => c.Type == "Permission" && c.Value == "Delete_Own_Rabbits");
+            var hasPermissionToDeleteOwn = userClaims.Any(c => c.Type == "Permission" && c.Value == "CRUD_My_Rabbits");
             var hasPermissionToDeleteAll = userClaims.Any(c => c.Type == "Permission" && c.Value == "CRUD_All_Rabbits");
+
+            var rabbitToDelete = await GetRabbitByEarTagsAsync(rightEarId, leftEarId);
+            if (rabbitToDelete == null)
+            {
+                throw new InvalidOperationException("No rabbit found with the given ear tags.");
+            }
 
             if (!hasPermissionToDeleteAll && (!hasPermissionToDeleteOwn || currentUser.Id != rabbitToDelete.OwnerId))
             {
@@ -213,5 +216,6 @@ namespace DB_AngoraLib.Services.RabbitService
             // Save the transfer request to the database
             //await _transferRequestRepository.AddObjectAsync(transferRequest);
         }
+                    
     }
 }

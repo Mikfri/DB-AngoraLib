@@ -198,22 +198,7 @@ namespace DB_AngoraMST.Services_InMemTest
             Assert.AreEqual(Color.Hvid, updatedRabbit.Color);
         }
 
-        [TestMethod]
-        public async Task DeleteMyRabbitAsync_TEST()
-        {
-            // Arrange
-            var currentUser = _context.Users.First();
-            var existingRabbit = await _context.Rabbits.FirstAsync();
-            var initialCount = _context.Rabbits.Count();    // Første optælling
-
-            // Act
-            await _rabbitService.DeleteMyRabbitAsync(currentUser, existingRabbit);
-
-            // Assert
-            var finalCount = _context.Rabbits.Count();      // Anden optælling
-            Assert.AreEqual(initialCount - 1, finalCount);
-        }
-
+        
         [TestMethod]
         public async Task DeleteRabbit_MODERATOR_Async_TEST()
         {
@@ -235,7 +220,7 @@ namespace DB_AngoraMST.Services_InMemTest
             }
 
             // Act
-            await _rabbitService.DeleteRabbit_RBAC_Async(mockUser, mockRabbitOwned, mockUserClaims);
+            await _rabbitService.DeleteRabbit_RBAC_Async(mockUser, mockRabbitOwned.RightEarId, mockRabbitOwned.LeftEarId, mockUserClaims);
 
             // Assert
             // Verify that the rabbit was deleted from the database
@@ -253,7 +238,7 @@ namespace DB_AngoraMST.Services_InMemTest
             }
 
             // Act
-            await _rabbitService.DeleteRabbit_RBAC_Async(mockUser, mockRabbitNotOwned, mockUserClaims);
+            await _rabbitService.DeleteRabbit_RBAC_Async(mockUser, mockRabbitNotOwned.RightEarId, mockRabbitNotOwned.LeftEarId, mockUserClaims);
 
             // Assert
             // Verify that the rabbit was deleted from the database
@@ -261,6 +246,7 @@ namespace DB_AngoraMST.Services_InMemTest
                 .FirstOrDefaultAsync(r => r.RightEarId == mockRabbitNotOwned.RightEarId && r.LeftEarId == mockRabbitNotOwned.LeftEarId);
             Assert.IsNull(deletedRabbitNotOwned);
         }
+
 
         [TestMethod]
         public async Task DeleteRabbit_BREEDER_Async_TEST()
@@ -276,8 +262,7 @@ namespace DB_AngoraMST.Services_InMemTest
 
             // Get a rabbit not owned by the user
             var mockRabbitNotOwned = _context.Rabbits.First(r => r.OwnerId != mockUser.Id);
-            var mockRabbitOwned = _context.Rabbits.First(r => r.OwnerId == mockUser.Id);
-            Console.WriteLine($"User: {mockUser.UserName}\nMY-Rabbit: {mockRabbitNotOwned.NickName}\nOTHER-Rabbit: {mockRabbitOwned.NickName}");
+            Console.WriteLine($"User: {mockUser.UserName}\nOTHER-Rabbit: {mockRabbitNotOwned.NickName}");
             foreach (var claim in mockUserClaims)
             {
                 Console.WriteLine($"ClaimType: '{claim.Type}' | ClaimValue: '{claim.Value}'");
@@ -286,11 +271,27 @@ namespace DB_AngoraMST.Services_InMemTest
             // Act & Assert
             // Expect an exception to be thrown because the user does not own the rabbit
             await Assert.ThrowsExceptionAsync<InvalidOperationException>(
-                () => _rabbitService.DeleteRabbit_RBAC_Async(mockUser, mockRabbitNotOwned, mockUserClaims));
+                () => _rabbitService.DeleteRabbit_RBAC_Async(mockUser, mockRabbitNotOwned.RightEarId, mockRabbitNotOwned.LeftEarId, mockUserClaims));
 
-            //await Assert.IsTrue(
-            //    () => _rabbitService.DeleteRabbit_RBAC_Async(mockUser, mockRabbitOwned, mockUserClaims));
+            // Arrange
+            // Get a rabbit owned by the user
+            var mockRabbitOwned = _context.Rabbits.First(r => r.OwnerId == mockUser.Id);
+            Console.WriteLine($"User: {mockUser.UserName}\nMY-Rabbit: {mockRabbitOwned.NickName}");
+            foreach (var claim in mockUserClaims)
+            {
+                Console.WriteLine($"ClaimType: '{claim.Type}' | ClaimValue: '{claim.Value}'");
+            }
+
+            // Act
+            await _rabbitService.DeleteRabbit_RBAC_Async(mockUser, mockRabbitOwned.RightEarId, mockRabbitOwned.LeftEarId, mockUserClaims);
+
+            // Assert
+            // Verify that the rabbit was deleted from the database
+            var deletedRabbitOwned = await _context.Rabbits
+                .FirstOrDefaultAsync(r => r.RightEarId == mockRabbitOwned.RightEarId && r.LeftEarId == mockRabbitOwned.LeftEarId);
+            Assert.IsNull(deletedRabbitOwned);
         }
+
 
 
     }
