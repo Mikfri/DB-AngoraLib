@@ -10,6 +10,8 @@ namespace DB_AngoraLib.DTOs
 {
     public record Rabbit_UpdateDTO
     {
+        public string RightEarId { get; init; }
+        public string LeftEarId { get; init; }
         //public string? OwnerId { get; init; } // En seperat DTO bør nok laves for ejerskifte 
 
         public string? NickName { get; init; }
