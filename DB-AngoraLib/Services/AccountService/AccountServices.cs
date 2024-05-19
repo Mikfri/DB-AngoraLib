@@ -72,7 +72,7 @@ namespace DB_AngoraLib.Services.AccountService
             await _emailService.SendEmailAsync(email, "Email Confirmation", $"Please confirm your email by clicking on this link: {confirmationLink}");
         }
 
-        public async Task ConfirmEmailAsync(string userId, string token)
+        public async Task ConfirmEmail_ConfirmAsync(string userId, string token)
         {
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)

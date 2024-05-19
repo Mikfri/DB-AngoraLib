@@ -110,7 +110,7 @@ namespace DB_AngoraLib.Services.RabbitService
             var existingRabbit = await GetRabbitByEarTagsAsync(newRabbit.RightEarId, newRabbit.LeftEarId);
             if (existingRabbit != null)
             {
-                throw new InvalidOperationException("A rabbit with the same ear tags already exists.");
+                throw new InvalidOperationException("En kanin med denne øremærke kombination findes allerede i systemet");
             }
 
             var currentUser = await _userService.GetUserByIdAsync(userId);

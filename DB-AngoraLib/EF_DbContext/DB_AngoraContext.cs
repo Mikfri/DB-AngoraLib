@@ -36,10 +36,20 @@ namespace DB_AngoraLib.EF_DbContext
             // Configure primary key for User
             modelBuilder.Entity<User>()
                 .HasKey(u => u.Id);
-                        
+
+            // Add unique constraint for User's BreederRegNo
+            modelBuilder.Entity<User>()
+                .HasIndex(u => u.BreederRegNo)
+                .IsUnique();
+
             // Configure composite key for Rabbit
             modelBuilder.Entity<Rabbit>()
                 .HasKey(r => new { r.RightEarId, r.LeftEarId });
+
+            // Add unique constraint for Rabbit: Forbedrer ydeevnen ved DB søgning da de nu er indexerede
+            modelBuilder.Entity<Rabbit>()
+                .HasIndex(r => new { r.RightEarId, r.LeftEarId })
+                .IsUnique();
 
             //------------------- FK SETUP -------------------
             // Configure Foreign Key for Rabbit -> User

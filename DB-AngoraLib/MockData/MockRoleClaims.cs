@@ -19,6 +19,12 @@ namespace DB_AngoraLib.MockData
                 ClaimType = "Permission",
                 ClaimValue = "CRUD_All_Rabbits"
             },
+            new IdentityRoleClaim<string>
+            {
+                RoleId = MockRoles.GetMockRoles().First(r => r.Name == "Admin").Id,
+                ClaimType = "Permission",
+                ClaimValue = "CRUD_All_Users"
+            },
 
             // Claims for the Moderator role
             new IdentityRoleClaim<string>
@@ -33,32 +39,8 @@ namespace DB_AngoraLib.MockData
             {
                 RoleId = MockRoles.GetMockRoles().First(r => r.Name == "Breeder").Id,
                 ClaimType = "Permission",
-                ClaimValue = "Read_Own_Rabbits"
+                ClaimValue = "CRUD_My_Rabbits"
             },
-            new IdentityRoleClaim<string>
-            {
-                RoleId = MockRoles.GetMockRoles().First(r => r.Name == "Breeder").Id,
-                ClaimType = "Permission",
-                ClaimValue = "Read_Public_Rabbits"
-            },
-            new IdentityRoleClaim<string>
-            {
-                RoleId = MockRoles.GetMockRoles().First(r => r.Name == "Breeder").Id,
-                ClaimType = "Permission",
-                ClaimValue = "Create_Own_Rabbits"
-            },
-            new IdentityRoleClaim<string>
-            {
-                RoleId = MockRoles.GetMockRoles().First(r => r.Name == "Breeder").Id,
-                ClaimType = "Permission",
-                ClaimValue = "Update_Own_Rabbits"
-            },
-            new IdentityRoleClaim<string>
-            {
-                RoleId = MockRoles.GetMockRoles().First(r => r.Name == "Breeder").Id,
-                ClaimType = "Permission",
-                ClaimValue = "Delete_Own_Rabbits"
-            }
         };
 
         public static List<IdentityRoleClaim<string>> GetMockRoleClaims()

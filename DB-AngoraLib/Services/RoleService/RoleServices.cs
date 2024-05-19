@@ -55,7 +55,7 @@ namespace DB_AngoraLib.Services.RoleService
             }
         }
 
-        public async Task ModMethod_AssignUserToRole(User user, string roleName)
+        public async Task ModMethod_AssignUserToRole(User user, string roleName) // TODO: Kigg på om en Modd istedet for ikke blot skal være istand til at up/downgrade en Guest og Breeder roller
         {
             if (roleName != "Admin" && roleName != "Moderator")
             {
