@@ -158,8 +158,8 @@ namespace DB_AngoraMST.Services_InMemTest
             var mockUser = _context.Users.First();
             var mockRabbitOwned = _context.Rabbits.First(r => r.OwnerId == mockUser.Id);
             var mockRabbitNotOwned = _context.Rabbits.First(r => r.OwnerId != mockUser.Id);
-            var updatedOwnedRabbit = new Rabbit_UpdateDTO { RightEarId = mockRabbitOwned.RightEarId, LeftEarId = mockRabbitOwned.LeftEarId, NickName = "UpdatedOwnedName" };
-            var updatedNotOwnedRabbit = new Rabbit_UpdateDTO { RightEarId = mockRabbitNotOwned.RightEarId, LeftEarId = mockRabbitNotOwned.LeftEarId, NickName = "UpdatedNotOwnedName" };
+            var updatedOwnedRabbitDTO = new Rabbit_UpdateDTO { NickName = "UpdatedOwnedName" };
+            var updatedNotOwnedRabbitDTO = new Rabbit_UpdateDTO { NickName = "UpdatedNotOwnedName" };
             // Get the user's claims from the database
             var mockUserClaims = _context.UserClaims
                 .Where(uc => uc.UserId == mockUser.Id)
@@ -173,8 +173,8 @@ namespace DB_AngoraMST.Services_InMemTest
             }
 
             // Act
-            await _rabbitService.UpdateRabbit_RBAC_Async(mockUser, mockRabbitOwned.RightEarId, mockRabbitOwned.LeftEarId, updatedOwnedRabbit, mockUserClaims);
-            await _rabbitService.UpdateRabbit_RBAC_Async(mockUser, mockRabbitNotOwned.RightEarId, mockRabbitNotOwned.LeftEarId, updatedNotOwnedRabbit, mockUserClaims);
+            await _rabbitService.UpdateRabbit_RBAC_Async(mockUser, mockRabbitOwned.RightEarId, mockRabbitOwned.LeftEarId, updatedOwnedRabbitDTO, mockUserClaims);
+            await _rabbitService.UpdateRabbit_RBAC_Async(mockUser, mockRabbitNotOwned.RightEarId, mockRabbitNotOwned.LeftEarId, updatedNotOwnedRabbitDTO, mockUserClaims);
 
             // Assert
             var updatedOwnedRabbitInDb = await _context.Rabbits.FindAsync(mockRabbitOwned.RightEarId, mockRabbitOwned.LeftEarId);
@@ -185,6 +185,7 @@ namespace DB_AngoraMST.Services_InMemTest
             Assert.AreEqual("UpdatedNotOwnedName", updatedNotOwnedRabbitInDb.NickName);
         }
 
+
         [TestMethod]
         public async Task UpdateRabbit_BREEDER_Async_TEST()
         {
@@ -192,8 +193,8 @@ namespace DB_AngoraMST.Services_InMemTest
             var mockUser = _context.Users.Skip(1).First();
             var mockRabbitOwned = _context.Rabbits.First(r => r.OwnerId == mockUser.Id);
             var mockRabbitNotOwned = _context.Rabbits.First(r => r.OwnerId != mockUser.Id);
-            var updatedOwnedRabbitDTO = new Rabbit_UpdateDTO { RightEarId = mockRabbitOwned.RightEarId, LeftEarId = mockRabbitOwned.LeftEarId, NickName = "UpdatedOwnedName" };
-            var updatedNotOwnedRabbitDTO = new Rabbit_UpdateDTO { RightEarId = mockRabbitNotOwned.RightEarId, LeftEarId = mockRabbitNotOwned.LeftEarId, NickName = "UpdatedNotOwnedName" };
+            var updatedOwnedRabbitDTO = new Rabbit_UpdateDTO { NickName = "UpdatedOwnedName" };
+            var updatedNotOwnedRabbitDTO = new Rabbit_UpdateDTO { NickName = "UpdatedNotOwnedName" };
             // Get the user's claims from the database
             var mockUserClaims = _context.UserClaims
                 .Where(uc => uc.UserId == mockUser.Id)
@@ -214,7 +215,6 @@ namespace DB_AngoraMST.Services_InMemTest
             Assert.AreEqual("UpdatedOwnedName", updatedOwnedRabbitInDb.NickName);
 
             // Act & Assert
-            var updatedNotOwnedRabbitInDb = await _context.Rabbits.FindAsync(mockRabbitNotOwned.RightEarId, mockRabbitNotOwned.LeftEarId);
             await Assert.ThrowsExceptionAsync<InvalidOperationException>(
                             () => _rabbitService.UpdateRabbit_RBAC_Async(mockUser, mockRabbitNotOwned.RightEarId, mockRabbitNotOwned.LeftEarId, updatedNotOwnedRabbitDTO, mockUserClaims));
         }
