@@ -11,7 +11,7 @@ namespace DB_AngoraLib.Services.SigninService
     {
         Task<SignInResult> LoginAsync(string userName, string password, bool rememberMe);
         Task LogoutAsync();
-        Task<ExternalLoginInfo> GetExternalLoginInfoAsync();
+        //Task<ExternalLoginInfo> GetExternalLoginInfoAsync();
         Task<SignInResult> ExternalLoginSignInAsync(string loginProvider, string providerKey, bool isPersistent);
     }
 }

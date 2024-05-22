@@ -26,7 +26,7 @@ namespace DB_AngoraLib.MockData
             {
                 Id = "IdasId"
             },
-            "Moderator" // Replace with the actual role
+            "Moderator"
             ),
 
             new MockUserWithRole(
@@ -43,7 +43,7 @@ namespace DB_AngoraLib.MockData
             {
                 Id = "MajasId"
             },
-            "Breeder" // Replace with the actual role
+            "Breeder"
             ),
 
             new MockUserWithRole(
@@ -60,7 +60,7 @@ namespace DB_AngoraLib.MockData
             {
                 Id = "MikkelsId"
             },
-            "Admin" // Replace with the actual role
+            "Admin"
             ),
         };
 

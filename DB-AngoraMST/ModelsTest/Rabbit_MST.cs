@@ -137,7 +137,7 @@ namespace DB_AngoraMST.ModelsTest
         public void ColorForRace_ValidTest(Race race, Color color)
         {
             Rabbit rabbit = new Rabbit { Race = race, Color = color };
-            rabbitValidator.ValidateRaceAndColorCombo(rabbit);
+            //rabbitValidator.ValidateRaceAndColorCombo(rabbit);
             Assert.IsTrue(rabbit.ApprovedRaceColorCombination);
         }
 
@@ -147,7 +147,7 @@ namespace DB_AngoraMST.ModelsTest
         public void ColorForRace_InvalidTest(Race race, Color color)
         {
             Rabbit rabbit = new Rabbit { Race = race, Color = color };
-            rabbitValidator.ValidateRaceAndColorCombo(rabbit);
+            //rabbitValidator.ValidateRaceAndColorCombo(rabbit);
             Assert.IsFalse(rabbit.ApprovedRaceColorCombination);
         }
 

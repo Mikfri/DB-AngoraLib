@@ -14,14 +14,11 @@ namespace DB_AngoraLib.EF_DbContext
 {
     public class DB_AngoraContext : IdentityDbContext<User>
     {
-
         public DB_AngoraContext(DbContextOptions<DB_AngoraContext> options) : base(options) { }
-                
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-
             #region IdentityUser PK setup - syntaks
             ////------------------- PK SETUP -------------------
             //// Irellevant, da IdentityUser allerede selv sætter disse op

@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using DB_AngoraLib.Services.ValidationService;
 
 namespace DB_AngoraLib.Models
 {
@@ -114,7 +115,22 @@ namespace DB_AngoraLib.Models
         public string? NickName { get; set; }
         public Race Race { get; set; }
         public Color Color { get; set; }
-        public bool? ApprovedRaceColorCombination { get; set; }
+
+        public bool ApprovedRaceColorCombination
+        {
+            get
+            {
+                if (RabbitValidator.NotApprovedColorsByRace.TryGetValue(Race, out var notApprovedColors))
+                {
+                    return !notApprovedColors.Contains(Color);
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
+
         public DateOnly DateOfBirth { get; set; }
         public DateOnly? DateOfDeath { get; set; }
         public bool IsJuvenile
@@ -154,9 +170,6 @@ namespace DB_AngoraLib.Models
 
         public Rabbit() { }
 
-        public override string ToString()
-        {
-            return $"RightEarId: {RightEarId}, LeftEarId: {LeftEarId}, Owner: {User}, NickName: {NickName}, Race: {Race}, Color: {Color}, ApprovedRaceColorCombination: {ApprovedRaceColorCombination}, DateOfBirth: {DateOfBirth}, Gender: {Gender}";
-        }
+        
     }
 }

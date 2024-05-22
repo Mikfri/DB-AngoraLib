@@ -12,7 +12,6 @@ namespace DB_AngoraLib.Models
 {
     public class User : IdentityUser
     {
-        //FK relation som Rabbit kan benytte
         public string? BreederRegNo { get; set; }    // unik property for Breeder role, med unik string
 
         public string FirstName { get; set; }

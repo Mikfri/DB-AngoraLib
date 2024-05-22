@@ -16,13 +16,13 @@ namespace DB_AngoraLib.MockData
             new IdentityRoleClaim<string>
             {
                 RoleId = MockRoles.GetMockRoles().First(r => r.Name == "Admin").Id,
-                ClaimType = "Permission",
+                ClaimType = "RolePermission",
                 ClaimValue = "CRUD_All_Rabbits"
             },
             new IdentityRoleClaim<string>
             {
                 RoleId = MockRoles.GetMockRoles().First(r => r.Name == "Admin").Id,
-                ClaimType = "Permission",
+                ClaimType = "RolePermission",
                 ClaimValue = "CRUD_All_Users"
             },
 
@@ -30,7 +30,7 @@ namespace DB_AngoraLib.MockData
             new IdentityRoleClaim<string>
             {
                 RoleId = MockRoles.GetMockRoles().First(r => r.Name == "Moderator").Id,
-                ClaimType = "Permission",
+                ClaimType = "RolePermission",
                 ClaimValue = "CRUD_All_Rabbits"
             },
 
@@ -38,7 +38,7 @@ namespace DB_AngoraLib.MockData
             new IdentityRoleClaim<string>
             {
                 RoleId = MockRoles.GetMockRoles().First(r => r.Name == "Breeder").Id,
-                ClaimType = "Permission",
+                ClaimType = "RolePermission",
                 ClaimValue = "CRUD_My_Rabbits"
             },
         };

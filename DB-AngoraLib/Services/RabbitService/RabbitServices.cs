@@ -1,5 +1,4 @@
 ﻿using DB_AngoraLib.DTOs;
-using DB_AngoraLib.EF_DbContext;
 using DB_AngoraLib.Models;
 using DB_AngoraLib.Repository;
 using DB_AngoraLib.Services.HelperService;
@@ -59,7 +58,7 @@ namespace DB_AngoraLib.Services.RabbitService
         /// <param name="rightEarId"></param>
         /// <param name="leftEarId"></param>
         /// <returns></returns>
-        public async Task<Rabbit> GetRabbitByEarTagsAsync(string rightEarId, string leftEarId)
+        public async Task<Rabbit> GetRabbit_ByEarTagsAsync(string rightEarId, string leftEarId)
         {
             Expression<Func<Rabbit, bool>> filter = r => r.RightEarId == rightEarId && r.LeftEarId == leftEarId;
 
@@ -88,7 +87,7 @@ namespace DB_AngoraLib.Services.RabbitService
         /// <param name="newRabbitDto"></param>
         /// <returns></returns>
         /// <exception cref="InvalidOperationException"></exception>
-        public async Task<RabbitDTO> AddRabbit_ToMyCollectionAsync(string currentUser, RabbitDTO newRabbitDto)
+        public async Task<Rabbit_ProfileDTO> AddRabbit_ToMyCollectionAsync(string currentUser, Rabbit_CreateDTO newRabbitDto)
         {
             //Console.WriteLine($"Trying to add rabbit with RightEarId: {newRabbitDto.RightEarId}, LeftEarId: {newRabbitDto.LeftEarId}");
 
@@ -102,7 +101,7 @@ namespace DB_AngoraLib.Services.RabbitService
                 Color = newRabbitDto.Color,
                 DateOfBirth = newRabbitDto.DateOfBirth,
                 DateOfDeath = newRabbitDto.DateOfDeath,
-                //IsJuvenile = newRabbitDto.IsJuvenile,
+                //IsJuvenile = newRabbitDto.IsJuvenile, // TODO: Kigg på denne opsætning
                 Gender = newRabbitDto.Gender,
                 IsPublic = newRabbitDto.IsPublic
                 // ... evt flere..
@@ -110,7 +109,7 @@ namespace DB_AngoraLib.Services.RabbitService
 
             _validatorService.ValidateRabbit(newRabbit);
 
-            var existingRabbit = await GetRabbitByEarTagsAsync(newRabbit.RightEarId, newRabbit.LeftEarId);
+            var existingRabbit = await GetRabbit_ByEarTagsAsync(newRabbit.RightEarId, newRabbit.LeftEarId);
             if (existingRabbit != null)
             {
                 throw new InvalidOperationException("En kanin med samme øremærke kombination eksistere allerede");
@@ -127,7 +126,7 @@ namespace DB_AngoraLib.Services.RabbitService
             await _dbRepository.AddObjectAsync(newRabbit);
 
             // Create a new RabbitDTO and copy properties from newRabbit
-            var newRabbitDtoToReturn = new RabbitDTO
+            var newRabbitDtoToReturn = new Rabbit_ProfileDTO
             {
                 RightEarId = newRabbit.RightEarId,
                 LeftEarId = newRabbit.LeftEarId,
@@ -144,38 +143,43 @@ namespace DB_AngoraLib.Services.RabbitService
         }
 
 
-        // TODO: Split update og delete i seperate metoder hver. Delete_MyRabbitAsync, Delete_AnyRabbitAsync..
         //---------------------: UPDATE
-        public async Task UpdateRabbit_RBAC_Async(User currentUser, string rightEarId, string leftEarId, Rabbit_UpdateDTO updatedRabbit, IList<Claim> userClaims)
+        public async Task<Rabbit_ProfileDTO> UpdateRabbit_RBAC_Async(User currentUser, string rightEarId, string leftEarId, Rabbit_UpdateDTO updatedRabbit, IList<Claim> userClaims)
         {
-            var hasPermissionToUpdateOwn = userClaims.Any(c => c.Type == "Permission" && c.Value == "CRUD_My_Rabbits");
-            var hasPermissionToUpdateAll = userClaims.Any(c => c.Type == "Permission" && c.Value == "CRUD_All_Rabbits");
+            var hasPermissionToUpdateOwn = userClaims.Any(c => c.Type == "RolePermission" && c.Value == "CRUD_My_Rabbits");
+            var hasPermissionToUpdateAll = userClaims.Any(c => c.Type == "RolePermission" && c.Value == "CRUD_All_Rabbits");
 
-            var rabbitToUpdate = await GetRabbitByEarTagsAsync(rightEarId, leftEarId);
+            var rabbitToUpdate = await GetRabbit_ByEarTagsAsync(rightEarId, leftEarId);
             if (rabbitToUpdate == null)
             {
-                throw new InvalidOperationException("No rabbit found with the given ear tags.");
-            }
+                return null; // No rabbit found with the given ear tags, so we return null
+            }           
 
-            if (!hasPermissionToUpdateAll && (!hasPermissionToUpdateOwn || currentUser.Id != rabbitToUpdate.OwnerId))
+            if (hasPermissionToUpdateAll || (hasPermissionToUpdateOwn && currentUser.Id == rabbitToUpdate.OwnerId))
             {
-                throw new InvalidOperationException("You do not have permission to update this rabbit.");
+                // Copy all non-null properties from updatedRabbit to rabbitToUpdate
+                HelperServices.CopyPropertiesTo(updatedRabbit, rabbitToUpdate);
+
+                _validatorService.ValidateRabbit(rabbitToUpdate);
+                await _dbRepository.UpdateObjectAsync(rabbitToUpdate);
             }
 
-            // Copy all non-null properties from updatedRabbit to rabbitToUpdate
-            HelperServices.CopyPropertiesTo(updatedRabbit, rabbitToUpdate);
+            // Create a new Rabbit_ProfileDTO and copy properties from rabbitToUpdate
+            var updatedRabbitDTO = new Rabbit_ProfileDTO();
+            HelperServices.CopyPropertiesTo(rabbitToUpdate, updatedRabbitDTO);
 
-            _validatorService.ValidateRabbit(rabbitToUpdate);
-            await _dbRepository.UpdateObjectAsync(rabbitToUpdate);
+            return updatedRabbitDTO; // Return the updated rabbit as a Rabbit_ProfileDTO
         }
+
+
 
         //---------------------: DELETE
         public async Task DeleteRabbit_RBAC_Async(User currentUser, string rightEarId, string leftEarId, IList<Claim> userClaims)
         {
-            var hasPermissionToDeleteOwn = userClaims.Any(c => c.Type == "Permission" && c.Value == "CRUD_My_Rabbits");
-            var hasPermissionToDeleteAll = userClaims.Any(c => c.Type == "Permission" && c.Value == "CRUD_All_Rabbits");
+            var hasPermissionToDeleteOwn = userClaims.Any(c => c.Type == "RolePermission" && c.Value == "CRUD_My_Rabbits");
+            var hasPermissionToDeleteAll = userClaims.Any(c => c.Type == "RolePermission" && c.Value == "CRUD_All_Rabbits");
 
-            var rabbitToDelete = await GetRabbitByEarTagsAsync(rightEarId, leftEarId);
+            var rabbitToDelete = await GetRabbit_ByEarTagsAsync(rightEarId, leftEarId);
             if (rabbitToDelete == null)
             {
                 throw new InvalidOperationException("Ingen kanin med angivede ørermærker eksistere");
@@ -201,7 +205,7 @@ namespace DB_AngoraLib.Services.RabbitService
             }
 
             // Find the rabbit to transfer
-            var rabbit = await GetRabbitByEarTagsAsync(rightEarId, leftEarId);
+            var rabbit = await GetRabbit_ByEarTagsAsync(rightEarId, leftEarId);
             if (rabbit == null)
             {
                 throw new Exception("Rabbit not found");

@@ -8,7 +8,6 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Identity.Client;
 using System.Web;
 
 namespace DB_AngoraLib.Services.AccountService
@@ -24,13 +23,13 @@ namespace DB_AngoraLib.Services.AccountService
             _emailService = emailService;
         }
 
-        public async Task<IdentityResult> Register_BasicUserAsync(User_CreateBasicDTO newUserDto)
+        public async Task<Register_ResponseDTO> Register_BasicUserAsync(User_CreateBasicDTO newUserDto)
         {
             var newUser = new User
             {
                 Email = newUserDto.Email,
                 PhoneNumber = newUserDto.Phone,
-                UserName = newUserDto.Email, // Assuming the username is the email                
+                UserName = newUserDto.Email, // For IdentityUser er UserName pr. standard = Email
                 FirstName = newUserDto.FirstName,
                 LastName = newUserDto.LastName,
                 RoadNameAndNo = newUserDto.RoadNameAndNo,
@@ -40,25 +39,30 @@ namespace DB_AngoraLib.Services.AccountService
 
             var result = await _userManager.CreateAsync(newUser, newUserDto.Password);
 
+            var response = new Register_ResponseDTO // <IdentityResult> alternativ!
+            {
+                UserName = newUser.UserName,
+                IsSuccessful = result.Succeeded,
+                Errors = result.Errors.Select(e => e.Description)
+            };
+
             if (result.Succeeded)
             {
-                await _userManager.AddToRoleAsync(newUser, "Guest");
+                await _userManager.AddToRoleAsync(newUser, "Guest");    // hardcoded role
 
-                // Add claims
                 var claims = new List<Claim>
                 {
                     new Claim(ClaimTypes.Name, $"{newUser.FirstName} {newUser.LastName}"),
                     new Claim(ClaimTypes.Email, newUser.Email),
-                    //new Claim(ClaimTypes.Role, newUser.Role),
-                    // Add other claims as needed
+                    // Evt andre Claims
                 };
 
                 await _userManager.AddClaimsAsync(newUser, claims);
             }
 
-            return result;
+            return response;
         }
-                
+
 
         public async Task ConfirmEmail_SendEmailToUserAsync(string email)
         {

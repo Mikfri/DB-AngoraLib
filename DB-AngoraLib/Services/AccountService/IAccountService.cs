@@ -6,7 +6,7 @@ namespace DB_AngoraLib.Services.AccountService
 {
     public interface IAccountService
     {
-        Task<IdentityResult> Register_BasicUserAsync(User_CreateBasicDTO newUserDto);
+        Task<Register_ResponseDTO> Register_BasicUserAsync(User_CreateBasicDTO newUserDto);
         Task ConfirmEmail_SendEmailToUserAsync(string email);
         Task ConfirmEmail_ConfirmAsync(string userId, string token);
         Task<IdentityResult> ChangePasswordAsync(User_ChangePasswordDTO userPwConfig);

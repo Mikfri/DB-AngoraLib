@@ -76,7 +76,7 @@ namespace DB_AngoraLib.Services.RoleService
             }
         }
 
-        public async Task ModMethod_AssignUserToRole_WithRoleClaims(User user, string roleName)
+        public async Task ModMethod_AssignUserToRole_WithRoleClaims(User user, string roleName) // overflødig da Login jævligt opdaterer brugerens RoleClaims
         {
             if (roleName != "Admin" && roleName != "Moderator")
             {

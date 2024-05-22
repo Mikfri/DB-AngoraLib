@@ -11,7 +11,7 @@ namespace DB_AngoraLib.DTOs
     /// <summary>
     /// Basis DTO for Rabbit, med alle dens properties
     /// </summary>
-    public record RabbitDTO
+    public record Rabbit_CreateDTO
     {
         public string RightEarId { get; init; }
         public string LeftEarId { get; init; }

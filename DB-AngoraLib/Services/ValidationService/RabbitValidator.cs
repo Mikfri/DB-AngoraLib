@@ -11,12 +11,10 @@ namespace DB_AngoraLib.Services.ValidationService
 
     public class RabbitValidator
     {
-        private readonly Dictionary<Race, List<Color>> NotApprovedColorsByRace;
+        public static readonly Dictionary<Race, List<Color>> NotApprovedColorsByRace = new Dictionary<Race, List<Color>>();
 
         public RabbitValidator()
         {
-            NotApprovedColorsByRace = new Dictionary<Race, List<Color>>();
-
             // Tilføj farver, der ikke er godkendt for hver race
             NotApprovedColorsByRace[Race.Angora] = new List<Color> { Color.Chinchilla, Color.Gouwenaar, Color.LyseBlå_BlåBeveren, Color.Ræverød_NewZealandRed, Color.Sallander, };
             NotApprovedColorsByRace[Race.Satinangora] = new List<Color> { Color.Chinchilla, Color.Gouwenaar, Color.LyseBlå_BlåBeveren, Color.Ræverød_NewZealandRed, Color.Sallander, };
@@ -26,28 +24,20 @@ namespace DB_AngoraLib.Services.ValidationService
         }
 
 
-        public void ValidateRaceAndColorCombo(Rabbit rabbit)
+        public bool ValidateRaceAndColorCombo(Rabbit rabbit)
         {
             Race race = rabbit.Race;
             Color color = rabbit.Color;
 
-            //Console.WriteLine($"Selected: {race} - {color}");
-
-            if (NotApprovedColorsByRace.TryGetValue(race, out var selectedColor))
+            if (RabbitValidator.NotApprovedColorsByRace.TryGetValue(race, out var selectedColor))
             {
-                //Console.WriteLine($"NotApprovedColorsFor_{race}: {string.Join(", ", selectedColor)}");
-                bool approvedRaceColorCombo = !selectedColor.Contains(color);
-
-                rabbit.ApprovedRaceColorCombination = approvedRaceColorCombo;
-                //Console.WriteLine($"Setting ApprovedRaceColorCombination to {approvedRaceColorCombo}");
+                return !selectedColor.Contains(color);
             }
             else
             {
-                rabbit.ApprovedRaceColorCombination = false;
-                //Console.WriteLine("Setting ApprovedRaceColorCombination to false");
+                return false;
             }
         }
-
 
 
         public void ValidateRace(Rabbit rabbit)
