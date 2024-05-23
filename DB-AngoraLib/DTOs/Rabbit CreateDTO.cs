@@ -28,6 +28,6 @@ namespace DB_AngoraLib.DTOs
         public DateOnly? DateOfDeath { get; init; }
         //public bool IsJuvenile { get; init; }
         public Gender Gender { get; init; }
-        public IsPublic? IsPublic { get; init; }
+        public OpenProfile? OpenProfile { get; init; }
     }
 }

@@ -24,8 +24,8 @@ namespace DB_AngoraLib.MockData
             //null,                   //ApprovedRaceColorCombination
             new DateOnly(2020, 06, 12), // Format: yyyy-MM-dd
             new DateOnly(2022, 07, 22), // Format: yyyy-MM-dd
-            Gender.Hun,         
-            IsPublic.No),
+            Gender.Hun,
+            OpenProfile.Nej),
 
             new Rabbit(
             "5095",
@@ -38,7 +38,7 @@ namespace DB_AngoraLib.MockData
             new DateOnly(2019, 02, 27),
             new DateOnly(2024, 04, 13),
             Gender.Hun,
-            IsPublic.No),
+            OpenProfile.Nej),
 
             new Rabbit(
             "5095",
@@ -50,7 +50,7 @@ namespace DB_AngoraLib.MockData
             new DateOnly(2020, 03, 12),
             new DateOnly(2023, 11, 3),
             Gender.Hun,            
-            IsPublic.No),
+            OpenProfile.Nej),
 
             new Rabbit(
             "4640",
@@ -62,7 +62,7 @@ namespace DB_AngoraLib.MockData
             new DateOnly(2021, 05, 11),
             new DateOnly(2023, 11, 3),
             Gender.Hun,
-            IsPublic.No),
+            OpenProfile.Nej),
 
             new Rabbit(
             "4640",
@@ -74,7 +74,7 @@ namespace DB_AngoraLib.MockData
             new DateOnly(2021, 04, 05),
             null,
             Gender.Han,
-            IsPublic.No),
+            OpenProfile.Nej),
 
             //---------------------: MAJAS RABBIT COLLECTION
             new Rabbit(
@@ -88,7 +88,7 @@ namespace DB_AngoraLib.MockData
             new DateOnly(2022, 07, 22),
             null,
             Gender.Han,
-            IsPublic.No),
+            OpenProfile.Nej),
 
             new Rabbit(
             "5053",
@@ -100,7 +100,7 @@ namespace DB_AngoraLib.MockData
             new DateOnly(2023, 05, 30),
             null,
             Gender.Hun,
-            IsPublic.No),
+            OpenProfile.Nej),
 
             new Rabbit(
             "5053",
@@ -112,7 +112,7 @@ namespace DB_AngoraLib.MockData
             new DateOnly(2024, 10, 15),
             null,
             Gender.Han,
-            IsPublic.No),
+            OpenProfile.Nej),
 
             new Rabbit(
             "5053",
@@ -124,7 +124,7 @@ namespace DB_AngoraLib.MockData
             new DateOnly(2024, 10, 15),
             null,
             Gender.Hun,
-            IsPublic.No),
+            OpenProfile.Nej),
 
             new Rabbit(
             "M63",
@@ -136,7 +136,7 @@ namespace DB_AngoraLib.MockData
             new DateOnly(2023, 05, 22),
             null,
             Gender.Hun,
-            IsPublic.No),
+            OpenProfile.Nej),
 
             new Rabbit(
             "5053",
@@ -148,7 +148,7 @@ namespace DB_AngoraLib.MockData
             new DateOnly(2024, 10, 15),
             null,
             Gender.Hun,
-            IsPublic.No),
+            OpenProfile.Nej),
 
             new Rabbit(
             "5053",
@@ -160,7 +160,7 @@ namespace DB_AngoraLib.MockData
             new DateOnly(2024, 10, 15),
             new DateOnly(2024, 03, 14),
             Gender.Han,
-            IsPublic.No),
+            OpenProfile.Nej),
 
             new Rabbit(
             "5053",
@@ -172,7 +172,7 @@ namespace DB_AngoraLib.MockData
             new DateOnly(2023, 08, 17),
             null,
             Gender.Hun,
-            IsPublic.No),
+            OpenProfile.Nej),
 
             new Rabbit(
             "M63",
@@ -184,7 +184,7 @@ namespace DB_AngoraLib.MockData
             new DateOnly(2023, 09, 23),
             null,
             Gender.Hun,
-            IsPublic.No),
+            OpenProfile.Nej),
 
             new Rabbit(
             "4977",
@@ -196,7 +196,7 @@ namespace DB_AngoraLib.MockData
             new DateOnly(2022, 02, 02),
             null,
             Gender.Han,
-            IsPublic.No),
+            OpenProfile.Nej),
 
             new Rabbit(
             "4977",
@@ -208,7 +208,7 @@ namespace DB_AngoraLib.MockData
             new DateOnly(2023, 01, 13),
             null,
             Gender.Hun,
-            IsPublic.No),
+            OpenProfile.Nej),
 
             new Rabbit(
             "5053",
@@ -220,7 +220,7 @@ namespace DB_AngoraLib.MockData
             new DateOnly(2023, 05, 30),
             null,
             Gender.Hun,
-            IsPublic.No),
+            OpenProfile.Nej),
 
             new Rabbit(
             "V23",
@@ -232,7 +232,7 @@ namespace DB_AngoraLib.MockData
             new DateOnly(2020, 04, 10),
             new DateOnly(2024, 04, 23),
             Gender.Han,
-            IsPublic.No),
+            OpenProfile.Nej),
 
             new Rabbit(
             "4977",
@@ -244,7 +244,7 @@ namespace DB_AngoraLib.MockData
             new DateOnly(2022, 03, 24),
             null,
             Gender.Hun,
-            IsPublic.No),
+            OpenProfile.Nej),
 
             new Rabbit(
             "5053",
@@ -256,7 +256,7 @@ namespace DB_AngoraLib.MockData
             new DateOnly(2020, 03, 25),
             new DateOnly(2021, 05, 31),
             Gender.Hun,
-            IsPublic.No),
+            OpenProfile.Nej),
 
             new Rabbit(
             "3658",
@@ -268,7 +268,7 @@ namespace DB_AngoraLib.MockData
             new DateOnly(2019, 05, 31),
             new DateOnly(2023, 01, 31),
             Gender.Hun,
-            IsPublic.No),
+            OpenProfile.Nej),
 
             new Rabbit(
             "5053",
@@ -280,7 +280,7 @@ namespace DB_AngoraLib.MockData
             new DateOnly(2023, 08, 17),
             null,
             Gender.Han,
-            IsPublic.No),
+            OpenProfile.Nej),
         };
 
         public static List<Rabbit> GetMockRabbits()

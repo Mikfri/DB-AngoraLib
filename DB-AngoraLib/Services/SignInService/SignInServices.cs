@@ -65,6 +65,43 @@ namespace DB_AngoraLib.Services.SigninService
             return result;
         }
 
+        public async Task SynchronizeUserClaims(User user) // TODO: Benyt evt denne til LoginAsync
+        {
+            var userRoles = await _userManager.GetRolesAsync(user);
+            var allUserRoleClaims = new List<Claim>();
+
+            // Laver en liste af af RoleClaims baseret på brugerens roller
+            foreach (var roleName in userRoles)
+            {
+                var aConfirmedUserRole = await _roleManager.FindByNameAsync(roleName);
+                var confirmedRoleClaims = await _roleManager.GetClaimsAsync(aConfirmedUserRole);
+                allUserRoleClaims.AddRange(confirmedRoleClaims);
+            }
+
+            var userClaims = await _userManager.GetClaimsAsync(user);
+
+            // For hver UserClaim, brugeren har
+            foreach (var claim in userClaims)
+            {
+                // Hvis der findes UserClaims som ikke stemmer overens med brugerens liste af RoleClaims
+                if (!allUserRoleClaims.Any(rc => rc.Type == claim.Type && rc.Value == claim.Value) && !userClaims.Any(uc => uc.Type == "ExtraClaims" && uc.Value == claim.Value))
+                {
+                    // Fjerner specifikke UserClaim fra brugeren
+                    await _userManager.RemoveClaimAsync(user, claim);
+                }
+            }
+            // For hver Claim i brugerens liste af RoleClaims
+            foreach (var claim in allUserRoleClaims)
+            {
+                // Hvis brugeren mangler en UserClaim, som findes i brugeren liste af RoleClaims
+                if (!userClaims.Any(uc => uc.Type == claim.Type && uc.Value == claim.Value))
+                {
+                    // Tilføjer UserClaim til brugeren
+                    await _userManager.AddClaimAsync(user, claim);
+                }
+            }
+        }
+
 
         public async Task LogoutAsync()
         {

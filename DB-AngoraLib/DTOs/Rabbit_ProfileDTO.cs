@@ -24,7 +24,6 @@ namespace DB_AngoraLib.DTOs
 
         public bool? ApprovedRaceColorCombination { get; set; }
 
-
         [DataType(DataType.Date)]
         public DateOnly? DateOfBirth { get; init; }
 
@@ -34,6 +33,6 @@ namespace DB_AngoraLib.DTOs
         public bool IsJuvenile { get; init; }
 
         public Gender? Gender { get; init; }
-        public IsPublic? IsPublic { get; init; }
+        public OpenProfile? OpenProfile { get; init; }
     }
 }

@@ -4,11 +4,11 @@ using DB_AngoraLib.Services.ValidationService;
 
 namespace DB_AngoraLib.Models
 {
-    public enum IsPublic
+    public enum OpenProfile
     {
-        No,
-        Yes
-    }
+        Nej,
+        Ja
+    }   
 
     public enum Gender
     {
@@ -142,7 +142,7 @@ namespace DB_AngoraLib.Models
             }
         }
         public Gender Gender { get; set; }
-        public IsPublic? IsPublic { get; set; }
+        public OpenProfile? OpenProfile { get; set; }
 
         public virtual ICollection<Rating> Ratings { get; set; }
         public virtual ICollection<RabbitParents> Parents { get; set; }
@@ -152,7 +152,7 @@ namespace DB_AngoraLib.Models
 
 
 
-        public Rabbit(string rightEarId, string leftEarId, string? ownerId, string? nickName, Race race, Color color, /*bool? approvedRaceColorCombination,*/ DateOnly dateOfBirth, DateOnly? dateOfDeath, Gender gender, IsPublic? isPublic)
+        public Rabbit(string rightEarId, string leftEarId, string? ownerId, string? nickName, Race race, Color color, /*bool? approvedRaceColorCombination,*/ DateOnly dateOfBirth, DateOnly? dateOfDeath, Gender gender, OpenProfile? openProfile)
         {
             RightEarId = rightEarId;
             LeftEarId = leftEarId;
@@ -165,7 +165,7 @@ namespace DB_AngoraLib.Models
             DateOfDeath = dateOfDeath;
             Gender = gender;
 
-            IsPublic = isPublic;
+            OpenProfile = openProfile;
         }
 
         public Rabbit() { }

@@ -8,6 +8,13 @@ namespace DB_AngoraLib.Services.HelperService
 {
     public static class HelperServices
     {
+        /// <summary>
+        /// Kopierer properties fra en 'source' til et 'target' hvis properties har samme navn
+        /// </summary>
+        /// <typeparam name="TSource">Kilde filen</typeparam>
+        /// <typeparam name="TTarget">Target filen</typeparam>
+        /// <param name="source">Kilde filen</param>
+        /// <param name="target">Target filen</param>
         public static void CopyPropertiesTo<TSource, TTarget>(this TSource source, TTarget target)
         {
             var sourceProperties = typeof(TSource).GetProperties();

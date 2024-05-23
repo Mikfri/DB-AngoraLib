@@ -10,10 +10,7 @@ using System.Security.Claims;
 
 
 namespace DB_AngoraLib.Services.RabbitService
-{
-    //using IRabbitRepository = IGRepository<Rabbit>;
-    //using RabbitList = List<Rabbit>;
-
+{    
     public class RabbitServices : IRabbitService
     {
         private readonly IGRepository<Rabbit> _dbRepository;
@@ -78,8 +75,34 @@ namespace DB_AngoraLib.Services.RabbitService
             return rabbit;
         }
 
-        //---------------------: ADD
+        public async Task<Rabbit_ProfileDTO> GetRabbit_ProfileAsync(
+            string currentUserId, string rightEarId, string leftEarId, IList<Claim> userClaims)
+        {
+            var rabbit = await GetRabbit_ByEarTagsAsync(rightEarId, leftEarId);
 
+            if (rabbit == null)
+            {
+                return null;
+            }
+
+            var hasPermissionToGetAnyRabbit = userClaims.Any(
+                c => c.Type == "RolePermission" && c.Value == "Get_Any_Rabbit");
+
+            if (rabbit.OpenProfile == OpenProfile.Ja || rabbit.OwnerId == currentUserId || hasPermissionToGetAnyRabbit)
+            {
+                var rabbitProfile = new Rabbit_ProfileDTO();
+                HelperServices.CopyPropertiesTo(rabbit, rabbitProfile);
+
+                return rabbitProfile;
+            }
+            return null;
+        }
+
+
+
+
+
+        //---------------------: ADD
         /// <summary>
         /// Tilføjer en Rabbit til den nuværende bruger og tilføjer den til Collectionen
         /// </summary>
@@ -99,11 +122,12 @@ namespace DB_AngoraLib.Services.RabbitService
                 NickName = newRabbitDto.NickName,
                 Race = newRabbitDto.Race,
                 Color = newRabbitDto.Color,
+                //ApprovedRaceColorCombination          // Ikke nødvendig, dictionary, automatisk udregnet
                 DateOfBirth = newRabbitDto.DateOfBirth,
                 DateOfDeath = newRabbitDto.DateOfDeath,
-                //IsJuvenile = newRabbitDto.IsJuvenile, // TODO: Kigg på denne opsætning
+                //IsJuvenile = newRabbitDto.IsJuvenile, // Ikke nødvendig, automatisk udregnet - evt frontend udregning?
                 Gender = newRabbitDto.Gender,
-                IsPublic = newRabbitDto.IsPublic
+                OpenProfile = newRabbitDto.OpenProfile
                 // ... evt flere..
             };
 
@@ -126,58 +150,49 @@ namespace DB_AngoraLib.Services.RabbitService
             await _dbRepository.AddObjectAsync(newRabbit);
 
             // Create a new RabbitDTO and copy properties from newRabbit
-            var newRabbitDtoToReturn = new Rabbit_ProfileDTO
-            {
-                RightEarId = newRabbit.RightEarId,
-                LeftEarId = newRabbit.LeftEarId,
-                NickName = newRabbit.NickName,
-                Race = newRabbit.Race,
-                Color = newRabbit.Color,
-                DateOfBirth = newRabbit.DateOfBirth,
-                DateOfDeath = newRabbit.DateOfDeath,
-                Gender = newRabbit.Gender,
-                IsPublic = newRabbit.IsPublic
-            };
+            var newRabbit_ProfileDTO = new Rabbit_ProfileDTO();
+            HelperServices.CopyPropertiesTo(newRabbit, newRabbit_ProfileDTO);
 
-            return newRabbitDtoToReturn;
+            return newRabbit_ProfileDTO;
         }
 
 
         //---------------------: UPDATE
-        public async Task<Rabbit_ProfileDTO> UpdateRabbit_RBAC_Async(User currentUser, string rightEarId, string leftEarId, Rabbit_UpdateDTO updatedRabbit, IList<Claim> userClaims)
+        public async Task<Rabbit_ProfileDTO> UpdateRabbit_RBAC_Async(User currentUser, string rightEarId, string leftEarId, Rabbit_UpdateDTO rabbit_updateDTO, IList<Claim> userClaims)
         {
-            var hasPermissionToUpdateOwn = userClaims.Any(c => c.Type == "RolePermission" && c.Value == "CRUD_My_Rabbits");
-            var hasPermissionToUpdateAll = userClaims.Any(c => c.Type == "RolePermission" && c.Value == "CRUD_All_Rabbits");
+            var hasPermissionToUpdateOwn = userClaims.Any(c => c.Type == "RolePermission" && c.Value == "Update_Own_Rabbit");
+            var hasPermissionToUpdateAll = userClaims.Any(c => c.Type == "RolePermission" && c.Value == "Update_Any_Rabbit"); // tilføj evt. "SpecialPermission" "Update_Any_Rabbit"
 
-            var rabbitToUpdate = await GetRabbit_ByEarTagsAsync(rightEarId, leftEarId);
-            if (rabbitToUpdate == null)
+            var rabbit_InDB = await GetRabbit_ByEarTagsAsync(rightEarId, leftEarId);    // TODO: Skal vi tage en HEL User objekt ind fremfor en string?
+            if (rabbit_InDB == null)
             {
                 return null; // No rabbit found with the given ear tags, so we return null
-            }           
-
-            if (hasPermissionToUpdateAll || (hasPermissionToUpdateOwn && currentUser.Id == rabbitToUpdate.OwnerId))
-            {
-                // Copy all non-null properties from updatedRabbit to rabbitToUpdate
-                HelperServices.CopyPropertiesTo(updatedRabbit, rabbitToUpdate);
-
-                _validatorService.ValidateRabbit(rabbitToUpdate);
-                await _dbRepository.UpdateObjectAsync(rabbitToUpdate);
             }
 
-            // Create a new Rabbit_ProfileDTO and copy properties from rabbitToUpdate
-            var updatedRabbitDTO = new Rabbit_ProfileDTO();
-            HelperServices.CopyPropertiesTo(rabbitToUpdate, updatedRabbitDTO);
+            if (hasPermissionToUpdateAll || (hasPermissionToUpdateOwn && currentUser.Id == rabbit_InDB.OwnerId))
+            {
+                // Copy all non-null properties from updatedRabbit to rabbitToUpdate
+                HelperServices.CopyPropertiesTo(rabbit_updateDTO, rabbit_InDB);
 
-            return updatedRabbitDTO; // Return the updated rabbit as a Rabbit_ProfileDTO
+                _validatorService.ValidateRabbit(rabbit_InDB);
+                await _dbRepository.UpdateObjectAsync(rabbit_InDB);
+            }
+
+            // Create a new Rabbit_ProfileDTO and copy properties from updatedRabbit
+            var rabbit_ProfileDTO = new Rabbit_ProfileDTO();
+            HelperServices.CopyPropertiesTo(rabbit_InDB, rabbit_ProfileDTO);
+
+            return rabbit_ProfileDTO; // Return the updated rabbit as a Rabbit_ProfileDTO
         }
+
 
 
 
         //---------------------: DELETE
         public async Task DeleteRabbit_RBAC_Async(User currentUser, string rightEarId, string leftEarId, IList<Claim> userClaims)
         {
-            var hasPermissionToDeleteOwn = userClaims.Any(c => c.Type == "RolePermission" && c.Value == "CRUD_My_Rabbits");
-            var hasPermissionToDeleteAll = userClaims.Any(c => c.Type == "RolePermission" && c.Value == "CRUD_All_Rabbits");
+            var hasPermissionToDeleteOwn = userClaims.Any(c => c.Type == "RolePermission" && c.Value == "Delete_Own_Rabbit");
+            var hasPermissionToDeleteAll = userClaims.Any(c => c.Type == "RolePermission" && c.Value == "Delete_Any_Rabbit"); // tilføj evt. "SpecialPermission" "Delete_Any_Rabbit"
 
             var rabbitToDelete = await GetRabbit_ByEarTagsAsync(rightEarId, leftEarId);
             if (rabbitToDelete == null)

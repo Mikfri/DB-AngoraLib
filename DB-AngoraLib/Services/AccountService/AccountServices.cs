@@ -48,10 +48,12 @@ namespace DB_AngoraLib.Services.AccountService
 
             if (result.Succeeded)
             {
-                await _userManager.AddToRoleAsync(newUser, "Guest");    // hardcoded role
+                await _userManager.AddToRoleAsync(newUser, "Guest"); // hardcoded role
 
                 var claims = new List<Claim>
                 {
+                    new Claim(ClaimTypes.NameIdentifier, newUser.Id),
+                    new Claim(ClaimTypes.Role, "Guest"),
                     new Claim(ClaimTypes.Name, $"{newUser.FirstName} {newUser.LastName}"),
                     new Claim(ClaimTypes.Email, newUser.Email),
                     // Evt andre Claims
