@@ -28,8 +28,6 @@ namespace DB_AngoraLib.Services.RabbitService
                 
 
         //---------------------: GET METODER
-        //-------: ADMIN METODER
-
         public async Task<List<Rabbit>> GetAllRabbitsAsync()     // reeeally though? Skal vi bruge denne metode, udover test?
         {
             var rabbits = await _dbRepository.GetAllObjectsAsync();
@@ -166,7 +164,7 @@ namespace DB_AngoraLib.Services.RabbitService
             var rabbit_InDB = await GetRabbit_ByEarTagsAsync(rightEarId, leftEarId);    // TODO: Skal vi tage en HEL User objekt ind fremfor en string?
             if (rabbit_InDB == null)
             {
-                return null; // No rabbit found with the given ear tags, so we return null
+                return null;
             }
 
             if (hasPermissionToUpdateAll || (hasPermissionToUpdateOwn && currentUser.Id == rabbit_InDB.OwnerId))

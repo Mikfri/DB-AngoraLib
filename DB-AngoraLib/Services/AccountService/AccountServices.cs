@@ -9,6 +9,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
+using DB_AngoraLib.Services.HelperService;
 
 namespace DB_AngoraLib.Services.AccountService
 {
@@ -23,18 +24,24 @@ namespace DB_AngoraLib.Services.AccountService
             _emailService = emailService;
         }
 
+        /// <summary>
+        /// Skaber en ny User i databasen, og tilføjer brugeren til en hardcoded rolle "Guest".
+        /// User har ikke BreederRegNo, og er derfor en "BasicUser".
+        /// </summary>
+        /// <param name="newUserDto"></param>
+        /// <returns></returns>
         public async Task<Register_ResponseDTO> Register_BasicUserAsync(User_CreateBasicDTO newUserDto)
         {
             var newUser = new User
             {
+                UserName = newUserDto.Email,
                 Email = newUserDto.Email,
                 PhoneNumber = newUserDto.Phone,
-                UserName = newUserDto.Email, // For IdentityUser er UserName pr. standard = Email
                 FirstName = newUserDto.FirstName,
                 LastName = newUserDto.LastName,
                 RoadNameAndNo = newUserDto.RoadNameAndNo,
-                City = newUserDto.City,
                 ZipCode = newUserDto.ZipCode,
+                City = newUserDto.City,
             };
 
             var result = await _userManager.CreateAsync(newUser, newUserDto.Password);
@@ -49,17 +56,6 @@ namespace DB_AngoraLib.Services.AccountService
             if (result.Succeeded)
             {
                 await _userManager.AddToRoleAsync(newUser, "Guest"); // hardcoded role
-
-                var claims = new List<Claim>
-                {
-                    new Claim(ClaimTypes.NameIdentifier, newUser.Id),
-                    new Claim(ClaimTypes.Role, "Guest"),
-                    new Claim(ClaimTypes.Name, $"{newUser.FirstName} {newUser.LastName}"),
-                    new Claim(ClaimTypes.Email, newUser.Email),
-                    // Evt andre Claims
-                };
-
-                await _userManager.AddClaimsAsync(newUser, claims);
             }
 
             return response;

@@ -10,13 +10,26 @@ namespace DB_AngoraLib.MockData
 {
     public class MockRoleClaims
     {
+        private static List<string> full_Any_CRUD_User_RolePermits = new List<string> { "Admin" };
         private static List<string> full_Any_CRUD_Rabbit_RolePermits = new List<string> { "Admin", "Moderator" };
         private static List<string> full_Limited_CRUD_Rabbit_RolePermits = new List<string> { "Breeder" };
+        private static List<string> get_public_Rabbit_RolePermits = new List<string> { "Guest" };
 
         private static List<IdentityRoleClaim<string>> _roleClaimsList = new List<IdentityRoleClaim<string>>();
 
         static MockRoleClaims()
         {
+            foreach (var role in full_Any_CRUD_User_RolePermits)
+            {
+                var roleId = MockRoles.GetMockRoles().First(r => r.Name == role).Id;
+                _roleClaimsList.AddRange(new List<IdentityRoleClaim<string>>
+                {
+                    new IdentityRoleClaim<string> { RoleId = roleId, ClaimType = "RolePermission", ClaimValue = "Get_Any_User" },
+                    new IdentityRoleClaim<string> { RoleId = roleId, ClaimType = "RolePermission", ClaimValue = "Update_Any_User" },
+                    new IdentityRoleClaim<string> { RoleId = roleId, ClaimType = "RolePermission", ClaimValue = "Delete_Any_User" }
+                });
+            }
+
             foreach (var role in full_Any_CRUD_Rabbit_RolePermits)
             {
                 var roleId = MockRoles.GetMockRoles().First(r => r.Name == role).Id;
@@ -38,6 +51,15 @@ namespace DB_AngoraLib.MockData
                     new IdentityRoleClaim<string> { RoleId = roleId, ClaimType = "RolePermission", ClaimValue = "Get_Own_Rabbit" },
                     new IdentityRoleClaim<string> { RoleId = roleId, ClaimType = "RolePermission", ClaimValue = "Update_Own_Rabbit" },
                     new IdentityRoleClaim<string> { RoleId = roleId, ClaimType = "RolePermission", ClaimValue = "Delete_Own_Rabbit" }
+                });
+            }
+
+            foreach (var role in get_public_Rabbit_RolePermits)
+            {
+                var roleId = MockRoles.GetMockRoles().First(r => r.Name == role).Id;
+                _roleClaimsList.AddRange(new List<IdentityRoleClaim<string>>
+                {
+                    new IdentityRoleClaim<string> { RoleId = roleId, ClaimType = "RolePermission", ClaimValue = "Get_Own_Rabbit" },
                 });
             }
         }
