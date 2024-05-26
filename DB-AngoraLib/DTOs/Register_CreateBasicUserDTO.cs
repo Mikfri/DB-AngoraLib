@@ -8,11 +8,16 @@ using System.Threading.Tasks;
 namespace DB_AngoraLib.DTOs
 {
     /// <summary>
-    /// USER, breeder DTO, med alle properties, inklusiv BreederRegNo (+Email og Phone fra IdentityUser)
+    /// USER, basis DTO, for dem der IKKE har breeder role (+Email og Phone fra IdentityUser)
     /// </summary>
-    public record User_BreederDTO
+    public record Register_CreateBasicUserDTO
     {
-        public string BreederRegNo { get; init; }
+        public string Email { get; init; }
+        public string Password { get; init; }
+
+        //[DataType(DataType.PhoneNumber)]
+        public string Phone { get; init; }
+
         public string FirstName { get; init; }
         public string LastName { get; init; }
         public string RoadNameAndNo { get; init; }
@@ -21,11 +26,5 @@ namespace DB_AngoraLib.DTOs
         public int ZipCode { get; init; }
 
         public string City { get; init; }
-
-        //[DataType(DataType.EmailAddress)]
-        public string Email { get; init; }
-
-        //[DataType(DataType.PhoneNumber)]
-        public string Phone { get; init; }
     }
 }

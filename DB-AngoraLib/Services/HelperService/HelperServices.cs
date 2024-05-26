@@ -9,7 +9,7 @@ namespace DB_AngoraLib.Services.HelperService
     public static class HelperServices
     {
         /// <summary>
-        /// Kopierer properties fra en 'source' til et 'target' hvis properties har samme navn
+        /// Kopierer properties fra en 'source' til et 'target' HVIS properties har samme navn. Ellers ignoreres de.
         /// </summary>
         /// <typeparam name="TSource">Kilde filen</typeparam>
         /// <typeparam name="TTarget">Target filen</typeparam>

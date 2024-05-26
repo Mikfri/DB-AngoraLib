@@ -24,7 +24,7 @@ namespace DB_AngoraLib.Services.UserService
 
         //------------------------- USER METHODS -------------------------
 
-        public async Task CreateBasicUserAsync(User_CreateBasicDTO newUserDto)
+        public async Task CreateBasicUserAsync(Register_CreateBasicUserDTO newUserDto)
         {
             var newUser = new User
             {

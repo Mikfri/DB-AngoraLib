@@ -25,28 +25,19 @@ namespace DB_AngoraLib.Services.AccountService
         }
 
         /// <summary>
-        /// Skaber en ny User i databasen, og tilføjer brugeren til en hardcoded rolle "Guest".
-        /// User har ikke BreederRegNo, og er derfor en "BasicUser".
+        /// 
         /// </summary>
         /// <param name="newUserDto"></param>
         /// <returns></returns>
-        public async Task<Register_ResponseDTO> Register_BasicUserAsync(User_CreateBasicDTO newUserDto)
+        public async Task<Register_ResponseDTO> Register_BasicUserAsync(Register_CreateBasicUserDTO newUserDTO)
         {
-            var newUser = new User
-            {
-                UserName = newUserDto.Email,
-                Email = newUserDto.Email,
-                PhoneNumber = newUserDto.Phone,
-                FirstName = newUserDto.FirstName,
-                LastName = newUserDto.LastName,
-                RoadNameAndNo = newUserDto.RoadNameAndNo,
-                ZipCode = newUserDto.ZipCode,
-                City = newUserDto.City,
-            };
+            var newUser = new User();
+            newUserDTO.CopyPropertiesTo(newUser);
+            newUser.UserName = newUserDTO.Email;
 
-            var result = await _userManager.CreateAsync(newUser, newUserDto.Password);
-
-            var response = new Register_ResponseDTO // <IdentityResult> alternativ!
+            var result = await _userManager.CreateAsync(newUser, newUserDTO.Password);
+            // returnere IdentityResult OG UserName
+            var responseDTO = new Register_ResponseDTO // <IdentityResult> alternativ!
             {
                 UserName = newUser.UserName,
                 IsSuccessful = result.Succeeded,
@@ -58,7 +49,7 @@ namespace DB_AngoraLib.Services.AccountService
                 await _userManager.AddToRoleAsync(newUser, "Guest"); // hardcoded role
             }
 
-            return response;
+            return responseDTO;
         }
 
 
