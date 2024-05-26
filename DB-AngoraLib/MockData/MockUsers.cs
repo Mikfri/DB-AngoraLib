@@ -26,7 +26,7 @@ namespace DB_AngoraLib.MockData
             {
                 Id = "IdasId"
             },
-            "Moderator"
+            new List<string> { "Moderator" }
             ),
 
             new MockUserWithRole(
@@ -43,7 +43,7 @@ namespace DB_AngoraLib.MockData
             {
                 Id = "MajasId"
             },
-            "Breeder"
+            new List<string> { "Breeder" }
             ),
 
             new MockUserWithRole(
@@ -60,7 +60,7 @@ namespace DB_AngoraLib.MockData
             {
                 Id = "MikkelsId"
             },
-            "Admin"
+            new List<string> { "Admin" }
             ),
         };
 
@@ -71,52 +71,52 @@ namespace DB_AngoraLib.MockData
             return _usersWithRolesList ?? new List<MockUserWithRole>();
         }
 
-        private static List<User> _usersList = new List<User>()
-        {
-            new User(
-            "5095",
-            "Ida",
-            "Friborg",
-            "Fynsvej 14",
-            4060,
-            "Kirke Såby",
-            "IdaFriborg87@gmail.com",
-            "27586455",
-            "Ida123!")
-            {
-                Id = "IdasId"
-            },
+        //private static List<User> _usersList = new List<User>()
+        //{
+        //    new User(
+        //    "5095",
+        //    "Ida",
+        //    "Friborg",
+        //    "Fynsvej 14",
+        //    4060,
+        //    "Kirke Såby",
+        //    "IdaFriborg87@gmail.com",
+        //    "27586455",
+        //    "Ida123!")
+        //    {
+        //        Id = "IdasId"
+        //    },
 
-            new User(
-            "5053",
-            "Maja",
-            "Hulstrøm",
-            "Sletten 4",
-            4100,
-            "Benløse",
-            "MajaJoensen89@gmail.com",
-            "28733085",
-            "Maja123!")
-            {
-                Id = "MajasId"
-            },
+        //    new User(
+        //    "5053",
+        //    "Maja",
+        //    "Hulstrøm",
+        //    "Sletten 4",
+        //    4100,
+        //    "Benløse",
+        //    "MajaJoensen89@gmail.com",
+        //    "28733085",
+        //    "Maja123!")
+        //    {
+        //        Id = "MajasId"
+        //    },
 
-            new User(
-            null,
-            "Mikkel",
-            "Friborg",
-            "Fynsvej 14",
-            4060,
-            "Kirke Såby",
-            "Mikk.fri@gmail.com",
-            "81183394",
-            "Mikkel123!")
-            {
-                Id = "MikkelsId"
-            },
-        };
+        //    new User(
+        //    null,
+        //    "Mikkel",
+        //    "Friborg",
+        //    "Fynsvej 14",
+        //    4060,
+        //    "Kirke Såby",
+        //    "Mikk.fri@gmail.com",
+        //    "81183394",
+        //    "Mikkel123!")
+        //    {
+        //        Id = "MikkelsId"
+        //    },
+        //};
 
-        public static List<User> GetMockUsers()
-        { return _usersList; }
+        //public static List<User> GetMockUsers()
+        //{ return _usersList; }
     }
 }

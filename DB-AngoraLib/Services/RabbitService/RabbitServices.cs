@@ -77,14 +77,13 @@ namespace DB_AngoraLib.Services.RabbitService
             string currentUserId, string rightEarId, string leftEarId, IList<Claim> userClaims)
         {
             var rabbit = await GetRabbit_ByEarTagsAsync(rightEarId, leftEarId);
+            var hasPermissionToGetAnyRabbit = userClaims.Any(
+                c => c.Type == "RolePermission" && c.Value == "Get_Any_Rabbit"); // tilføj evt. "SpecialPermission" "Get_Any_Rabbit"
 
             if (rabbit == null)
             {
                 return null;
-            }
-
-            var hasPermissionToGetAnyRabbit = userClaims.Any(
-                c => c.Type == "RolePermission" && c.Value == "Get_Any_Rabbit");
+            }            
 
             if (rabbit.OpenProfile == OpenProfile.Ja || rabbit.OwnerId == currentUserId || hasPermissionToGetAnyRabbit)
             {
@@ -93,6 +92,7 @@ namespace DB_AngoraLib.Services.RabbitService
 
                 return rabbitProfile;
             }
+
             return null;
         }
 
@@ -158,7 +158,7 @@ namespace DB_AngoraLib.Services.RabbitService
         //---------------------: UPDATE
         public async Task<Rabbit_ProfileDTO> UpdateRabbit_RBAC_Async(User currentUser, string rightEarId, string leftEarId, Rabbit_UpdateDTO rabbit_updateDTO, IList<Claim> userClaims)
         {
-            var hasPermissionToUpdateOwn = userClaims.Any(c => c.Type == "RolePermission" && c.Value == "Update_Own_Rabbit");
+            var hasPermissionToUpdateOwn = userClaims.Any(c => c.Type == "RolePermission" && c.Value == "Update_Own_Rabbit"); // tilføj evt. "SpecialPermission" "Update_Own_Rabbit"
             var hasPermissionToUpdateAll = userClaims.Any(c => c.Type == "RolePermission" && c.Value == "Update_Any_Rabbit"); // tilføj evt. "SpecialPermission" "Update_Any_Rabbit"
 
             var rabbit_InDB = await GetRabbit_ByEarTagsAsync(rightEarId, leftEarId);    // TODO: Skal vi tage en HEL User objekt ind fremfor en string?
@@ -189,7 +189,7 @@ namespace DB_AngoraLib.Services.RabbitService
         //---------------------: DELETE
         public async Task DeleteRabbit_RBAC_Async(User currentUser, string rightEarId, string leftEarId, IList<Claim> userClaims)
         {
-            var hasPermissionToDeleteOwn = userClaims.Any(c => c.Type == "RolePermission" && c.Value == "Delete_Own_Rabbit");
+            var hasPermissionToDeleteOwn = userClaims.Any(c => c.Type == "RolePermission" && c.Value == "Delete_Own_Rabbit"); // tilføj evt. "SpecialPermission" "Delete_Own_Rabbit"
             var hasPermissionToDeleteAll = userClaims.Any(c => c.Type == "RolePermission" && c.Value == "Delete_Any_Rabbit"); // tilføj evt. "SpecialPermission" "Delete_Any_Rabbit"
 
             var rabbitToDelete = await GetRabbit_ByEarTagsAsync(rightEarId, leftEarId);

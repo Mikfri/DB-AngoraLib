@@ -49,16 +49,6 @@ namespace DB_AngoraMST.Services_InMemTest
             _rabbitService = new RabbitServices(rabbitRepository, _userService, validatorService);
         }
 
-        //[TestInitialize]
-        //public void Setup()
-        //{
-        //    // Add mock data to in-memory database
-        //    var mockUsers = MockUsers.GetMockUsers();
-        //    _context.Users.AddRange(mockUsers);
-        //    var mockRabbits = MockRabbits.GetMockRabbits();
-        //    _context.Rabbits.AddRange(mockRabbits);
-        //    _context.SaveChanges();
-        //}
         [TestInitialize]
         public void Setup()
         {
@@ -67,18 +57,61 @@ namespace DB_AngoraMST.Services_InMemTest
             foreach (var mockUserWithRole in mockUsersWithRoles)
             {
                 _context.Users.Add(mockUserWithRole.User);
-                var userClaims = MockUserClaims.GetMockUserClaimsForUser(mockUserWithRole);
+
+                // Add standard claims
+                var standardClaims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.NameIdentifier, mockUserWithRole.User.Id),
+                    new Claim(ClaimTypes.Name, $"{mockUserWithRole.User.FirstName} {mockUserWithRole.User.LastName}"),
+                    new Claim(ClaimTypes.Email, mockUserWithRole.User.Email),
+                };
+                _context.UserClaims.AddRange(standardClaims.Select(sc => new IdentityUserClaim<string>
+                {
+                    UserId = mockUserWithRole.User.Id,
+                    ClaimType = sc.Type,
+                    ClaimValue = sc.Value
+                }));
+
+                var userClaims = MockUserClaims.GetMockUserClaimsForUser(mockUserWithRole.User);
                 _context.UserClaims.AddRange(userClaims.Select(uc => new IdentityUserClaim<string>
                 {
                     UserId = mockUserWithRole.User.Id,
                     ClaimType = uc.Type,
                     ClaimValue = uc.Value
                 }));
+
+                // Add RoleClaims for the user
+                foreach (var role in mockUserWithRole.Roles)
+                {
+                    // Add the role to the user
+                    _userManagerMock.Object.AddToRoleAsync(mockUserWithRole.User, role).GetAwaiter().GetResult();
+
+                    // Add the role as a claim
+                    _context.UserClaims.Add(new IdentityUserClaim<string>
+                    {
+                        UserId = mockUserWithRole.User.Id,
+                        ClaimType = ClaimTypes.Role,
+                        ClaimValue = role
+                    });
+
+                    var roleClaims = MockRoleClaims.GetMockRoleClaimsForRole(role);
+                    foreach (var roleClaim in roleClaims)
+                    {
+                        _context.UserClaims.Add(new IdentityUserClaim<string>
+                        {
+                            UserId = mockUserWithRole.User.Id,
+                            ClaimType = roleClaim.ClaimType,
+                            ClaimValue = roleClaim.ClaimValue
+                        });
+                    }
+                }
             }
             var mockRabbits = MockRabbits.GetMockRabbits();
             _context.Rabbits.AddRange(mockRabbits);
             _context.SaveChanges();
         }
+
+
 
         [TestCleanup]
         public void Cleanup()

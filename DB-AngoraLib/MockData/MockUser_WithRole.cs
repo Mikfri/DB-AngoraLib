@@ -10,12 +10,12 @@ namespace DB_AngoraLib.MockData
     public class MockUserWithRole
     {
         public User User { get; set; }
-        public string Role { get; set; }
+        public List<string> Roles { get; set; }
 
-        public MockUserWithRole(User user, string role)
+        public MockUserWithRole(User user, List<string> roles)
         {
             User = user;
-            Role = role;
+            Roles = roles;
         }
     }
 }

@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
@@ -38,12 +39,12 @@ namespace DB_AngoraLib.Services.SigninService
             if (result.Succeeded)
             {
                 var user = await _userManager.FindByNameAsync(loginRequest.UserName);
-                await SynchronizeUserClaims(user);
+                //await SynchronizeUserClaims(user);
 
-                var claims = await _userManager.GetClaimsAsync(user);
+                //var claims = await _userManager.GetClaimsAsync(user);
 
                 // Generate the token with the user's claims
-                var token = await GenerateToken(user, claims);
+                var token = await GenerateToken(user);
                 var tokenHandler = new JwtSecurityTokenHandler();
 
                 signinResultResponse.UserName = user.UserName;
@@ -58,8 +59,7 @@ namespace DB_AngoraLib.Services.SigninService
             return signinResultResponse;
         }
 
-
-        private async Task<JwtSecurityToken> GenerateToken(User user, IList<Claim> claims)
+        private async Task<JwtSecurityToken> GenerateToken(User user)
         {
             var keyString = _configuration["Jwt:Key"];
             var issuer = _configuration["Jwt:Issuer"];
@@ -68,16 +68,28 @@ namespace DB_AngoraLib.Services.SigninService
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(keyString));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-            // Add the four claims
-            claims.Add(new Claim(ClaimTypes.NameIdentifier, user.Id));
+            var claims = new List<Claim>();
 
-            // Get the actual role of the user
+            // Tilføjer UserClaims til token claims
+            var userClaims = await _userManager.GetClaimsAsync(user);
+            claims.AddRange(userClaims);
+
+            //Tilføjer RoleClaims til token claims
             var userRoles = await _userManager.GetRolesAsync(user);
+            foreach (var roleName in userRoles)
+            {
+                var role = await _roleManager.FindByNameAsync(roleName);
+                var roleClaims = await _roleManager.GetClaimsAsync(role);
+                claims.AddRange(roleClaims);
+            }
+
+            // Tilføjer brugerens roller som claims
             foreach (var role in userRoles)
             {
                 claims.Add(new Claim(ClaimTypes.Role, role));
             }
 
+            claims.Add(new Claim(ClaimTypes.NameIdentifier, user.Id));
             claims.Add(new Claim(ClaimTypes.Name, $"{user.FirstName} {user.LastName}"));
             claims.Add(new Claim(ClaimTypes.Email, user.Email));
 
@@ -92,43 +104,118 @@ namespace DB_AngoraLib.Services.SigninService
         }
 
 
+        //private async Task<JwtSecurityToken> GenerateToken(User user)
+        //{
+        //    var keyString = _configuration["Jwt:Key"];
+        //    var issuer = _configuration["Jwt:Issuer"];
+        //    var audience = _configuration["Jwt:Audience"];
 
-        public async Task SynchronizeUserClaims(User user) // TODO: Benyt evt denne til LoginAsync
-        {
-            var userRoles = await _userManager.GetRolesAsync(user);
-            var allUserRoleClaims = new List<Claim>();
+        //    var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(keyString));
+        //    var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-            // Laver en liste af af RoleClaims baseret på brugerens roller
-            foreach (var roleName in userRoles)
-            {
-                var aConfirmedUserRole = await _roleManager.FindByNameAsync(roleName);
-                var confirmedRoleClaims = await _roleManager.GetClaimsAsync(aConfirmedUserRole);
-                allUserRoleClaims.AddRange(confirmedRoleClaims);
-            }
+        //    var claims = new List<Claim>();
 
-            var userClaims = await _userManager.GetClaimsAsync(user);
+        //    // Tilføjer brugerens roller som claims
+        //    var userRoles = await _userManager.GetRolesAsync(user);
+        //    foreach (var role in userRoles)
+        //    {
+        //        claims.Add(new Claim(ClaimTypes.Role, role));
 
-            // For hver UserClaim, brugeren har
-            foreach (var claim in userClaims)
-            {
-                // Hvis der findes UserClaims som ikke stemmer overens med brugerens liste af RoleClaims
-                if (!allUserRoleClaims.Any(rc => rc.Type == claim.Type && rc.Value == claim.Value)) /* && !userClaims.Any(uc => uc.Type == "SpecialPermission" && uc.Value == claim.Value))*/
-                {
-                    // Fjerner specifikke UserClaim fra brugeren
-                    await _userManager.RemoveClaimAsync(user, claim);
-                }
-            }
-            // For hver Claim i brugerens liste af RoleClaims
-            foreach (var claim in allUserRoleClaims)
-            {
-                // Hvis brugeren mangler en UserClaim, som findes i brugeren liste af RoleClaims
-                if (!userClaims.Any(uc => uc.Type == claim.Type && uc.Value == claim.Value))
-                {
-                    // Tilføjer UserClaim til brugeren
-                    await _userManager.AddClaimAsync(user, claim);
-                }
-            }
-        }
+        //        // Tilføjer RoleClaims til token claims
+        //        var identityRole = await _roleManager.FindByNameAsync(role);
+        //        var roleClaims = await _roleManager.GetClaimsAsync(identityRole);
+        //        claims.AddRange(roleClaims);
+        //    }
+
+        //    // Tilføjer UserClaims til token claims
+        //    var userClaims = await _userManager.GetClaimsAsync(user);
+        //    claims.AddRange(userClaims);
+
+        //    claims.Add(new Claim(ClaimTypes.NameIdentifier, user.Id));
+        //    claims.Add(new Claim(ClaimTypes.Name, $"{user.FirstName} {user.LastName}"));
+        //    claims.Add(new Claim(ClaimTypes.Email, user.Email));
+
+        //    var token = new JwtSecurityToken(
+        //        issuer: issuer,
+        //        audience: audience,
+        //        claims: claims,
+        //        expires: DateTime.Now.AddHours(1),
+        //        signingCredentials: creds);
+
+        //    return token;
+        //}
+
+
+        //private async Task<JwtSecurityToken> GenerateToken(User user, IList<Claim> claims)
+        //{
+        //    var keyString = _configuration["Jwt:Key"];
+        //    var issuer = _configuration["Jwt:Issuer"];
+        //    var audience = _configuration["Jwt:Audience"];
+
+        //    var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(keyString));
+        //    var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+        //    //-------------:  ADD
+        //    claims.Add(new Claim(ClaimTypes.NameIdentifier, user.Id));
+
+        //    // Tilføjer brugerens roller som claims
+        //    var userRoles = await _userManager.GetRolesAsync(user);
+        //    foreach (var role in userRoles)
+        //    {
+        //        claims.Add(new Claim(ClaimTypes.Role, role));
+        //    }
+
+        //    claims.Add(new Claim(ClaimTypes.Name, $"{user.FirstName} {user.LastName}"));
+        //    claims.Add(new Claim(ClaimTypes.Email, user.Email));
+
+        //    var token = new JwtSecurityToken(
+        //        issuer: issuer,
+        //        audience: audience,
+        //        claims: claims,
+        //        expires: DateTime.Now.AddHours(1),
+        //        signingCredentials: creds);
+
+        //    return token;
+        //}
+
+
+
+        //public async Task SynchronizeUserClaims(User user) // TODO: Benyt evt denne til LoginAsync
+        //{
+        //    var userRoles = await _userManager.GetRolesAsync(user);
+        //    var allUserRoleClaims = new List<Claim>();
+
+        //    // Laver en liste af af RoleClaims baseret på brugerens roller
+        //    foreach (var roleName in userRoles)
+        //    {
+        //        var aConfirmedUserRole = await _roleManager.FindByNameAsync(roleName);
+        //        var confirmedRoleClaims = await _roleManager.GetClaimsAsync(aConfirmedUserRole);
+        //        allUserRoleClaims.AddRange(confirmedRoleClaims);
+        //    }
+
+        //    var userClaims = await _userManager.GetClaimsAsync(user);
+
+        //    // For hver UserClaim, brugeren har
+        //    foreach (var claim in userClaims)
+        //    {
+        //        // Hvis der findes UserClaims som ikke stemmer overens med brugerens liste af RoleClaims
+        //        if (!allUserRoleClaims.Any(rc => rc.Type == claim.Type && rc.Value == claim.Value)) /* && !userClaims.Any(uc => uc.Type == "SpecialPermission" && uc.Value == claim.Value))*/
+        //        {
+        //            // Fjerner specifikke UserClaim fra brugeren
+        //            await _userManager.RemoveClaimAsync(user, claim);
+        //        }
+        //    }
+        //    // For hver Claim i brugerens liste af RoleClaims
+        //    foreach (var claim in allUserRoleClaims)
+        //    {
+        //        // Hvis brugeren mangler en UserClaim, som findes i brugeren liste af RoleClaims
+        //        if (!userClaims.Any(uc => uc.Type == claim.Type && uc.Value == claim.Value))
+        //        {
+        //            // Tilføjer UserClaim til brugeren
+        //            await _userManager.AddClaimAsync(user, claim);
+        //        }
+        //    }
+        //}
 
 
         public async Task LogoutAsync()

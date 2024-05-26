@@ -1,4 +1,5 @@
-﻿using DB_AngoraLib.Models;
+﻿using DB_AngoraLib.DTOs;
+using DB_AngoraLib.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -21,112 +22,77 @@ namespace DB_AngoraLib.Services.RoleService
             _userManager = userManager;
         }
 
-        public async Task AdminMethod_AddClaimToRole(string roleName, string claimType, string claimValue)
+        
+        public async Task AddSpecialPermissionToUser(string userId, string claimValue)
         {
-            var role = await _roleManager.FindByNameAsync(roleName);
-            if (role != null)
+            // Check if the claimValue exists in RoleClaims
+            if (!RoleClaims.Get_AspNetRoleClaims().Any(rc => rc.ClaimValue == claimValue))
             {
-                var claim = new Claim(claimType, claimValue);
-                var result = await _roleManager.AddClaimAsync(role, claim);
-                if (!result.Succeeded)
-                {
-                    // Handle error
-                }
+                throw new ArgumentException("Invalid claim value.");
             }
-        }
 
-        public async Task AdminMethod_RemoveClaimFromRole(string roleName, string claimType, string claimValue)
-        {
-            var role = await _roleManager.FindByNameAsync(roleName);
-            if (role != null)
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
             {
-                var claim = new Claim(claimType, claimValue);
-                await _roleManager.RemoveClaimAsync(role, claim);
+                throw new ArgumentException("User not found.");
             }
-        }
 
-        public async Task AddClaimToUser(User user, string claimType, string claimValue)
-        {
-            var claim = new Claim(claimType, claimValue);
+            var claim = new Claim("SpecialPermission", claimValue);
             var result = await _userManager.AddClaimAsync(user, claim);
+
             if (!result.Succeeded)
             {
-                // Handle error
+                throw new Exception("Failed to add special permission to user.");
             }
         }
 
-        public async Task ModMethod_AssignUserToRole(User user, string roleName) // TODO: Kigg på om en Modd istedet for ikke blot skal være istand til at up/downgrade en Guest og Breeder roller
+        public async Task<User_RolesAndClaimsDTO> GetUserRolesAndClaims(string userId)
         {
-            if (roleName != "Admin" && roleName != "Moderator")
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
             {
-                if (await _roleManager.RoleExistsAsync(roleName))
-                {
-                    await _userManager.AddToRoleAsync(user, roleName);
-                }
+                throw new ArgumentException("User not found.");
             }
-        }
-        public async Task ModMethod_RemoveUserFromRole(User user, string roleName)
-        {
-            if (roleName != "Admin" && roleName != "Moderator")
+
+            var roles = await _userManager.GetRolesAsync(user);   // Henter navnene på brugerens roller
+            var claims = await _userManager.GetClaimsAsync(user); // Henter UserClaims og RoleClaims
+
+            var userRolesAndClaims = new User_RolesAndClaimsDTO
             {
-                if (await _roleManager.RoleExistsAsync(roleName))
-                {
-                    await _userManager.RemoveFromRoleAsync(user, roleName);
-                }
-            }
+                UserId = user.Id,
+                UserName = user.UserName,
+                Roles = roles.ToList(),
+                Claims = claims.Select(c => new ClaimDTO { Type = c.Type, Value = c.Value }).ToList()
+            };
+
+            return userRolesAndClaims;
         }
 
-        public async Task ModMethod_AssignUserToRole_WithRoleClaims(User user, string roleName) // overflødig da Login jævligt opdaterer brugerens RoleClaims
+        public async Task RemoveSpecialPermissionFromUser(string userId, string claimValue)
         {
-            if (roleName != "Admin" && roleName != "Moderator")
+            // Check if the claimValue exists in RoleClaims
+            if (!RoleClaims.Get_AspNetRoleClaims().Any(rc => rc.ClaimValue == claimValue))
             {
-                if (await _roleManager.RoleExistsAsync(roleName))
-                {
-                    await _userManager.AddToRoleAsync(user, roleName);
-
-                    // Get the role
-                    var role = await _roleManager.FindByNameAsync(roleName);
-
-                    // Get the claims associated with the role
-                    var roleClaims = await _roleManager.GetClaimsAsync(role);
-
-                    // Assign each claim to the user
-                    foreach (var claim in roleClaims)
-                    {
-                        await _userManager.AddClaimAsync(user, claim);
-                    }
-                }
+                throw new ArgumentException("Invalid claim value.");
             }
-        }
-               
 
-
-        public async Task<List<IdentityRole>> GetAllRolesAsync()
-        {
-            return await _roleManager.Roles.ToListAsync();
-        }
-
-        public async Task AdminMethod_AssignRoleAsync(User user, string roleName)
-        {
-            if (await _roleManager.RoleExistsAsync(roleName))
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
             {
-                await _userManager.AddToRoleAsync(user, roleName);
+                throw new ArgumentException("User not found.");
+            }
+
+            var claim = new Claim("SpecialPermission", claimValue);
+            var result = await _userManager.RemoveClaimAsync(user, claim);
+
+            if (!result.Succeeded)
+            {
+                throw new Exception("Failed to remove special permission from user.");
             }
         }
 
-        public async Task AdminMethod_UpdateRoleNameAsync(string oldRoleName, string newRoleName)
-        {
-            var role = await _roleManager.FindByNameAsync(oldRoleName);
-            if (role != null)
-            {
-                role.Name = newRoleName;
-                role.NormalizedName = _roleManager.NormalizeKey(newRoleName);
-                var result = await _roleManager.UpdateAsync(role);
-                if (!result.Succeeded)
-                {
-                    // Handle error
-                }
-            }
-        }
+
+
+       
     }
 }
