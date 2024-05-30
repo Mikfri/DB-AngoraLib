@@ -187,6 +187,41 @@ namespace DB_AngoraMST.Services_InMemTest
             Assert.IsNull(resultNotOwned, "Expected not to retrieve profile of not owned rabbit due to breeder role");
         }
 
+        [TestMethod]
+        public async Task GetAllRabbits_OpenProfile_Filtered_Test()
+        {
+            // Arrange
+            var expectedRace = Race.Angora;
+            //var expectedColor = Color.Jerngrå;
+            //var expectedGender = Gender.Hun;
+
+            // Create a list of expected rabbits
+            var expectedRabbits = _context.Rabbits
+                .Where(r =>
+                //r.Race == expectedRace &&
+                // r.Color == expectedColor &&
+                //r.Gender == expectedGender &&
+                r.OpenProfile == OpenProfile.Ja);
+
+            // Print each rabbit's nickname
+            foreach (var rabbit in expectedRabbits)
+            {
+                Console.WriteLine($"Rabbit: {rabbit.NickName}, AppovedColComb: {rabbit.ApprovedRaceColorCombination}");
+            }
+
+
+            // Act
+            var rabbits = await _rabbitService.GetAllRabbits_OpenProfile_Filtered(
+                race: expectedRace);/*,
+                color: expectedColor,
+                gender: expectedGender);*/
+
+            // Assert
+            Assert.IsNotNull(rabbits);
+           
+        }
+
+
 
         //-------------------------: UPDATE TESTS
         [TestMethod]
