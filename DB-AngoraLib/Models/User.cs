@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 
 namespace DB_AngoraLib.Models
 {
+    //https://learn.microsoft.com/en-us/aspnet/core/security/authentication/customize-identity-model?view=aspnetcore-8.0
     public class User : IdentityUser
     {
         public string? BreederRegNo { get; set; }    // unik property for Breeder role, med unik string
@@ -24,7 +25,13 @@ namespace DB_AngoraLib.Models
         [NotMapped]
         public string Password { get; set; }    // hack: For vi via MockUsers kan sætte password uden at det bliver hashet
 
+
+        //public virtual ICollection<IdentityUserClaim<string>> Claims { get; set; }
+        //public virtual ICollection<IdentityUserLogin<string>> Logins { get; set; }
+        //public virtual ICollection<IdentityUserToken<string>> Tokens { get; set; }
+        //public virtual ICollection<IdentityUserRole<string>> UserRoles { get; set; }
         public ICollection<Rabbit> Rabbits { get; set; }
+
 
         public User(string? breederRegNo, string firstName, string lastName, string roadName, int zipCode, string city, string email, string phone, string password)
         {

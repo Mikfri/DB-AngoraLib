@@ -19,6 +19,8 @@ namespace DB_AngoraMST.Services_InMemTest
     [TestClass]
     public class AccountServices_MST
     {
+        public TestContext TestContext { get; set; }
+
         private IAccountService _accountService;
         private DB_AngoraContext _context;
         private Mock<UserManager<User>> _userManagerMock;
@@ -106,7 +108,7 @@ namespace DB_AngoraMST.Services_InMemTest
         public async Task GetCurrentUsersRabbitCollection_TEST()
         {
             // Arrange
-            var userId = "5053";
+            var userId = "MajasId";
 
             // Act
             var rabbitCollection = await _accountService.GetMyRabbitCollection(userId);
@@ -125,21 +127,46 @@ namespace DB_AngoraMST.Services_InMemTest
         public async Task GetFilteredRabbitCollection_TEST()
         {
             // Arrange
-            var userId = "5053"; // Replace with the actual user id
-            var race = Race.Satinangora; // Replace with the actual right ear id
+            var userId = "IdasId"; // Replace with the actual user id
+            var race = Race.Satinangora;
+            var approvedRaceColorCombination = true;
 
-            // Act
-            var filteredRabbitCollection = await _accountService.GetMyRabbitCollection_Filtered(userId, race: race);
+            // Check if the user exists
+            //if (!_context.Users.Any(u => u.Id == userId))
+            //{
+            //    Assert.Fail("No user with the given id exists in the database.");
+            //}
 
-            foreach (var rabbit in filteredRabbitCollection)
+            // Get the user's rabbit collection
+            var mockUserRabbitCollection = _context.Users
+                .Include(u => u.Rabbits) // Load the related rabbits
+                .Single(u => u.Id == userId) // Get the user
+                .Rabbits; // Get the user's rabbit collection
+
+            // Print each rabbit's nickname
+            foreach (var rabbit in mockUserRabbitCollection)
             {
-                Console.WriteLine(rabbit.NickName);
+                Console.WriteLine($"Rabbit: {rabbit.NickName}, AppovedColComb: {rabbit.ApprovedRaceColorCombination}");
             }
 
+            // Act
+            var filteredRabbitCollection = await _accountService.GetMyRabbitCollection_Filtered(userId, race: race, approvedRaceColorCombination: approvedRaceColorCombination);
+
             // Assert
-            Assert.IsNotNull(filteredRabbitCollection);
-            // Add more assertions based on your test expectations
+            Assert.IsNotNull(filteredRabbitCollection); // Check that the result is not null
+            Assert.IsTrue(filteredRabbitCollection.All(rabbit => rabbit.Race == race)); // Check that all rabbits in the result have the expected race
+
+            // Check that the number of rabbits in the result matches the expected number
+            var allRabbits = await _context.Rabbits.ToListAsync();
+            var expectedRabbitCount = allRabbits.Count(rabbit => rabbit.OwnerId == userId && rabbit.Race == race && rabbit.ApprovedRaceColorCombination == approvedRaceColorCombination);
+            Assert.AreEqual(expectedRabbitCount, filteredRabbitCollection.Count);
         }
+
+
+
+
+
+
 
     }
 }

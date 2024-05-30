@@ -49,7 +49,7 @@ namespace DB_AngoraLib.Services.RabbitService
 
         //-------: GET BY EAR TAGs METODER
         /// <summary>
-        /// Finder en Rabbit ud fra dens øremærkerne kombinationen
+        /// Finder en Rabbit ud fra dens composite-KEY (øremærkerne kombinationen)
         /// </summary>
         /// <param name="rightEarId"></param>
         /// <param name="leftEarId"></param>
@@ -73,6 +73,38 @@ namespace DB_AngoraLib.Services.RabbitService
 
             return rabbit;
         }
+
+        public async Task<List<Rabbit_PreviewDTO>> GetAllRabbits_OpenProfile_Filtered(
+        string rightEarId = null, string leftEarId = null,
+        string nickName = null, Race? race = null, Color? color = null, Gender? gender = null, bool? isJuvenile = null, bool? approvedRaceColorCombination = null)
+        {
+            var rabbits = await _dbRepository.GetDbSet()
+                .Where(rabbit => rabbit.OpenProfile == OpenProfile.Ja)
+                .ToListAsync();
+
+            return rabbits
+                .Where(rabbit =>
+                       (rightEarId == null || rabbit.RightEarId == rightEarId)
+                    && (leftEarId == null || rabbit.LeftEarId == leftEarId)
+                    && (nickName == null || rabbit.NickName == nickName)
+                    && (race == null || rabbit.Race == race)
+                    && (color == null || rabbit.Color == color)
+                    && (gender == null || rabbit.Gender == gender)
+                    && (isJuvenile == null || rabbit.IsJuvenile == isJuvenile)
+                    && (approvedRaceColorCombination == null || rabbit.ApprovedRaceColorCombination == approvedRaceColorCombination))
+                
+                .Select(rabbit => new Rabbit_PreviewDTO
+                {
+                    RightEarId = rabbit.RightEarId,
+                    LeftEarId = rabbit.LeftEarId,
+                    NickName = rabbit.NickName,
+                    Race = rabbit.Race,
+                    Color = rabbit.Color,
+                    Gender = rabbit.Gender
+                })
+                .ToList();
+        }
+
 
         public async Task<Rabbit_ProfileDTO> GetRabbit_ProfileAsync(
             string currentUserId, string rightEarId, string leftEarId, IList<Claim> userClaims)

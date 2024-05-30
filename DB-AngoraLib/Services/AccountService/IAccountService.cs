@@ -15,7 +15,7 @@ namespace DB_AngoraLib.Services.AccountService
         Task<User> GetUserByBreederRegNoAsync(string breederRegNo);
         Task<List<Rabbit_PreviewDTO>> GetMyRabbitCollection(string userId);
         Task<List<Rabbit_PreviewDTO>> GetMyRabbitCollection_Filtered(
-            string userId, string rightEarId = null, string leftEarId = null, string nickName = null, Race? race = null, Color? color = null, Gender? gender = null);
+            string userId, string rightEarId = null, string leftEarId = null, string nickName = null, Race? race = null, Color? color = null, Gender? gender = null, bool? isJuvenile = null, bool? approvedRaceColorCombination = null);
         Task ConfirmEmail_ConfirmAsync(string userId, string token);
         Task<IdentityResult> ChangePasswordAsync(User_ChangePasswordDTO userPwConfig);
         Task ResetPasswordAsync(string userId, string token, string newPassword);

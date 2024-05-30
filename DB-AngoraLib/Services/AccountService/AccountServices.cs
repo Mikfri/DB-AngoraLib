@@ -86,8 +86,15 @@ namespace DB_AngoraLib.Services.AccountService
                 .Include(u => u.Rabbits)
                 .FirstOrDefaultAsync(u => u.Id == userId);
 
-            if (currentUserCollection?.Rabbits == null)
+            if (currentUserCollection == null)
             {
+                Console.WriteLine("User not found");
+                return new List<Rabbit_PreviewDTO>();
+            }
+
+            if (currentUserCollection.Rabbits.Count < 1)
+            {
+                Console.WriteLine("No rabbits found in collection");
                 return new List<Rabbit_PreviewDTO>();
             }
 
@@ -104,9 +111,9 @@ namespace DB_AngoraLib.Services.AccountService
                 .ToList();
         }
 
-        
+
         public async Task<List<Rabbit_PreviewDTO>> GetMyRabbitCollection_Filtered(
-            string userId, string rightEarId = null, string leftEarId = null, string nickName = null, Race? race = null, Color? color = null, Gender? gender = null)
+            string userId, string rightEarId = null, string leftEarId = null, string nickName = null, Race? race = null, Color? color = null, Gender? gender = null, bool? isJuvenile = null, bool? approvedRaceColorCombination = null)
         {
             var rabbitCollection = await GetMyRabbitCollection(userId);
 
@@ -120,6 +127,10 @@ namespace DB_AngoraLib.Services.AccountService
                     && (gender == null || rabbit.Gender == gender))
                 .ToList();
         }
+
+
+
+
 
 
         //---------------------------------: EMAIL CONFIRMATION :-------------------------------

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace DB_AngoraLib.DTOs
 {
     /// <summary>
-    /// Indeholder alle properties for en Rabbit, som en User skal kunne se
+    /// Indeholder alle properties for en Rabbit, som en User skal kunne se og søge på.
     /// </summary>
     public record Rabbit_ProfileDTO
     {
