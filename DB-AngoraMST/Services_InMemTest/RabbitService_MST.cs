@@ -198,7 +198,7 @@ namespace DB_AngoraMST.Services_InMemTest
             // Create a list of expected rabbits
             var expectedRabbits = _context.Rabbits
                 .Where(r =>
-                //r.Race == expectedRace &&
+                r.Race == expectedRace &&
                 // r.Color == expectedColor &&
                 //r.Gender == expectedGender &&
                 r.OpenProfile == OpenProfile.Ja);
@@ -206,15 +206,22 @@ namespace DB_AngoraMST.Services_InMemTest
             // Print each rabbit's nickname
             foreach (var rabbit in expectedRabbits)
             {
-                Console.WriteLine($"Rabbit: {rabbit.NickName}, AppovedColComb: {rabbit.ApprovedRaceColorCombination}");
+                Console.WriteLine($"EXP-Rabbit: {rabbit.NickName}, EXP-AppovedColComb: {rabbit.ApprovedRaceColorCombination}");
             }
+            Console.WriteLine($"EXP-Rabbit.Count: {expectedRabbits.Count()}\n");
 
 
             // Act
-            var rabbits = await _rabbitService.GetAllRabbits_OpenProfile_Filtered(
-                race: expectedRace);/*,
-                color: expectedColor,
-                gender: expectedGender);*/
+            var filter = new Rabbit_ProfileDTO { Race = expectedRace };
+            var rabbits = await _rabbitService.GetAllRabbits_OpenProfile_Filtered(filter);
+
+
+            foreach (var rabbit in rabbits)
+            {
+                Console.WriteLine($"FOUND-Rabbit: {rabbit.NickName}");
+            }
+            Console.WriteLine($"FOUND-Rabbit.Count: {rabbits.Count}");
+
 
             // Assert
             Assert.IsNotNull(rabbits);

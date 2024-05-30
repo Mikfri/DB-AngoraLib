@@ -74,9 +74,7 @@ namespace DB_AngoraLib.Services.RabbitService
             return rabbit;
         }
 
-        public async Task<List<Rabbit_PreviewDTO>> GetAllRabbits_OpenProfile_Filtered(
-        string rightEarId = null, string leftEarId = null,
-        string nickName = null, Race? race = null, Color? color = null, Gender? gender = null, bool? isJuvenile = null, bool? approvedRaceColorCombination = null)
+        public async Task<List<Rabbit_PreviewDTO>> GetAllRabbits_OpenProfile_Filtered(Rabbit_ProfileDTO filter)
         {
             var rabbits = await _dbRepository.GetDbSet()
                 .Where(rabbit => rabbit.OpenProfile == OpenProfile.Ja)
@@ -84,15 +82,15 @@ namespace DB_AngoraLib.Services.RabbitService
 
             return rabbits
                 .Where(rabbit =>
-                       (rightEarId == null || rabbit.RightEarId == rightEarId)
-                    && (leftEarId == null || rabbit.LeftEarId == leftEarId)
-                    && (nickName == null || rabbit.NickName == nickName)
-                    && (race == null || rabbit.Race == race)
-                    && (color == null || rabbit.Color == color)
-                    && (gender == null || rabbit.Gender == gender)
-                    && (isJuvenile == null || rabbit.IsJuvenile == isJuvenile)
-                    && (approvedRaceColorCombination == null || rabbit.ApprovedRaceColorCombination == approvedRaceColorCombination))
-                
+                       (filter.RightEarId == null || rabbit.RightEarId == filter.RightEarId)
+                    && (filter.LeftEarId == null || rabbit.LeftEarId == filter.LeftEarId)
+                    && (filter.NickName == null || rabbit.NickName == filter.NickName)
+                    && (filter.Race == null || rabbit.Race == filter.Race)
+                    && (filter.Color == null || rabbit.Color == filter.Color)
+                    && (filter.Gender == null || rabbit.Gender == filter.Gender)
+                    && (filter.IsJuvenile == null || rabbit.IsJuvenile == filter.IsJuvenile)
+                    && (filter.ApprovedRaceColorCombination == null || rabbit.ApprovedRaceColorCombination == filter.ApprovedRaceColorCombination))
+
                 .Select(rabbit => new Rabbit_PreviewDTO
                 {
                     RightEarId = rabbit.RightEarId,
@@ -104,6 +102,7 @@ namespace DB_AngoraLib.Services.RabbitService
                 })
                 .ToList();
         }
+
 
 
         public async Task<Rabbit_ProfileDTO> GetRabbit_ProfileAsync(

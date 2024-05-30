@@ -59,7 +59,7 @@ namespace DB_AngoraLib.Models
         Gulrød_Bourgogne,
         Orange,
         Ræverød_NewZealandRed,
-        Lutino,
+        Lutino, // Lutino_Vildtgul
         Lutino_Shadow,
         Chinchilla,
         Schwarzgrannen,
@@ -68,13 +68,15 @@ namespace DB_AngoraLib.Models
         Sort_Alaska,
         Blå,
         LyseBlå_BlåBeveren,
-        LilleEgern_Gråblå,
-        MarburgerEgern_Gråblå,
-        Gouwenaar,
+        Gråblå_LilleEgern,
+        Gråblå_MarburgerEgern,
+        LysGråblå_Gouwenaar,
+        Eller,                  // side 64.. Ikke godkendt
         Brun_Havana,
         Beige,
         Rødorange_Sachsengold,
-        Hvid,
+        Hvid_Albino,            // side 65
+        Hvid_Blåøjet,
 
         // Ensfarvede m. slør
         Rødbrun_Madagascar,
@@ -85,7 +87,7 @@ namespace DB_AngoraLib.Models
         Sølv,
         Stikkelhår_Trønder,
 
-        // Endnu ikke godkendte farver i DK
+        //Special farver
         Elfenben,
     }
 

@@ -108,9 +108,9 @@ namespace DB_AngoraMST.ModelsTest
 
         //////////////// Color
         [TestMethod]
-        [DataRow("Hvid")]   // Color GYLDIG
-        [DataRow("hvId")]
-        [DataRow("Gouwenaar")]
+        [DataRow("Hvid_Albino")]   // Color GYLDIG
+        [DataRow("hvId_AlbiNo")]
+        [DataRow("LysGråblå_Gouwenaar")]
         public void Color_ValidTest(string color)
         {
             rabbit.Color = Enum.Parse<Color>(color, true);
@@ -131,8 +131,8 @@ namespace DB_AngoraMST.ModelsTest
 
         /////////////// Race && Color
         [TestMethod]
-        [DataRow(Race.Angora, Color.Hvid)]           // Kombi GYLDIG
-        [DataRow(Race.Satinangora, Color.Hvid)]
+        [DataRow(Race.Angora, Color.Hvid_Albino)]           // Kombi GYLDIG
+        [DataRow(Race.Satinangora, Color.Hvid_Blåøjet)]
         //[DataRow(Race.Satinangora, Color.Gouwenaar)]
         public void ColorForRace_ValidTest(Race race, Color color)
         {
@@ -142,8 +142,8 @@ namespace DB_AngoraMST.ModelsTest
         }
 
         [TestMethod]
-        [DataRow(Race.Angora, Color.Chinchilla)]    // Kombi UGYLDIG
-        [DataRow(Race.Satin, Color.Hvid)]
+        [DataRow(Race.Angora, Color.Ræverød_NewZealandRed)]    // Kombi UGYLDIG
+        [DataRow(Race.Satin, Color.Hvid_Albino)]
         public void ColorForRace_InvalidTest(Race race, Color color)
         {
             Rabbit rabbit = new Rabbit { Race = race, Color = color };
