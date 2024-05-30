@@ -12,35 +12,16 @@ using System.Threading.Tasks;
 namespace DB_AngoraLib.Services.UserService
 {
     public class UserService : IUserService
-    {   
+    {
+        // TODO: Se om AccountServices virker med GetBy metoderne hvis den arver fra IGRepository<User>
         private readonly IGRepository<User> _dbRepository;
-        private readonly UserManager<User> _userManager;
-
-        public UserService(IGRepository<User> dbRepository, UserManager<User> userManager)
+        public UserService(IGRepository<User> dbRepository)
         {
             _dbRepository = dbRepository;
-            _userManager = userManager;
         }
 
         //------------------------- USER METHODS -------------------------
 
-        public async Task CreateBasicUserAsync(Register_CreateBasicUserDTO newUserDto)
-        {
-            var newUser = new User
-            {
-                UserName = newUserDto.Email, // Assuming the username is the email
-                Email = newUserDto.Email,
-                PhoneNumber = newUserDto.Phone,
-                FirstName = newUserDto.FirstName,
-                LastName = newUserDto.LastName,
-                RoadNameAndNo = newUserDto.RoadNameAndNo,
-                City = newUserDto.City,
-                ZipCode = newUserDto.ZipCode,
-            };
-
-            await _userManager.CreateAsync(newUser, "DefaultPassword123!"); // Replace with actual password
-            await _userManager.AddToRoleAsync(newUser, "Guest");
-        }
 
 
         /// <summary>

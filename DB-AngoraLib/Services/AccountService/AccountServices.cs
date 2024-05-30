@@ -10,25 +10,24 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using DB_AngoraLib.Services.HelperService;
+using DB_AngoraLib.Repository;
+using Microsoft.EntityFrameworkCore;
+using DB_AngoraLib.Events;
 
 namespace DB_AngoraLib.Services.AccountService
 {
     public class AccountServices : IAccountService
     {
+        private readonly IGRepository<User> _dbRepository;
         private readonly UserManager<User> _userManager;
-        private readonly IEmailService _emailService;
 
-        public AccountServices(UserManager<User> userManager, IEmailService emailService)
+        public AccountServices(IGRepository<User> dbRepository, UserManager<User> userManager)
         {
+            _dbRepository = dbRepository;
             _userManager = userManager;
-            _emailService = emailService;
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="newUserDto"></param>
-        /// <returns></returns>
+        //---------------------------------: CREATE/REGISTER USER :---------------------------------
         public async Task<Register_ResponseDTO> Register_BasicUserAsync(Register_CreateBasicUserDTO newUserDTO)
         {
             var newUser = new User();
@@ -47,24 +46,83 @@ namespace DB_AngoraLib.Services.AccountService
             if (result.Succeeded)
             {
                 await _userManager.AddToRoleAsync(newUser, "Guest"); // hardcoded role
+
+                //// Trigger UserRegisteredEvent
+                //var userRegisteredEvent = new UserRegistered_Event { Email = newUser.UserName };
+                //await _eventBus.Trigger(userRegisteredEvent);
             }
 
             return responseDTO;
         }
 
-
-        public async Task ConfirmEmail_SendEmailToUserAsync(string email)
+        //---------------------------------: GET USER METHODS :---------------------------------
+        public async Task<List<User>> GetAllUsersAsync()
         {
-            var user = await _userManager.FindByEmailAsync(email);
-            if (user == null)
-            {
-                throw new Exception("User not found");
-            }
-            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-            var confirmationLink = $"https://yourwebsite.com/confirmemail?userid={user.Id}&token={HttpUtility.UrlEncode(token)}";
-            await _emailService.SendEmailAsync(email, "Email Confirmation", $"Please confirm your email by clicking on this link: {confirmationLink}");
+            return (await _dbRepository.GetAllObjectsAsync()).ToList();
         }
 
+        public async Task<User> GetUserByUserNameOrEmailAsync(string userNameOrEmail)
+        {
+            return await _dbRepository.GetDbSet()
+                .FirstOrDefaultAsync(u => u.UserName == userNameOrEmail || u.Email == userNameOrEmail);
+        }
+
+        public async Task<User> GetUserByIdAsync(string userId)
+        {
+            return await _dbRepository.GetObjectByKEYAsync(userId);
+        }
+
+        public async Task<User> GetUserByBreederRegNoAsync(string breederRegNo)
+        {
+            return await _dbRepository.GetObjectAsync(u => u.BreederRegNo == breederRegNo);
+        }
+
+
+        //---------------------------------: GET USERs ICOLLECTION METHODS :--------------------       
+        public async Task<List<Rabbit_PreviewDTO>> GetMyRabbitCollection(string userId)
+        {
+            var currentUserCollection = await _dbRepository.GetDbSet()
+                .AsNoTracking()
+                .Include(u => u.Rabbits)
+                .FirstOrDefaultAsync(u => u.Id == userId);
+
+            if (currentUserCollection?.Rabbits == null)
+            {
+                return new List<Rabbit_PreviewDTO>();
+            }
+
+            return currentUserCollection.Rabbits
+                .Select(rabbit => new Rabbit_PreviewDTO
+                {
+                    RightEarId = rabbit.RightEarId,
+                    LeftEarId = rabbit.LeftEarId,
+                    NickName = rabbit.NickName,
+                    Race = rabbit.Race,
+                    Color = rabbit.Color,
+                    Gender = rabbit.Gender
+                })
+                .ToList();
+        }
+
+        
+        public async Task<List<Rabbit_PreviewDTO>> GetMyRabbitCollection_Filtered(
+            string userId, string rightEarId = null, string leftEarId = null, string nickName = null, Race? race = null, Color? color = null, Gender? gender = null)
+        {
+            var rabbitCollection = await GetMyRabbitCollection(userId);
+
+            return rabbitCollection
+                .Where(rabbit =>
+                       (rightEarId == null || rabbit.RightEarId == rightEarId)
+                    && (leftEarId == null || rabbit.LeftEarId == leftEarId)
+                    && (nickName == null || rabbit.NickName == nickName)
+                    && (race == null || rabbit.Race == race)
+                    && (color == null || rabbit.Color == color)
+                    && (gender == null || rabbit.Gender == gender))
+                .ToList();
+        }
+
+
+        //---------------------------------: EMAIL CONFIRMATION :-------------------------------
         public async Task ConfirmEmail_ConfirmAsync(string userId, string token)
         {
             var user = await _userManager.FindByIdAsync(userId);
@@ -81,6 +139,8 @@ namespace DB_AngoraLib.Services.AccountService
             }
         }
 
+
+        //---------------------------------: PASSWORD RESET :-----------------------------------
         public async Task<IdentityResult> ChangePasswordAsync(User_ChangePasswordDTO userPwConfig)
         {
             var user = await _userManager.FindByIdAsync(userPwConfig.UserId);
@@ -92,18 +152,7 @@ namespace DB_AngoraLib.Services.AccountService
             return await _userManager.ChangePasswordAsync(user, userPwConfig.CurrentPassword, userPwConfig.NewPassword);
         }
 
-        public async Task ResetPassword_SendResetTokenToUserEmailAsync(string email)
-        {
-            var foundUser = await _userManager.FindByEmailAsync(email);
-            if (foundUser == null)
-            {
-                throw new Exception("User not found");
-            }
 
-            var token = await _userManager.GeneratePasswordResetTokenAsync(foundUser);
-            var resetLink = $"https://yourwebsite.com/resetpassword?userid={foundUser.Id}&token={HttpUtility.UrlEncode(token)}";
-            await _emailService.SendEmailAsync(email, "Password Reset", $"You can reset your password by clicking on this link: {resetLink}");
-        }
 
         /// <summary>
         /// Formular til brugeren på frontend, hvor brugeren indtaster ny password.

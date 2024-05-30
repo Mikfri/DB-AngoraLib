@@ -49,6 +49,9 @@ namespace DB_AngoraLib.EF_DbContext
                 .IsUnique();
 
             //------------------- FK SETUP -------------------
+
+
+
             // Configure Foreign Key for Rabbit -> User
             modelBuilder.Entity<Rabbit>()
                 .HasOne(r => r.User)        // En Rabbit har en User

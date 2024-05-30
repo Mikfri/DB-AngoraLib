@@ -32,31 +32,32 @@ namespace DB_AngoraLib.Services.SigninService
         
         public async Task<Login_ResponseDTO> LoginAsync(Login_RequestDTO loginRequest)
         {
-            var result = await _signInManager.PasswordSignInAsync(loginRequest.UserName, loginRequest.Password, loginRequest.RememberMe, lockoutOnFailure: false);
+            var result = await _signInManager.PasswordSignInAsync(
+                loginRequest.UserName, 
+                loginRequest.Password, 
+                loginRequest.RememberMe,
+                lockoutOnFailure: false);
 
-            var signinResultResponse = new Login_ResponseDTO();
+            var loginResponseDTO = new Login_ResponseDTO();
 
             if (result.Succeeded)
             {
                 var user = await _userManager.FindByNameAsync(loginRequest.UserName);
-                //await SynchronizeUserClaims(user);
-
-                //var claims = await _userManager.GetClaimsAsync(user);
 
                 // Generate the token with the user's claims
                 var token = await GenerateToken(user);
                 var tokenHandler = new JwtSecurityTokenHandler();
 
-                signinResultResponse.UserName = user.UserName;
-                signinResultResponse.Token = tokenHandler.WriteToken(token);
-                signinResultResponse.ExpiryDate = token.ValidTo;
+                loginResponseDTO.UserName = user.UserName;
+                loginResponseDTO.Token = tokenHandler.WriteToken(token);
+                loginResponseDTO.ExpiryDate = token.ValidTo;
             }
             else
             {
-                signinResultResponse.Errors.Add("Invalid login attempt.");
+                loginResponseDTO.Errors.Add("Invalid login attempt.");
             }
 
-            return signinResultResponse;
+            return loginResponseDTO;
         }
 
         private async Task<JwtSecurityToken> GenerateToken(User user)

@@ -3,6 +3,7 @@ using DB_AngoraLib.EF_DbContext;
 using DB_AngoraLib.MockData;
 using DB_AngoraLib.Models;
 using DB_AngoraLib.Repository;
+using DB_AngoraLib.Services.AccountService;
 using DB_AngoraLib.Services.HelperService;
 using DB_AngoraLib.Services.RabbitService;
 using DB_AngoraLib.Services.UserService;
@@ -23,7 +24,7 @@ namespace DB_AngoraMST.Services_InMemTest
     public class RabbitService_MST
     {
         private IRabbitService _rabbitService;
-        private IUserService _userService;
+        private IAccountService _accountService; // Changed from IUserService
         private DB_AngoraContext _context;
         private Mock<UserManager<User>> _userManagerMock;
 
@@ -42,11 +43,11 @@ namespace DB_AngoraMST.Services_InMemTest
             _userManagerMock = new Mock<UserManager<User>>(userStoreMock.Object, null, null, null, null, null, null, null, null);
 
             var userRepository = new GRepository<User>(_context);
-            _userService = new UserService(userRepository, _userManagerMock.Object);
+            _accountService = new AccountServices(userRepository, _userManagerMock.Object); // Changed from UserService
 
             var rabbitRepository = new GRepository<Rabbit>(_context);
             var validatorService = new RabbitValidator();
-            _rabbitService = new RabbitServices(rabbitRepository, _userService, validatorService);
+            _rabbitService = new RabbitServices(rabbitRepository, _accountService, validatorService); // Changed from _userService
         }
 
         [TestInitialize]

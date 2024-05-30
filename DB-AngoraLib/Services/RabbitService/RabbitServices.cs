@@ -1,6 +1,7 @@
 ﻿using DB_AngoraLib.DTOs;
 using DB_AngoraLib.Models;
 using DB_AngoraLib.Repository;
+using DB_AngoraLib.Services.AccountService;
 using DB_AngoraLib.Services.HelperService;
 using DB_AngoraLib.Services.UserService;
 using DB_AngoraLib.Services.ValidationService;
@@ -14,13 +15,13 @@ namespace DB_AngoraLib.Services.RabbitService
     public class RabbitServices : IRabbitService
     {
         private readonly IGRepository<Rabbit> _dbRepository;
-        private readonly IUserService _userService;
+        private readonly IAccountService _accountService;
         private readonly RabbitValidator _validatorService;
 
-        public RabbitServices(IGRepository<Rabbit> dbRepository, IUserService userService, RabbitValidator validatorService)
+        public RabbitServices(IGRepository<Rabbit> dbRepository, IAccountService userService, RabbitValidator validatorService)
         {
             _dbRepository = dbRepository;
-            _userService = userService;
+            _accountService = userService;
             _validatorService = validatorService;
         }
 
@@ -36,7 +37,7 @@ namespace DB_AngoraLib.Services.RabbitService
 
         public async Task<List<Rabbit>> GetAllRabbits_ByBreederRegAsync(string breederRegNo)
         {
-            var user = await _userService.GetUserByBreederRegNoAsync(breederRegNo);
+            var user = await _accountService.GetUserByBreederRegNoAsync(breederRegNo);
             if (user == null)
             {
                 return null;
@@ -137,7 +138,7 @@ namespace DB_AngoraLib.Services.RabbitService
                 throw new InvalidOperationException("En kanin med samme øremærke kombination eksistere allerede");
             }
 
-            var thisUser = await _userService.GetUserByIdAsync(currentUser);
+            var thisUser = await _accountService.GetUserByIdAsync(currentUser);
 
             if (thisUser == null)
             {
@@ -211,7 +212,7 @@ namespace DB_AngoraLib.Services.RabbitService
         public async Task RequestRabbitTransfer(string rightEarId, string leftEarId, string breederRegNo)
         {
             // Check if the new owner exists in the database
-            var newOwner = await _userService.GetUserByBreederRegNoAsync(breederRegNo);
+            var newOwner = await _accountService.GetUserByBreederRegNoAsync(breederRegNo);
             if (newOwner == null)
             {
                 throw new Exception("New owner not found");

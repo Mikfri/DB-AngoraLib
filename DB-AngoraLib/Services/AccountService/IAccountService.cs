@@ -1,19 +1,23 @@
 ﻿using DB_AngoraLib.DTOs;
 using DB_AngoraLib.Models;
 using Microsoft.AspNetCore.Identity;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace DB_AngoraLib.Services.AccountService
 {
     public interface IAccountService
     {
         Task<Register_ResponseDTO> Register_BasicUserAsync(Register_CreateBasicUserDTO newUserDto);
-        Task ConfirmEmail_SendEmailToUserAsync(string email);
+        Task<List<User>> GetAllUsersAsync();
+        Task<User> GetUserByUserNameOrEmailAsync(string userNameOrEmail);
+        Task<User> GetUserByIdAsync(string userId);
+        Task<User> GetUserByBreederRegNoAsync(string breederRegNo);
+        Task<List<Rabbit_PreviewDTO>> GetMyRabbitCollection(string userId);
+        Task<List<Rabbit_PreviewDTO>> GetMyRabbitCollection_Filtered(
+            string userId, string rightEarId = null, string leftEarId = null, string nickName = null, Race? race = null, Color? color = null, Gender? gender = null);
         Task ConfirmEmail_ConfirmAsync(string userId, string token);
         Task<IdentityResult> ChangePasswordAsync(User_ChangePasswordDTO userPwConfig);
-        Task ResetPassword_SendResetTokenToUserEmailAsync(string email);
         Task ResetPasswordAsync(string userId, string token, string newPassword);
-
-
-        //Task<IdentityResult> ChangeEmailAsync(User_ChangeEmailDTO userMailConfig); //TODO: Denne metode skal implementeres
     }
 }

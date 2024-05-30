@@ -22,7 +22,6 @@ namespace DB_AngoraMST.Services_InMemTest
         private IAccountService _accountService;
         private DB_AngoraContext _context;
         private Mock<UserManager<User>> _userManagerMock;
-        private Mock<IEmailService> _emailServiceMock;
 
         public AccountServices_MST()
         {
@@ -38,21 +37,17 @@ namespace DB_AngoraMST.Services_InMemTest
             var userStoreMock = new Mock<IUserStore<User>>();
             _userManagerMock = new Mock<UserManager<User>>(userStoreMock.Object, null, null, null, null, null, null, null, null);
 
-            // Create EmailService
-            _emailServiceMock = new Mock<IEmailService>();
-
             var userRepository = new GRepository<User>(_context);
-            _accountService = new AccountServices(_userManagerMock.Object, _emailServiceMock.Object);
+            _accountService = new AccountServices(userRepository, _userManagerMock.Object); // Added _userManagerMock.Object
         }
 
-        //[TestInitialize]
-        //public void Setup()
-        //{
-        //    // Add mock data to in-memory database
-        //    var mockUsers = MockUsers.GetMockUsersWithRoles();
-        //    _context.Users.AddRange(mockUsers);
-        //    _context.SaveChanges();
-        //}
+        [TestInitialize]
+        public void Setup()
+        {
+            // Add mock data to in-memory database
+            var mockDataInitializer = new MockDataInitializer(_context, _userManagerMock.Object);
+            mockDataInitializer.Initialize();
+        }
 
         [TestCleanup]
         public void Cleanup()
@@ -62,60 +57,89 @@ namespace DB_AngoraMST.Services_InMemTest
         }
 
         // Add your test methods here
+        [TestMethod]
+        public async Task GetAllUsersAsync_TEST()
+        {
+            // Arrange
+            var expectedUsersCount = 3; // Replace with the actual number of mock users
 
-        //[TestMethod]
-        //public async Task Register_BasicUserAsync_Test()
-        //{
-        //    // Arrange
-        //    var newUserDto = new User_CreateBasicDTO
-        //    {
-        //        Email = "testuser@gmail.com",
-        //        Password = "Test123!",
-        //        Phone = "1234567890",
-        //        FirstName = "Test",
-        //        LastName = "User",
-        //        RoadNameAndNo = "Test Road 1",
-        //        ZipCode = 12345,
-        //        City = "Test City"
-        //    };
+            // Act
+            var users = await _accountService.GetAllUsersAsync();
 
-        //    _userManagerMock.Setup(x => x.CreateAsync(It.IsAny<User>(), It.IsAny<string>()))
-        //        .ReturnsAsync(IdentityResult.Success);
-        //    _userManagerMock.Setup(x => x.AddToRoleAsync(It.IsAny<User>(), It.IsAny<string>()))
-        //        .ReturnsAsync(IdentityResult.Success);
-        //    _userManagerMock.Setup(x => x.AddClaimsAsync(It.IsAny<User>(), It.IsAny<IEnumerable<Claim>>()))
-        //        .ReturnsAsync(IdentityResult.Success);
+            // Assert
+            Assert.AreEqual(expectedUsersCount, users.Count);
+        }
 
-        //    // Ensure FindByNameAsync and GetClaimsAsync return non-null values
-        //    _userManagerMock.Setup(x => x.FindByNameAsync(It.IsAny<string>()))
-        //        .ReturnsAsync(new User { UserName = newUserDto.Email });
-        //    _userManagerMock.Setup(x => x.GetClaimsAsync(It.IsAny<User>()))
-        //        .ReturnsAsync(new List<Claim> { new Claim(ClaimTypes.Name, newUserDto.Email) });
+        [TestMethod]
+        public async Task GetUserByBreederRegNoAsync_TEST()
+        {
+            // Arrange
+            var expectedUser = _context.Users.First();
+            var breederRegNo = expectedUser.BreederRegNo;
 
-        //    // Act
-        //    var result = await _accountService.Register_BasicUserAsync(newUserDto);
+            // Act
+            var actualUser = await _accountService.GetUserByBreederRegNoAsync(breederRegNo);
 
-        //    // Assert
-        //    Assert.IsNotNull(result);
-        //    Assert.IsTrue(result.IsSuccessful);
-        //    Assert.AreEqual(newUserDto.Email, result.UserName);
+            // Assert
+            Assert.IsNotNull(actualUser);
+            Assert.AreEqual(expectedUser.BreederRegNo, actualUser.BreederRegNo);
+        }
 
-        //    // Get the created user and their claims
-        //    var createdUser = await _userManagerMock.Object.FindByNameAsync(result.UserName);
-        //    var userClaims = await _userManagerMock.Object.GetClaimsAsync(createdUser);
+        [TestMethod]
+        public async Task GetUserByUserNameOrEmailAsync_TEST()
+        {
+            // Arrange
+            var expectedUser = _context.Users.First();
 
-        //    // Check that the user has the expected claims
-        //    var expectedClaims = new List<Claim>
-        //    {
-        //        new Claim(ClaimTypes.Name, newUserDto.Email),
-        //        // Add other expected claims here
-        //    };
-        //    foreach (var expectedClaim in expectedClaims)
-        //    {
-        //        Assert.IsTrue(userClaims.Any(uc => uc.Type == expectedClaim.Type && uc.Value == expectedClaim.Value));
-        //    }
-        //}
+            // Act
+            var actualUserByUsername = await _accountService.GetUserByUserNameOrEmailAsync(expectedUser.UserName);
+            var actualUserByEmail = await _accountService.GetUserByUserNameOrEmailAsync(expectedUser.Email);
 
+            // Assert
+            Assert.IsNotNull(actualUserByUsername);
+            Assert.AreEqual(expectedUser.UserName, actualUserByUsername.UserName);
+            Assert.IsNotNull(actualUserByEmail);
+            Assert.AreEqual(expectedUser.Email, actualUserByEmail.Email);
+        }
+
+        [TestMethod]
+        public async Task GetCurrentUsersRabbitCollection_TEST()
+        {
+            // Arrange
+            var userId = "5053";
+
+            // Act
+            var rabbitCollection = await _accountService.GetMyRabbitCollection(userId);
+
+            foreach (var rabbit in rabbitCollection)
+            {
+                Console.WriteLine(rabbit.NickName);
+            }
+
+            // Assert
+            Assert.IsNotNull(rabbitCollection);
+            // Add more assertions based on your test expectations
+        }
+
+        [TestMethod]
+        public async Task GetFilteredRabbitCollection_TEST()
+        {
+            // Arrange
+            var userId = "5053"; // Replace with the actual user id
+            var race = Race.Satinangora; // Replace with the actual right ear id
+
+            // Act
+            var filteredRabbitCollection = await _accountService.GetMyRabbitCollection_Filtered(userId, race: race);
+
+            foreach (var rabbit in filteredRabbitCollection)
+            {
+                Console.WriteLine(rabbit.NickName);
+            }
+
+            // Assert
+            Assert.IsNotNull(filteredRabbitCollection);
+            // Add more assertions based on your test expectations
+        }
 
     }
 }
