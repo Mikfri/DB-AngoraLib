@@ -13,8 +13,8 @@ namespace DB_AngoraLib.DTOs
     /// </summary>
     public record Rabbit_ProfileDTO
     {
-        public string RightEarId { get; init; }   
-        public string LeftEarId { get; init; }    
+        public string RightEarId { get; init; }
+        public string LeftEarId { get; init; }
         
         public string? OwnerId { get; init; }
 
@@ -30,7 +30,7 @@ namespace DB_AngoraLib.DTOs
         [DataType(DataType.Date)]
         public DateOnly? DateOfDeath { get; init; }
 
-        public bool IsJuvenile { get; init; }
+        public bool? IsJuvenile { get; init; }
 
         public Gender? Gender { get; init; }
         public OpenProfile? OpenProfile { get; init; }

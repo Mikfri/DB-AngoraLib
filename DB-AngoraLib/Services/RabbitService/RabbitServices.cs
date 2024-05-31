@@ -26,7 +26,64 @@ namespace DB_AngoraLib.Services.RabbitService
         }
 
         public RabbitServices() { }
-                
+
+
+
+        //---------------------: ADD
+        /// <summary>
+        /// Tilføjer en Rabbit til den nuværende bruger og tilføjer den til Collectionen
+        /// </summary>
+        /// <param name="userId">GUID fra brugeren</param>
+        /// <param name="newRabbitDto"></param>
+        /// <returns></returns>
+        /// <exception cref="InvalidOperationException"></exception>
+        public async Task<Rabbit_ProfileDTO> AddRabbit_ToMyCollectionAsync(string userId, Rabbit_CreateDTO newRabbitDto)
+        {
+            //Console.WriteLine($"Trying to add rabbit with RightEarId: {newRabbitDto.RightEarId}, LeftEarId: {newRabbitDto.LeftEarId}");
+
+            // Convert RabbitDto to Rabbit
+            var newRabbit = new Rabbit
+            {
+                RightEarId = newRabbitDto.RightEarId,
+                LeftEarId = newRabbitDto.LeftEarId,
+                NickName = newRabbitDto.NickName,
+                Race = newRabbitDto.Race,
+                Color = newRabbitDto.Color,
+                //ApprovedRaceColorCombination          // Ikke nødvendig, dictionary, automatisk udregnet
+                DateOfBirth = newRabbitDto.DateOfBirth,
+                DateOfDeath = newRabbitDto.DateOfDeath,
+                //IsJuvenile = newRabbitDto.IsJuvenile, // Ikke nødvendig, automatisk udregnet - evt frontend udregning?
+                Gender = newRabbitDto.Gender,
+                OpenProfile = newRabbitDto.OpenProfile
+                // ... evt flere..
+            };
+
+            _validatorService.ValidateRabbit(newRabbit);
+
+            var existingRabbit = await GetRabbit_ByEarTagsAsync(newRabbit.RightEarId, newRabbit.LeftEarId);
+            if (existingRabbit != null)
+            {
+                throw new InvalidOperationException("En kanin med samme øremærke kombination eksistere allerede");
+            }
+
+            var thisUser = await _accountService.GetUserByIdAsync(userId);
+
+            if (thisUser == null)
+            {
+                throw new InvalidOperationException("No user found with the given GUID");
+            }
+
+            newRabbit.OwnerId = thisUser.Id;
+            await _dbRepository.AddObjectAsync(newRabbit);
+
+            // Create a new RabbitDTO and copy properties from newRabbit
+            var newRabbit_ProfileDTO = new Rabbit_ProfileDTO();
+            HelperServices.CopyPropertiesTo(newRabbit, newRabbit_ProfileDTO);
+
+            return newRabbit_ProfileDTO;
+        }
+
+
 
         //---------------------: GET METODER
         public async Task<List<Rabbit>> GetAllRabbitsAsync()     // reeeally though? Skal vi bruge denne metode, udover test?
@@ -60,7 +117,7 @@ namespace DB_AngoraLib.Services.RabbitService
 
             //Console.WriteLine($"Checking for existing Rabbit with ear tags: RightEarId: {rightEarId}, LeftEarId: {leftEarId}");
 
-            var rabbit = await _dbRepository.GetObjectAsync(filter);
+            var rabbit = await _dbRepository.GetObject_ByFilterAsync(filter);
 
             //if (rabbit != null)
             //{
@@ -74,7 +131,7 @@ namespace DB_AngoraLib.Services.RabbitService
             return rabbit;
         }
 
-        public async Task<List<Rabbit_PreviewDTO>> GetAllRabbits_OpenProfile_Filtered(Rabbit_ProfileDTO filter)
+        public async Task<List<Rabbit_PreviewDTO>> GetAllRabbits_OpenProfile_Filtered(Rabbit_ForsaleFilterDTO filter)
         {
             var rabbits = await _dbRepository.GetDbSet()
                 .Where(rabbit => rabbit.OpenProfile == OpenProfile.Ja)
@@ -82,9 +139,9 @@ namespace DB_AngoraLib.Services.RabbitService
 
             return rabbits
                 .Where(rabbit =>
-                       (filter.RightEarId == null || rabbit.RightEarId == filter.RightEarId)
-                    && (filter.LeftEarId == null || rabbit.LeftEarId == filter.LeftEarId)
-                    && (filter.NickName == null || rabbit.NickName == filter.NickName)
+                       (filter.RightEarId == null || rabbit.RightEarId == filter.RightEarId) // Vi vil kunne søge på hvor den kommer fra!
+                    //&& (filter.LeftEarId == null || rabbit.LeftEarId == filter.LeftEarId) // hvorfor sq man søge på venstre øre?
+                    && (filter.NickName == null || rabbit.NickName == filter.NickName)      // hvorfor søge på navn?
                     && (filter.Race == null || rabbit.Race == filter.Race)
                     && (filter.Color == null || rabbit.Color == filter.Color)
                     && (filter.Gender == null || rabbit.Gender == filter.Gender)
@@ -106,7 +163,7 @@ namespace DB_AngoraLib.Services.RabbitService
 
 
         public async Task<Rabbit_ProfileDTO> GetRabbit_ProfileAsync(
-            string currentUserId, string rightEarId, string leftEarId, IList<Claim> userClaims)
+            string userId, string rightEarId, string leftEarId, IList<Claim> userClaims)
         {
             var rabbit = await GetRabbit_ByEarTagsAsync(rightEarId, leftEarId);
             var hasPermissionToGetAnyRabbit = userClaims.Any(
@@ -117,7 +174,7 @@ namespace DB_AngoraLib.Services.RabbitService
                 return null;
             }            
 
-            if (rabbit.OpenProfile == OpenProfile.Ja || rabbit.OwnerId == currentUserId || hasPermissionToGetAnyRabbit)
+            if (rabbit.OpenProfile == OpenProfile.Ja || rabbit.OwnerId == userId || hasPermissionToGetAnyRabbit)
             {
                 var rabbitProfile = new Rabbit_ProfileDTO();
                 HelperServices.CopyPropertiesTo(rabbit, rabbitProfile);
@@ -132,74 +189,19 @@ namespace DB_AngoraLib.Services.RabbitService
 
 
 
-        //---------------------: ADD
-        /// <summary>
-        /// Tilføjer en Rabbit til den nuværende bruger og tilføjer den til Collectionen
-        /// </summary>
-        /// <param name="userId">GUID fra brugeren</param>
-        /// <param name="newRabbitDto"></param>
-        /// <returns></returns>
-        /// <exception cref="InvalidOperationException"></exception>
-        public async Task<Rabbit_ProfileDTO> AddRabbit_ToMyCollectionAsync(string currentUser, Rabbit_CreateDTO newRabbitDto)
-        {
-            //Console.WriteLine($"Trying to add rabbit with RightEarId: {newRabbitDto.RightEarId}, LeftEarId: {newRabbitDto.LeftEarId}");
-
-            // Convert RabbitDto to Rabbit
-            var newRabbit = new Rabbit
-            {
-                RightEarId = newRabbitDto.RightEarId,
-                LeftEarId = newRabbitDto.LeftEarId,
-                NickName = newRabbitDto.NickName,
-                Race = newRabbitDto.Race,
-                Color = newRabbitDto.Color,
-                //ApprovedRaceColorCombination          // Ikke nødvendig, dictionary, automatisk udregnet
-                DateOfBirth = newRabbitDto.DateOfBirth,
-                DateOfDeath = newRabbitDto.DateOfDeath,
-                //IsJuvenile = newRabbitDto.IsJuvenile, // Ikke nødvendig, automatisk udregnet - evt frontend udregning?
-                Gender = newRabbitDto.Gender,
-                OpenProfile = newRabbitDto.OpenProfile
-                // ... evt flere..
-            };
-
-            _validatorService.ValidateRabbit(newRabbit);
-
-            var existingRabbit = await GetRabbit_ByEarTagsAsync(newRabbit.RightEarId, newRabbit.LeftEarId);
-            if (existingRabbit != null)
-            {
-                throw new InvalidOperationException("En kanin med samme øremærke kombination eksistere allerede");
-            }
-
-            var thisUser = await _accountService.GetUserByIdAsync(currentUser);
-
-            if (thisUser == null)
-            {
-                throw new InvalidOperationException("No user found with the given GUID");
-            }
-
-            newRabbit.OwnerId = thisUser.Id;
-            await _dbRepository.AddObjectAsync(newRabbit);
-
-            // Create a new RabbitDTO and copy properties from newRabbit
-            var newRabbit_ProfileDTO = new Rabbit_ProfileDTO();
-            HelperServices.CopyPropertiesTo(newRabbit, newRabbit_ProfileDTO);
-
-            return newRabbit_ProfileDTO;
-        }
-
-
         //---------------------: UPDATE
-        public async Task<Rabbit_ProfileDTO> UpdateRabbit_RBAC_Async(User currentUser, string rightEarId, string leftEarId, Rabbit_UpdateDTO rabbit_updateDTO, IList<Claim> userClaims)
+        public async Task<Rabbit_ProfileDTO> UpdateRabbit_RBAC_Async(string userId, string rightEarId, string leftEarId, Rabbit_UpdateDTO rabbit_updateDTO, IList<Claim> userClaims)
         {
             var hasPermissionToUpdateOwn = userClaims.Any(c => c.Type == "RolePermission" && c.Value == "Update_Own_Rabbit"); // tilføj evt. "SpecialPermission" "Update_Own_Rabbit"
             var hasPermissionToUpdateAll = userClaims.Any(c => c.Type == "RolePermission" && c.Value == "Update_Any_Rabbit"); // tilføj evt. "SpecialPermission" "Update_Any_Rabbit"
 
-            var rabbit_InDB = await GetRabbit_ByEarTagsAsync(rightEarId, leftEarId);    // TODO: Skal vi tage en HEL User objekt ind fremfor en string?
+            var rabbit_InDB = await GetRabbit_ByEarTagsAsync(rightEarId, leftEarId);
             if (rabbit_InDB == null)
             {
                 return null;
             }
 
-            if (hasPermissionToUpdateAll || (hasPermissionToUpdateOwn && currentUser.Id == rabbit_InDB.OwnerId))
+            if (hasPermissionToUpdateAll || (hasPermissionToUpdateOwn && userId == rabbit_InDB.OwnerId))
             {
                 // Copy all non-null properties from updatedRabbit to rabbitToUpdate
                 HelperServices.CopyPropertiesTo(rabbit_updateDTO, rabbit_InDB);
@@ -218,8 +220,9 @@ namespace DB_AngoraLib.Services.RabbitService
 
 
 
+
         //---------------------: DELETE
-        public async Task DeleteRabbit_RBAC_Async(User currentUser, string rightEarId, string leftEarId, IList<Claim> userClaims)
+        public async Task<Rabbit_PreviewDTO> DeleteRabbit_RBAC_Async(string userId, string rightEarId, string leftEarId, IList<Claim> userClaims)
         {
             var hasPermissionToDeleteOwn = userClaims.Any(c => c.Type == "RolePermission" && c.Value == "Delete_Own_Rabbit"); // tilføj evt. "SpecialPermission" "Delete_Own_Rabbit"
             var hasPermissionToDeleteAll = userClaims.Any(c => c.Type == "RolePermission" && c.Value == "Delete_Any_Rabbit"); // tilføj evt. "SpecialPermission" "Delete_Any_Rabbit"
@@ -230,13 +233,21 @@ namespace DB_AngoraLib.Services.RabbitService
                 throw new InvalidOperationException("Ingen kanin med angivede ørermærker eksistere");
             }
 
-            if (!hasPermissionToDeleteAll && (!hasPermissionToDeleteOwn || currentUser.Id != rabbitToDelete.OwnerId))
+            if (!hasPermissionToDeleteAll && (!hasPermissionToDeleteOwn || userId != rabbitToDelete.OwnerId))
             {
                 throw new InvalidOperationException("Du har ikke tilladelse til denne handling");
             }
 
+            // Create a new Rabbit_PreviewDTO and copy properties from rabbitToDelete
+            var rabbitPreviewDTO = new Rabbit_PreviewDTO();
+            HelperServices.CopyPropertiesTo(rabbitToDelete, rabbitPreviewDTO);
+
             await _dbRepository.DeleteObjectAsync(rabbitToDelete);
+
+            return rabbitPreviewDTO; // Return the rabbit to be deleted as a Rabbit_PreviewDTO
         }
+
+
 
 
         //---------------------: TRANSFER

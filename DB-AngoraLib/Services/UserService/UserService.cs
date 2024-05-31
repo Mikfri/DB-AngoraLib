@@ -105,12 +105,12 @@ namespace DB_AngoraLib.Services.UserService
 
         public async Task<User> GetUserByIdAsync(string userId)
         {
-            return await _dbRepository.GetObjectByKEYAsync(userId);
+            return await _dbRepository.GetObject_ByKEYAsync(userId);
         }
 
         public async Task<User> GetUserByBreederRegNoAsync(string breederRegNo)
         {
-            return await _dbRepository.GetObjectAsync(u => u.BreederRegNo == breederRegNo);
+            return await _dbRepository.GetObject_ByFilterAsync(u => u.BreederRegNo == breederRegNo);
         }
 
     }

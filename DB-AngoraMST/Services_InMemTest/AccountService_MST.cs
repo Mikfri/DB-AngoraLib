@@ -131,11 +131,6 @@ namespace DB_AngoraMST.Services_InMemTest
             var race = Race.Satinangora;
             var approvedRaceColorCombination = true;
 
-            // Check if the user exists
-            //if (!_context.Users.Any(u => u.Id == userId))
-            //{
-            //    Assert.Fail("No user with the given id exists in the database.");
-            //}
 
             // Get the user's rabbit collection
             var mockUserRabbitCollection = _context.Users
@@ -146,7 +141,7 @@ namespace DB_AngoraMST.Services_InMemTest
             // Print each rabbit's nickname
             foreach (var rabbit in mockUserRabbitCollection)
             {
-                Console.WriteLine($"Rabbit: {rabbit.NickName}, AppovedColComb: {rabbit.ApprovedRaceColorCombination}");
+                Console.WriteLine($"Rabbit: {rabbit.NickName},Race: {rabbit.Race}, Color: {rabbit.Color} AppovedColComb: {rabbit.ApprovedRaceColorCombination}");
             }
 
             // Act

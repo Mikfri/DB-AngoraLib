@@ -212,7 +212,7 @@ namespace DB_AngoraMST.Services_InMemTest
 
 
             // Act
-            var filter = new Rabbit_ProfileDTO { Race = expectedRace };
+            var filter = new Rabbit_ForsaleFilterDTO { Race = expectedRace };
             var rabbits = await _rabbitService.GetAllRabbits_OpenProfile_Filtered(filter);
 
 
@@ -253,8 +253,8 @@ namespace DB_AngoraMST.Services_InMemTest
             }
 
             // Act
-            var updatedOwnedRabbit = await _rabbitService.UpdateRabbit_RBAC_Async(mockUser, mockRabbitOwned.RightEarId, mockRabbitOwned.LeftEarId, updatedOwnedRabbitDTO, mockUserClaims);
-            var updatedNotOwnedRabbit = await _rabbitService.UpdateRabbit_RBAC_Async(mockUser, mockRabbitNotOwned.RightEarId, mockRabbitNotOwned.LeftEarId, updatedNotOwnedRabbitDTO, mockUserClaims);
+            var updatedOwnedRabbit = await _rabbitService.UpdateRabbit_RBAC_Async(mockUser.Id, mockRabbitOwned.RightEarId, mockRabbitOwned.LeftEarId, updatedOwnedRabbitDTO, mockUserClaims);
+            var updatedNotOwnedRabbit = await _rabbitService.UpdateRabbit_RBAC_Async(mockUser.Id, mockRabbitNotOwned.RightEarId, mockRabbitNotOwned.LeftEarId, updatedNotOwnedRabbitDTO, mockUserClaims);
 
             // Assert
             Assert.AreEqual("UpdatedOwnedName", updatedOwnedRabbit.NickName);
@@ -284,12 +284,12 @@ namespace DB_AngoraMST.Services_InMemTest
             }
 
             // Act
-            var updatedOwnedRabbit = await _rabbitService.UpdateRabbit_RBAC_Async(mockUser, mockRabbitOwned.RightEarId, mockRabbitOwned.LeftEarId, updatedOwnedRabbitDTO, mockUserClaims);
-            var updatedNotOwnedRabbit = await _rabbitService.UpdateRabbit_RBAC_Async(mockUser, mockRabbitNotOwned.RightEarId, mockRabbitNotOwned.LeftEarId, updatedNotOwnedRabbitDTO, mockUserClaims);
+            var updatedOwnedRabbit = await _rabbitService.UpdateRabbit_RBAC_Async(mockUser.Id, mockRabbitOwned.RightEarId, mockRabbitOwned.LeftEarId, updatedOwnedRabbitDTO, mockUserClaims);
+            var updatedNotOwnedRabbit = await _rabbitService.UpdateRabbit_RBAC_Async(mockUser.Id, mockRabbitNotOwned.RightEarId, mockRabbitNotOwned.LeftEarId, updatedNotOwnedRabbitDTO, mockUserClaims);
 
             // Assert
             Assert.AreEqual("UpdatedOwnedName", updatedOwnedRabbit.NickName);
-            Assert.AreNotEqual("UpdatedNotOwnedName", updatedNotOwnedRabbit.NickName);     
+            Assert.AreNotEqual("UpdatedNotOwnedName", updatedNotOwnedRabbit.NickName); 
         }
 
 
@@ -316,8 +316,8 @@ namespace DB_AngoraMST.Services_InMemTest
             }
 
             // Act
-            await _rabbitService.DeleteRabbit_RBAC_Async(mockUser, mockRabbitOwned.RightEarId, mockRabbitOwned.LeftEarId, mockUserClaims);
-            await _rabbitService.DeleteRabbit_RBAC_Async(mockUser, mockRabbitNotOwned.RightEarId, mockRabbitNotOwned.LeftEarId, mockUserClaims);
+            await _rabbitService.DeleteRabbit_RBAC_Async(mockUser.Id, mockRabbitOwned.RightEarId, mockRabbitOwned.LeftEarId, mockUserClaims);
+            await _rabbitService.DeleteRabbit_RBAC_Async(mockUser.Id, mockRabbitNotOwned.RightEarId, mockRabbitNotOwned.LeftEarId, mockUserClaims);
 
             // Assert
             // Verify that both rabbits was deleted from the database
@@ -355,10 +355,10 @@ namespace DB_AngoraMST.Services_InMemTest
             // Act & Assert
             // Expect an exception to be thrown because the user does not own the rabbit
             await Assert.ThrowsExceptionAsync<InvalidOperationException>(
-                () => _rabbitService.DeleteRabbit_RBAC_Async(mockUser, mockRabbitNotOwned.RightEarId, mockRabbitNotOwned.LeftEarId, mockUserClaims));
+                () => _rabbitService.DeleteRabbit_RBAC_Async(mockUser.Id, mockRabbitNotOwned.RightEarId, mockRabbitNotOwned.LeftEarId, mockUserClaims));
             
             // Act
-            await _rabbitService.DeleteRabbit_RBAC_Async(mockUser, mockRabbitOwned.RightEarId, mockRabbitOwned.LeftEarId, mockUserClaims);
+            await _rabbitService.DeleteRabbit_RBAC_Async(mockUser.Id, mockRabbitOwned.RightEarId, mockRabbitOwned.LeftEarId, mockUserClaims);
 
             // Assert
             // Verify that the rabbit was deleted from the database

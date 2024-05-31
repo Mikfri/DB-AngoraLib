@@ -55,11 +55,11 @@ namespace DB_AngoraLib.Models
         Vildtbrun,
         Vildtblå_PerleEgern,
         Vildtrød_Harefarvet,
-        Rødbrun_Gråblå_Lux,
+        Rødbrungråblå_Lux,
         Gulrød_Bourgogne,
         Orange,
         Ræverød_NewZealandRed,
-        Lutino, // Lutino_Vildtgul
+        Lutino_Vildtgul,
         Lutino_Shadow,
         Chinchilla,
         Schwarzgrannen,
@@ -71,24 +71,25 @@ namespace DB_AngoraLib.Models
         Gråblå_LilleEgern,
         Gråblå_MarburgerEgern,
         LysGråblå_Gouwenaar,
-        Eller,                  // side 64.. Ikke godkendt
         Brun_Havana,
         Beige,
         Rødorange_Sachsengold,
-        Hvid_Albino,            // side 65
+        Hvid_Albino,            
         Hvid_Blåøjet,
 
         // Ensfarvede m. slør
         Rødbrun_Madagascar,
+        Kanel,
         Gulbrun_Isabella,
         Sallander,
+
 
         // Ensfarvede m. stikkelhår
         Sølv,
         Stikkelhår_Trønder,
 
         //Special farver
-        Elfenben,
+        Elfenben = Hvid_Albino
     }
 
     public enum Pattern

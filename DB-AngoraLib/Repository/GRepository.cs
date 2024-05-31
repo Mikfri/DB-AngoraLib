@@ -33,20 +33,6 @@ namespace DB_AngoraLib.Repository
             }
         }
 
-        /// <summary>
-        /// Returnerer en IQueryable af objekter af typen T.
-        /// </summary>
-        /// <returns></returns>
-        public DbSet<T> GetDbSet()
-        {
-            return _dbContext.Set<T>();
-        }
-
-        public virtual async Task<IEnumerable<T>> GetAllObjectsAsync()
-        {
-            return await _dbContext.Set<T>().AsNoTracking().ToListAsync();
-        }
-
         public async Task SaveObjects(List<T> objs)
         {
             foreach (T obj in objs)
@@ -58,11 +44,27 @@ namespace DB_AngoraLib.Repository
         }
 
         /// <summary>
+        /// Returnerer en IQueryable af objekter af typen T.
+        /// </summary>
+        /// <returns></returns>
+        public DbSet<T> GetDbSet()
+        {
+            return _dbContext.Set<T>();
+        }
+
+
+        public virtual async Task<IEnumerable<T>> GetAllObjectsAsync()
+        {
+            return await _dbContext.Set<T>().AsNoTracking().ToListAsync();
+        }
+        
+
+        /// <summary>
         /// Filtrerer og returnerer ÉT objekt ud fra et given filter.
         /// </summary>
         /// <param name="filter"></param>
         /// <returns></returns>
-        public async Task<T> GetObjectAsync(Expression<Func<T, bool>> filter)
+        public async Task<T> GetObject_ByFilterAsync(Expression<Func<T, bool>> filter)
         {
             return await _dbContext.Set<T>().Where(filter).FirstOrDefaultAsync();
         }
@@ -72,7 +74,7 @@ namespace DB_AngoraLib.Repository
         /// </summary>
         /// <param name="id">string Id [KEY]</param>
         /// <returns></returns>
-        public async Task<T> GetObjectByKEYAsync(string id)
+        public async Task<T> GetObject_ByKEYAsync(string id)
         {
             return await _dbContext.Set<T>().FindAsync(id);
         }

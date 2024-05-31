@@ -56,25 +56,29 @@ namespace DB_AngoraLib.Services.AccountService
         }
 
         //---------------------------------: GET USER METHODS :---------------------------------
+        //------------: GET ALL USERS :------------
         public async Task<List<User>> GetAllUsersAsync()
         {
             return (await _dbRepository.GetAllObjectsAsync()).ToList();
         }
 
+        //------------: GET USER BY USERNAME OR EMAIL :------------
         public async Task<User> GetUserByUserNameOrEmailAsync(string userNameOrEmail)
         {
             return await _dbRepository.GetDbSet()
                 .FirstOrDefaultAsync(u => u.UserName == userNameOrEmail || u.Email == userNameOrEmail);
         }
 
+        //------------: GET USER BY ID :------------
         public async Task<User> GetUserByIdAsync(string userId)
         {
-            return await _dbRepository.GetObjectByKEYAsync(userId);
+            return await _dbRepository.GetObject_ByKEYAsync(userId);
         }
 
+        //------------: GET USER BY BREEDER-REG-NO :------------
         public async Task<User> GetUserByBreederRegNoAsync(string breederRegNo)
         {
-            return await _dbRepository.GetObjectAsync(u => u.BreederRegNo == breederRegNo);
+            return await _dbRepository.GetObject_ByFilterAsync(u => u.BreederRegNo == breederRegNo);
         }
 
 
