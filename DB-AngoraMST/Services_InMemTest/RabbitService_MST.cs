@@ -66,6 +66,8 @@ namespace DB_AngoraMST.Services_InMemTest
             _context.Dispose();
         }
 
+
+        //-------------------------: ADD TESTS
         [TestMethod]
         public async Task AddRabbit_ToMyCollectionAsync_TEST()
         {
@@ -80,10 +82,11 @@ namespace DB_AngoraMST.Services_InMemTest
                 DateOfBirth = new DateOnly(2020, 06, 12),
                 DateOfDeath = null,
                 Gender = Gender.Hun,
-                OpenProfile = OpenProfile.Nej
+                ForSale = ForSale.Nej
             };
+            var existingRabbit = await _context.Rabbits.FirstAsync();
+            Assert.IsNotNull(existingRabbit);
 
-            // Set the current user for the test
             var currentUser = await _context.Users.FirstAsync();
             Assert.IsNotNull(currentUser);
 
@@ -92,12 +95,8 @@ namespace DB_AngoraMST.Services_InMemTest
             await _rabbitService.AddRabbit_ToMyCollectionAsync(currentUser.Id, newUniqRabbit);
 
             // Assert
-            var addedRabbit = await _context.Rabbits.FindAsync(newUniqRabbit.RightEarId, newUniqRabbit.LeftEarId);
+            var addedRabbit = await _context.Rabbits.FirstOrDefaultAsync(r => r.RightEarId == newUniqRabbit.RightEarId && r.LeftEarId == newUniqRabbit.LeftEarId);
             Assert.IsNotNull(addedRabbit);
-
-            // Get a rabbit from the mock data
-            var existingRabbit = await _context.Rabbits.FirstAsync();
-            Assert.IsNotNull(existingRabbit);
 
             // Act & Assert
             var existingRabbitDto = new Rabbit_CreateDTO { RightEarId = existingRabbit.RightEarId, LeftEarId = existingRabbit.LeftEarId };
@@ -187,8 +186,9 @@ namespace DB_AngoraMST.Services_InMemTest
             Assert.IsNull(resultNotOwned, "Expected not to retrieve profile of not owned rabbit due to breeder role");
         }
 
+
         [TestMethod]
-        public async Task GetAllRabbits_OpenProfile_Filtered_Test()
+        public async Task GetAllRabbits_OpenProfile_Filtered_TEST()
         {
             // Arrange
             var expectedRace = Race.Angora;
@@ -201,7 +201,7 @@ namespace DB_AngoraMST.Services_InMemTest
                 r.Race == expectedRace &&
                 // r.Color == expectedColor &&
                 //r.Gender == expectedGender &&
-                r.OpenProfile == OpenProfile.Ja);
+                r.ForSale == ForSale.Ja);
 
             // Print each rabbit's nickname
             foreach (var rabbit in expectedRabbits)
@@ -213,7 +213,7 @@ namespace DB_AngoraMST.Services_InMemTest
 
             // Act
             var filter = new Rabbit_ForsaleFilterDTO { Race = expectedRace };
-            var rabbits = await _rabbitService.GetAllRabbits_OpenProfile_Filtered(filter);
+            var rabbits = await _rabbitService.GetAllRabbits_Forsale_Filtered(filter);
 
 
             foreach (var rabbit in rabbits)
@@ -228,9 +228,41 @@ namespace DB_AngoraMST.Services_InMemTest
            
         }
 
+        //[TestMethod]
+        //public async Task GetRabbitPedigreeAsync_TEST()
+        //{
+        //    // Arrange
+        //    var rightEarId = "123";
+        //    var leftEarId = "456";
+
+        //    var rabbit = new Rabbit
+        //    {
+        //        RightEarId = rightEarId,
+        //        LeftEarId = leftEarId,
+        //        Father = new Rabbit { RightEarId = "789", LeftEarId = "1011" },
+        //        Mother = new Rabbit { RightEarId = "1213", LeftEarId = "1415" }
+        //    };
+
+        //    var mockRepo = new Mock<IGRepository<Rabbit>>();
+        //    mockRepo.Setup(repo => repo.GetDbSet())
+        //        .Returns(new List<Rabbit> { rabbit }.AsQueryable().BuildMockDbSet().Object);
+
+        //    _rabbitService = new RabbitServices(mockRepo.Object, _accountService, new RabbitValidator());
+
+        //    // Act
+        //    var result = await _rabbitService.GetRabbitPedigreeAsync(rightEarId, leftEarId);
+
+        //    // Assert
+        //    Assert.IsNotNull(result);
+        //    Assert.AreEqual(rightEarId, result.Rabbit.RightEarId);
+        //    Assert.AreEqual(leftEarId, result.Rabbit.LeftEarId);
+        //    Assert.IsNotNull(result.Father);
+        //    Assert.IsNotNull(result.Mother);
+        //}
 
 
         //-------------------------: UPDATE TESTS
+
         [TestMethod]
         public async Task UpdateRabbit_MODERATOR_Async_TEST()
         {

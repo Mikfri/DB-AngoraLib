@@ -6,6 +6,7 @@ using DB_AngoraLib.Services.HelperService;
 using DB_AngoraLib.Services.UserService;
 using DB_AngoraLib.Services.ValidationService;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using System.Linq.Expressions;
 using System.Security.Claims;
 
@@ -37,12 +38,12 @@ namespace DB_AngoraLib.Services.RabbitService
         /// <param name="newRabbitDto"></param>
         /// <returns></returns>
         /// <exception cref="InvalidOperationException"></exception>
-        public async Task<Rabbit_ProfileDTO> AddRabbit_ToMyCollectionAsync(string userId, Rabbit_CreateDTO newRabbitDto)
+        public async Task<Rabbit_ProfileDTO> AddRabbit_ToMyCollectionAsync(string userId, Rabbit_CreateDTO newRabbitDto) // TODO: Find ud af hvorfor testen fejler efter Rabbit nu har GUID Key fremfor composite-key
         {
             //Console.WriteLine($"Trying to add rabbit with RightEarId: {newRabbitDto.RightEarId}, LeftEarId: {newRabbitDto.LeftEarId}");
 
             // Convert RabbitDto to Rabbit
-            var newRabbit = new Rabbit
+            var newRabbit = new Rabbit      // TODO: Du var igang med at finde ud om der sq laves en DTO klasse for en Rabbits Pedigree, med de 3 kolloner
             {
                 RightEarId = newRabbitDto.RightEarId,
                 LeftEarId = newRabbitDto.LeftEarId,
@@ -54,8 +55,12 @@ namespace DB_AngoraLib.Services.RabbitService
                 DateOfDeath = newRabbitDto.DateOfDeath,
                 //IsJuvenile = newRabbitDto.IsJuvenile, // Ikke nødvendig, automatisk udregnet - evt frontend udregning?
                 Gender = newRabbitDto.Gender,
-                OpenProfile = newRabbitDto.OpenProfile
+                ForSale = newRabbitDto.ForSale,
                 // ... evt flere..
+
+                Father = await GetRabbit_ByEarTagsAsync(newRabbitDto.Father_RightEarId, newRabbitDto.Father_LeftEarId),
+                Mother = await GetRabbit_ByEarTagsAsync(newRabbitDto.Mother_RightEarId, newRabbitDto.Mother_LeftEarId),
+
             };
 
             _validatorService.ValidateRabbit(newRabbit);
@@ -92,55 +97,16 @@ namespace DB_AngoraLib.Services.RabbitService
             return rabbits.ToList();
         }
 
-        public async Task<List<Rabbit>> GetAllRabbits_ByBreederRegAsync(string breederRegNo)
-        {
-            var user = await _accountService.GetUserByBreederRegNoAsync(breederRegNo);
-            if (user == null)
-            {
-                return null;
-            }
-            var rabbits = await _dbRepository.GetAllObjectsAsync();
-            return rabbits.Where(rabbit => rabbit.OwnerId == user.Id).ToList();
-        }
-
-
-        //-------: GET BY EAR TAGs METODER
-        /// <summary>
-        /// Finder en Rabbit ud fra dens composite-KEY (øremærkerne kombinationen)
-        /// </summary>
-        /// <param name="rightEarId"></param>
-        /// <param name="leftEarId"></param>
-        /// <returns></returns>
-        public async Task<Rabbit> GetRabbit_ByEarTagsAsync(string rightEarId, string leftEarId)
-        {
-            Expression<Func<Rabbit, bool>> filter = r => r.RightEarId == rightEarId && r.LeftEarId == leftEarId;
-
-            //Console.WriteLine($"Checking for existing Rabbit with ear tags: RightEarId: {rightEarId}, LeftEarId: {leftEarId}");
-
-            var rabbit = await _dbRepository.GetObject_ByFilterAsync(filter);
-
-            //if (rabbit != null)
-            //{
-            //    Console.WriteLine($"A Rabbit with this ear-tag already exists!\nRabbitName: {rabbit.NickName}, OwnerId: {rabbit.OwnerId}, OwnerName: {rabbit.User.FirstName} {rabbit.User.LastName}");
-            //}
-            //else
-            //{
-            //    Console.WriteLine("No rabbit found with the given ear tags.");
-            //}
-
-            return rabbit;
-        }
-
-        public async Task<List<Rabbit_PreviewDTO>> GetAllRabbits_OpenProfile_Filtered(Rabbit_ForsaleFilterDTO filter)
+        public async Task<List<Rabbit_PreviewDTO>> GetAllRabbits_Forsale_Filtered(Rabbit_ForsaleFilterDTO filter)
         {
             var rabbits = await _dbRepository.GetDbSet()
-                .Where(rabbit => rabbit.OpenProfile == OpenProfile.Ja)
+                .Where(rabbit => rabbit.ForSale == ForSale.Ja)
                 .ToListAsync();
 
             return rabbits
                 .Where(rabbit =>
                        (filter.RightEarId == null || rabbit.RightEarId == filter.RightEarId) // Vi vil kunne søge på hvor den kommer fra!
-                    //&& (filter.LeftEarId == null || rabbit.LeftEarId == filter.LeftEarId) // hvorfor sq man søge på venstre øre?
+                                                                                             //&& (filter.LeftEarId == null || rabbit.LeftEarId == filter.LeftEarId) // hvorfor sq man søge på venstre øre?
                     && (filter.NickName == null || rabbit.NickName == filter.NickName)      // hvorfor søge på navn?
                     && (filter.Race == null || rabbit.Race == filter.Race)
                     && (filter.Color == null || rabbit.Color == filter.Color)
@@ -160,10 +126,31 @@ namespace DB_AngoraLib.Services.RabbitService
                 .ToList();
         }
 
+        public async Task<List<Rabbit>> GetAllRabbits_ByBreederRegAsync(string breederRegNo)
+        {
+            var user = await _accountService.GetUserByBreederRegNoAsync(breederRegNo);
+            if (user == null)
+            {
+                return null;
+            }
+            var rabbits = await _dbRepository.GetAllObjectsAsync();
+            return rabbits.Where(rabbit => rabbit.OwnerId == user.Id).ToList();
+        }
+
+        /// <summary>
+        /// Henter en kanin ud fra dens ID (compiste-KEY)
+        /// </summary>
+        /// <param name="rightEarId"></param>
+        /// <param name="leftEarId"></param>
+        /// <returns>En Rabbit, med ALT</returns>
+        public async Task<Rabbit?> GetRabbit_ByEarTagsAsync(string rightEarId, string leftEarId)
+        {
+            return await _dbRepository.GetDbSet()
+                .FirstOrDefaultAsync(r => r.RightEarId == rightEarId && r.LeftEarId == leftEarId);
+        }
 
 
-        public async Task<Rabbit_ProfileDTO> GetRabbit_ProfileAsync(
-            string userId, string rightEarId, string leftEarId, IList<Claim> userClaims)
+        public async Task<Rabbit_ProfileDTO> GetRabbit_ProfileAsync(string userId, string rightEarId, string leftEarId, IList<Claim> userClaims)
         {
             var rabbit = await GetRabbit_ByEarTagsAsync(rightEarId, leftEarId);
             var hasPermissionToGetAnyRabbit = userClaims.Any(
@@ -174,7 +161,7 @@ namespace DB_AngoraLib.Services.RabbitService
                 return null;
             }            
 
-            if (rabbit.OpenProfile == OpenProfile.Ja || rabbit.OwnerId == userId || hasPermissionToGetAnyRabbit)
+            if (rabbit.ForSale == ForSale.Ja || rabbit.OwnerId == userId || hasPermissionToGetAnyRabbit)
             {
                 var rabbitProfile = new Rabbit_ProfileDTO();
                 HelperServices.CopyPropertiesTo(rabbit, rabbitProfile);
@@ -185,8 +172,33 @@ namespace DB_AngoraLib.Services.RabbitService
             return null;
         }
 
+        //private readonly MemoryCache _cache = new MemoryCache(new MemoryCacheOptions());
 
+        public async Task<Rabbit_PedigreeDTO> GetRabbit_PedigreeAsync(string rightEarId, string leftEarId, int generation = 0)
+        {
+            //var cacheKey = $"{rightEarId}-{leftEarId}";
+            //if (_cache.TryGetValue(cacheKey, out Rabbit_PedigreeDTO pedigree))
+            //{
+            //    return pedigree;
+            //}
 
+            var rabbit = await GetRabbit_ByEarTagsAsync(rightEarId, leftEarId);
+            if (rabbit == null)
+            {
+                return null;
+            }
+
+            var pedigree = new Rabbit_PedigreeDTO
+            {
+                Rabbit = rabbit,
+                Father = generation < 3 ? await GetRabbit_PedigreeAsync(rabbit.Father.RightEarId, rabbit.Father.LeftEarId, generation + 1) : null,
+                Mother = generation < 3 ? await GetRabbit_PedigreeAsync(rabbit.Mother.RightEarId, rabbit.Mother.LeftEarId, generation + 1) : null
+            };
+
+            //_cache.Set(cacheKey, pedigree);
+
+            return pedigree;
+        }
 
 
         //---------------------: UPDATE

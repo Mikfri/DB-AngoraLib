@@ -21,7 +21,7 @@ namespace DB_AngoraMST.ModelsTest
         public void LeftEarId_ValidTest(string leftEarId)
         {
             rabbit.LeftEarId = leftEarId;
-            rabbitValidator.ValidateLeftEarId(rabbit);
+            rabbitValidator.ValidateLeftEarId(rabbit.LeftEarId);
         }
 
         [TestMethod]
@@ -29,7 +29,7 @@ namespace DB_AngoraMST.ModelsTest
         public void LeftEarId_NullTest(string leftEarId)
         {
             rabbit.LeftEarId = leftEarId;
-            Assert.ThrowsException<ArgumentNullException>(() => rabbitValidator.ValidateLeftEarId(rabbit));
+            Assert.ThrowsException<ArgumentNullException>(() => rabbitValidator.ValidateLeftEarId(rabbit.LeftEarId));
         }
 
         [TestMethod]
@@ -40,7 +40,7 @@ namespace DB_AngoraMST.ModelsTest
         public void LeftEarId_InvalidTest(string leftEarId)
         {
             rabbit.LeftEarId = leftEarId;
-            Assert.ThrowsException<ArgumentException>(() => rabbitValidator.ValidateLeftEarId(rabbit));
+            Assert.ThrowsException<ArgumentException>(() => rabbitValidator.ValidateLeftEarId(rabbit.LeftEarId));
         }
 
         //////////////// RightEarId
@@ -49,7 +49,7 @@ namespace DB_AngoraMST.ModelsTest
         public void rightEarId_ValidTest(string rightEarId)
         {
             rabbit.RightEarId = rightEarId;
-            rabbitValidator.ValidateRightEarId(rabbit);
+            rabbitValidator.ValidateRightEarId(rabbit.RightEarId);
         }
 
         [TestMethod]
@@ -57,7 +57,7 @@ namespace DB_AngoraMST.ModelsTest
         public void rightEarId_NullTest(string rightEarId)
         {
             rabbit.RightEarId = rightEarId;
-            Assert.ThrowsException<ArgumentNullException>(() => rabbitValidator.ValidateRightEarId(rabbit));
+            Assert.ThrowsException<ArgumentNullException>(() => rabbitValidator.ValidateRightEarId(rabbit.RightEarId));
         }
 
         [TestMethod]
@@ -67,7 +67,7 @@ namespace DB_AngoraMST.ModelsTest
         public void rightEarId_InvalidTest(string rightEarId)
         {
             rabbit.RightEarId = rightEarId;
-            Assert.ThrowsException<ArgumentException>(() => rabbitValidator.ValidateRightEarId(rabbit));
+            Assert.ThrowsException<ArgumentException>(() => rabbitValidator.ValidateRightEarId(rabbit.RightEarId));
         }
 
         //////////////// Race

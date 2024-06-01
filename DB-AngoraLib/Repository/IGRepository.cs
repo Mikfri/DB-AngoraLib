@@ -14,7 +14,7 @@ namespace DB_AngoraLib.Repository
         Task<IEnumerable<T>> GetAllObjectsAsync();
         Task SaveObjects(List<T> objs);
         DbSet<T> GetDbSet();
-        Task<T> GetObject_ByFilterAsync(Expression<Func<T, bool>> filter); // TODO: overvej at istedet at benytte GetObjectByIdAsync
+        Task<T> GetObject_ByFilterAsync(Expression<Func<T, bool>> filter);
         Task<T> GetObject_ByKEYAsync(string id);
         Task UpdateObjectAsync(T obj);
         Task DeleteObjectAsync(T obj);

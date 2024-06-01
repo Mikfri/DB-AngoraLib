@@ -13,7 +13,6 @@ namespace DB_AngoraLib.Services.UserService
 {
     public class UserService : IUserService
     {
-        // TODO: Se om AccountServices virker med GetBy metoderne hvis den arver fra IGRepository<User>
         private readonly IGRepository<User> _dbRepository;
         public UserService(IGRepository<User> dbRepository)
         {

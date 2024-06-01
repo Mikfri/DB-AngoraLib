@@ -39,9 +39,9 @@ namespace DB_AngoraLib.EF_DbContext
                 .HasIndex(u => u.BreederRegNo)
                 .IsUnique();
 
-            // Configure composite key for Rabbit
+            // Konfigurer primær nøgle for Rabbit
             modelBuilder.Entity<Rabbit>()
-                .HasKey(r => new { r.RightEarId, r.LeftEarId });
+                .HasKey(r => r.Id);
 
             // Add unique constraint for Rabbit: Forbedrer ydeevnen ved DB søgning da de nu er indexerede
             modelBuilder.Entity<Rabbit>()
@@ -59,27 +59,32 @@ namespace DB_AngoraLib.EF_DbContext
                 .HasForeignKey(r => r.OwnerId) // En Rabbit har en OwnerId
                 .IsRequired(false);
 
-            modelBuilder.Entity<Rating>()
-                .HasOne(r => r.Rabbit)      // En Rating har en Rabbit
-                .WithMany(rb => rb.Ratings) // En Rabbit har mange Ratings
-                .HasForeignKey(r => new { r.RightEarId, r.LeftEarId });
+            modelBuilder.Entity<Rabbit>()
+                .HasOne(r => r.Father)
+                .WithMany()
+                .HasForeignKey(r => r.FatherId)
+                .IsRequired(false)
+                .OnDelete(DeleteBehavior.Restrict); // Prevent cascade delete
 
-            modelBuilder.Entity<RabbitParents>()
-                .HasOne(rp => rp.RabbitMother)      // En RabbitParent har en RabbitMother
-                .WithMany(r => r.MotheredChildren)
-                .HasForeignKey(rp => new { rp.MotherRightEarId, rp.MotherLeftEarId })
-                .OnDelete(DeleteBehavior.NoAction);
+            // Configure Foreign Key for Rabbit -> Rabbit (Mother)
+            modelBuilder.Entity<Rabbit>()
+                .HasOne(r => r.Mother)
+                .WithMany()
+                .HasForeignKey(r => r.MotherId)
+                .IsRequired(false)
+                .OnDelete(DeleteBehavior.Restrict); // Prevent cascade delete
 
-            modelBuilder.Entity<RabbitParents>()
-                .HasOne(rp => rp.RabbitFather)
-                .WithMany(r => r.FatheredChildren)
-                .HasForeignKey(rp => new { rp.FatherRightEarId, rp.FatherLeftEarId })
-                .OnDelete(DeleteBehavior.NoAction);
+
+            //modelBuilder.Entity<Rating>()
+            //    .HasOne(r => r.Rabbit)      // En Rating har en Rabbit
+            //    .WithMany(rb => rb.Ratings) // En Rabbit har mange Ratings
+            //    .HasForeignKey(r => r.Id); // Opdateret til at bruge den nye Id property
+
+
 
         }
         public DbSet<Rabbit> Rabbits { get; set; }
         public DbSet<Rating> Ratings { get; set; }
-        public DbSet<RabbitParents> RabbitParents { get; set; }
         public DbSet<Photo> Photos { get; set; }
     }
 }

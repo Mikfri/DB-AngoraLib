@@ -65,9 +65,9 @@ namespace DB_AngoraLib.Services.ValidationService
             }
         }
 
-        public void ValidateRightEarId(Rabbit rabbit)
+        public void ValidateRightEarId(string rightEarId)
         {
-            string rightEarId = rabbit.RightEarId;
+            //string rightEarId = rabbit.RightEarId;
 
             Regex fourNumbersDigit = new Regex(@"^\d{4}$");
 
@@ -82,9 +82,8 @@ namespace DB_AngoraLib.Services.ValidationService
             }
         }
 
-        public void ValidateLeftEarId(Rabbit rabbit)
+        public void ValidateLeftEarId(string leftEarId)
         {
-            string leftEarId = rabbit.LeftEarId;
 
             Regex threeToFiveNumbersDigit = new Regex(@"^\d{3,5}$"); // 3-5 numeriske tal
 
@@ -115,32 +114,36 @@ namespace DB_AngoraLib.Services.ValidationService
             }
         }
 
-        //public void ValidateParentIds(Rabbit rabbit)
-        //{
-        //    if ((string.IsNullOrEmpty(rabbit.MotherRightEarId) && !string.IsNullOrEmpty(rabbit.MotherLeftEarId)) ||
-        //        (!string.IsNullOrEmpty(rabbit.MotherRightEarId) && string.IsNullOrEmpty(rabbit.MotherLeftEarId)))
-        //    {
-        //        throw new ArgumentException("Kanin.ModerId: Begge ører ID er nødvendige for at specificere moderen");
-        //    }
+        public void ValidateParentId(string parentId)
+        {
+            // Hvis parentId er null eller tom, returner uden fejl
+            if (string.IsNullOrEmpty(parentId))
+            {
+                return;
+            }
 
-        //    if ((string.IsNullOrEmpty(rabbit.FatherRightEarId) && !string.IsNullOrEmpty(rabbit.FatherLeftEarId)) ||
-        //        (!string.IsNullOrEmpty(rabbit.FatherRightEarId) && string.IsNullOrEmpty(rabbit.FatherLeftEarId)))
-        //    {
-        //        throw new ArgumentException("Kanin.FaderId: Begge ører ID er nødvendige for at specificere faderen");
-        //    }
-        //}
+            Regex parentIdPattern = new Regex(@"^\d{4}-\d{3,5}$");
+
+            if (!parentIdPattern.IsMatch(parentId))
+            {
+                throw new ArgumentException("Kanin.ForældreId: Skal være i formatet RightEarId-LeftEarId (f.eks. 5095-021)");
+            }
+        }
+
 
         public void ValidateRabbit(Rabbit rabbit)
         {
             //Key validations
-            ValidateRightEarId(rabbit);
-            ValidateLeftEarId(rabbit);
+            ValidateRightEarId(rabbit.RightEarId);
+            ValidateLeftEarId(rabbit.LeftEarId);
 
             ValidateRace(rabbit);
             ValidateColor(rabbit);
             ValidateRaceAndColorCombo(rabbit);
             ValidateGender(rabbit);
-            //ValidateParentIds(rabbit);
+
+            //ValidateParentId(rabbit.FatherId);
+            //ValidateParentId(rabbit.MotherId);
         }
 
     }

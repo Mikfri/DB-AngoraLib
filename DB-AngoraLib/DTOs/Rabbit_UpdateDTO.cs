@@ -22,6 +22,6 @@ namespace DB_AngoraLib.DTOs
         [DataType(DataType.Date)]
         public DateOnly? DateOfDeath { get; init; }
         public Gender? Gender { get; init; }
-        public OpenProfile? OpenProfile { get; init; }
+        public ForSale? ForSale { get; init; }
     }
 }

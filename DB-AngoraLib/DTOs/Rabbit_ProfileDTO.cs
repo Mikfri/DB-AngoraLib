@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace DB_AngoraLib.DTOs
 {
     /// <summary>
-    /// Indeholder alle properties for en Rabbit, som en User skal kunne se og søge på.
+    /// Indeholder alle properties for en Rabbit, som en User skal kunne se
     /// </summary>
     public record Rabbit_ProfileDTO
     {
@@ -33,6 +33,6 @@ namespace DB_AngoraLib.DTOs
         public bool? IsJuvenile { get; init; }
 
         public Gender? Gender { get; init; }
-        public OpenProfile? OpenProfile { get; init; }
+        public ForSale? ForSale { get; init; }
     }
 }

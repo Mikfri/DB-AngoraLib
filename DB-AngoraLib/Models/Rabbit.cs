@@ -4,7 +4,7 @@ using DB_AngoraLib.Services.ValidationService;
 
 namespace DB_AngoraLib.Models
 {
-    public enum OpenProfile
+    public enum ForSale
     {
         Nej,
         Ja
@@ -109,6 +109,8 @@ namespace DB_AngoraLib.Models
 
     public class Rabbit
     {
+        public int Id { get; set; }
+
         public string RightEarId { get; set; }
         public string LeftEarId { get; set; }
 
@@ -135,7 +137,6 @@ namespace DB_AngoraLib.Models
         }
 
         public DateOnly DateOfBirth { get; set; }
-        public DateOnly? DateOfDeath { get; set; }
         public bool IsJuvenile
         {
             get
@@ -144,31 +145,44 @@ namespace DB_AngoraLib.Models
                 return ageInWeeks >= 8 && ageInWeeks <= 14;
             }
         }
+        public DateOnly? DateOfDeath { get; set; }
+        
         public Gender Gender { get; set; }
-        public OpenProfile? OpenProfile { get; set; }
+        public ForSale? ForSale { get; set; }
 
-        public virtual ICollection<Rating> Ratings { get; set; }
-        public virtual ICollection<RabbitParents> Parents { get; set; }
-        public virtual ICollection<RabbitParents> MotheredChildren { get; set; } // Er altid null hvis, Rabbit er far/Han
-        public virtual ICollection<RabbitParents> FatheredChildren { get; set; } // Er altid null hvis, Rabbit er mor/Hun
+        public int? FatherId { get; set; }
+        public Rabbit? Father { get; set; }
+
+        public int? MotherId { get; set; }
+        public Rabbit? Mother { get; set; }
+
+
+        //public virtual ICollection<Rating> Ratings { get; set; }
+        //public virtual ICollection<RabbitParents> Parents { get; set; }
+        //public virtual ICollection<RabbitParents> MotheredChildren { get; set; } // Er altid null hvis, Rabbit er far/Han
+        //public virtual ICollection<RabbitParents> FatheredChildren { get; set; } // Er altid null hvis, Rabbit er mor/Hun
         public virtual ICollection<Photo> Photos { get; set; }
 
 
 
-        public Rabbit(string rightEarId, string leftEarId, string? ownerId, string? nickName, Race race, Color color, /*bool? approvedRaceColorCombination,*/ DateOnly dateOfBirth, DateOnly? dateOfDeath, Gender gender, OpenProfile? openProfile)
+        public Rabbit(int id, string rightEarId, string leftEarId, string? ownerId, string? nickName, Race race, Color color, DateOnly dateOfBirth, DateOnly? dateOfDeath, Gender gender, ForSale? forSale, int fatherId, int motherId)
         {
+            Id = id;
+
             RightEarId = rightEarId;
             LeftEarId = leftEarId;
             OwnerId = ownerId;
             NickName = nickName;
             Race = race;
             Color = color;
-            /*ApprovedRaceColorCombination = approvedRaceColorCombination;*/
             DateOfBirth = dateOfBirth;
             DateOfDeath = dateOfDeath;
             Gender = gender;
 
-            OpenProfile = openProfile;
+            ForSale = forSale;
+
+            FatherId = fatherId;
+            MotherId = motherId;
         }
 
         public Rabbit() { }
