@@ -105,6 +105,7 @@ namespace DB_AngoraLib.Services.AccountService
             return currentUserCollection.Rabbits
                 .Select(rabbit => new Rabbit_PreviewDTO
                 {
+                    EarCombId = $"{rabbit.RightEarId}-{rabbit.LeftEarId}",
                     RightEarId = rabbit.RightEarId,
                     LeftEarId = rabbit.LeftEarId,
                     NickName = rabbit.NickName,

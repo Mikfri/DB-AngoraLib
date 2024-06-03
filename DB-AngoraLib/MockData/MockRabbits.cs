@@ -15,7 +15,7 @@ namespace DB_AngoraLib.MockData
             //---------------------: IDAS RABBIT COLLECTION
 
             new Rabbit(
-            1,
+            //1,
             "5095",                 // RightEarId
             "002",                  // LeftEarId
             "IdasId",               // User.Id
@@ -27,11 +27,11 @@ namespace DB_AngoraLib.MockData
             new DateOnly(2022, 07, 22), // Format: yyyy-MM-dd
             Gender.Hun,
             ForSale.Nej,
-            0,
-            0),
+            null,
+            null),
 
             new Rabbit(
-            2,
+            //2,
             "5095",
             "001",
             "IdasId",
@@ -43,11 +43,12 @@ namespace DB_AngoraLib.MockData
             new DateOnly(2024, 04, 13),
             Gender.Hun,
             ForSale.Ja,
-            0,
-            0),
+
+            null,
+            null),
 
             new Rabbit(
-            3,
+            //3,
             "5095",
             "003",
             "IdasId",
@@ -58,11 +59,11 @@ namespace DB_AngoraLib.MockData
             new DateOnly(2023, 11, 3),
             Gender.Hun,
             ForSale.Nej,
-            0,
-            0),
+            null,
+            null),
 
             new Rabbit(
-            4,
+            //4,
             "4640",
             "120",
             "IdasId",
@@ -73,11 +74,11 @@ namespace DB_AngoraLib.MockData
             new DateOnly(2023, 11, 3),
             Gender.Hun,
             ForSale.Nej,
-            0,
-            0),
+            null,
+            null),
 
             new Rabbit(
-            5,
+            //5,
             "4640",
             "105",
             "IdasId",
@@ -88,12 +89,12 @@ namespace DB_AngoraLib.MockData
             null,
             Gender.Han,
             ForSale.Ja,
-            0,
-            0),
+            null,
+            null),
 
             //---------------------: MAJAS RABBIT COLLECTION
             new Rabbit(
-            6,
+            //6,
             "4398",
             "3020",
             "MajasId",
@@ -105,11 +106,11 @@ namespace DB_AngoraLib.MockData
             null,
             Gender.Han,
             ForSale.Ja,
-            0,
-            0),
+            null,
+            null),
 
             new Rabbit(
-            7,
+            //7,
             "5053",
             "0223",
             "MajasId",
@@ -120,11 +121,11 @@ namespace DB_AngoraLib.MockData
             null,
             Gender.Hun,
             ForSale.Ja,
-            0,
-            0),
+            "4977-206",
+            "4977-213"),
 
             new Rabbit(
-            8,
+            //8,
             "5053",
             "0723",
             "MajasId",
@@ -135,11 +136,11 @@ namespace DB_AngoraLib.MockData
             null,
             Gender.Han,
             ForSale.Ja,
-            0,
-            0),
+            "4977-206",
+            "4977-315"),
 
             new Rabbit(
-            9,
+            //9,
             "5053",
             "1023",
             "MajasId",
@@ -150,11 +151,11 @@ namespace DB_AngoraLib.MockData
             null,
             Gender.Hun,
             ForSale.Nej,
-            0,
-            0),
+            "4977-206",
+            "4977-315"),
 
             new Rabbit(
-            10,
+            //10,
             "M63",
             "2104",
             "MajasId",
@@ -165,26 +166,26 @@ namespace DB_AngoraLib.MockData
             null,
             Gender.Hun,
             ForSale.Ja,
-            0,
-            0),
+            "M63-085",
+            "M63-164"),
 
             new Rabbit(
-            11,
+            //11,
             "5053",
             "0823",
             "MajasId",
             "Pepsi",
             Race.Satinangora,
-            Color.Rødbrun_Madagascar,
+            Color.Kanel,
             new DateOnly(2024, 10, 15),
             null,
             Gender.Hun,
             ForSale.Nej,
-            0,
-            0),
+            "4977-206",
+            "4977-315"),
 
             new Rabbit(
-            12,
+            //12,
             "5053",
             "0923",
             "MajasId",
@@ -195,11 +196,11 @@ namespace DB_AngoraLib.MockData
             new DateOnly(2024, 03, 14),
             Gender.Han,
             ForSale.Nej,
-            0,
-            0),
+            "4977-206",
+            "4977-315"),
 
             new Rabbit(
-            13,
+            //13,
             "5053",
             "0623",
             "MajasId",
@@ -210,11 +211,11 @@ namespace DB_AngoraLib.MockData
             null,
             Gender.Hun,
             ForSale.Nej,
-            0,
-            0),
+            "4977-206",
+            "4977-213"),
 
             new Rabbit(
-            14,
+            //14,
             "M63",
             "3102",
             "MajasId",
@@ -225,11 +226,11 @@ namespace DB_AngoraLib.MockData
             null,
             Gender.Hun,
             ForSale.Nej,
-            0,
-            0),
+            "M63-0204",
+            "M63-0000"),
 
             new Rabbit(
-            15,
+            //15,
             "4977",
             "206",
             "MajasId",
@@ -237,14 +238,14 @@ namespace DB_AngoraLib.MockData
             Race.Satinangora,
             Color.Sort_Alaska,
             new DateOnly(2022, 02, 02),
-            null,
+            new DateOnly(2024, 04, 05),
             Gender.Han,
             ForSale.Ja,
-            0,
-            0),
+            "M63-044",
+            "M63-989"),
 
             new Rabbit(
-            16,
+            //16,
             "4977",
             "315",
             "MajasId",
@@ -252,14 +253,14 @@ namespace DB_AngoraLib.MockData
             Race.Satinangora,
             Color.Sort_Alaska,
             new DateOnly(2023, 01, 13),
-            null,
+            new DateOnly(2024, 04, 15),
             Gender.Hun,
             ForSale.Nej,
-            0,
-            0),
+            "4977-205",
+            "13-232"),
 
             new Rabbit(
-            17,
+            //17,
             "5053",
             "0423",
             "MajasId",
@@ -270,11 +271,11 @@ namespace DB_AngoraLib.MockData
             null,
             Gender.Hun,
             ForSale.Nej,
-            0,
-            0),
+            "4977-206",
+            "4977-213"),
 
             new Rabbit(
-            18,
+            //18,
             "V23",
             "023",
             "MajasId",
@@ -285,11 +286,11 @@ namespace DB_AngoraLib.MockData
             new DateOnly(2024, 04, 23),
             Gender.Han,
             ForSale.Ja,
-            0,
-            0),
+            null,
+            null),
 
             new Rabbit(
-            19,
+            //19,
             "4977",
             "213",
             "MajasId",
@@ -300,11 +301,11 @@ namespace DB_AngoraLib.MockData
             null,
             Gender.Hun,
             ForSale.Ja,
-            0,
-            0),
+            "M63-125",
+            "M63-155"),
 
             new Rabbit(
-            20,
+            //20,
             "5053",
             "0120",
             "MajasId",
@@ -315,11 +316,11 @@ namespace DB_AngoraLib.MockData
             new DateOnly(2021, 05, 31),
             Gender.Hun,
             ForSale.Nej,
-            0,
-            0),
+            null,
+            null),
 
             new Rabbit(
-            21,
+            //21,
             "3658",
             "0819",
             "MajasId",
@@ -330,11 +331,11 @@ namespace DB_AngoraLib.MockData
             new DateOnly(2023, 01, 31),
             Gender.Hun,
             ForSale.Nej,
-            0,
-            0),
+            null,
+            null),
 
             new Rabbit(
-            22,
+           //22,
             "5053",
             "0523",
             "MajasId",
@@ -345,8 +346,8 @@ namespace DB_AngoraLib.MockData
             null,
             Gender.Han,
             ForSale.Ja,
-            0,
-            0),
+            "4977-206",
+            "4977-213"),
         };
 
         public static List<Rabbit> GetMockRabbits()

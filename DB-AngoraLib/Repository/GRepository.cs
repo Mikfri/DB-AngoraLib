@@ -18,7 +18,7 @@ namespace DB_AngoraLib.Repository
             _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
         }
 
-
+        //-------------------: ADD :-------------------
         public virtual async Task AddObjectAsync(T obj)
         {
             try
@@ -43,6 +43,8 @@ namespace DB_AngoraLib.Repository
             await _dbContext.SaveChangesAsync();
         }
 
+
+        //-------------------: GET :-------------------
         /// <summary>
         /// Returnerer en IQueryable af objekter af typen T.
         /// </summary>
@@ -79,12 +81,14 @@ namespace DB_AngoraLib.Repository
             return await _dbContext.Set<T>().FindAsync(id);
         }
 
+        //-------------------: UPDATE :-------------------
         public async Task UpdateObjectAsync(T obj)
         {
             _dbContext.Set<T>().Update(obj);
             await _dbContext.SaveChangesAsync();
         }
 
+        //-------------------: DELETE :-------------------
         public async Task DeleteObjectAsync(T obj)
         {
             _dbContext.Set<T>().Remove(obj);

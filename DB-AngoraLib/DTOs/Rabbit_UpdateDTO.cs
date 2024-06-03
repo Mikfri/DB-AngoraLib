@@ -23,5 +23,8 @@ namespace DB_AngoraLib.DTOs
         public DateOnly? DateOfDeath { get; init; }
         public Gender? Gender { get; init; }
         public ForSale? ForSale { get; init; }
+
+        public string? Father_EarCombId { get; init; }
+        public string? Mother_EarCombId { get; init; }
     }
 }

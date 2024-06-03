@@ -41,12 +41,14 @@ namespace DB_AngoraLib.EF_DbContext
 
             // Konfigurer primær nøgle for Rabbit
             modelBuilder.Entity<Rabbit>()
-                .HasKey(r => r.Id);
+                    //.HasKey(r => r.Id);
+                    //.HasKey(r => new { r.RightEarId, r.LeftEarId });
+                    .HasKey(r => r.EarCombId);
 
-            // Add unique constraint for Rabbit: Forbedrer ydeevnen ved DB søgning da de nu er indexerede
-            modelBuilder.Entity<Rabbit>()
-                .HasIndex(r => new { r.RightEarId, r.LeftEarId })
-                .IsUnique();
+            //// Add unique constraint for Rabbit: Forbedrer ydeevnen ved DB søgning da de nu er indexerede
+            //modelBuilder.Entity<Rabbit>()
+            //    .HasIndex(r => new { r.RightEarId, r.LeftEarId })
+            //    .IsUnique();
 
             //------------------- FK SETUP -------------------
 
@@ -59,10 +61,11 @@ namespace DB_AngoraLib.EF_DbContext
                 .HasForeignKey(r => r.OwnerId) // En Rabbit har en OwnerId
                 .IsRequired(false);
 
+            // Configure Foreign Key for Rabbit -> Rabbit (Father)
             modelBuilder.Entity<Rabbit>()
                 .HasOne(r => r.Father)
                 .WithMany()
-                .HasForeignKey(r => r.FatherId)
+                .HasForeignKey(r => r.Father_EarCombId)
                 .IsRequired(false)
                 .OnDelete(DeleteBehavior.Restrict); // Prevent cascade delete
 
@@ -70,9 +73,26 @@ namespace DB_AngoraLib.EF_DbContext
             modelBuilder.Entity<Rabbit>()
                 .HasOne(r => r.Mother)
                 .WithMany()
-                .HasForeignKey(r => r.MotherId)
+                .HasForeignKey(r => r.Mother_EarCombId)
                 .IsRequired(false)
                 .OnDelete(DeleteBehavior.Restrict); // Prevent cascade delete
+
+
+
+            //modelBuilder.Entity<Rabbit>()
+            //    .HasOne(r => r.Father)
+            //    .WithMany()
+            //    .HasForeignKey(r => r.FatherId)
+            //    .IsRequired(false)
+            //    .OnDelete(DeleteBehavior.Restrict); // Prevent cascade delete
+
+            //// Configure Foreign Key for Rabbit -> Rabbit (Mother)
+            //    modelBuilder.Entity<Rabbit>()
+            //        .HasOne(r => r.Mother)
+            //        .WithMany()
+            //        .HasForeignKey(r => r.MotherId)
+            //        .IsRequired(false)
+            //        .OnDelete(DeleteBehavior.Restrict); // Prevent cascade delete
 
 
             //modelBuilder.Entity<Rating>()

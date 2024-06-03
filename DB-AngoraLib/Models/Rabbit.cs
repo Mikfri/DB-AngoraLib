@@ -109,10 +109,12 @@ namespace DB_AngoraLib.Models
 
     public class Rabbit
     {
-        public int Id { get; set; }
+        //public int Id { get; set; }
+        public string EarCombId { get; set; }
 
         public string RightEarId { get; set; }
         public string LeftEarId { get; set; }
+
 
         public string? OwnerId { get; set; }
         public User? User { get; set; } // public virtual -> lazy loading (færre DB requests)
@@ -150,11 +152,11 @@ namespace DB_AngoraLib.Models
         public Gender Gender { get; set; }
         public ForSale? ForSale { get; set; }
 
-        public int? FatherId { get; set; }
-        public Rabbit? Father { get; set; }
+        public string? Father_EarCombId { get; set; }   // TODO: Bør være en reference til en Rabbit?
+        public virtual Rabbit? Father { get; set; }
 
-        public int? MotherId { get; set; }
-        public Rabbit? Mother { get; set; }
+        public string? Mother_EarCombId { get; set; }
+        public virtual Rabbit? Mother { get; set; }
 
 
         //public virtual ICollection<Rating> Ratings { get; set; }
@@ -164,10 +166,10 @@ namespace DB_AngoraLib.Models
         public virtual ICollection<Photo> Photos { get; set; }
 
 
-
-        public Rabbit(int id, string rightEarId, string leftEarId, string? ownerId, string? nickName, Race race, Color color, DateOnly dateOfBirth, DateOnly? dateOfDeath, Gender gender, ForSale? forSale, int fatherId, int motherId)
+        public Rabbit(string rightEarId, string leftEarId, string? ownerId, string? nickName, Race race, Color color, DateOnly dateOfBirth, DateOnly? dateOfDeath, Gender gender, ForSale? forSale, string father_EarCombId, string mother_EarCombId/*, string? fatherRightEarId, string? fatherLeftEarId, string? motherRightEarId, string? motherLeftEarId*/)
         {
-            Id = id;
+            //Id = id;
+            EarCombId = $"{rightEarId}-{leftEarId}";
 
             RightEarId = rightEarId;
             LeftEarId = leftEarId;
@@ -181,8 +183,17 @@ namespace DB_AngoraLib.Models
 
             ForSale = forSale;
 
-            FatherId = fatherId;
-            MotherId = motherId;
+            Father_EarCombId = father_EarCombId;
+            Mother_EarCombId = mother_EarCombId;
+
+
+            //FatherRightEarId = fatherRightEarId;
+            //FatherLeftEarId = fatherLeftEarId;
+            //MotherRightEarId = motherRightEarId;
+            //MotherLeftEarId = motherLeftEarId;
+            //FatherId = fatherId;
+            //MotherId = motherId;
+
         }
 
         public Rabbit() { }

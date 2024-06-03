@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace DB_AngoraLib.MockData
 {
-    public class MockUserClaims // TODO: Lav en seperat liste som AccountServices.Register_BasicUserAsync og MockUserClaims kan hente så de stemmer overens
+    public class MockUserClaims
     {
         public static List<Claim> GetMockUserClaimsForUser(User user)
         {

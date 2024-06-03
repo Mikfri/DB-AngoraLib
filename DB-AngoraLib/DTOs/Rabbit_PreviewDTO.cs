@@ -14,6 +14,7 @@ namespace DB_AngoraLib.DTOs
     /// </summary>
     public record Rabbit_PreviewDTO
     {
+        public string EarCombId { get; init; }
         public string RightEarId { get; init; }
         public string LeftEarId { get; init; }
         public string? NickName { get; init; }

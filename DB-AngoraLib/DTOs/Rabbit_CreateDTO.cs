@@ -30,10 +30,7 @@ namespace DB_AngoraLib.DTOs
         public Gender Gender { get; init; }
         public ForSale? ForSale { get; init; }
 
-
-        public string? Father_RightEarId { get; init; }
-        public string? Father_LeftEarId { get; init; }
-        public string? Mother_RightEarId { get; init; }
-        public string? Mother_LeftEarId { get; init; }
+        public string? Father_EarCombId { get; init; }
+        public string? Mother_EarCombId { get; init; }
     }
 }
