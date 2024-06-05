@@ -13,13 +13,11 @@ namespace DB_AngoraLib.Services.RabbitService
     {
         Task<List<Rabbit>> GetAllRabbitsAsync();
         Task<List<Rabbit>> GetAllRabbits_ByBreederRegAsync(string breederRegNo);
-        Task<Rabbit?> GetRabbit_ByEarTagsAsync(string rightEarId, string leftEarId);
         Task<Rabbit> GetRabbit_ByEarCombIdAsync(string earCombId);
+        Task<List<Rabbit>> GetRabbit_ChildCollection(string earCombId);
         Task<List<Rabbit_PreviewDTO>> GetAllRabbits_Forsale_Filtered(Rabbit_ForsaleFilterDTO filter);
         Task<Rabbit_ProfileDTO> GetRabbit_ProfileAsync(string userId, string earCombId, IList<Claim> userClaims);
-        Task<List<Rabbit_PreviewDTO>> GetRabbit_ChildrenAsync(string earCombId);
 
-        //Task<List<Rabbit_PreviewDTO>> GetRabbit_ChildCollection(string earCombId);
         Task<Rabbit_PedigreeDTO> GetRabbit_PedigreeAsync(string earCombId, int generation = 0);
         Task<Rabbit_ProfileDTO> AddRabbit_ToMyCollectionAsync(string userId, Rabbit_CreateDTO newRabbit);
         Task<Rabbit_ProfileDTO> UpdateRabbit_RBAC_Async(string userId, string earCombId, Rabbit_UpdateDTO updatedRabbit, IList<Claim> userClaims);

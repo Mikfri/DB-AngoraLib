@@ -61,10 +61,11 @@ namespace DB_AngoraLib.EF_DbContext
                 .HasForeignKey(r => r.OwnerId) // En Rabbit har en OwnerId
                 .IsRequired(false);
 
+
             // Configure Foreign Key for Rabbit -> Rabbit (Father)
             modelBuilder.Entity<Rabbit>()
                 .HasOne(r => r.Father)
-                .WithMany()
+                .WithMany(r => r.FatheredChildren)
                 .HasForeignKey(r => r.Father_EarCombId)
                 .IsRequired(false)
                 .OnDelete(DeleteBehavior.Restrict); // Prevent cascade delete
@@ -72,27 +73,11 @@ namespace DB_AngoraLib.EF_DbContext
             // Configure Foreign Key for Rabbit -> Rabbit (Mother)
             modelBuilder.Entity<Rabbit>()
                 .HasOne(r => r.Mother)
-                .WithMany()
+                .WithMany(r => r.MotheredChildren)
                 .HasForeignKey(r => r.Mother_EarCombId)
                 .IsRequired(false)
                 .OnDelete(DeleteBehavior.Restrict); // Prevent cascade delete
 
-
-
-            //modelBuilder.Entity<Rabbit>()
-            //    .HasOne(r => r.Father)
-            //    .WithMany()
-            //    .HasForeignKey(r => r.FatherId)
-            //    .IsRequired(false)
-            //    .OnDelete(DeleteBehavior.Restrict); // Prevent cascade delete
-
-            //// Configure Foreign Key for Rabbit -> Rabbit (Mother)
-            //    modelBuilder.Entity<Rabbit>()
-            //        .HasOne(r => r.Mother)
-            //        .WithMany()
-            //        .HasForeignKey(r => r.MotherId)
-            //        .IsRequired(false)
-            //        .OnDelete(DeleteBehavior.Restrict); // Prevent cascade delete
 
 
             //modelBuilder.Entity<Rating>()
@@ -103,6 +88,7 @@ namespace DB_AngoraLib.EF_DbContext
 
 
         }
+
         public DbSet<Rabbit> Rabbits { get; set; }
         public DbSet<Rating> Ratings { get; set; }
         public DbSet<Photo> Photos { get; set; }

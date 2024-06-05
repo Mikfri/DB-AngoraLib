@@ -14,6 +14,7 @@ namespace DB_AngoraLib.Models
     public class User : IdentityUser
     {
         public string? BreederRegNo { get; set; }    // unik property for Breeder role, med unik string
+        //public string? MemberNo { get; set; }    // unik property for Member role, med unik string
 
         public string FirstName { get; set; }
         public string LastName { get; set; }

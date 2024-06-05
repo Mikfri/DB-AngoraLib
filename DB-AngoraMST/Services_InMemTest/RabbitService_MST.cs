@@ -81,7 +81,8 @@ namespace DB_AngoraMST.Services_InMemTest
                 DateOfBirth = new DateOnly(2020, 06, 12),
                 DateOfDeath = null,
                 Gender = Gender.Hun,
-                ForSale = ForSale.Nej
+                ForSale = ForSale.Nej,
+                Father_EarCombId = "5050-188",
             };
             var existingRabbit = await _context.Rabbits.FirstAsync();
             Assert.IsNotNull(existingRabbit);
@@ -96,11 +97,13 @@ namespace DB_AngoraMST.Services_InMemTest
             // Assert
             var addedRabbit = await _context.Rabbits.FirstOrDefaultAsync(r => r.RightEarId == newUniqRabbit.RightEarId && r.LeftEarId == newUniqRabbit.LeftEarId);
             Assert.IsNotNull(addedRabbit);
+            Assert.AreEqual("5050-188", newUniqRabbit.Father_EarCombId);
 
             // Act & Assert
             var existingRabbitDto = new Rabbit_CreateDTO { RightEarId = existingRabbit.RightEarId, LeftEarId = existingRabbit.LeftEarId };
             await Assert.ThrowsExceptionAsync<InvalidOperationException>(
                 () => _rabbitService.AddRabbit_ToMyCollectionAsync(currentUser.Id, existingRabbitDto));
+           
         }
 
 
@@ -119,7 +122,7 @@ namespace DB_AngoraMST.Services_InMemTest
             // Act
             var rabbits = await _rabbitService.GetAllRabbits_ByBreederRegAsync(breederRegNo);
 
-            // Debug: Print the names of the returned rabbits
+            Console.WriteLine($"User.BreederRegNo: {breederRegNo}");
             foreach (var rabbit in rabbits)
             {
                 Console.WriteLine(rabbit.NickName);
@@ -187,7 +190,7 @@ namespace DB_AngoraMST.Services_InMemTest
 
 
         [TestMethod]
-        public async Task GetAllRabbits_OpenProfile_Filtered_TEST()
+        public async Task GetAllRabbits_ForSale_Filtered_TEST()
         {
             // Arrange
             var expectedRace = Race.Angora;
@@ -227,86 +230,89 @@ namespace DB_AngoraMST.Services_InMemTest
            
         }
 
+        [TestMethod]
+        public async Task GetRabbit_ChildCollectionAsync_TEST()
+        {
+            // Arrange
+            var earCombId = "4977-205";
+            var parentRabbit = _context.Rabbits.First(r => r.EarCombId == earCombId);
+
+            // Create a list of expected rabbits
+            var expectedChildren = _context.Rabbits
+                .Where(r =>
+                r.Father_EarCombId == earCombId ||
+                r.Mother_EarCombId == earCombId);
+
+            Console.WriteLine($"ID: {parentRabbit.EarCombId}, NickName: {parentRabbit.NickName}\n");
+            foreach (var rabbit in expectedChildren)
+            {
+                Console.WriteLine(rabbit.NickName);
+            }
+
+            // Act
+            var rabbitCollection = await _rabbitService.GetRabbit_ChildCollection(earCombId);
+
+            // Assert
+            Assert.IsNotNull(rabbitCollection);
+            // Add more assertions based on your test expectations
+        }
+
         //[TestMethod]
-        //public async Task GetRabbit_ChildCollectionAsync_TEST()
+        //public async Task GetRabbit_ChildCollection_ByEarCombIdAsync_ReturnsCorrectData()
         //{
         //    // Arrange
-        //    var earCombId = "4977-206";
+        //    var earCombId = "testEarCombId";
+        //    var expectedChildren = new List<Rabbit> { new Rabbit(), new Rabbit() }; // Add your expected children here
+
+        //    Console.WriteLine($"User: {mockUser.UserName}\nMY-Rabbit: {mockRabbitOwned.NickName}\nOTHER-Rabbit: {mockRabbitNotOwned.NickName}");
+        //    foreach (var claim in mockUserClaims)
+        //    {
+        //        Console.WriteLine($"ClaimType: '{claim.Type}' | ClaimValue: '{claim.Value}'");
+        //    }
+
+        //    // Add the Rabbit with the expected children to the in-memory database
+        //    var rabbit = new Rabbit { EarCombId = earCombId, FatheredChildren = expectedChildren, MotheredChildren = new List<Rabbit>() };
+        //    _context.Rabbits.Add(rabbit);
+        //    await _context.SaveChangesAsync();
 
         //    // Act
-        //    var rabbitCollection = await _rabbitService.GetRabbit_ChildCollection(earCombId);
+        //    var result = await _rabbitService.GetRabbit_ChildCollection_ByEarCombIdAsync(earCombId);
 
-        //    foreach (var rabbit in rabbitCollection)
+        //    // Assert
+        //    Assert.IsNotNull(result);
+        //    Assert.AreEqual(expectedChildren.Count, result.Count);
+        //    for (int i = 0; i < expectedChildren.Count; i++)
+        //    {
+        //        Assert.AreEqual(expectedChildren[i], result[i]);
+        //    }
+        //}
+
+        //[TestMethod]
+        //public async Task GetRabbit_ChildrenAsync_TEST()
+        //{
+        //    // Arrange
+        //    var rabbitParrent = _context.Rabbits
+        //        .FirstOrDefault(r =>
+        //        //r.EarCombId == "4977-206");
+        //        r.NickName == "Miranda");
+
+        //    //var earCombId = "4977-206"; // Replace with a valid EarCombId from your test data
+
+
+        //    // Act
+        //    var rabbitChildren = await _rabbitService.GetRabbit_ChildrenAsync(rabbitParrent.EarCombId);
+
+        //    Console.WriteLine($"Rabbit: Nickname: {rabbitParrent.NickName}\n");
+        //    foreach (var rabbit in rabbitChildren)
         //    {
         //        Console.WriteLine(rabbit.NickName);
         //    }
 
         //    // Assert
-        //    Assert.IsNotNull(rabbitCollection);
-        //    // Add more assertions based on your test expectations
+        //    Assert.IsNotNull(rabbitChildren); // The method should always return a list (which can be empty)
+        //                                      // Add more assertions based on your test expectations. For example:
+        //                                      // Assert.IsTrue(rabbitChildren.All(c => c.Mother_EarCombId == earCombId || c.Father_EarCombId == earCombId));
         //}
-
-        [TestMethod]
-        public async Task GetRabbit_ChildrenAsync_TEST()
-        {
-            // Arrange
-            var rabbitParrent = _context.Rabbits
-                .FirstOrDefault(r =>
-                //r.EarCombId == "4977-206");
-                r.NickName == "Miranda");
-
-            //var earCombId = "4977-206"; // Replace with a valid EarCombId from your test data
-
-
-            // Act
-            var rabbitChildren = await _rabbitService.GetRabbit_ChildrenAsync(rabbitParrent.EarCombId);
-
-            Console.WriteLine($"Rabbit: Nickname: {rabbitParrent.NickName}\n");
-            foreach (var rabbit in rabbitChildren)
-            {
-                Console.WriteLine(rabbit.NickName);
-            }
-
-            // Assert
-            Assert.IsNotNull(rabbitChildren); // The method should always return a list (which can be empty)
-                                              // Add more assertions based on your test expectations. For example:
-                                              // Assert.IsTrue(rabbitChildren.All(c => c.Mother_EarCombId == earCombId || c.Father_EarCombId == earCombId));
-        }
-
-
-
-        //[TestMethod]
-        //public async Task GetRabbitPedigreeAsync_TEST()
-        //{
-        //    // Arrange
-        //    var rightEarId = "123";
-        //    var leftEarId = "456";
-
-        //    var rabbit = new Rabbit
-        //    {
-        //        RightEarId = rightEarId,
-        //        LeftEarId = leftEarId,
-        //        Father = new Rabbit { RightEarId = "789", LeftEarId = "1011" },
-        //        Mother = new Rabbit { RightEarId = "1213", LeftEarId = "1415" }
-        //    };
-
-        //    var mockRepo = new Mock<IGRepository<Rabbit>>();
-        //    mockRepo.Setup(repo => repo.GetDbSet())
-        //        .Returns(new List<Rabbit> { rabbit }.AsQueryable().BuildMockDbSet().Object);
-
-        //    _rabbitService = new RabbitServices(mockRepo.Object, _accountService, new RabbitValidator());
-
-        //    // Act
-        //    var result = await _rabbitService.GetRabbitPedigreeAsync(rightEarId, leftEarId);
-
-        //    // Assert
-        //    Assert.IsNotNull(result);
-        //    Assert.AreEqual(rightEarId, result.Rabbit.RightEarId);
-        //    Assert.AreEqual(leftEarId, result.Rabbit.LeftEarId);
-        //    Assert.IsNotNull(result.Father);
-        //    Assert.IsNotNull(result.Mother);
-        //}
-
 
         //-------------------------: UPDATE TESTS
 
