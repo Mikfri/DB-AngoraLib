@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace DB_AngoraLib.DTOs
 {
     /// <summary>
-    /// En DTO for Rabbit, som kun indeholder de properties, de mest nødvendige properties
+    /// En DTO for Rabbit, som kun indeholder de mest nødvendige properties,
     /// for at en Breeder kan danne overblik over sine kaniner
     /// </summary>
     public record Rabbit_PreviewDTO

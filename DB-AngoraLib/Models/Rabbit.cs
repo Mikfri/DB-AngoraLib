@@ -109,11 +109,30 @@ namespace DB_AngoraLib.Models
 
     public class Rabbit
     {
-        //public int Id { get; set; }
-        public string EarCombId { get; set; }
+        private string rightEarId;
+        private string leftEarId;
 
-        public string RightEarId { get; set; }
-        public string LeftEarId { get; set; }
+        public string EarCombId { get; private set; }
+
+        public string RightEarId
+        {
+            get => rightEarId;
+            set
+            {
+                rightEarId = value;
+                UpdateEarCombId();
+            }
+        }
+
+        public string LeftEarId
+        {
+            get => leftEarId;
+            set
+            {
+                leftEarId = value;
+                UpdateEarCombId();
+            }
+        }
 
 
         public string? OwnerId { get; set; }
@@ -153,7 +172,7 @@ namespace DB_AngoraLib.Models
         public ForSale? ForSale { get; set; }
 
         public string? FatherId_Placeholder { get; set; }
-        public string? Father_EarCombId { get; set; }   // TODO: Bør være en reference til en Rabbit?
+        public string? Father_EarCombId { get; set; }
         public Rabbit? Father { get; set; }
 
         public string? MotherId_Placeholder { get; set; }
@@ -196,6 +215,11 @@ namespace DB_AngoraLib.Models
             //FatherId = fatherId;
             //MotherId = motherId;
 
+        }
+
+        private void UpdateEarCombId()
+        {
+            EarCombId = $"{RightEarId}-{LeftEarId}";
         }
 
         public Rabbit() { }

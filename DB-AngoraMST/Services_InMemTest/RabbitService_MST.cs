@@ -234,7 +234,7 @@ namespace DB_AngoraMST.Services_InMemTest
         public async Task GetRabbit_ChildCollectionAsync_TEST()
         {
             // Arrange
-            var earCombId = "4977-205";
+            var earCombId = "4977-206";
             var parentRabbit = _context.Rabbits.First(r => r.EarCombId == earCombId);
 
             // Create a list of expected rabbits

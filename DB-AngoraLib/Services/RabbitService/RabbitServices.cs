@@ -40,12 +40,17 @@ namespace DB_AngoraLib.Services.RabbitService
         public async Task<Rabbit_ProfileDTO> AddRabbit_ToMyCollectionAsync(string userId, Rabbit_CreateDTO newRabbitDto) 
         {
             //Console.WriteLine($"Trying to add rabbit with RightEarId: {newRabbitDto.RightEarId}, LeftEarId: {newRabbitDto.LeftEarId}");
-
-            // Convert RabbitDto to Rabbit
+            // Validate input
+            if (string.IsNullOrEmpty(userId) || newRabbitDto == null)
+            {
+                throw new ArgumentException("Invalid arguments");
+            }
+            // Create a new Rabbit from the DTO
             var newRabbit = new Rabbit
             {
                 RightEarId = newRabbitDto.RightEarId,
                 LeftEarId = newRabbitDto.LeftEarId,
+                OwnerId = userId,
                 NickName = newRabbitDto.NickName,
                 Race = newRabbitDto.Race,
                 Color = newRabbitDto.Color,
@@ -58,37 +63,20 @@ namespace DB_AngoraLib.Services.RabbitService
                 // ... evt flere..
 
                 FatherId_Placeholder = newRabbitDto.Father_EarCombId,
+                MotherId_Placeholder = newRabbitDto.Mother_EarCombId,
                 //Father = await GetRabbit_ByEarCombIdAsync(newRabbitDto.Father_EarCombId),
                 //Mother = await GetRabbit_ByEarCombIdAsync(newRabbitDto.Mother_EarCombId),
                 //Father_EarCombId = newRabbitDto.Father_EarCombId,
                 //Mother_EarCombId = newRabbitDto.Mother_EarCombId,
-                //Mother = await GetRabbit_ByEarTagsAsync(newRabbitDto.Mother_RightEarId, newRabbitDto.Mother_LeftEarId),
             };
 
-            newRabbit.EarCombId = $"{newRabbit.RightEarId}-{newRabbit.LeftEarId}";
+            //newRabbit.EarCombId = $"{newRabbit.RightEarId}-{newRabbit.LeftEarId}";
             _validatorService.ValidateRabbit(newRabbit);
 
-            var existingRabbit = await GetRabbit_ByEarCombIdAsync(newRabbit.EarCombId);
-            if (existingRabbit != null)
-            {
-                throw new InvalidOperationException("En kanin med samme øremærke kombination eksistere allerede");
-            }
+            await _dbRepository.AddObjectAsync(newRabbit); // Add the new rabbit to the database
 
-            var existingRabbitFather = await GetRabbit_ByEarCombIdAsync(newRabbit.FatherId_Placeholder);
-            if (existingRabbitFather != null && existingRabbitFather.Gender == Gender.Han)
-            {
-                newRabbit.Father_EarCombId = newRabbit.FatherId_Placeholder;
-            }
-
-            var thisUser = await _accountService.GetUserByIdAsync(userId);
-
-            if (thisUser == null)
-            {
-                throw new InvalidOperationException("No user found with the given GUID");
-            }
-
-            newRabbit.OwnerId = thisUser.Id;
-            await _dbRepository.AddObjectAsync(newRabbit);
+            // Update the Father_EarCombId and Mother_EarCombId if the corresponding rabbits exist
+            await UpdateParentIdAsync(newRabbit, newRabbit.FatherId_Placeholder, newRabbit.MotherId_Placeholder);
 
             // Create a new RabbitDTO and copy properties from newRabbit
             var newRabbit_ProfileDTO = new Rabbit_ProfileDTO();
@@ -173,22 +161,7 @@ namespace DB_AngoraLib.Services.RabbitService
                 return null;
             }
 
-            // Check if a rabbit with the FatherId_Paceholder exists now
-            var existingRabbitFather = await GetRabbit_ByEarCombIdAsync(rabbit.FatherId_Placeholder);
-            if (existingRabbitFather != null && existingRabbitFather.Gender == Gender.Han)
-            {
-                rabbit.Father_EarCombId = rabbit.FatherId_Placeholder;
-                await _dbRepository.UpdateObjectAsync(rabbit); // Update the rabbit in the database
-            }
-
-            // Check if a rabbit with the MotherId_Paceholder exists now
-            var existingRabbitMother = await GetRabbit_ByEarCombIdAsync(rabbit.MotherId_Placeholder);
-            if (existingRabbitMother != null && existingRabbitMother.Gender == Gender.Hun)
-            {
-                rabbit.Mother_EarCombId = rabbit.MotherId_Placeholder;
-                await _dbRepository.UpdateObjectAsync(rabbit); // Update the rabbit in the database
-            }
-
+            await UpdateParentIdAsync(rabbit, rabbit.FatherId_Placeholder, rabbit.MotherId_Placeholder);
 
             if (rabbit.ForSale == ForSale.Ja || rabbit.OwnerId == userId || hasPermissionToGetAnyRabbit)
             {
@@ -377,6 +350,51 @@ namespace DB_AngoraLib.Services.RabbitService
             // Save the transfer request to the database
             //await _transferRequestRepository.AddObjectAsync(transferRequest);
         }
-                    
+
+        //---------------------: HELPER METHODs
+
+        /// <summary>
+        /// Kigger efter om der findes nogle eksisterende Rabbits i systemet,
+        /// som matcher de angivne EarCombIds som brugeren har angivet for forældrende
+        /// </summary>
+        /// <param name="rabbit">Rabbit objekt hvis forældre skal undersøges</param>
+        /// <param name="fatherIdPlaceholder">Id på angivne far</param>
+        /// <param name="motherIdPlaceholder">Id på angivne mor</param>
+        /// <returns></returns>
+        private async Task UpdateParentIdAsync(Rabbit rabbit, string? fatherIdPlaceholder, string? motherIdPlaceholder)
+        {
+            // If fatherIdPlaceholder is not null, update Father_EarCombId
+            if (fatherIdPlaceholder != null)
+            {
+                var existingFather = await GetRabbit_ByEarCombIdAsync(fatherIdPlaceholder);
+                if (existingFather != null && existingFather.Gender == Gender.Han)
+                {
+                    rabbit.Father_EarCombId = fatherIdPlaceholder;
+                }
+                else // hvis existingFather ikke eksistere, så fjern forælderen
+                {
+                    rabbit.Father_EarCombId = null;
+                }
+            }
+
+            // If motherIdPlaceholder is not null, update Mother_EarCombId
+            if (motherIdPlaceholder != null)
+            {
+                var existingMother = await GetRabbit_ByEarCombIdAsync(motherIdPlaceholder);
+                if (existingMother != null && existingMother.Gender == Gender.Hun)
+                {
+                    rabbit.Mother_EarCombId = motherIdPlaceholder;
+                }
+                else // hvis existingMother ikke eksistere, så fjern forælderen
+                {
+                    rabbit.Mother_EarCombId = null;
+                }
+            }
+
+            await _dbRepository.UpdateObjectAsync(rabbit); // Update the rabbit in the database
+        }
+
+
+
     }
 }

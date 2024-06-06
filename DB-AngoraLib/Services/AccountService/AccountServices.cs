@@ -105,7 +105,7 @@ namespace DB_AngoraLib.Services.AccountService
             return currentUserCollection.Rabbits
                 .Select(rabbit => new Rabbit_PreviewDTO
                 {
-                    EarCombId = $"{rabbit.RightEarId}-{rabbit.LeftEarId}",
+                    EarCombId = rabbit.EarCombId,
                     RightEarId = rabbit.RightEarId,
                     LeftEarId = rabbit.LeftEarId,
                     NickName = rabbit.NickName,
@@ -118,7 +118,7 @@ namespace DB_AngoraLib.Services.AccountService
 
 
         public async Task<List<Rabbit_PreviewDTO>> GetMyRabbitCollection_Filtered(
-            string userId, string rightEarId = null, string leftEarId = null, string nickName = null, Race? race = null, Color? color = null, Gender? gender = null, bool? isJuvenile = null, bool? approvedRaceColorCombination = null)
+            string userId, string? rightEarId = null, string? leftEarId = null, string nickName = null, Race? race = null, Color? color = null, Gender? gender = null, bool? isJuvenile = null, bool? approvedRaceColorCombination = null)
         {
             var rabbitCollection = await GetMyRabbitCollection(userId);
 
