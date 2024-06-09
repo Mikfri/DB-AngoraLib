@@ -14,7 +14,7 @@ namespace DB_AngoraLib.Services.RabbitService
         Task<List<Rabbit>> GetAllRabbitsAsync();
         Task<List<Rabbit>> GetAllRabbits_ByBreederRegAsync(string breederRegNo);
         Task<Rabbit> GetRabbit_ByEarCombIdAsync(string earCombId);
-        Task<List<Rabbit>> GetRabbit_ChildCollection(string earCombId);
+        Task<List<Rabbit_ChildPreviewDTO>> GetRabbit_ChildCollection(string earCombId);
         Task<List<Rabbit_PreviewDTO>> GetAllRabbits_Forsale_Filtered(Rabbit_ForsaleFilterDTO filter);
         Task<Rabbit_ProfileDTO> GetRabbit_ProfileAsync(string userId, string earCombId, IList<Claim> userClaims);
 

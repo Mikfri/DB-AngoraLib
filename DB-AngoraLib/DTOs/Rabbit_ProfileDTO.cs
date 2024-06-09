@@ -37,20 +37,14 @@ namespace DB_AngoraLib.DTOs
         public Gender? Gender { get; init; }
         public ForSale? ForSale { get; init; }
 
-        public string? Father_EarCombId { get; init; }
-        public string? Mother_EarCombId { get; init; }
+        public string? FatherId_Placeholder { get; init; }
+        public string? FatherStatusMessage { get; init; }
 
-        public List<Rabbit_PreviewDTO> Children { get; init; }
+        public string? MotherId_Placeholder { get; init; }
+        public string? MotherStatusMessage { get; init; }
 
-        public Rabbit_ProfileDTO()
-        {
-            Children = new List<Rabbit_PreviewDTO>();
-        }
+        public List<Rabbit_ChildPreviewDTO?> Children { get; init; }
 
-        public Rabbit_ProfileDTO(List<Rabbit_PreviewDTO> children)
-        {
-            Children = children;
-        }
 
     }
 }

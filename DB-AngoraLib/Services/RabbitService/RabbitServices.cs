@@ -165,7 +165,17 @@ namespace DB_AngoraLib.Services.RabbitService
 
             if (rabbit.ForSale == ForSale.Ja || rabbit.OwnerId == userId || hasPermissionToGetAnyRabbit)
             {
-                var rabbitProfile = new Rabbit_ProfileDTO();
+                var rabbitProfile = new Rabbit_ProfileDTO
+                {
+                    // Set FatherStatusMessage and MotherStatusMessage properties
+                    FatherStatusMessage = rabbit.FatherId_Placeholder == null ? null :
+                                          rabbit.Father_EarCombId != null ? "Kanin fundet i systemet" : "Ikke fundet i systemet",
+                    MotherStatusMessage = rabbit.MotherId_Placeholder == null ? null :
+                                          rabbit.Mother_EarCombId != null ? "Kanin fundet i systemet" : "Ikke fundet i systemet",
+                    Children = await GetRabbit_ChildCollection(earCombId)
+
+                };
+
                 HelperServices.CopyPropertiesTo(rabbit, rabbitProfile);
 
                 return rabbitProfile;
@@ -180,55 +190,50 @@ namespace DB_AngoraLib.Services.RabbitService
         /// </summary>
         /// <param name="earCombId">Rabbit Id</param>
         /// <returns>En kombineret liste af de to ICollections</returns>
-        public async Task<List<Rabbit>> GetRabbit_ChildCollection(string earCombId)
+        public async Task<List<Rabbit_ChildPreviewDTO>> GetRabbit_ChildCollection(string earCombId)
         {
-            var rabbit = await _dbRepository.GetDbSet()
+            var rabbitParent = await _dbRepository.GetDbSet()
                 .Include(r => r.FatheredChildren)
                 .Include(r => r.MotheredChildren)
                 .FirstOrDefaultAsync(r => r.EarCombId == earCombId);
 
-            if (rabbit == null)
+            if (rabbitParent == null)
             {
                 return null;
             }
 
-            var allChildren = rabbit.FatheredChildren.Concat(rabbit.MotheredChildren).ToList();
-            return allChildren;
+            var allChildrenList = rabbitParent.FatheredChildren.Concat(rabbitParent.MotheredChildren)
+                .Select(rabbitChild => new Rabbit_ChildPreviewDTO
+                {
+                    EarCombId = rabbitChild.EarCombId,
+                    DateOfBirth = rabbitChild.DateOfBirth,
+                    NickName = rabbitChild.NickName,
+                    Color = rabbitChild.Color,
+                    Gender = rabbitChild.Gender,
+                    OtherParentId = rabbitParent.EarCombId == rabbitChild.Father_EarCombId ? rabbitChild.Mother_EarCombId : rabbitChild.Father_EarCombId
+                })
+                .ToList();
+
+            return allChildrenList;
         }
 
-
-        //public async Task<List<Rabbit_PreviewDTO>> GetRabbit_ChildCollection(string earCombId)
+        //public async Task<List<Rabbit>> GetRabbit_ChildCollection(string earCombId)
         //{
-        //    var rabbitChildCollection = await _dbRepository.GetDbSet()
-        //        .AsNoTracking()
-        //        .Include(r => r.Children)
+        //    var rabbit = await _dbRepository.GetDbSet()
+        //        .Include(r => r.FatheredChildren)
+        //        .Include(r => r.MotheredChildren)
         //        .FirstOrDefaultAsync(r => r.EarCombId == earCombId);
 
-        //    if (rabbitChildCollection == null)
+        //    if (rabbit == null)
         //    {
-        //        Console.WriteLine("Children not found");
-        //        return new List<Rabbit_PreviewDTO>();
+        //        return null;
         //    }
 
-        //    if (rabbitChildCollection.Children.Count < 1)
-        //    {
-        //        Console.WriteLine("No rabbits found in collection");
-        //        return new List<Rabbit_PreviewDTO>();
-        //    }
-
-        //    return rabbitChildCollection.Children
-        //       .Select(rabbit => new Rabbit_PreviewDTO
-        //       {
-        //           EarCombId = $"{rabbit.RightEarId}-{rabbit.LeftEarId}",
-        //           RightEarId = rabbit.RightEarId,
-        //           LeftEarId = rabbit.LeftEarId,
-        //           NickName = rabbit.NickName,
-        //           Race = rabbit.Race,
-        //           Color = rabbit.Color,
-        //           Gender = rabbit.Gender
-        //       })
-        //       .ToList();
+        //    var allChildrenList = rabbit.FatheredChildren.Concat(rabbit.MotheredChildren).ToList();
+        //    return allChildrenList;
         //}
+
+
 
 
         //private readonly MemoryCache _cache = new MemoryCache(new MemoryCacheOptions());
@@ -271,6 +276,8 @@ namespace DB_AngoraLib.Services.RabbitService
             {
                 return null;
             }
+
+            await UpdateParentIdAsync(rabbit_InDB, rabbit_InDB.FatherId_Placeholder, rabbit_InDB.MotherId_Placeholder);
 
             if (hasPermissionToUpdateAll || (hasPermissionToUpdateOwn && userId == rabbit_InDB.OwnerId))
             {

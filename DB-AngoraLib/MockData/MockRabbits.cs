@@ -27,8 +27,8 @@ namespace DB_AngoraLib.MockData
             new DateOnly(2022, 07, 22), // Format: yyyy-MM-dd
             Gender.Hun,
             ForSale.Nej,
-            null,
-            null),
+            null,                   // Father_EarCombId
+            null),                  // Mother_EarCombId
 
             new Rabbit(
             //2,
@@ -38,12 +38,10 @@ namespace DB_AngoraLib.MockData
             "Kaliba",
             Race.Angora,
             Color.Gråblå_LilleEgern,
-            //null,
             new DateOnly(2019, 02, 27),
             new DateOnly(2024, 04, 13),
             Gender.Hun,
             ForSale.Ja,
-
             null,
             null),
 
@@ -101,7 +99,6 @@ namespace DB_AngoraLib.MockData
             "Douglas",
             Race.Lille_Rex,
             Color.Gulbrun_Isabella,
-            //null,
             new DateOnly(2022, 07, 22),
             null,
             Gender.Han,
@@ -193,9 +190,9 @@ namespace DB_AngoraLib.MockData
             Race.Satinangora,
             Color.Rødbrun_Madagascar,
             new DateOnly(2024, 10, 15),
-            new DateOnly(2024, 03, 14),
+            null,
             Gender.Han,
-            ForSale.Nej,
+            ForSale.Ja,
             "4977-206",
             "4977-315"),
 
@@ -346,6 +343,34 @@ namespace DB_AngoraLib.MockData
             null,
             Gender.Han,
             ForSale.Ja,
+            "4977-206",
+            "4977-213"),
+
+            new Rabbit(
+            "5053",
+            "0123",
+            "MajasId",
+            "Pichu",
+            Race.Satinangora,
+            Color.Vildtrød_Harefarvet,
+            new DateOnly(2023, 05, 30),
+            null,
+            Gender.Hun,
+            ForSale.Ja,
+            "4977-206",
+            "4977-213"),
+
+            new Rabbit(
+            "5053",
+            "0323",
+            "MajasId",
+            "Hunter",
+            Race.Satinangora,
+            Color.Sort_Alaska,
+            new DateOnly(2023, 08, 17),
+            new DateOnly(2023, 12, 18),
+            Gender.Han,
+            ForSale.Nej,
             "4977-206",
             "4977-213"),
         };

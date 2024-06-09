@@ -169,8 +169,8 @@ namespace DB_AngoraLib.Models
         public DateOnly? DateOfDeath { get; set; }
         
         public Gender Gender { get; set; }
-        public ForSale? ForSale { get; set; }
-
+        public ForSale? ForSale { get; set; }       // TODO: Kunne være DateOnly, så man kan se hvornår den blev sat til salg + ny property for pris og DateOnly for solgt dato
+       
         public string? FatherId_Placeholder { get; set; }
         public string? Father_EarCombId { get; set; }
         public Rabbit? Father { get; set; }
@@ -180,15 +180,13 @@ namespace DB_AngoraLib.Models
         public Rabbit? Mother { get; set; }
 
 
-        //public virtual ICollection<Rating> Ratings { get; set; }
-        //public virtual ICollection<RabbitParents> Parents { get; set; }
         public virtual ICollection<Rabbit> MotheredChildren { get; set; } // Er altid null hvis, Rabbit er far/Han
         public virtual ICollection<Rabbit> FatheredChildren { get; set; } // Er altid null hvis, Rabbit er mor/Hun
         public virtual ICollection<Photo> Photos { get; set; }
 
 
 
-        public Rabbit(string rightEarId, string leftEarId, string? ownerId, string? nickName, Race race, Color color, DateOnly dateOfBirth, DateOnly? dateOfDeath, Gender gender, ForSale? forSale, string fatherId_Placeholder, string motherId_Placeholder)
+        public Rabbit(string rightEarId, string leftEarId, string? ownerId, string? nickName, Race race, Color color, DateOnly dateOfBirth, DateOnly? dateOfDeath, Gender gender, ForSale? forSale, string? fatherId_Placeholder, string? motherId_Placeholder)
         {
             //Id = id;
             EarCombId = $"{rightEarId}-{leftEarId}";
