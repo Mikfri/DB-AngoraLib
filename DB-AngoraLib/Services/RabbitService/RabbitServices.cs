@@ -172,7 +172,8 @@ namespace DB_AngoraLib.Services.RabbitService
                                           rabbit.Father_EarCombId != null ? "Kanin fundet i systemet" : "Ikke fundet i systemet",
                     MotherStatusMessage = rabbit.MotherId_Placeholder == null ? null :
                                           rabbit.Mother_EarCombId != null ? "Kanin fundet i systemet" : "Ikke fundet i systemet",
-                    Children = await GetRabbit_ChildCollection(earCombId)
+                    Children = await GetRabbit_ChildCollection(earCombId),
+                    //Pedigree = await GetRabbitPedigreeAsync(earCombId, 3)
 
                 };
 
@@ -238,31 +239,38 @@ namespace DB_AngoraLib.Services.RabbitService
 
         //private readonly MemoryCache _cache = new MemoryCache(new MemoryCacheOptions());
 
-        public async Task<Rabbit_PedigreeDTO> GetRabbit_PedigreeAsync(string earCombId, int generation = 0)
+        public async Task<Rabbit_PedigreeDTO> GetRabbitPedigreeAsync(string earCombId, int maxGeneration)
         {
-            //var cacheKey = $"{rightEarId}-{leftEarId}";
-            //if (_cache.TryGetValue(cacheKey, out Rabbit_PedigreeDTO pedigree))
-            //{
-            //    return pedigree;
-            //}
+            var rabbit = await _dbRepository.GetObject_ByKEYAsync(earCombId);
+            return await GetRabbitPedigreeRecursive(rabbit, 0, maxGeneration);
+        }
 
-            var rabbit = await GetRabbit_ByEarCombIdAsync(earCombId);
-            if (rabbit == null)
+
+
+        private async Task<Rabbit_PedigreeDTO> GetRabbitPedigreeRecursive(Rabbit rabbit, int currentGeneration, int maxGeneration)
+        {
+            if (currentGeneration >= maxGeneration)
             {
-                return null;
+                return new Rabbit_PedigreeDTO
+                {
+                    Rabbit = rabbit,
+                    Generation = currentGeneration
+                };
             }
 
-            var pedigree = new Rabbit_PedigreeDTO
+            var father = await _dbRepository.GetObject_ByKEYAsync(rabbit.Father_EarCombId);
+            var mother = await _dbRepository.GetObject_ByKEYAsync(rabbit.Mother_EarCombId);
+
+            return new Rabbit_PedigreeDTO
             {
                 Rabbit = rabbit,
-                Father = generation < 3 ? await GetRabbit_PedigreeAsync(rabbit.Father.EarCombId, generation + 1) : null,
-                Mother = generation < 3 ? await GetRabbit_PedigreeAsync(rabbit.Mother.EarCombId, generation + 1) : null
+                Father = father != null ? await GetRabbitPedigreeRecursive(father, currentGeneration + 1, maxGeneration) : null,
+                Mother = mother != null ? await GetRabbitPedigreeRecursive(mother, currentGeneration + 1, maxGeneration) : null,
+                Generation = currentGeneration
             };
-
-            //_cache.Set(cacheKey, pedigree);
-
-            return pedigree;
         }
+
+
 
 
         //---------------------: UPDATE

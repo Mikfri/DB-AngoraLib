@@ -16,6 +16,6 @@ namespace DB_AngoraLib.DTOs
         public string? NickName { get; init; }
         public Models.Color Color { get; init; }
         public Gender Gender { get; init; }
-        public string OtherParentId{ get; init; }
+        public string? OtherParentId{ get; init; }
     }
 }

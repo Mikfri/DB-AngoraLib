@@ -43,6 +43,8 @@ namespace DB_AngoraLib.DTOs
         public string? MotherId_Placeholder { get; init; }
         public string? MotherStatusMessage { get; init; }
 
+        //public Rabbit_PedigreeDTO Pedigree { get; init; }
+
         public List<Rabbit_ChildPreviewDTO?> Children { get; init; }
 
 

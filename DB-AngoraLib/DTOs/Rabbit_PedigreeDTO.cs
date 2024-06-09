@@ -12,5 +12,6 @@ namespace DB_AngoraLib.DTOs
         public Rabbit Rabbit { get; init; }
         public Rabbit_PedigreeDTO Father { get; init; }
         public Rabbit_PedigreeDTO Mother { get; init; }
+        public int Generation { get; init; }
     }
 }
