@@ -15,8 +15,10 @@ namespace DB_AngoraLib.DTOs
     {
         public string EarCombId { get; init; }
 
-        public string? RightEarId { get; init; }
-        public string? LeftEarId { get; init; }
+        //public string? RightEarId { get; init; }
+        //public string? LeftEarId { get; init; }
+
+        public string? OriginBreeder { get; init; }
         
         public string? OwnerId { get; init; }
 

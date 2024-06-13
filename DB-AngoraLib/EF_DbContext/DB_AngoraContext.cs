@@ -41,8 +41,6 @@ namespace DB_AngoraLib.EF_DbContext
 
             // Konfigurer primær nøgle for Rabbit
             modelBuilder.Entity<Rabbit>()
-                    //.HasKey(r => r.Id);
-                    //.HasKey(r => new { r.RightEarId, r.LeftEarId });
                     .HasKey(r => r.EarCombId);
 
             //// Add unique constraint for Rabbit: Forbedrer ydeevnen ved DB søgning da de nu er indexerede
@@ -54,11 +52,18 @@ namespace DB_AngoraLib.EF_DbContext
 
 
 
-            // Configure Foreign Key for Rabbit -> User
+            // Configure Foreign Key for Rabbit -> UserOwer (ejerforhold)
             modelBuilder.Entity<Rabbit>()
-                .HasOne(r => r.User)        // En Rabbit har en User
-                .WithMany(u => u.Rabbits)   // En User har mange Rabbits
+                .HasOne(r => r.UserOwner)        // En Rabbit har en User (UserOwner)
+                .WithMany(u => u.RabbitsOwned)   // En User har mange Rabbits
                 .HasForeignKey(r => r.OwnerId) // En Rabbit har en OwnerId
+                .IsRequired(false);
+
+            // Configure Foreign Key for Rabbit -> UserOrigin (Opdrætterforhold)
+            modelBuilder.Entity<Rabbit>()
+                .HasOne(r => r.UserOrigin)
+                .WithMany(u => u.RabbitsLinked)
+                .HasForeignKey(r => r.OriginId)
                 .IsRequired(false);
 
 

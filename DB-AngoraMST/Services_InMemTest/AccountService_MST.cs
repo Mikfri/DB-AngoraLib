@@ -134,9 +134,9 @@ namespace DB_AngoraMST.Services_InMemTest
 
             // Get the user's rabbit collection
             var mockUserRabbitCollection = _context.Users
-                .Include(u => u.Rabbits) // Load the related rabbits
+                .Include(u => u.RabbitsOwned) // Load the related rabbits
                 .Single(u => u.Id == userId) // Get the user
-                .Rabbits; // Get the user's rabbit collection
+                .RabbitsOwned; // Get the user's rabbit collection
 
             // Print each rabbit's nickname
             foreach (var rabbit in mockUserRabbitCollection)

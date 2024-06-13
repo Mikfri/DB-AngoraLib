@@ -87,7 +87,7 @@ namespace DB_AngoraLib.Services.AccountService
         {
             var currentUserCollection = await _dbRepository.GetDbSet()
                 .AsNoTracking()
-                .Include(u => u.Rabbits)
+                .Include(u => u.RabbitsOwned)
                 .FirstOrDefaultAsync(u => u.Id == userId);
 
             if (currentUserCollection == null)
@@ -96,13 +96,13 @@ namespace DB_AngoraLib.Services.AccountService
                 return new List<Rabbit_PreviewDTO>();
             }
 
-            if (currentUserCollection.Rabbits.Count < 1)
+            if (currentUserCollection.RabbitsOwned.Count < 1)
             {
                 Console.WriteLine("No rabbits found in collection");
                 return new List<Rabbit_PreviewDTO>();
             }
 
-            return currentUserCollection.Rabbits
+            return currentUserCollection.RabbitsOwned
                 .Select(rabbit => new Rabbit_PreviewDTO
                 {
                     EarCombId = rabbit.EarCombId,

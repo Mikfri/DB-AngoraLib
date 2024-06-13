@@ -18,11 +18,10 @@ namespace DB_AngoraLib.MockData
             //1,
             "5095",                 // RightEarId
             "002",                  // LeftEarId
-            "IdasId",               // User.Id
-            "Sov",                  // Nickname
+            "IdasId",               // OwnerId (User.Id)      
+            "Sov",                  // NickName
             Race.Angora,
             Color.Blå,
-            //null,                   //ApprovedRaceColorCombination
             new DateOnly(2020, 06, 12), // Format: yyyy-MM-dd
             new DateOnly(2022, 07, 22), // Format: yyyy-MM-dd
             Gender.Hun,

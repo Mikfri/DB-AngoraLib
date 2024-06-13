@@ -124,6 +124,7 @@ namespace DB_AngoraLib.Models
             }
         }
 
+
         public string LeftEarId
         {
             get => leftEarId;
@@ -134,9 +135,12 @@ namespace DB_AngoraLib.Models
             }
         }
 
+        public string? OriginId { get; set; }
+        public User? UserOrigin { get; set; }
+
 
         public string? OwnerId { get; set; }
-        public User? User { get; set; } // public virtual -> lazy loading (færre DB requests)
+        public User? UserOwner { get; set; } // public virtual -> lazy loading (færre DB requests)
 
         public string? NickName { get; set; }
         public Race Race { get; set; }
