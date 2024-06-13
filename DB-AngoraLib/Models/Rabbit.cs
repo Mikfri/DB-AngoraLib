@@ -190,13 +190,14 @@ namespace DB_AngoraLib.Models
 
 
 
-        public Rabbit(string rightEarId, string leftEarId, string? ownerId, string? nickName, Race race, Color color, DateOnly dateOfBirth, DateOnly? dateOfDeath, Gender gender, ForSale? forSale, string? fatherId_Placeholder, string? motherId_Placeholder)
+        public Rabbit(string rightEarId, string leftEarId, string? originId, string? ownerId, string? nickName, Race race, Color color, DateOnly dateOfBirth, DateOnly? dateOfDeath, Gender gender, ForSale? forSale, string? fatherId_Placeholder, string? motherId_Placeholder)
         {
             //Id = id;
             EarCombId = $"{rightEarId}-{leftEarId}";
 
             RightEarId = rightEarId;
             LeftEarId = leftEarId;
+            OriginId = originId;
             OwnerId = ownerId;
             NickName = nickName;
             Race = race;

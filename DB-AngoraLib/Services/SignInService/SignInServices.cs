@@ -30,19 +30,19 @@ namespace DB_AngoraLib.Services.SigninService
         }
 
         
-        public async Task<Login_ResponseDTO> LoginAsync(Login_RequestDTO loginRequest)
+        public async Task<Login_ResponseDTO> LoginAsync(Login_RequestDTO loginRequestDTO)
         {
             var result = await _signInManager.PasswordSignInAsync(
-                loginRequest.UserName, 
-                loginRequest.Password, 
-                loginRequest.RememberMe,
+                loginRequestDTO.UserName,
+                loginRequestDTO.Password,
+                loginRequestDTO.RememberMe,
                 lockoutOnFailure: false);
 
             var loginResponseDTO = new Login_ResponseDTO();
 
             if (result.Succeeded)
             {
-                var user = await _userManager.FindByNameAsync(loginRequest.UserName);
+                var user = await _userManager.FindByNameAsync(loginRequestDTO.UserName);
 
                 // Generate the token with the user's claims
                 var token = await GenerateToken(user);
