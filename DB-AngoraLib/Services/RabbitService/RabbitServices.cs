@@ -50,7 +50,6 @@ namespace DB_AngoraLib.Services.RabbitService
             {
                 RightEarId = newRabbitDTO.RightEarId,
                 LeftEarId = newRabbitDTO.LeftEarId,
-                //OriginBreeder
                 OwnerId = userId,
                 NickName = newRabbitDTO.NickName,
                 Race = newRabbitDTO.Race,
@@ -172,10 +171,11 @@ namespace DB_AngoraLib.Services.RabbitService
                 var rabbitProfile = new Rabbit_ProfileDTO
                 {
                     // Set FatherStatusMessage and MotherStatusMessage properties
+                    OriginStatusMessage = rabbit.OriginId != null ? $"Oprdætter: {rabbit.UserOrigin.FirstName} {rabbit.UserOrigin.LastName}" : "Oprdrætter: Ikke fundet",
                     FatherStatusMessage = rabbit.FatherId_Placeholder == null ? null :
-                                          rabbit.Father_EarCombId != null ? "Kanin fundet i systemet" : "Ikke fundet i systemet",
+                                          rabbit.Father_EarCombId != null ? $"Sire: {rabbit.Father.NickName}" : "Sire: Ikke fundet i systemet",
                     MotherStatusMessage = rabbit.MotherId_Placeholder == null ? null :
-                                          rabbit.Mother_EarCombId != null ? "Kanin fundet i systemet" : "Ikke fundet i systemet",
+                                          rabbit.Mother_EarCombId != null ? $"Dam: {rabbit.Mother.NickName}" : "Dam: Ikke fundet i systemet",
                     Children = await GetRabbit_ChildCollection(earCombId),
                     //Pedigree = await GetRabbitPedigreeAsync(earCombId, 3)
 
@@ -475,7 +475,7 @@ namespace DB_AngoraLib.Services.RabbitService
             if (user != null)
             {
                 // If the user exists, establish the relationship between the rabbit and the user
-                rabbit.OriginId = user.BreederRegNo;
+                rabbit.OriginId = user.Id;
             }
             else
             {

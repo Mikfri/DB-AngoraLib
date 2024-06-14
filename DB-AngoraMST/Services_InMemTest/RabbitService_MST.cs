@@ -117,7 +117,7 @@ namespace DB_AngoraMST.Services_InMemTest
         {
             // Arrange
             var breederRegNo = "5053";
-            var expectedRabbitsCount = 17;
+            var expectedRabbitsCount = 19;
 
             // Act
             var rabbits = await _rabbitService.GetAllRabbits_ByBreederRegAsync(breederRegNo);
@@ -257,62 +257,7 @@ namespace DB_AngoraMST.Services_InMemTest
             // Add more assertions based on your test expectations
         }
 
-        //[TestMethod]
-        //public async Task GetRabbit_ChildCollection_ByEarCombIdAsync_ReturnsCorrectData()
-        //{
-        //    // Arrange
-        //    var earCombId = "testEarCombId";
-        //    var expectedChildren = new List<Rabbit> { new Rabbit(), new Rabbit() }; // Add your expected children here
 
-        //    Console.WriteLine($"User: {mockUser.UserName}\nMY-Rabbit: {mockRabbitOwned.NickName}\nOTHER-Rabbit: {mockRabbitNotOwned.NickName}");
-        //    foreach (var claim in mockUserClaims)
-        //    {
-        //        Console.WriteLine($"ClaimType: '{claim.Type}' | ClaimValue: '{claim.Value}'");
-        //    }
-
-        //    // Add the Rabbit with the expected children to the in-memory database
-        //    var rabbit = new Rabbit { EarCombId = earCombId, FatheredChildren = expectedChildren, MotheredChildren = new List<Rabbit>() };
-        //    _context.Rabbits.Add(rabbit);
-        //    await _context.SaveChangesAsync();
-
-        //    // Act
-        //    var result = await _rabbitService.GetRabbit_ChildCollection_ByEarCombIdAsync(earCombId);
-
-        //    // Assert
-        //    Assert.IsNotNull(result);
-        //    Assert.AreEqual(expectedChildren.Count, result.Count);
-        //    for (int i = 0; i < expectedChildren.Count; i++)
-        //    {
-        //        Assert.AreEqual(expectedChildren[i], result[i]);
-        //    }
-        //}
-
-        //[TestMethod]
-        //public async Task GetRabbit_ChildrenAsync_TEST()
-        //{
-        //    // Arrange
-        //    var rabbitParrent = _context.Rabbits
-        //        .FirstOrDefault(r =>
-        //        //r.EarCombId == "4977-206");
-        //        r.NickName == "Miranda");
-
-        //    //var earCombId = "4977-206"; // Replace with a valid EarCombId from your test data
-
-
-        //    // Act
-        //    var rabbitChildren = await _rabbitService.GetRabbit_ChildrenAsync(rabbitParrent.EarCombId);
-
-        //    Console.WriteLine($"Rabbit: Nickname: {rabbitParrent.NickName}\n");
-        //    foreach (var rabbit in rabbitChildren)
-        //    {
-        //        Console.WriteLine(rabbit.NickName);
-        //    }
-
-        //    // Assert
-        //    Assert.IsNotNull(rabbitChildren); // The method should always return a list (which can be empty)
-        //                                      // Add more assertions based on your test expectations. For example:
-        //                                      // Assert.IsTrue(rabbitChildren.All(c => c.Mother_EarCombId == earCombId || c.Father_EarCombId == earCombId));
-        //}
 
         //-------------------------: UPDATE TESTS
 

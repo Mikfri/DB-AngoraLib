@@ -16,13 +16,14 @@ namespace DB_AngoraLib.DTOs
         public string EarCombId { get; init; }
 
         //public string? RightEarId { get; init; }
-        //public string? LeftEarId { get; init; }
-
-        public string? OriginBreeder { get; init; }
-        
-        public string? OwnerId { get; init; }
+        //public string? LeftEarId { get; init; } 
 
         public string? NickName { get; init; }
+
+        public string? OriginStatusMessage { get; init; }
+        //public string? OriginId { get; init; }      // HACK: Skal ikke ud til brugerne, da det er ulæseligt. Overvej en string message
+        public string? OwnerId { get; init; }
+
         public Race? Race { get; init; }
         public Color? Color { get; init; }
 

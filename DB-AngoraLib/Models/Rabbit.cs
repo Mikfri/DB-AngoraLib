@@ -12,8 +12,8 @@ namespace DB_AngoraLib.Models
 
     public enum Gender
     {
-        Hun,    // NiceToHave: ♂    0.1
-        Han,    // NiceToHave: ♀    1.0
+        Hun,    // NiceToHave: ♂    0.1     Doe
+        Han,    // NiceToHave: ♀    1.0     Buck
     }
 
     public enum Race

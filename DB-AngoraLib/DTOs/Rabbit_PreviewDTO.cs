@@ -15,9 +15,10 @@ namespace DB_AngoraLib.DTOs
     public record Rabbit_PreviewDTO
     {
         public string EarCombId { get; init; }
+        public string? NickName { get; init; }
+
         public string RightEarId { get; init; }
         public string LeftEarId { get; init; }
-        public string? NickName { get; init; }
 
         public Race Race { get; set; }
         public Color Color { get; set; }
