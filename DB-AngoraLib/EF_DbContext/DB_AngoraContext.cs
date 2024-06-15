@@ -43,10 +43,6 @@ namespace DB_AngoraLib.EF_DbContext
             modelBuilder.Entity<Rabbit>()
                     .HasKey(r => r.EarCombId);
 
-            //// Add unique constraint for Rabbit: Forbedrer ydeevnen ved DB søgning da de nu er indexerede
-            //modelBuilder.Entity<Rabbit>()
-            //    .HasIndex(r => new { r.RightEarId, r.LeftEarId })
-            //    .IsUnique();
 
             //------------------- FK SETUP -------------------
 

@@ -20,8 +20,7 @@ namespace DB_AngoraLib.DTOs
 
         public string? NickName { get; init; }
 
-        public string? OriginStatusMessage { get; init; }
-        //public string? OriginId { get; init; }      // HACK: Skal ikke ud til brugerne, da det er ulæseligt. Overvej en string message
+        public string? OriginId { get; init; }
         public string? OwnerId { get; init; }
 
         public Race? Race { get; init; }
@@ -41,14 +40,15 @@ namespace DB_AngoraLib.DTOs
         public ForSale? ForSale { get; init; }
 
         public string? FatherId_Placeholder { get; init; }
-        public string? FatherStatusMessage { get; init; }
+        public string? Father_EarCombId { get; init; }
 
         public string? MotherId_Placeholder { get; init; }
-        public string? MotherStatusMessage { get; init; }
+        public string? Mother_EarCombId { get; init; }
+
 
         //public Rabbit_PedigreeDTO Pedigree { get; init; }
 
-        public List<Rabbit_ChildPreviewDTO?> Children { get; init; }
+        public List<Rabbit_ChildPreviewDTO> ?Children { get; init; }
 
 
     }
