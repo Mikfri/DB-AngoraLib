@@ -19,11 +19,13 @@ namespace DB_AngoraLib.Services.AccountService
     public class AccountServices : IAccountService
     {
         private readonly IGRepository<User> _dbRepository;
+        private readonly IEmailService _emailService;
         private readonly UserManager<User> _userManager;
 
-        public AccountServices(IGRepository<User> dbRepository, UserManager<User> userManager)
+        public AccountServices(IGRepository<User> dbRepository, IEmailService emailService, UserManager<User> userManager)
         {
             _dbRepository = dbRepository;
+            _emailService = emailService;
             _userManager = userManager;
         }
 
@@ -47,6 +49,13 @@ namespace DB_AngoraLib.Services.AccountService
             {
                 await _userManager.AddToRoleAsync(newUser, "Guest"); // hardcoded role
 
+                // Generer e-mail bekræftelsestoken
+                var token = await _userManager.GenerateEmailConfirmationTokenAsync(newUser);
+
+                // Send bekræftelses e-mail
+                await Send_EmailConfirmAsync(newUser.Id, token);
+
+
                 //// Trigger UserRegisteredEvent
                 //var userRegisteredEvent = new UserRegistered_Event { Email = newUser.UserName };
                 //await _eventBus.Trigger(userRegisteredEvent);
@@ -56,26 +65,26 @@ namespace DB_AngoraLib.Services.AccountService
         }
 
         //---------------------------------: GET USER METHODS :---------------------------------
-        //------------: GET ALL USERS :------------
+        //------------: GET ALL USERS
         public async Task<List<User>> GetAllUsersAsync()
         {
             return (await _dbRepository.GetAllObjectsAsync()).ToList();
         }
 
-        //------------: GET USER BY USERNAME OR EMAIL :------------
+        //------------: GET USER BY USERNAME OR EMAIL
         public async Task<User> GetUserByUserNameOrEmailAsync(string userNameOrEmail)
         {
             return await _dbRepository.GetDbSet()
                 .FirstOrDefaultAsync(u => u.UserName == userNameOrEmail || u.Email == userNameOrEmail);
         }
 
-        //------------: GET USER BY ID :------------
+        //------------: GET USER BY ID
         public async Task<User> GetUserByIdAsync(string userId)
         {
             return await _dbRepository.GetObject_ByKEYAsync(userId);
         }
 
-        //------------: GET USER BY BREEDER-REG-NO :------------
+        //------------: GET USER BY BREEDER-REG-NO
         public async Task<User> GetUserByBreederRegNoAsync(string breederRegNo)
         {
             return await _dbRepository.GetObject_ByFilterAsync(u => u.BreederRegNo == breederRegNo);
@@ -138,8 +147,9 @@ namespace DB_AngoraLib.Services.AccountService
 
 
 
-        //---------------------------------: EMAIL CONFIRMATION :-------------------------------
-        public async Task ConfirmEmail_ConfirmAsync(string userId, string token)
+        //---------------------------------: EMAIL METHODs :-------------------------------
+
+        public async Task Send_EmailConfirmAsync(string userId, string token)
         {
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
@@ -147,38 +157,54 @@ namespace DB_AngoraLib.Services.AccountService
                 throw new Exception("User not found");
             }
 
-            var result = await _userManager.ConfirmEmailAsync(user, token);
+            // Antag at du har en frontend-rute setup til at håndtere e-mail bekræftelse
+            var confirmationLink = $"https://DB-Angora.dk/email-confirmation?userId={HttpUtility.UrlEncode(userId)}&token={HttpUtility.UrlEncode(token)}";
 
-            if (!result.Succeeded)
-            {
-                throw new Exception("Email confirmation failed");
-            }
+            // Konstruer e-mail beskeden
+            var emailSubject = "DB-Angora: Velkommen til";
+            var emailBody = $"Bekræft venligst din e-mail ved at klikke på følgende link, for at fuldende din profil: <a href=\"{confirmationLink}\">Bekræft e-mail</a>";
+
+            // Send bekræftelses e-mail
+            await _emailService.SendEmailAsync(user.Email, emailSubject, emailBody);
         }
 
 
-        //---------------------------------: PASSWORD RESET :-----------------------------------
-        public async Task<IdentityResult> ChangePasswordAsync(User_ChangePasswordDTO userPwConfig)
+        public async Task Send_PWResetRequestAsync(string userEmail)
         {
-            var user = await _userManager.FindByIdAsync(userPwConfig.UserId);
+            var user = await _userManager.FindByEmailAsync(userEmail);
             if (user == null)
             {
-                // Handle user not found error
+                throw new Exception("User not found");
             }
 
-            return await _userManager.ChangePasswordAsync(user, userPwConfig.CurrentPassword, userPwConfig.NewPassword);
+            // Generer nulstillingstoken
+            var resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
+
+            // Konstruer URL'en til nulstilling af adgangskoden
+            var resetLink = $"https://DB-Angora.dk/password-reset?userId={HttpUtility.UrlEncode(user.Id)}&token={HttpUtility.UrlEncode(resetToken)}";
+
+            // Konstruer e-mail beskeden
+            var emailSubject = "DB-Angora: Nulstil din adgangskode";
+            var emailBody = $"For at nulstille din adgangskode, venligst klik på følgende link: <a href=\"{resetLink}\">Nulstil adgangskode</a>";
+
+            // Send e-mailen
+            await _emailService.SendEmailAsync(user.Email, emailSubject, emailBody);
         }
 
 
+
+        //---------------: RESET PASSWORD FORMULAR
 
         /// <summary>
         /// Formular til brugeren på frontend, hvor brugeren indtaster ny password.
+        /// Metoden kommer i brug efter metoden: Send_PWResetRequestAsync
         /// </summary>
         /// <param name="userId"></param>
         /// <param name="token"></param>
         /// <param name="newPassword"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public async Task ResetPasswordAsync(string userId, string token, string newPassword)
+        public async Task Formular_ResetPWAsync(string userId, string token, string newPassword)
         {
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
@@ -192,6 +218,23 @@ namespace DB_AngoraLib.Services.AccountService
                 throw new Exception("Password reset failed");
             }
         }
+
+
+        //---------------------------------: UPDATE ACCOUNT Settings :-----------------------------------
+        public async Task<IdentityResult> User_ChangePasswordAsync(User_ChangePasswordDTO userPwConfig)
+        {
+            var user = await _userManager.FindByIdAsync(userPwConfig.UserId);
+            if (user == null)
+            {
+                throw new InvalidOperationException("User not found");
+            }
+
+            return await _userManager.ChangePasswordAsync(user, userPwConfig.CurrentPassword, userPwConfig.NewPassword);
+        }
+
+
+
+       
 
     }
 }

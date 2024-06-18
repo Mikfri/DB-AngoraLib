@@ -37,4 +37,38 @@ namespace DB_AngoraLib.Services.EmailService
     }
 
 
+    //public class EmailServices : IEmailService    // Alternative implementation
+    //{
+    //    private readonly IConfiguration _configuration;
+
+    //    public EmailService(IConfiguration configuration)
+    //    {
+    //        _configuration = configuration;
+    //    }
+
+    //    public async Task SendEmailAsync(string to, string subject, string htmlMessage)
+    //    {
+    //        var emailSettings = _configuration.GetSection("EmailSettings");
+    //        var smtpHost = emailSettings["SmtpHost"];
+    //        var smtpPort = Convert.ToInt32(emailSettings["SmtpPort"]);
+    //        var fromEmail = emailSettings["FromEmail"];
+    //        var smtpUser = emailSettings["SmtpUser"];
+    //        var smtpPass = emailSettings["SmtpPass"];
+
+    //        var email = new MimeMessage();
+    //        email.From.Add(MailboxAddress.Parse(fromEmail));
+    //        email.To.Add(MailboxAddress.Parse(to));
+    //        email.Subject = subject;
+    //        email.Body = new TextPart("html") { Text = htmlMessage };
+
+    //        using var smtp = new SmtpClient();
+    //        await smtp.ConnectAsync(smtpHost, smtpPort, true);
+    //        await smtp.AuthenticateAsync(smtpUser, smtpPass);
+    //        await smtp.SendAsync(email);
+    //        await smtp.DisconnectAsync(true);
+    //    }
+    //}
+
+
+
 }
