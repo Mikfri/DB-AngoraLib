@@ -77,7 +77,7 @@ namespace DB_AngoraLib.Services.RabbitService
 
             await UserOriginFK_SetupAsync(newRabbit);
             await ParentsFK_SetupAsync(newRabbit);
-            await ChildFK_SetupAsync(newRabbit);
+            await ChildFK_SetupAsync(newRabbit.EarCombId, newRabbit.Gender);
 
             // Create a new RabbitDTO and copy properties from newRabbit
             var newRabbit_ProfileDTO = new Rabbit_ProfileDTO();
@@ -417,37 +417,39 @@ namespace DB_AngoraLib.Services.RabbitService
         }
 
 
+
         /// <summary>
         /// Kigger efter om der eksistere Rabbits i DB som peger på det snarlige nye object, 'newRabbit', som forælder.
         /// Hvis nogen Rabbits i DB pejer på 'newRabbit' etableres en FK forbindelse, med forbehold for køn.
         /// </summary>
-        /// <param name="newRabbit"></param>
+        /// <param name="earCombId"></param>
+        /// <param name="gender"></param>
         /// <returns></returns>
-        private async Task ChildFK_SetupAsync(Rabbit newRabbit)
+        private async Task ChildFK_SetupAsync(string earCombId, Gender gender)
         {
             List<Rabbit> rabbitsToUpdate = new List<Rabbit>();
 
-            if (newRabbit.Gender == Gender.Han)
+            if (gender == Gender.Han)
             {
                 var children = await _dbRepository.GetDbSet()
-                    .Where(r => r.FatherId_Placeholder == newRabbit.EarCombId)
+                    .Where(r => r.FatherId_Placeholder == earCombId)
                     .ToListAsync();
 
                 foreach (var child in children)
                 {
-                    child.Father_EarCombId = newRabbit.EarCombId;
+                    child.Father_EarCombId = earCombId;
                     rabbitsToUpdate.Add(child);
                 }
             }
-            else if (newRabbit.Gender == Gender.Hun)
+            else if (gender == Gender.Hun)
             {
                 var children = await _dbRepository.GetDbSet()
-                    .Where(r => r.MotherId_Placeholder == newRabbit.EarCombId)
+                    .Where(r => r.MotherId_Placeholder == earCombId)
                     .ToListAsync();
 
                 foreach (var child in children)
                 {
-                    child.Mother_EarCombId = newRabbit.EarCombId;
+                    child.Mother_EarCombId = earCombId;
                     rabbitsToUpdate.Add(child);
                 }
             }
@@ -458,6 +460,7 @@ namespace DB_AngoraLib.Services.RabbitService
                 await _dbRepository.SaveObjects(rabbitsToUpdate);
             }
         }
+
 
 
         private async Task UserOriginFK_SetupAsync(Rabbit rabbit)
@@ -479,6 +482,28 @@ namespace DB_AngoraLib.Services.RabbitService
 
             // Update the rabbit in the database
             await _dbRepository.UpdateObjectAsync(rabbit); // Update the rabbit in the database
+        }
+
+        /// <summary>
+        /// Finder alle kaniner vis Rabbit.RightEarId matcher avlerens nye User.BreederRegNo
+        /// og opdaterer alle disse Rabbit.OriginId til at pege på brugeren.
+        /// </summary>
+        /// <param name="breederRegNo">Brugerens avlernummer</param>
+        /// <param name="userId">Brugerens ID</param>
+        /// <returns></returns>
+        public async Task LinkRabbits_ToNewBreederAsync(string breederRegNo, string userId)
+        {
+            // Filtrer kaniner baseret på RightEarId, der matcher breederRegNo, direkte i databasen
+            var rabbitsToUpdateList = await _dbRepository.GetDbSet()
+                .Where(rabbit => rabbit.RightEarId == breederRegNo)
+                .ToListAsync();
+
+            // Opdater OriginId for hver relevant kanin til at pege på brugeren
+            foreach (var rabbit in rabbitsToUpdateList)
+            {
+                rabbit.OriginId = userId; // Brug userId direkte
+                await _dbRepository.UpdateObjectAsync(rabbit);
+            }
         }
 
 

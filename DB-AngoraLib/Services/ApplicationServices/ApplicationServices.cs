@@ -1,6 +1,7 @@
 ﻿using DB_AngoraLib.EF_DbContext;
 using DB_AngoraLib.Models;
 using DB_AngoraLib.Repository;
+using DB_AngoraLib.Services.RabbitService;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
@@ -13,12 +14,14 @@ namespace DB_AngoraLib.Services.ApplicationServices
     public class ApplicationServices
     {
         private readonly IGRepository<BreederApplication> _dbRepository;
+        private readonly IRabbitService _rabbitServices;
         private readonly UserManager<User> _userManager;
 
-        public ApplicationServices(IGRepository<BreederApplication> breederAppRepository, UserManager<User> userManager)
+        public ApplicationServices(IGRepository<BreederApplication> breederAppRepository, UserManager<User> userManager, IRabbitService rabbitService)
         {
             _dbRepository = breederAppRepository;
             _userManager = userManager;
+            _rabbitServices = rabbitService;
         }
 
 
@@ -51,7 +54,7 @@ namespace DB_AngoraLib.Services.ApplicationServices
             await _dbRepository.AddObjectAsync(application);
         }
 
-        //----------------: Create 'Breeder'
+        //----------------: Approve application (Create 'Breeder')
         public async Task ApproveApplicationAsync(int applicationId)
         {
             // Find ansøgningen ved hjælp af GRepository
@@ -75,6 +78,9 @@ namespace DB_AngoraLib.Services.ApplicationServices
 
             // Gem ændringerne i ansøgningen
             await _dbRepository.UpdateObjectAsync(application);
+
+            // Link relevante kaniner til den nye avler
+            await _rabbitServices.LinkRabbits_ToNewBreederAsync(user.BreederRegNo, user.Id);
         }
 
         //----------------: Reject application
