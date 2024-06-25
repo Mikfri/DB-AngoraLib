@@ -30,7 +30,7 @@ namespace DB_AngoraLib.Services.SigninService
         }
 
         
-        public async Task<Login_ResponseDTO> LoginAsync(Login_RequestDTO loginRequestDTO)   // TODO: Gå tilbage til at returnere IdentityResult?
+        public async Task<Login_ResponseDTO> LoginAsync(Login_RequestDTO loginRequestDTO)
         {
             var result = await _signInManager.PasswordSignInAsync(
                 loginRequestDTO.UserName,
