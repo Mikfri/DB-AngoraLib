@@ -80,16 +80,19 @@ namespace DB_AngoraLib.EF_DbContext
                 .OnDelete(DeleteBehavior.Restrict); // Prevent cascade delete
 
 
+            modelBuilder.Entity<BreederApplication>()
+                .HasOne(ba => ba.UserApplicant)         // BreederApplication har én UserApplicant
+                .WithMany(u => u.BreederApplications)   // User har mange BreederApplications
+                .HasForeignKey(ba => ba.UserId);        // ForeignKey i BreederApplication der peger på User
+
 
             //modelBuilder.Entity<Rating>()
             //    .HasOne(r => r.Rabbit)      // En Rating har en Rabbit
             //    .WithMany(rb => rb.Ratings) // En Rabbit har mange Ratings
             //    .HasForeignKey(r => r.Id); // Opdateret til at bruge den nye Id property
 
-
-
         }
-
+        public DbSet<BreederApplication> BreederApplications { get; set; }
         public DbSet<Rabbit> Rabbits { get; set; }
         public DbSet<Rating> Ratings { get; set; }
         public DbSet<Photo> Photos { get; set; }

@@ -28,7 +28,7 @@ namespace DB_AngoraLib.MockData
             Gender.Hun,
             ForSale.Nej,
             null,                   // Father_EarCombId
-            null),                  // Mother_EarCombId
+            "5095-001"),            // Mother_EarCombId
 
             new Rabbit(
             //2,
@@ -60,7 +60,7 @@ namespace DB_AngoraLib.MockData
             Gender.Hun,
             ForSale.Nej,
             null,
-            null),
+            "5095-001"),
 
             new Rabbit(
             //4,
@@ -136,7 +136,7 @@ namespace DB_AngoraLib.MockData
             "Sandshrew",
             Race.Satinangora,
             Color.Brun_Havana,
-            new DateOnly(2024, 10, 15),
+            new DateOnly(2023, 10, 15),
             null,
             Gender.Han,
             ForSale.Ja,
@@ -396,6 +396,82 @@ namespace DB_AngoraLib.MockData
             ForSale.Nej,
             "4977-206",
             "4977-213"),
+
+            new Rabbit(
+            "5053",
+            "0124",
+            "MajasId",
+            "MajasId",
+            null,
+            Race.Satinangora,
+            Color.Vildtrød_Harefarvet,
+            new DateOnly(2024, 04, 1),
+            null,
+            Gender.Han,
+            ForSale.Nej,
+            "V23-023",
+            "5053-0423"),
+
+            new Rabbit(
+            "5053",
+            "0224",
+            "MajasId",
+            "MajasId",
+            "Chokolade",
+            Race.Satinangora,
+            Color.Gråblå_LilleEgern,
+            new DateOnly(2024, 04, 18),
+            null,
+            Gender.Hun,
+            ForSale.Nej,
+            "5053-0723",
+            "M63-3102"),
+
+            new Rabbit(
+            "5053",
+            "0324",
+            "MajasId",
+            "MajasId",
+            null,
+            Race.Satinangora,
+            Color.Gråblå_LilleEgern,
+            new DateOnly(2024, 04, 18),
+            null,
+            Gender.Han,
+            ForSale.Nej,
+            "5053-0723",
+            "M63-3102"),
+
+            new Rabbit(
+            "5053",
+            "0524",
+            "MajasId",
+            "MajasId",
+            null,
+            Race.Satinangora,
+            Color.Brun_Havana,
+            new DateOnly(2024, 04, 18),
+            null,
+            Gender.Han,
+            ForSale.Nej,
+            "5053-0723",
+            "M63-3102"),
+
+            new Rabbit(
+            "5053",
+            "10724",
+            "MajasId",
+            "MajasId",
+            "Ice Beam",
+            Race.Satinangora,
+            Color.Gråblå_LilleEgern,
+            new DateOnly(2024, 04, 18),
+            null,
+            Gender.Hun,
+            ForSale.Nej,
+            "5053-0723",
+            "M63-3102"),
+
         };
 
         public static List<Rabbit> GetMockRabbits()

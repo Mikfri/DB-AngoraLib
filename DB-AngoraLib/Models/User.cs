@@ -31,6 +31,8 @@ namespace DB_AngoraLib.Models
         //public virtual ICollection<IdentityUserLogin<string>> Logins { get; set; }
         //public virtual ICollection<IdentityUserToken<string>> Tokens { get; set; }
         //public virtual ICollection<IdentityUserRole<string>> UserRoles { get; set; }
+        public ICollection<BreederApplication> BreederApplications { get; set; }
+
         public ICollection<Rabbit> RabbitsOwned { get; set; }
         public ICollection<Rabbit> RabbitsLinked { get; set; }
 

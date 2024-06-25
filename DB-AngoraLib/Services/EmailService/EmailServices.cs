@@ -29,7 +29,8 @@ namespace DB_AngoraLib.Services.EmailService
             email.Body = new TextPart("html") { Text = htmlMessage };
 
             using var smtp = new SmtpClient();
-            await smtp.ConnectAsync(_emailSettings.SmtpHost, _emailSettings.SmtpPort, true);
+            //await smtp.ConnectAsync(_emailSettings.SmtpHost, _emailSettings.SmtpPort, true); // uden SSL
+            await smtp.ConnectAsync(_emailSettings.SmtpHost, _emailSettings.SmtpPort, MailKit.Security.SecureSocketOptions.StartTls); // med SSL
             await smtp.AuthenticateAsync(_emailSettings.SmtpUser, _emailSettings.SmtpPass);
             await smtp.SendAsync(email);
             await smtp.DisconnectAsync(true);

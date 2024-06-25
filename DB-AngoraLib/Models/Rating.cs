@@ -11,12 +11,11 @@ namespace DB_AngoraLib.Models
     public class Rating
     {
         public int Id { get; set; }
-
-        public string RightEarId{ get; set; }
-        public string LeftEarId{ get; set; }
-        public Rabbit Rabbit { get; set; }
-
         public DateOnly DateRated { get; set; }
+
+        public string EarCombId{ get; set; }
+        public Rabbit RabbitRated { get; set; }
+
         public int WeightPoint { get; set; }
         public string? WeightNotice { get; set; } = null;
         public int BodyPoint { get; set; }

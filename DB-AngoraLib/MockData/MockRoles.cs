@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace DB_AngoraLib.MockData
 {
-    public class MockRoles
+    public static class MockRoles
     {
         private static readonly List<IdentityRole> _rolesList = new List<IdentityRole>
         {
@@ -17,9 +17,9 @@ namespace DB_AngoraLib.MockData
             new IdentityRole { Id = "GuestRoleId", Name = "Guest" }
         };
 
-        public static List<IdentityRole> GetMockRoles()
+        public static IReadOnlyList<IdentityRole> GetMockRoles()
         {
-            return _rolesList;
+            return _rolesList.AsReadOnly();
         }
     }
 }

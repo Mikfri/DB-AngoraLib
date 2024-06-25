@@ -4,6 +4,7 @@ using DB_AngoraLib.MockData;
 using DB_AngoraLib.Models;
 using DB_AngoraLib.Repository;
 using DB_AngoraLib.Services.AccountService;
+using DB_AngoraLib.Services.EmailService;
 using DB_AngoraLib.Services.HelperService;
 using DB_AngoraLib.Services.RabbitService;
 using DB_AngoraLib.Services.ValidationService;
@@ -26,6 +27,8 @@ namespace DB_AngoraMST.Services_InMemTest
         private IAccountService _accountService; // Changed from IUserService
         private DB_AngoraContext _context;
         private Mock<UserManager<User>> _userManagerMock;
+        private Mock<IEmailService> _emailServiceMock;
+
 
         public RabbitService_MST()
         {
@@ -41,8 +44,12 @@ namespace DB_AngoraMST.Services_InMemTest
             var userStoreMock = new Mock<IUserStore<User>>();
             _userManagerMock = new Mock<UserManager<User>>(userStoreMock.Object, null, null, null, null, null, null, null, null);
 
+            // Create EmailService mock
+            _emailServiceMock = new Mock<IEmailService>();
+
+
             var userRepository = new GRepository<User>(_context);
-            _accountService = new AccountServices(userRepository, _userManagerMock.Object); // Changed from UserService
+            _accountService = new AccountServices(userRepository, _emailServiceMock.Object, _userManagerMock.Object);
 
             var rabbitRepository = new GRepository<Rabbit>(_context);
             var validatorService = new RabbitValidator();

@@ -97,7 +97,7 @@ namespace DB_AngoraLib.Services.RabbitService
 
         public async Task<List<Rabbit_PreviewDTO>> GetAllRabbits_Forsale_Filtered(Rabbit_ForsaleFilterDTO filter)
         {
-            var rabbits = await _dbRepository.GetDbSet()        // TODO: Overvej om døde Rabbits skal medtages (skind?)
+            var rabbits = await _dbRepository.GetDbSet()
                 .Where(rabbit =>
                     rabbit.ForSale == ForSale.Ja &&
                     rabbit.DateOfDeath == null)

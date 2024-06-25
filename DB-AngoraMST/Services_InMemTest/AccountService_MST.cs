@@ -24,6 +24,8 @@ namespace DB_AngoraMST.Services_InMemTest
         private IAccountService _accountService;
         private DB_AngoraContext _context;
         private Mock<UserManager<User>> _userManagerMock;
+        private Mock<IEmailService> _emailServiceMock;
+
 
         public AccountServices_MST()
         {
@@ -39,8 +41,11 @@ namespace DB_AngoraMST.Services_InMemTest
             var userStoreMock = new Mock<IUserStore<User>>();
             _userManagerMock = new Mock<UserManager<User>>(userStoreMock.Object, null, null, null, null, null, null, null, null);
 
+            // Create EmailService mock
+            _emailServiceMock = new Mock<IEmailService>();
+
             var userRepository = new GRepository<User>(_context);
-            _accountService = new AccountServices(userRepository, _userManagerMock.Object); // Added _userManagerMock.Object
+            _accountService = new AccountServices(userRepository, _emailServiceMock.Object, _userManagerMock.Object);
         }
 
         [TestInitialize]

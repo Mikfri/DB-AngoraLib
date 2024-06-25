@@ -9,9 +9,11 @@ namespace DB_AngoraLib.Models
     public class WeightMeasurement
     {
         public int Id { get; set; }
-        public int RabbitId { get; set; }
         public DateOnly DateMeasured { get; set; }
         public int DaysAfterBirth { get; set; }
+
+
+        public int RabbitId { get; set; }
         public int WeightInGram { get; set; }
     }
 }
