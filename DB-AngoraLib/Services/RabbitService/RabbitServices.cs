@@ -144,7 +144,7 @@ namespace DB_AngoraLib.Services.RabbitService
 
         public async Task<Rabbit> GetRabbit_ByEarCombIdAsync(string earCombId)
         {
-            return await _dbRepository.GetObject_ByKEYAsync(earCombId);
+            return await _dbRepository.GetObject_ByStringKEYAsync(earCombId);
         }
 
 
@@ -155,14 +155,13 @@ namespace DB_AngoraLib.Services.RabbitService
         {
             var rabbit = await GetRabbit_ByEarCombIdAsync(earCombId);
             var hasPermissionToGetAnyRabbit = userClaims.Any(
-                c => c.Type == "RolePermission" && c.Value == "Get_Any_Rabbit"); // tilføj evt. "SpecialPermission" "Get_Any_Rabbit"
+                c => c.Type == "Rabbit:Read" && c.Value == "Any");
 
             if (rabbit == null)
             {
                 return null;
             }
 
-            // Tjek om der findes eksisterende Rabbits i systemet, som matcher de angivne EarCombIds som brugeren har angivet for forældrende
             await ParentsFK_SetupAsync(rabbit);
             await UserOriginFK_SetupAsync(rabbit);
 
@@ -172,14 +171,11 @@ namespace DB_AngoraLib.Services.RabbitService
                 {
                     Children = await GetRabbit_ChildCollection(earCombId),
                     //Pedigree = await GetRabbitPedigreeAsync(earCombId, 3)
-
                 };
 
                 HelperServices.CopyPropertiesTo(rabbit, rabbitProfile);
-
                 return rabbitProfile;
             }
-
             return null;
         }
 
@@ -216,33 +212,14 @@ namespace DB_AngoraLib.Services.RabbitService
             return allChildrenList;
         }
 
-        //public async Task<List<Rabbit>> GetRabbit_ChildCollection(string earCombId)
-        //{
-        //    var rabbit = await _dbRepository.GetDbSet()
-        //        .Include(r => r.FatheredChildren)
-        //        .Include(r => r.MotheredChildren)
-        //        .FirstOrDefaultAsync(r => r.EarCombId == earCombId);
-
-        //    if (rabbit == null)
-        //    {
-        //        return null;
-        //    }
-
-        //    var allChildrenList = rabbit.FatheredChildren.Concat(rabbit.MotheredChildren).ToList();
-        //    return allChildrenList;
-        //}
-
-
-
 
         //private readonly MemoryCache _cache = new MemoryCache(new MemoryCacheOptions());
 
         public async Task<Rabbit_PedigreeDTO> GetRabbitPedigreeAsync(string earCombId, int maxGeneration)
         {
-            var rabbit = await _dbRepository.GetObject_ByKEYAsync(earCombId);
+            var rabbit = await _dbRepository.GetObject_ByStringKEYAsync(earCombId);
             return await GetRabbit_PedigreeRecursive(rabbit, 0, maxGeneration);
         }
-
 
 
         private async Task<Rabbit_PedigreeDTO> GetRabbit_PedigreeRecursive(Rabbit rabbit, int currentGeneration, int maxGeneration)
@@ -256,8 +233,8 @@ namespace DB_AngoraLib.Services.RabbitService
                 };
             }
 
-            var father = await _dbRepository.GetObject_ByKEYAsync(rabbit.Father_EarCombId);
-            var mother = await _dbRepository.GetObject_ByKEYAsync(rabbit.Mother_EarCombId);
+            var father = await _dbRepository.GetObject_ByStringKEYAsync(rabbit.Father_EarCombId);
+            var mother = await _dbRepository.GetObject_ByStringKEYAsync(rabbit.Mother_EarCombId);
 
             return new Rabbit_PedigreeDTO
             {
@@ -274,8 +251,8 @@ namespace DB_AngoraLib.Services.RabbitService
         //---------------------: UPDATE
         public async Task<Rabbit_ProfileDTO> UpdateRabbit_RBAC_Async(string userId, string earCombId, Rabbit_UpdateDTO rabbit_updateDTO, IList<Claim> userClaims)
         {
-            var hasPermissionToUpdateOwn = userClaims.Any(c => c.Type == "RolePermission" && c.Value == "Update_Own_Rabbit"); // tilføj evt. "SpecialPermission" "Update_Own_Rabbit"
-            var hasPermissionToUpdateAll = userClaims.Any(c => c.Type == "RolePermission" && c.Value == "Update_Any_Rabbit"); // tilføj evt. "SpecialPermission" "Update_Any_Rabbit"
+            var hasPermissionToUpdateOwn = userClaims.Any(c => c.Type == "Rabbit:Update" && c.Value == "Own");
+            var hasPermissionToUpdateAll = userClaims.Any(c => c.Type == "Rabbit:Update" && c.Value == "Any");
 
             var rabbit_InDB = await GetRabbit_ByEarCombIdAsync(earCombId);
             if (rabbit_InDB == null)
@@ -309,8 +286,8 @@ namespace DB_AngoraLib.Services.RabbitService
         //---------------------: DELETE
         public async Task<Rabbit_PreviewDTO> DeleteRabbit_RBAC_Async(string userId, string earCombId, IList<Claim> userClaims)
         {
-            var hasPermissionToDeleteOwn = userClaims.Any(c => c.Type == "RolePermission" && c.Value == "Delete_Own_Rabbit"); // tilføj evt. "SpecialPermission" "Delete_Own_Rabbit"
-            var hasPermissionToDeleteAll = userClaims.Any(c => c.Type == "RolePermission" && c.Value == "Delete_Any_Rabbit"); // tilføj evt. "SpecialPermission" "Delete_Any_Rabbit"
+            var hasPermissionToDeleteOwn = userClaims.Any(c => c.Type == "Rabbit:Delete" && c.Value == "Own"); // tilføj evt. "SpecialPermission" "Delete_Own_Rabbit"
+            var hasPermissionToDeleteAll = userClaims.Any(c => c.Type == "Rabbit:Delete" && c.Value == "Any"); // tilføj evt. "SpecialPermission" "Delete_Any_Rabbit"
 
             var rabbitToDelete = await GetRabbit_ByEarCombIdAsync(earCombId);
             if (rabbitToDelete == null)

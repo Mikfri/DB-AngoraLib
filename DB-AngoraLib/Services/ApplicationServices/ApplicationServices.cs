@@ -1,6 +1,8 @@
-﻿using DB_AngoraLib.EF_DbContext;
+﻿using DB_AngoraLib.DTOs;
+using DB_AngoraLib.EF_DbContext;
 using DB_AngoraLib.Models;
 using DB_AngoraLib.Repository;
+using DB_AngoraLib.Services.AccountService;
 using DB_AngoraLib.Services.RabbitService;
 using Microsoft.AspNetCore.Identity;
 using System;
@@ -11,25 +13,28 @@ using System.Threading.Tasks;
 
 namespace DB_AngoraLib.Services.ApplicationServices
 {
-    public class ApplicationServices
+    public class ApplicationServices : IApplicationService
     {
         private readonly IGRepository<BreederApplication> _dbRepository;
         private readonly IRabbitService _rabbitServices;
+        private readonly IAccountService _accountServices;
         private readonly UserManager<User> _userManager;
 
-        public ApplicationServices(IGRepository<BreederApplication> breederAppRepository, UserManager<User> userManager, IRabbitService rabbitService)
+        public ApplicationServices(IGRepository<BreederApplication> breederAppRepository, IRabbitService rabbitService, IAccountService accountService, UserManager<User> userManager)
         {
             _dbRepository = breederAppRepository;
-            _userManager = userManager;
             _rabbitServices = rabbitService;
+            _accountServices = accountService;
+            _userManager = userManager;
         }
 
 
         //---------------------------------: CREATE/POST :---------------------------------
         //----------------: Create application
-        public async Task ApplyForBreederRoleAsync(string userId, string requestedBreederRegNo, string documentationPath)
+        public async Task ApplyForBreederRoleAsync(string userId, Application_BreederDTO applicationDTO)
         {
-            var user = await _userManager.FindByIdAsync(userId);
+            // Brug GetUserByIdAsync fra IAccountService til at hente den aktuelt loggede ind brugers oplysninger
+            var user = await _accountServices.GetUserByIdAsync(userId);
             if (user == null) throw new Exception("User not found");
 
             if (user.BreederRegNo is not null)
@@ -46,19 +51,21 @@ namespace DB_AngoraLib.Services.ApplicationServices
             var application = new BreederApplication
             {
                 UserId = userId,
-                RequestedBreederRegNo = requestedBreederRegNo,
-                DocumentationPath = documentationPath,
+                RequestedBreederRegNo = applicationDTO.RequestedBreederRegNo,
+                DocumentationPath = applicationDTO.DocumentationPath,
                 Status = BreederRequestStatus.Pending
             };
 
             await _dbRepository.AddObjectAsync(application);
         }
 
+
+
         //----------------: Approve application (Create 'Breeder')
         public async Task ApproveApplicationAsync(int applicationId)
         {
             // Find ansøgningen ved hjælp af GRepository
-            var application = await _dbRepository.GetObject_ByKEYAsync(applicationId.ToString());
+            var application = await _dbRepository.GetObject_ByIntKEYAsync(applicationId);
             if (application == null) throw new Exception("Application not found");
 
             // Opdater ansøgningens status
@@ -87,7 +94,7 @@ namespace DB_AngoraLib.Services.ApplicationServices
         public async Task RejectApplicationAsync(int applicationId, string reason)
         {
             // Find ansøgningen ved hjælp af GRepository
-            var application = await _dbRepository.GetObject_ByKEYAsync(applicationId.ToString());
+            var application = await _dbRepository.GetObject_ByIntKEYAsync(applicationId);
             if (application == null) throw new Exception("Application not found");
 
             // Opdater ansøgningens status og tilføj afvisningsårsagen

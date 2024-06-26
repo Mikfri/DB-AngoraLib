@@ -15,7 +15,8 @@ namespace DB_AngoraLib.Repository
         Task SaveObjects(List<T> objs);
         DbSet<T> GetDbSet();
         Task<T> GetObject_ByFilterAsync(Expression<Func<T, bool>> filter);
-        Task<T> GetObject_ByKEYAsync(string id);
+        Task<T> GetObject_ByStringKEYAsync(string id);
+        Task<T> GetObject_ByIntKEYAsync(int id);
         Task UpdateObjectAsync(T obj);
         Task DeleteObjectAsync(T obj);
     }

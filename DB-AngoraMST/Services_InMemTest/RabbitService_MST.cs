@@ -130,9 +130,11 @@ namespace DB_AngoraMST.Services_InMemTest
             var rabbits = await _rabbitService.GetAllRabbits_ByBreederRegAsync(breederRegNo);
 
             Console.WriteLine($"User.BreederRegNo: {breederRegNo}");
+            int i = 0;
             foreach (var rabbit in rabbits)
             {
-                Console.WriteLine(rabbit.NickName);
+                Console.WriteLine($"{++i}: {rabbit.NickName}");
+                //Console.WriteLine(rabbit.NickName);
             }
 
             // Assert

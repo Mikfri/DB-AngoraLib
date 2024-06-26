@@ -76,7 +76,12 @@ namespace DB_AngoraLib.Repository
         /// </summary>
         /// <param name="id">string Id [KEY]</param>
         /// <returns></returns>
-        public async Task<T> GetObject_ByKEYAsync(string id)
+        public async Task<T> GetObject_ByStringKEYAsync(string id)
+        {
+            return await _dbContext.Set<T>().FindAsync(id);
+        }
+
+        public async Task<T> GetObject_ByIntKEYAsync(int id)
         {
             return await _dbContext.Set<T>().FindAsync(id);
         }

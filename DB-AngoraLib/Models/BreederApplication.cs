@@ -15,6 +15,8 @@ namespace DB_AngoraLib.Models
 
     public class BreederApplication         // TODO: Følg op på denne opsætning. Relation til User og BreederRole?
     {
+        // Da navnet 'Id' følger EF Core namingkonvention, behøves der ikke at være en [Key] annotation,
+        // eller angivning i DbContext OnModelCreating
         public int Id { get; set; }
         public DateOnly DateApplied { get; set; } = DateOnly.FromDateTime(DateTime.Now);
 

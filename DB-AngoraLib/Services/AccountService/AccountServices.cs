@@ -81,7 +81,7 @@ namespace DB_AngoraLib.Services.AccountService
         //------------: GET USER BY ID
         public async Task<User> GetUserByIdAsync(string userId)
         {
-            return await _dbRepository.GetObject_ByKEYAsync(userId);
+            return await _dbRepository.GetObject_ByStringKEYAsync(userId);
         }
 
         //------------: GET USER BY BREEDER-REG-NO
@@ -125,6 +125,39 @@ namespace DB_AngoraLib.Services.AccountService
                 .ToList();
         }
 
+        public async Task<List<Rabbit_PreviewDTO>> GetMyRabbitLinkedCollection(string userId)
+        {
+            var userWithRabbitsLinked = await _dbRepository.GetDbSet()
+                .AsNoTracking()
+                .Include(u => u.RabbitsLinked)
+                .FirstOrDefaultAsync(u => u.Id == userId);
+
+            if (userWithRabbitsLinked == null)
+            {
+                Console.WriteLine("User not found");
+                return new List<Rabbit_PreviewDTO>();
+            }
+
+            if (userWithRabbitsLinked.RabbitsLinked.Count < 1)
+            {
+                Console.WriteLine("No linked rabbits found in collection");
+                return new List<Rabbit_PreviewDTO>();
+            }
+
+            return userWithRabbitsLinked.RabbitsLinked
+                .Select(rabbit => new Rabbit_PreviewDTO
+                {
+                    EarCombId = rabbit.EarCombId,
+                    RightEarId = rabbit.RightEarId,
+                    LeftEarId = rabbit.LeftEarId,
+                    NickName = rabbit.NickName,
+                    Race = rabbit.Race,
+                    Color = rabbit.Color,
+                    Gender = rabbit.Gender
+                })
+                .ToList();
+        }
+
 
         public async Task<List<Rabbit_PreviewDTO>> GetMyRabbitCollection_Filtered(
             string userId, string? rightEarId = null, string? leftEarId = null, string nickName = null, Race? race = null, Color? color = null, Gender? gender = null, bool? isJuvenile = null, bool? approvedRaceColorCombination = null)
@@ -141,9 +174,6 @@ namespace DB_AngoraLib.Services.AccountService
                     && (gender == null || rabbit.Gender == gender))
                 .ToList();
         }
-
-
-
 
 
 

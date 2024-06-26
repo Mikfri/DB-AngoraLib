@@ -15,9 +15,9 @@ namespace DB_AngoraLib.MockData
             var userClaims = new List<Claim>();
 
             // Tilføj en speciel tilladelse for Maja
-            if (user.FirstName == "Maja")
+            if (user.Id == "MajasId")
             {
-                userClaims.Add(new Claim("SpecialPermission", "Update_Any_Rabbit"));
+                userClaims.Add(new Claim("Rabbit:Read", "Any"));
             }
 
             return userClaims;

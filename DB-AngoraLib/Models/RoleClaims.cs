@@ -1,5 +1,7 @@
 ﻿using DB_AngoraLib.MockData;
 using Microsoft.AspNetCore.Identity;
+using System.Collections.Generic;
+using System.Linq;
 
 public static class RoleClaims
 {
@@ -7,35 +9,32 @@ public static class RoleClaims
 
     static RoleClaims()
     {
-        //------------------------: ADMIN :------------------------
-        // User
-        AddRoleClaim("Admin", "RolePermission", "Get_Any_User");
-        AddRoleClaim("Admin", "RolePermission", "Update_Any_User");
-        AddRoleClaim("Admin", "RolePermission", "Delete_Any_User");
+        var rolePermissions = new List<(string ClaimType, string ClaimValue, List<string> Roles)>
+        {
+            // TODO: Kan vi bruge enums for Role, ClaimType og ClaimValue?
+            ("User:Read", "Any", new List<string> { "Admin" }),
+            ("User:Create", "Any", new List<string> { "Admin" }),
+            ("User:Update", "Any", new List<string> { "Admin" }),
+            ("User:Delete", "Any", new List<string> { "Admin" }),
 
-        // Rabbit
-        AddRoleClaim("Admin", "RolePermission", "Create_Any_Rabbit");
-        AddRoleClaim("Admin", "RolePermission", "Get_Any_Rabbit");
-        AddRoleClaim("Admin", "RolePermission", "Update_Any_Rabbit");
-        AddRoleClaim("Admin", "RolePermission", "Delete_Any_Rabbit");
+            ("Rabbit:Create", "Any", new List<string> { "Admin", "Moderator" }),
+            ("Rabbit:Read", "Any", new List<string> { "Admin", "Moderator" }),
+            ("Rabbit:Update", "Any", new List<string> { "Admin", "Moderator" }),
+            ("Rabbit:Delete", "Any", new List<string> { "Admin", "Moderator" }),
 
-        //------------------------: MODERATOR :------------------------
-        // Rabbit
-        AddRoleClaim("Moderator", "RolePermission", "Create_Any_Rabbit");
-        AddRoleClaim("Moderator", "RolePermission", "Get_Any_Rabbit");
-        AddRoleClaim("Moderator", "RolePermission", "Update_Any_Rabbit");
-        AddRoleClaim("Moderator", "RolePermission", "Delete_Any_Rabbit");
+            ("Rabbit:Create", "Own", new List<string> { "Breeder" }),
+            ("Rabbit:Read", "Own", new List<string> { "Breeder" }),
+            ("Rabbit:Update", "Own", new List<string> { "Breeder" }),
+            ("Rabbit:Delete", "Own", new List<string> { "Breeder" })
+        };
 
-        //------------------------: BREEDER :------------------------
-        // Rabbit
-        AddRoleClaim("Breeder", "RolePermission", "Create_Own_Rabbit");
-        AddRoleClaim("Breeder", "RolePermission", "Get_Own_Rabbit");
-        AddRoleClaim("Breeder", "RolePermission", "Update_Own_Rabbit");
-        AddRoleClaim("Breeder", "RolePermission", "Delete_Own_Rabbit");
-
-        //------------------------: GUEST :------------------------
-        // Rabbit
-        AddRoleClaim("Guest", "RolePermission", "Get_Own_Rabbit");
+        foreach (var permission in rolePermissions)
+        {
+            foreach (var roleName in permission.Roles)
+            {
+                AddRoleClaim(roleName, permission.ClaimType, permission.ClaimValue);
+            }
+        }
     }
 
     private static void AddRoleClaim(string roleName, string claimType, string claimValue)
