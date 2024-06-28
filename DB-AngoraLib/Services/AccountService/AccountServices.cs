@@ -158,22 +158,78 @@ namespace DB_AngoraLib.Services.AccountService
                 .ToList();
         }
 
-
+        // TODO: Overvej at fjerne GetMyRabbitCollection, til fordel for at benytte .Include() i GetMyRabbitCollection_Filtered.
+        // Herved vil det være muligt også at filtrere på DateOfDeath, DateOfBirth, Forsale, Father_EarCombId, Mother_EarCombId, etc.
         public async Task<List<Rabbit_PreviewDTO>> GetMyRabbitCollection_Filtered(
-            string userId, string? rightEarId = null, string? leftEarId = null, string nickName = null, Race? race = null, Color? color = null, Gender? gender = null, bool? isJuvenile = null, bool? approvedRaceColorCombination = null)
+            string userId, string? rightEarId = null, string? leftEarId = null, string? nickName = null, Race? race = null, Color? color = null, Gender? gender = null, bool? isJuvenile = null, bool? approvedRaceColorCombination = null)
         {
             var rabbitCollection = await GetMyRabbitCollection(userId);
 
             return rabbitCollection
                 .Where(rabbit =>
-                       (rightEarId == null || rabbit.RightEarId == rightEarId)
-                    && (leftEarId == null || rabbit.LeftEarId == leftEarId)
-                    && (nickName == null || rabbit.NickName == nickName)
-                    && (race == null || rabbit.Race == race)
-                    && (color == null || rabbit.Color == color)
+                       (rightEarId == null || rabbit.RightEarId.Contains(rightEarId, StringComparison.OrdinalIgnoreCase))
+                    && (leftEarId == null || rabbit.LeftEarId.Contains(leftEarId, StringComparison.OrdinalIgnoreCase))
+                    && (nickName == null || rabbit.NickName.Contains(nickName, StringComparison.OrdinalIgnoreCase))
+                    && (race == null || rabbit.Race == race) // Direkte sammenligning er passende for enums
+                    && (color == null || rabbit.Color == color) // Direkte sammenligning er passende for enums
                     && (gender == null || rabbit.Gender == gender))
                 .ToList();
         }
+
+        public async Task<List<Rabbit_PreviewDTO>> GetMyRabbitCollection_Filtered2(
+            string userId, Rabbit_FilteredRequestDTO filter)
+        {
+            var query = _dbRepository.GetDbSet()
+                .AsNoTracking()
+                .Include(u => u.RabbitsOwned)
+                .Where(u => u.Id == userId)
+                .SelectMany(u => u.RabbitsOwned)
+                .AsQueryable();
+
+            // Anvend filtrering baseret på Rabbit_FilteredRequestDTO
+            if (filter.RightEarId != null)
+                query = query.Where(r => r.RightEarId.Contains(filter.RightEarId, StringComparison.OrdinalIgnoreCase));
+            if (filter.LeftEarId != null)
+                query = query.Where(r => r.LeftEarId.Contains(filter.LeftEarId, StringComparison.OrdinalIgnoreCase));
+            if (filter.NickName != null)
+                query = query.Where(r => r.NickName.Contains(filter.NickName, StringComparison.OrdinalIgnoreCase));
+            if (filter.Race.HasValue)
+                query = query.Where(r => r.Race == filter.Race.Value);
+            if (filter.Color.HasValue)
+                query = query.Where(r => r.Color == filter.Color.Value);
+            if (filter.Gender.HasValue)
+                query = query.Where(r => r.Gender == filter.Gender.Value);
+            if (filter.MinDateOfBirth.HasValue)
+                query = query.Where(r => r.DateOfBirth >= filter.MinDateOfBirth.Value);
+            if (filter.MaxDateOfBirth.HasValue)
+                query = query.Where(r => r.DateOfBirth <= filter.MaxDateOfBirth.Value);
+
+            // Filtrering baseret på FatherId_Placeholder og MotherId_Placeholder
+            if (filter.FatherId_Placeholder != null)
+                //query = query.Where(r => r.FatherId_Placeholder.Contains(filter.FatherId_Placeholder, StringComparison.OrdinalIgnoreCase));
+                query = query.Where(r => EF.Functions.Like(r.FatherId_Placeholder, filter.FatherId_Placeholder));
+                //query = query.Where(r => r.FatherId_Placeholder.ToLower() == filter.FatherId_Placeholder.ToLower());
+            if (filter.MotherId_Placeholder != null)
+                query = query.Where(r => EF.Functions.Like(r.MotherId_Placeholder, filter.MotherId_Placeholder));
+
+            var queryRabbitsList = await query.ToListAsync();
+
+            var rabbitPreviewDTOsList = queryRabbitsList.Select(rabbit => new Rabbit_PreviewDTO
+            {
+                EarCombId = rabbit.EarCombId,
+                RightEarId = rabbit.RightEarId,
+                LeftEarId = rabbit.LeftEarId,
+                NickName = rabbit.NickName,
+                Race = rabbit.Race,
+                Color = rabbit.Color,
+                Gender = rabbit.Gender
+                // Yderligere egenskaber kan mappes her
+            }).ToList();
+
+            return rabbitPreviewDTOsList;
+        }
+
+
 
 
 

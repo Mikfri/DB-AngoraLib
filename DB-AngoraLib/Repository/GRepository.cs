@@ -33,7 +33,7 @@ namespace DB_AngoraLib.Repository
             }
         }
 
-        public async Task SaveObjects(List<T> objs)
+        public async Task SaveObjectsList(List<T> objs)
         {
             foreach (T obj in objs)
             {
@@ -90,6 +90,15 @@ namespace DB_AngoraLib.Repository
         public async Task UpdateObjectAsync(T obj)
         {
             _dbContext.Set<T>().Update(obj);
+            await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task UpdateObjectsListAsync(List<T> objs)
+        {
+            if (objs == null) throw new ArgumentNullException(nameof(objs));
+            if (!objs.Any()) return;
+
+            _dbContext.Set<T>().UpdateRange(objs);
             await _dbContext.SaveChangesAsync();
         }
 

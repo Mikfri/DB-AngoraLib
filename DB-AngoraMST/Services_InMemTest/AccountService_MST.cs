@@ -110,7 +110,7 @@ namespace DB_AngoraMST.Services_InMemTest
         }
 
         [TestMethod]
-        public async Task GetCurrentUsersRabbitCollection_TEST()
+        public async Task GetMyRabbitCollection_TEST()
         {
             // Arrange
             var userId = "MajasId";
@@ -129,7 +129,7 @@ namespace DB_AngoraMST.Services_InMemTest
         }
 
         [TestMethod]
-        public async Task GetFilteredRabbitCollection_TEST()
+        public async Task GetMyRabbitCollection_Filtered_TEST()
         {
             // Arrange
             var userId = "IdasId"; // Replace with the actual user id

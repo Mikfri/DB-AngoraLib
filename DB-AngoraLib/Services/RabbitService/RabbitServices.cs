@@ -404,7 +404,7 @@ namespace DB_AngoraLib.Services.RabbitService
         /// <returns></returns>
         private async Task ChildFK_SetupAsync(string earCombId, Gender gender)
         {
-            List<Rabbit> rabbitsToUpdate = new List<Rabbit>();
+            List<Rabbit> rabbitsToUpdateList = new List<Rabbit>();
 
             if (gender == Gender.Han)
             {
@@ -415,7 +415,7 @@ namespace DB_AngoraLib.Services.RabbitService
                 foreach (var child in children)
                 {
                     child.Father_EarCombId = earCombId;
-                    rabbitsToUpdate.Add(child);
+                    rabbitsToUpdateList.Add(child);
                 }
             }
             else if (gender == Gender.Hun)
@@ -427,17 +427,16 @@ namespace DB_AngoraLib.Services.RabbitService
                 foreach (var child in children)
                 {
                     child.Mother_EarCombId = earCombId;
-                    rabbitsToUpdate.Add(child);
+                    rabbitsToUpdateList.Add(child);
                 }
             }
 
             // Gem kun ændringerne, hvis der er nogen rabbits at opdatere
-            if (rabbitsToUpdate.Any())
+            if (rabbitsToUpdateList.Any())
             {
-                await _dbRepository.SaveObjects(rabbitsToUpdate);
+                await _dbRepository.SaveObjectsList(rabbitsToUpdateList);
             }
         }
-
 
 
         private async Task UserOriginFK_SetupAsync(Rabbit rabbit)
@@ -479,8 +478,9 @@ namespace DB_AngoraLib.Services.RabbitService
             foreach (var rabbit in rabbitsToUpdateList)
             {
                 rabbit.OriginId = userId; // Brug userId direkte
-                await _dbRepository.UpdateObjectAsync(rabbit);
+                //await _dbRepository.UpdateObjectAsync(rabbit);
             }
+            await _dbRepository.UpdateObjectsListAsync(rabbitsToUpdateList);
         }
 
 
