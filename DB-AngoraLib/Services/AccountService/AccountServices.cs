@@ -186,13 +186,18 @@ namespace DB_AngoraLib.Services.AccountService
                 .SelectMany(u => u.RabbitsOwned)
                 .AsQueryable();
 
+            if (!filter.IncludeDeceased)
+            {
+                query = query.Where(r => r.DateOfDeath == null);
+            }
+
             // Anvend filtrering baseret på Rabbit_FilteredRequestDTO
             if (filter.RightEarId != null)
-                query = query.Where(r => r.RightEarId.Contains(filter.RightEarId, StringComparison.OrdinalIgnoreCase));
+                query = query.Where(r => EF.Functions.Like(r.RightEarId, $"%{filter.RightEarId}%"));
             if (filter.LeftEarId != null)
-                query = query.Where(r => r.LeftEarId.Contains(filter.LeftEarId, StringComparison.OrdinalIgnoreCase));
+                query = query.Where(r => EF.Functions.Like(r.LeftEarId, $"%{filter.LeftEarId}%"));
             if (filter.NickName != null)
-                query = query.Where(r => r.NickName.Contains(filter.NickName, StringComparison.OrdinalIgnoreCase));
+                query = query.Where(r => EF.Functions.Like(r.NickName, $"%{filter.NickName}%"));
             if (filter.Race.HasValue)
                 query = query.Where(r => r.Race == filter.Race.Value);
             if (filter.Color.HasValue)
@@ -203,6 +208,11 @@ namespace DB_AngoraLib.Services.AccountService
                 query = query.Where(r => r.DateOfBirth >= filter.MinDateOfBirth.Value);
             if (filter.MaxDateOfBirth.HasValue)
                 query = query.Where(r => r.DateOfBirth <= filter.MaxDateOfBirth.Value);
+            if (filter.IsJuvenile.HasValue)
+                query = query.Where(r => r.IsJuvenile == filter.IsJuvenile.Value);
+            if (filter.ApprovedRaceColorCombination.HasValue)
+                query = query.Where(r => r.ApprovedRaceColorCombination == filter.ApprovedRaceColorCombination.Value);
+
 
             // Filtrering baseret på FatherId_Placeholder og MotherId_Placeholder
             if (filter.FatherId_Placeholder != null)

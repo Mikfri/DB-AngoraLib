@@ -18,6 +18,7 @@ namespace DB_AngoraLib.Services.AccountService
         Task<List<Rabbit_PreviewDTO>> GetMyRabbitCollection_Filtered(
             string userId, string rightEarId = null, string leftEarId = null, string nickName = null, Race? race = null, Color? color = null, Gender? gender = null, bool? isJuvenile = null, bool? approvedRaceColorCombination = null);
         Task<List<Rabbit_PreviewDTO>> GetMyRabbitLinkedCollection(string userId);
+        Task<List<Rabbit_PreviewDTO>> GetMyRabbitCollection_Filtered2(string userId, Rabbit_FilteredRequestDTO filter);
 
         Task Send_EmailConfirmAsync(string userId, string token);
         Task Formular_ResetPWAsync(string userId, string token, string newPassword);
