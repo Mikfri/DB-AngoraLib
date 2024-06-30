@@ -20,10 +20,10 @@ namespace DB_AngoraLib.DTOs
         public Gender? Gender { get; init; }
 
         [DataType(DataType.Date)]
-        public DateOnly? MinDateOfBirth { get; init; }
+        public DateOnly? FromDateOfBirth { get; init; }
 
         [DataType(DataType.Date)]
-        public DateOnly? MaxDateOfBirth { get; init; }
+        public DateOnly? FromDateOfDeath { get; init; }
 
         public string? FatherId_Placeholder { get; init; }
         public string? MotherId_Placeholder { get; init; }

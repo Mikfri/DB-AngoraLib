@@ -13,6 +13,7 @@ using DB_AngoraLib.Services.HelperService;
 using DB_AngoraLib.Repository;
 using Microsoft.EntityFrameworkCore;
 using DB_AngoraLib.Events;
+using DB_AngoraLib.Services.ValidationService;
 
 namespace DB_AngoraLib.Services.AccountService
 {
@@ -204,23 +205,33 @@ namespace DB_AngoraLib.Services.AccountService
                 query = query.Where(r => r.Color == filter.Color.Value);
             if (filter.Gender.HasValue)
                 query = query.Where(r => r.Gender == filter.Gender.Value);
-            if (filter.MinDateOfBirth.HasValue)
-                query = query.Where(r => r.DateOfBirth >= filter.MinDateOfBirth.Value);
-            if (filter.MaxDateOfBirth.HasValue)
-                query = query.Where(r => r.DateOfBirth <= filter.MaxDateOfBirth.Value);
-            if (filter.IsJuvenile.HasValue)
-                query = query.Where(r => r.IsJuvenile == filter.IsJuvenile.Value);
-            if (filter.ApprovedRaceColorCombination.HasValue)
-                query = query.Where(r => r.ApprovedRaceColorCombination == filter.ApprovedRaceColorCombination.Value);
+            if (filter.FromDateOfBirth.HasValue)            
+                query = query.Where(r => r.DateOfBirth > filter.FromDateOfBirth.Value);            
+            if (filter.FromDateOfDeath.HasValue)
+                query = query.Where(r => r.DateOfDeath.HasValue && r.DateOfDeath > filter.FromDateOfDeath.Value);
 
+            // Håndter IsJuvenile
+            if (filter.IsJuvenile.HasValue)
+            {
+                var today = DateOnly.FromDateTime(DateTime.Now);
+                var juvenileStart = today.AddDays(-14 * 7); // Starten af juvenile alderen (14 uger tilbage)
+                var juvenileEnd = today.AddDays(-8 * 7); // Slutningen af juvenile alderen (8 uger tilbage)
+
+                if (filter.IsJuvenile.Value)
+                {
+                    query = query.Where(r => r.DateOfBirth >= juvenileStart && r.DateOfBirth <= juvenileEnd);
+                }
+                else
+                {
+                    query = query.Where(r => r.DateOfBirth < juvenileStart || r.DateOfBirth > juvenileEnd);
+                }
+            }
 
             // Filtrering baseret på FatherId_Placeholder og MotherId_Placeholder
             if (filter.FatherId_Placeholder != null)
-                //query = query.Where(r => r.FatherId_Placeholder.Contains(filter.FatherId_Placeholder, StringComparison.OrdinalIgnoreCase));
-                query = query.Where(r => EF.Functions.Like(r.FatherId_Placeholder, filter.FatherId_Placeholder));
-                //query = query.Where(r => r.FatherId_Placeholder.ToLower() == filter.FatherId_Placeholder.ToLower());
+                query = query.Where(r => EF.Functions.Like(r.FatherId_Placeholder, $"%{filter.FatherId_Placeholder}%"));
             if (filter.MotherId_Placeholder != null)
-                query = query.Where(r => EF.Functions.Like(r.MotherId_Placeholder, filter.MotherId_Placeholder));
+                query = query.Where(r => EF.Functions.Like(r.MotherId_Placeholder, $"%{filter.MotherId_Placeholder}%"));
 
             var queryRabbitsList = await query.ToListAsync();
 

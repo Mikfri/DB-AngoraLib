@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -132,7 +133,7 @@ namespace DB_AngoraMST.Services_InMemTest
         public async Task GetMyRabbitCollection_Filtered_TEST()
         {
             // Arrange
-            var userId = "IdasId"; // Replace with the actual user id
+            var userId = "IdasId";
             var race = Race.Satinangora;
             var approvedRaceColorCombination = true;
 
@@ -162,6 +163,54 @@ namespace DB_AngoraMST.Services_InMemTest
             Assert.AreEqual(expectedRabbitCount, filteredRabbitCollection.Count);
         }
 
+        [TestMethod]
+        public async Task GetMyRabbitCollection_Filtered2_TEST()
+        {
+            // Arrange
+            var userId = "MajasId";
+            var race = Race.Satinangora;
+            var dateOfBirth = new DateOnly(2024, 3, 1);
+
+            var filter = new Rabbit_FilteredRequestDTO
+            {
+                Race = race,
+                FromDateOfBirth = dateOfBirth,
+                IncludeDeceased = true
+            };
+
+            // Get the user's rabbit collection for comparison
+            var mockUserRabbitCollection = _context.Users
+                .Include(u => u.RabbitsOwned) // Load the related rabbits
+                .Single(u => u.Id == userId) // Get the user
+                .RabbitsOwned; // Get the user's rabbit collection
+
+            // Filtrer mockUserRabbitCollection baseret på DateOfBirth
+            var filteredMockUserRabbitCollection = mockUserRabbitCollection
+                .Where(rabbit => rabbit.DateOfBirth >= filter.FromDateOfBirth)
+                .ToList();
+
+            // Print hver filtreret kanins kaldenavn og fødselsdato for debugging formål
+            int i = 0;
+            foreach (var rabbit in filteredMockUserRabbitCollection)
+            {
+                Console.WriteLine($"{i++}:{rabbit.EarCombId}: {rabbit.NickName}, DateOfBirth: {rabbit.DateOfBirth}");
+            }
+
+
+            // Act
+            var filteredRabbitCollection = await _accountService.GetMyRabbitCollection_Filtered2(userId, filter);
+
+            // Assert
+            Assert.IsNotNull(filteredRabbitCollection); // Check that the result is not null
+            Assert.IsTrue(filteredRabbitCollection.All(rabbit => rabbit.Race == race)); // Check that all rabbits in the result have the expected race
+
+            // Check that the number of rabbits in the result matches the expected number
+            var allRabbits = await _context.Rabbits.ToListAsync();
+            var expectedRabbitCount = allRabbits.Count(rabbit => rabbit.OwnerId == userId && rabbit.Race == race && rabbit.DateOfBirth >= filter.FromDateOfBirth);
+
+            Assert.AreEqual(expectedRabbitCount, filteredRabbitCollection.Count);
+            Debug.WriteLine($"Expected: {expectedRabbitCount}, Actual: {filteredRabbitCollection.Count}");
+        }
 
 
 
