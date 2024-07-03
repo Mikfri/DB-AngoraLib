@@ -91,6 +91,22 @@ namespace DB_AngoraLib.EF_DbContext
             //    .WithMany(rb => rb.Ratings) // En Rabbit har mange Ratings
             //    .HasForeignKey(r => r.Id); // Opdateret til at bruge den nye Id property
 
+
+            // Konfigurer RabbitTransferRequest relationer
+            modelBuilder.Entity<RabbitTransfer>()
+                .HasOne(rtr => rtr.RabbitInTrans) // En RabbitTransferRequest har en Rabbit (RabbitInTrans)
+                .WithMany() // Rabbit er ikke konfigureret til at have en navigationsegenskab tilbage til RabbitTransferRequest
+                .HasForeignKey(rtr => rtr.RabbitId); // ForeignKey i RabbitTransferRequest der peger på Rabbit
+
+            modelBuilder.Entity<RabbitTransfer>()
+                .HasOne(rtr => rtr.UserCurrentOwner) // En RabbitTransferRequest har en User (UserCurrentOwner)
+                .WithMany() // User er ikke konfigureret til at have en navigationsegenskab tilbage til RabbitTransferRequest
+                .HasForeignKey(rtr => rtr.CurrentOwnerId); // ForeignKey i RabbitTransferRequest der peger på User
+
+            modelBuilder.Entity<RabbitTransfer>()
+                .HasOne(rtr => rtr.UserProposedOwner) // En RabbitTransferRequest har en User (UserProposedOwner)
+                .WithMany() // User er ikke konfigureret til at have en navigationsegenskab tilbage til RabbitTransferRequest
+                .HasForeignKey(rtr => rtr.ProposedOwnerId); // ForeignKey i RabbitTransferRequest der peger på User
         }
         public DbSet<BreederApplication> BreederApplications { get; set; }
         public DbSet<Rabbit> Rabbits { get; set; }

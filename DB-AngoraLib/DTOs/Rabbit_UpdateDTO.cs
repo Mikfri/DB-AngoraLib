@@ -17,10 +17,12 @@ namespace DB_AngoraLib.DTOs
         public string? NickName { get; init; }
         public Race? Race { get; init; }
         public Color? Color { get; init; }
+
         [DataType(DataType.Date)]
         public DateOnly? DateOfBirth { get; init; }
         [DataType(DataType.Date)]
         public DateOnly? DateOfDeath { get; init; }
+
         public Gender? Gender { get; init; }
         public ForSale? ForSale { get; init; }
 

@@ -12,7 +12,7 @@ namespace DB_AngoraLib.DTOs
     /// </summary>
     public record User_ProfileDTO
     {
-        public string BreederRegNo { get; init; }
+        public string? BreederRegNo { get; init; }
 
         public string FirstName { get; init; }
         public string LastName { get; init; }

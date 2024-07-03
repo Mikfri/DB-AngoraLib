@@ -16,12 +16,10 @@ namespace DB_AngoraLib.DTOs
     {
         public string EarCombId { get; init; }
         public string? NickName { get; init; }
-
-        public string RightEarId { get; init; }
-        public string LeftEarId { get; init; }
-
         public Race Race { get; set; }
         public Color Color { get; set; }
         public Gender Gender { get; set; }
+        public string? UserOwner { get; init; }
+        public string? UserOrigin { get; init; }
     }
 }

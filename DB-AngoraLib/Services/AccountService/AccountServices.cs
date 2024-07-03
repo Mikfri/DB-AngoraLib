@@ -14,6 +14,7 @@ using DB_AngoraLib.Repository;
 using Microsoft.EntityFrameworkCore;
 using DB_AngoraLib.Events;
 using DB_AngoraLib.Services.ValidationService;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace DB_AngoraLib.Services.AccountService
 {
@@ -23,11 +24,16 @@ namespace DB_AngoraLib.Services.AccountService
         private readonly IEmailService _emailService;
         private readonly UserManager<User> _userManager;
 
-        public AccountServices(IGRepository<User> dbRepository, IEmailService emailService, UserManager<User> userManager)
+        //private readonly IMemoryCache _cache;
+
+
+        public AccountServices(IGRepository<User> dbRepository, IEmailService emailService, UserManager<User> userManager/*, IMemoryCache cache*/)
         {
             _dbRepository = dbRepository;
             _emailService = emailService;
             _userManager = userManager;
+
+            //_cache = cache;
         }
 
         //---------------------------------: CREATE/REGISTER USER :---------------------------------
@@ -67,33 +73,34 @@ namespace DB_AngoraLib.Services.AccountService
 
         //---------------------------------: GET USER METHODS :---------------------------------
         //------------: GET ALL USERS
-        public async Task<List<User>> GetAllUsersAsync()
+        public async Task<List<User>> Get_AllUsersAsync()
         {
             return (await _dbRepository.GetAllObjectsAsync()).ToList();
         }
 
         //------------: GET USER BY USERNAME OR EMAIL
-        public async Task<User> GetUserByUserNameOrEmailAsync(string userNameOrEmail)
+        public async Task<User> Get_UserByUserNameOrEmailAsync(string userNameOrEmail)
         {
             return await _dbRepository.GetDbSet()
                 .FirstOrDefaultAsync(u => u.UserName == userNameOrEmail || u.Email == userNameOrEmail);
         }
 
         //------------: GET USER BY ID
-        public async Task<User> GetUserByIdAsync(string userId)
+        public async Task<User> Get_UserByIdAsync(string userId)
         {
             return await _dbRepository.GetObject_ByStringKEYAsync(userId);
         }
 
         //------------: GET USER BY BREEDER-REG-NO
-        public async Task<User> GetUserByBreederRegNoAsync(string breederRegNo)
+        public async Task<User?> Get_UserByBreederRegNoAsync(string breederRegNo)
         {
-            return await _dbRepository.GetObject_ByFilterAsync(u => u.BreederRegNo == breederRegNo);
+            return await _dbRepository.GetDbSet()
+                .FirstOrDefaultAsync(u => u.BreederRegNo == breederRegNo);
         }
 
 
         //---------------------------------: GET USERs ICOLLECTION METHODS :--------------------       
-        public async Task<List<Rabbit_PreviewDTO>> GetMyRabbitCollection(string userId)
+        public async Task<List<Rabbit_PreviewDTO>> Get_MyRabbitCollection(string userId)
         {
             var currentUserCollection = await _dbRepository.GetDbSet()
                 .AsNoTracking()
@@ -116,73 +123,33 @@ namespace DB_AngoraLib.Services.AccountService
                 .Select(rabbit => new Rabbit_PreviewDTO
                 {
                     EarCombId = rabbit.EarCombId,
-                    RightEarId = rabbit.RightEarId,
-                    LeftEarId = rabbit.LeftEarId,
                     NickName = rabbit.NickName,
                     Race = rabbit.Race,
                     Color = rabbit.Color,
-                    Gender = rabbit.Gender
+                    Gender = rabbit.Gender,
+                    //UserOwner = rabbit.UserOwner != null ? $"{rabbit.UserOwner.FirstName} {rabbit.UserOwner.LastName}" : null,
+                    UserOwner = rabbit.UserOwner?.FirstName + rabbit.UserOwner?.LastName,
+                    //UserOrigin = rabbit.UserOrigin != null ? $"{rabbit.UserOrigin.FirstName} {rabbit.UserOrigin.LastName}" : null,
+                    UserOrigin = rabbit.UserOrigin?.FirstName + rabbit.UserOrigin?.LastName,
                 })
                 .ToList();
         }
 
-        public async Task<List<Rabbit_PreviewDTO>> GetMyRabbitLinkedCollection(string userId)
+        public async Task<List<Rabbit_PreviewDTO>> Get_Rabbits_OwnedAlive_FilteredAsync(
+           string userId, Rabbit_FilteredRequestDTO filter)
         {
-            var userWithRabbitsLinked = await _dbRepository.GetDbSet()
-                .AsNoTracking()
-                .Include(u => u.RabbitsLinked)
-                .FirstOrDefaultAsync(u => u.Id == userId);
-
-            if (userWithRabbitsLinked == null)
-            {
-                Console.WriteLine("User not found");
-                return new List<Rabbit_PreviewDTO>();
-            }
-
-            if (userWithRabbitsLinked.RabbitsLinked.Count < 1)
-            {
-                Console.WriteLine("No linked rabbits found in collection");
-                return new List<Rabbit_PreviewDTO>();
-            }
-
-            return userWithRabbitsLinked.RabbitsLinked
-                .Select(rabbit => new Rabbit_PreviewDTO
-                {
-                    EarCombId = rabbit.EarCombId,
-                    RightEarId = rabbit.RightEarId,
-                    LeftEarId = rabbit.LeftEarId,
-                    NickName = rabbit.NickName,
-                    Race = rabbit.Race,
-                    Color = rabbit.Color,
-                    Gender = rabbit.Gender
-                })
-                .ToList();
-        }
-
-        // TODO: Overvej at fjerne GetMyRabbitCollection, til fordel for at benytte .Include() i GetMyRabbitCollection_Filtered.
-        // Herved vil det være muligt også at filtrere på DateOfDeath, DateOfBirth, Forsale, Father_EarCombId, Mother_EarCombId, etc.
-        public async Task<List<Rabbit_PreviewDTO>> GetMyRabbitCollection_Filtered(
-            string userId, string? rightEarId = null, string? leftEarId = null, string? nickName = null, Race? race = null, Color? color = null, Gender? gender = null, bool? isJuvenile = null, bool? approvedRaceColorCombination = null)
-        {
-            var rabbitCollection = await GetMyRabbitCollection(userId);
-
-            return rabbitCollection
-                .Where(rabbit =>
-                       (rightEarId == null || rabbit.RightEarId.Contains(rightEarId, StringComparison.OrdinalIgnoreCase))
-                    && (leftEarId == null || rabbit.LeftEarId.Contains(leftEarId, StringComparison.OrdinalIgnoreCase))
-                    && (nickName == null || rabbit.NickName.Contains(nickName, StringComparison.OrdinalIgnoreCase))
-                    && (race == null || rabbit.Race == race) // Direkte sammenligning er passende for enums
-                    && (color == null || rabbit.Color == color) // Direkte sammenligning er passende for enums
-                    && (gender == null || rabbit.Gender == gender))
-                .ToList();
-        }
-
-        public async Task<List<Rabbit_PreviewDTO>> GetMyRabbitCollection_Filtered2(
-            string userId, Rabbit_FilteredRequestDTO filter)
-        {
+            //var query = _dbRepository.GetDbSet()
+            //    .AsNoTracking()
+            //    .Include(u => u.RabbitsOwned)
+            //    .Where(u => u.Id == userId)
+            //    .SelectMany(u => u.RabbitsOwned)
+            //    .AsQueryable();
             var query = _dbRepository.GetDbSet()
                 .AsNoTracking()
                 .Include(u => u.RabbitsOwned)
+                    .ThenInclude(rabbit => rabbit.UserOwner) // Inkluder UserOwner relationen
+                .Include(u => u.RabbitsOwned)
+                    .ThenInclude(rabbit => rabbit.UserOrigin) // Inkluder UserOrigin relationen
                 .Where(u => u.Id == userId)
                 .SelectMany(u => u.RabbitsOwned)
                 .AsQueryable();
@@ -205,8 +172,8 @@ namespace DB_AngoraLib.Services.AccountService
                 query = query.Where(r => r.Color == filter.Color.Value);
             if (filter.Gender.HasValue)
                 query = query.Where(r => r.Gender == filter.Gender.Value);
-            if (filter.FromDateOfBirth.HasValue)            
-                query = query.Where(r => r.DateOfBirth > filter.FromDateOfBirth.Value);            
+            if (filter.FromDateOfBirth.HasValue)
+                query = query.Where(r => r.DateOfBirth > filter.FromDateOfBirth.Value);
             if (filter.FromDateOfDeath.HasValue)
                 query = query.Where(r => r.DateOfDeath.HasValue && r.DateOfDeath > filter.FromDateOfDeath.Value);
 
@@ -238,31 +205,60 @@ namespace DB_AngoraLib.Services.AccountService
             var rabbitPreviewDTOsList = queryRabbitsList.Select(rabbit => new Rabbit_PreviewDTO
             {
                 EarCombId = rabbit.EarCombId,
-                RightEarId = rabbit.RightEarId,
-                LeftEarId = rabbit.LeftEarId,
                 NickName = rabbit.NickName,
                 Race = rabbit.Race,
                 Color = rabbit.Color,
-                Gender = rabbit.Gender
-                // Yderligere egenskaber kan mappes her
+                Gender = rabbit.Gender,
+                UserOwner = rabbit.UserOwner != null ? $"{rabbit.UserOwner.FirstName} {rabbit.UserOwner.LastName}" : null,
+                UserOrigin = rabbit.UserOrigin != null ? $"{rabbit.UserOrigin.FirstName} {rabbit.UserOrigin.LastName}" : null,
             }).ToList();
 
             return rabbitPreviewDTOsList;
         }
 
 
+        public async Task<List<Rabbit_PreviewDTO>> Get_Rabbits_FromMyFold(string userId)
+        {
+            var userWithRabbitsLinked = await _dbRepository.GetDbSet()
+                .AsNoTracking()
+                .Include(u => u.RabbitsLinked)
+                .FirstOrDefaultAsync(u => u.Id == userId);
 
+            if (userWithRabbitsLinked == null)
+            {
+                Console.WriteLine("User not found");
+                return new List<Rabbit_PreviewDTO>();
+            }
+
+            if (userWithRabbitsLinked.RabbitsLinked.Count < 1)
+            {
+                Console.WriteLine("No linked rabbits found in collection");
+                return new List<Rabbit_PreviewDTO>();
+            }
+
+            return userWithRabbitsLinked.RabbitsLinked
+                .Select(rabbit => new Rabbit_PreviewDTO
+                {
+                    EarCombId = rabbit.EarCombId,
+                    NickName = rabbit.NickName,
+                    Race = rabbit.Race,
+                    Color = rabbit.Color,
+                    Gender = rabbit.Gender,
+                    UserOwner = rabbit.UserOwner != null ? $"{rabbit.UserOwner.FirstName} {rabbit.UserOwner.LastName}" : null,
+                    UserOrigin = rabbit.UserOrigin != null ? $"{rabbit.UserOrigin.FirstName} {rabbit.UserOrigin.LastName}" : null,
+                })
+                .ToList();
+        }
 
 
         //---------------------------------: EMAIL METHODs :-------------------------------
 
         public async Task Send_EmailConfirmAsync(string userId, string token)
         {
-            var user = await _userManager.FindByIdAsync(userId);
-            if (user == null)
-            {
-                throw new Exception("User not found");
-            }
+            var user = await _userManager.FindByIdAsync(userId) 
+                ?? throw new Exception("User not found");
+            
+
 
             // Antag at du har en frontend-rute setup til at håndtere e-mail bekræftelse
             var confirmationLink = $"https://DB-Angora.dk/email-confirmation?userId={HttpUtility.UrlEncode(userId)}&token={HttpUtility.UrlEncode(token)}";

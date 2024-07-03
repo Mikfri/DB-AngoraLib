@@ -34,7 +34,7 @@ namespace DB_AngoraLib.Services.ApplicationServices
         public async Task ApplyForBreederRoleAsync(string userId, Application_BreederDTO applicationDTO)
         {
             // Brug GetUserByIdAsync fra IAccountService til at hente den aktuelt loggede ind brugers oplysninger
-            var user = await _accountServices.GetUserByIdAsync(userId);
+            var user = await _accountServices.Get_UserByIdAsync(userId);
             if (user == null) throw new Exception("User not found");
 
             if (user.BreederRegNo is not null)
@@ -42,7 +42,7 @@ namespace DB_AngoraLib.Services.ApplicationServices
                 throw new Exception("Du er allerede registreret som avler");
             }
 
-            var existingApplication = await _dbRepository.GetObject_ByFilterAsync(ba => ba.UserId == userId && ba.Status == BreederRequestStatus.Pending);
+            var existingApplication = await _dbRepository.GetObject_ByFilterAsync(ba => ba.UserId == userId && ba.Status == RequestStatus.Pending);
             if (existingApplication != null)
             {
                 throw new Exception("Du har allerede en afventende ansøgning om optagelse som avler! Vent venligst");
@@ -53,7 +53,7 @@ namespace DB_AngoraLib.Services.ApplicationServices
                 UserId = userId,
                 RequestedBreederRegNo = applicationDTO.RequestedBreederRegNo,
                 DocumentationPath = applicationDTO.DocumentationPath,
-                Status = BreederRequestStatus.Pending
+                Status = RequestStatus.Pending
             };
 
             await _dbRepository.AddObjectAsync(application);
@@ -69,10 +69,10 @@ namespace DB_AngoraLib.Services.ApplicationServices
             if (application == null) throw new Exception("Application not found");
 
             // Opdater ansøgningens status
-            application.Status = BreederRequestStatus.Approved;
+            application.Status = RequestStatus.Approved;
 
             // Find brugeren og opdater deres rolle og BreederRegNo
-            var user = await _userManager.FindByIdAsync(application.UserId);
+            var user = await _accountServices.Get_UserByIdAsync(application.UserId);
             if (user == null) throw new Exception("User not found");
 
             var addToRoleResult = await _userManager.AddToRoleAsync(user, "Breeder");
@@ -98,7 +98,7 @@ namespace DB_AngoraLib.Services.ApplicationServices
             if (application == null) throw new Exception("Application not found");
 
             // Opdater ansøgningens status og tilføj afvisningsårsagen
-            application.Status = BreederRequestStatus.Rejected;
+            application.Status = RequestStatus.Rejected;
             application.RejectionReason = reason;
 
             // Gem ændringerne i ansøgningen
@@ -111,7 +111,7 @@ namespace DB_AngoraLib.Services.ApplicationServices
         {
             // Brug _dbRepository til at hente alle ansøgninger med status 'Pending'
             var pendingApplications = await _dbRepository.GetAllObjectsAsync();
-            return pendingApplications.Where(a => a.Status == BreederRequestStatus.Pending);
+            return pendingApplications.Where(a => a.Status == RequestStatus.Pending);
         }
 
     }

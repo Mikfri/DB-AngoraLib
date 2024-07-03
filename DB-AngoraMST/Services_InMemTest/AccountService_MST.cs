@@ -72,7 +72,7 @@ namespace DB_AngoraMST.Services_InMemTest
             var expectedUsersCount = 3; // Replace with the actual number of mock users
 
             // Act
-            var users = await _accountService.GetAllUsersAsync();
+            var users = await _accountService.Get_AllUsersAsync();
 
             // Assert
             Assert.AreEqual(expectedUsersCount, users.Count);
@@ -86,7 +86,7 @@ namespace DB_AngoraMST.Services_InMemTest
             var breederRegNo = expectedUser.BreederRegNo;
 
             // Act
-            var actualUser = await _accountService.GetUserByBreederRegNoAsync(breederRegNo);
+            var actualUser = await _accountService.Get_UserByBreederRegNoAsync(breederRegNo);
 
             // Assert
             Assert.IsNotNull(actualUser);
@@ -100,8 +100,8 @@ namespace DB_AngoraMST.Services_InMemTest
             var expectedUser = _context.Users.First();
 
             // Act
-            var actualUserByUsername = await _accountService.GetUserByUserNameOrEmailAsync(expectedUser.UserName);
-            var actualUserByEmail = await _accountService.GetUserByUserNameOrEmailAsync(expectedUser.Email);
+            var actualUserByUsername = await _accountService.Get_UserByUserNameOrEmailAsync(expectedUser.UserName);
+            var actualUserByEmail = await _accountService.Get_UserByUserNameOrEmailAsync(expectedUser.Email);
 
             // Assert
             Assert.IsNotNull(actualUserByUsername);
@@ -117,7 +117,7 @@ namespace DB_AngoraMST.Services_InMemTest
             var userId = "MajasId";
 
             // Act
-            var rabbitCollection = await _accountService.GetMyRabbitCollection(userId);
+            var rabbitCollection = await _accountService.Get_MyRabbitCollection(userId);
 
             foreach (var rabbit in rabbitCollection)
             {
@@ -129,42 +129,9 @@ namespace DB_AngoraMST.Services_InMemTest
             // Add more assertions based on your test expectations
         }
 
-        [TestMethod]
-        public async Task GetMyRabbitCollection_Filtered_TEST()
-        {
-            // Arrange
-            var userId = "IdasId";
-            var race = Race.Satinangora;
-            var approvedRaceColorCombination = true;
-
-
-            // Get the user's rabbit collection
-            var mockUserRabbitCollection = _context.Users
-                .Include(u => u.RabbitsOwned) // Load the related rabbits
-                .Single(u => u.Id == userId) // Get the user
-                .RabbitsOwned; // Get the user's rabbit collection
-
-            // Print each rabbit's nickname
-            foreach (var rabbit in mockUserRabbitCollection)
-            {
-                Console.WriteLine($"Rabbit: {rabbit.NickName},Race: {rabbit.Race}, Color: {rabbit.Color} AppovedColComb: {rabbit.ApprovedRaceColorCombination}");
-            }
-
-            // Act
-            var filteredRabbitCollection = await _accountService.GetMyRabbitCollection_Filtered(userId, race: race, approvedRaceColorCombination: approvedRaceColorCombination);
-
-            // Assert
-            Assert.IsNotNull(filteredRabbitCollection); // Check that the result is not null
-            Assert.IsTrue(filteredRabbitCollection.All(rabbit => rabbit.Race == race)); // Check that all rabbits in the result have the expected race
-
-            // Check that the number of rabbits in the result matches the expected number
-            var allRabbits = await _context.Rabbits.ToListAsync();
-            var expectedRabbitCount = allRabbits.Count(rabbit => rabbit.OwnerId == userId && rabbit.Race == race && rabbit.ApprovedRaceColorCombination == approvedRaceColorCombination);
-            Assert.AreEqual(expectedRabbitCount, filteredRabbitCollection.Count);
-        }
 
         [TestMethod]
-        public async Task GetMyRabbitCollection_Filtered2_TEST()
+        public async Task Get_Rabbits_OwnedAlive_Filtered_TEST()
         {
             // Arrange
             var userId = "MajasId";
@@ -198,7 +165,7 @@ namespace DB_AngoraMST.Services_InMemTest
 
 
             // Act
-            var filteredRabbitCollection = await _accountService.GetMyRabbitCollection_Filtered2(userId, filter);
+            var filteredRabbitCollection = await _accountService.Get_Rabbits_OwnedAlive_FilteredAsync(userId, filter);
 
             // Assert
             Assert.IsNotNull(filteredRabbitCollection); // Check that the result is not null

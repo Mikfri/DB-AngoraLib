@@ -37,7 +37,7 @@ namespace DB_AngoraLib.Services.RabbitService
         /// <param name="newRabbitDto"></param>
         /// <returns></returns>
         /// <exception cref="InvalidOperationException"></exception>
-        public async Task<Rabbit_ProfileDTO> AddRabbit_ToMyCollectionAsync(string userId, Rabbit_CreateDTO newRabbitDTO)
+        public async Task<Rabbit_ProfileDTO> AddRabbit_ToMyCollection(string userId, Rabbit_CreateDTO newRabbitDTO)
         {
             //Console.WriteLine($"Trying to add rabbit with RightEarId: {newRabbitDto.RightEarId}, LeftEarId: {newRabbitDto.LeftEarId}");
             // Validate input
@@ -86,28 +86,26 @@ namespace DB_AngoraLib.Services.RabbitService
             return newRabbit_ProfileDTO;
         }
 
-
-
         //---------------------: GET METODER
-        public async Task<List<Rabbit>> GetAllRabbitsAsync()     // reeeally though? Skal vi bruge denne metode, udover test?
+        public async Task<List<Rabbit>> Get_AllRabbits()     // reeeally though? Skal vi bruge denne metode, udover test?
         {
             var rabbits = await _dbRepository.GetAllObjectsAsync();
             return rabbits.ToList();
         }
 
-        public async Task<List<Rabbit_PreviewDTO>> GetAllRabbits_Forsale_Filtered(Rabbit_ForsaleFilterDTO filter)
+        public async Task<List<Rabbit_PreviewDTO>> Get_AllRabbits_Forsale_Filtered(Rabbit_ForsaleFilterDTO filter)
         {
             var rabbits = await _dbRepository.GetDbSet()
+                .AsNoTracking()
                 .Where(rabbit =>
-                    rabbit.ForSale == ForSale.Ja &&
-                    rabbit.DateOfDeath == null)
-                    .ToListAsync();
+                rabbit.ForSale == ForSale.Ja &&
+                rabbit.DateOfDeath == null)
+                .ToListAsync();
 
             return rabbits
                 .Where(rabbit =>
-                       (filter.RightEarId == null || rabbit.RightEarId == filter.RightEarId) // Vi vil kunne søge på hvor den kommer fra!
-                                                                                             //&& (filter.LeftEarId == null || rabbit.LeftEarId == filter.LeftEarId) // hvorfor sq man søge på venstre øre?
-                    && (filter.NickName == null || rabbit.NickName == filter.NickName)      // hvorfor søge på navn?
+                    (filter.RightEarId == null || rabbit.RightEarId == filter.RightEarId) // Vi vil kunne søge på hvor den kommer fra!
+                    && (filter.NickName == null || rabbit.NickName == filter.NickName)    // hvorfor søge på navn?
                     && (filter.Race == null || rabbit.Race == filter.Race)
                     && (filter.Color == null || rabbit.Color == filter.Color)
                     && (filter.Gender == null || rabbit.Gender == filter.Gender)
@@ -116,21 +114,22 @@ namespace DB_AngoraLib.Services.RabbitService
 
                 .Select(rabbit => new Rabbit_PreviewDTO
                 {
-                    RightEarId = rabbit.RightEarId,
-                    LeftEarId = rabbit.LeftEarId,
+                    EarCombId = rabbit.EarCombId,
                     NickName = rabbit.NickName,
                     Race = rabbit.Race,
                     Color = rabbit.Color,
-                    Gender = rabbit.Gender
+                    Gender = rabbit.Gender,
+                    UserOwner = rabbit.UserOwner != null ? $"{rabbit.UserOwner.FirstName} {rabbit.UserOwner.LastName}" : null,
+                    UserOrigin = rabbit.UserOrigin != null ? $"{rabbit.UserOrigin.FirstName} {rabbit.UserOrigin.LastName}" : null,
                 })
                 .ToList();
         }
 
 
 
-        public async Task<List<Rabbit>> GetAllRabbits_ByBreederRegAsync(string breederRegNo)
+        public async Task<List<Rabbit>> Get_AllRabbits_ByBreederReg(string breederRegNo)
         {
-            var user = await _accountService.GetUserByBreederRegNoAsync(breederRegNo);
+            var user = await _accountService.Get_UserByBreederRegNoAsync(breederRegNo);
             if (user == null)
             {
                 return null;
@@ -140,20 +139,25 @@ namespace DB_AngoraLib.Services.RabbitService
         }
 
 
-
-
-        public async Task<Rabbit> GetRabbit_ByEarCombIdAsync(string earCombId)
+        public async Task<Rabbit?> Get_Rabbit_ByEarCombId(string earCombId) // TODO: Lav tænd/sluk for .Include() afhængig af behov
         {
-            return await _dbRepository.GetObject_ByStringKEYAsync(earCombId);
+            return await _dbRepository
+                .GetDbSet()
+                .AsNoTracking() // Tilføjer AsNoTracking for bedre ydeevne
+                .Include(r => r.UserOrigin)
+                .Include(r => r.UserOwner)
+                .FirstOrDefaultAsync(r => r.EarCombId == earCombId);
         }
 
 
+        //public async Task<Rabbit> Get_Rabbit_ByEarCombId(string earCombId)
+        //{
+        //    return await _dbRepository.GetObject_ByStringKEYAsync(earCombId);
+        //}
 
-
-
-        public async Task<Rabbit_ProfileDTO> GetRabbit_ProfileAsync(string userId, string earCombId, IList<Claim> userClaims)
+        public async Task<Rabbit_ProfileDTO> Get_Rabbit_Profile(string userId, string earCombId, IList<Claim> userClaims)
         {
-            var rabbit = await GetRabbit_ByEarCombIdAsync(earCombId);
+            var rabbit = await Get_Rabbit_ByEarCombId(earCombId);
             var hasPermissionToGetAnyRabbit = userClaims.Any(
                 c => c.Type == "Rabbit:Read" && c.Value == "Any");
 
@@ -169,8 +173,7 @@ namespace DB_AngoraLib.Services.RabbitService
             {
                 var rabbitProfile = new Rabbit_ProfileDTO
                 {
-                    Children = await GetRabbit_ChildCollection(earCombId),
-                    //Pedigree = await GetRabbitPedigreeAsync(earCombId, 3)
+                    Children = await Get_Rabbit_ChildCollection(earCombId),
                 };
 
                 HelperServices.CopyPropertiesTo(rabbit, rabbitProfile);
@@ -180,14 +183,15 @@ namespace DB_AngoraLib.Services.RabbitService
         }
 
         /// <summary>
-        /// Henter en Rabbits ICollection af <parent>Children.
+        /// Henter en Rabbits ICollection af <Fath-/Mothered>Children.
         /// Kun er af de to lister har værdi, alt efter om Rabbit er far eller mor.
         /// </summary>
         /// <param name="earCombId">Rabbit Id</param>
         /// <returns>En kombineret liste af de to ICollections</returns>
-        public async Task<List<Rabbit_ChildPreviewDTO>> GetRabbit_ChildCollection(string earCombId)
+        public async Task<List<Rabbit_ChildPreviewDTO>> Get_Rabbit_ChildCollection(string earCombId)
         {
             var rabbitParent = await _dbRepository.GetDbSet()
+                .AsNoTracking()
                 .Include(r => r.FatheredChildren)
                 .Include(r => r.MotheredChildren)
                 .FirstOrDefaultAsync(r => r.EarCombId == earCombId);
@@ -215,46 +219,62 @@ namespace DB_AngoraLib.Services.RabbitService
 
         //private readonly MemoryCache _cache = new MemoryCache(new MemoryCacheOptions());
 
-        public async Task<Rabbit_PedigreeDTO> GetRabbitPedigreeAsync(string earCombId, int maxGeneration)
+        //------: PEDIGREE
+
+        public async Task<Rabbit_PedigreeDTO> Get_RabbitPedigree(string earCombId/*, int maxGeneration*/)
         {
-            var rabbit = await _dbRepository.GetObject_ByStringKEYAsync(earCombId);
-            return await GetRabbit_PedigreeRecursive(rabbit, 0, maxGeneration);
+            int maxGeneration = 3; // Eksempel: Sætter maksimalt antal generationer til 3
+
+            var rabbit = await Get_Rabbit_ByEarCombId(earCombId); // Antager denne metode returnerer en Rabbit inklusiv UserOrigin og UserOwner
+            if (rabbit == null) return null;
+            return await Get_Rabbit_PedigreeRecursive(rabbit, 0, maxGeneration, "Selv");
         }
 
-
-        private async Task<Rabbit_PedigreeDTO> GetRabbit_PedigreeRecursive(Rabbit rabbit, int currentGeneration, int maxGeneration)
+        private async Task<Rabbit_PedigreeDTO> Get_Rabbit_PedigreeRecursive(Rabbit rabbit, int currentGeneration, int maxGeneration, string relationPrefix)
         {
-            if (currentGeneration >= maxGeneration)
+            if (rabbit == null || currentGeneration > maxGeneration)
             {
-                return new Rabbit_PedigreeDTO
-                {
-                    Rabbit = rabbit,
-                    Generation = currentGeneration
-                };
+                return null;
             }
 
-            var father = await _dbRepository.GetObject_ByStringKEYAsync(rabbit.Father_EarCombId);
-            var mother = await _dbRepository.GetObject_ByStringKEYAsync(rabbit.Mother_EarCombId);
+            var father = await Get_Rabbit_ByEarCombId(rabbit.Father_EarCombId);
+            var mother = await Get_Rabbit_ByEarCombId(rabbit.Mother_EarCombId);
+
+            // Opbyg relation for far og mor baseret på den nuværende relationPrefix
+            string fatherRelation = BuildRelation(relationPrefix, "Far");
+            string motherRelation = BuildRelation(relationPrefix, "Mor");
 
             return new Rabbit_PedigreeDTO
             {
-                Rabbit = rabbit,
-                Father = father != null ? await GetRabbit_PedigreeRecursive(father, currentGeneration + 1, maxGeneration) : null,
-                Mother = mother != null ? await GetRabbit_PedigreeRecursive(mother, currentGeneration + 1, maxGeneration) : null,
-                Generation = currentGeneration
+                Generation = currentGeneration,
+                Relation = relationPrefix,
+                EarCombId = rabbit.EarCombId,
+                NickName = rabbit.NickName,
+                Race = rabbit.Race,
+                Color = rabbit.Color,
+                DateOfBirth = rabbit.DateOfBirth,
+                UserOwnerName = rabbit.UserOwner != null ? $"{rabbit.UserOwner.FirstName} {rabbit.UserOwner.LastName}" : null,
+                UserOriginName = rabbit.UserOrigin != null ? $"{rabbit.UserOrigin.FirstName} {rabbit.UserOrigin.LastName}" : null,
+                
+                Father = father != null ? await Get_Rabbit_PedigreeRecursive(father, currentGeneration + 1, maxGeneration, fatherRelation) : null,
+                Mother = mother != null ? await Get_Rabbit_PedigreeRecursive(mother, currentGeneration + 1, maxGeneration, motherRelation) : null,
             };
         }
 
-
+        private string BuildRelation(string currentRelation, string newRelation)
+        {
+            if (currentRelation == "Selv") return newRelation;
+            return currentRelation + newRelation;
+        }
 
 
         //---------------------: UPDATE
-        public async Task<Rabbit_ProfileDTO> UpdateRabbit_RBAC_Async(string userId, string earCombId, Rabbit_UpdateDTO rabbit_updateDTO, IList<Claim> userClaims)
+        public async Task<Rabbit_ProfileDTO> UpdateRabbit_RBAC(string userId, string earCombId, Rabbit_UpdateDTO rabbit_updateDTO, IList<Claim> userClaims)
         {
             var hasPermissionToUpdateOwn = userClaims.Any(c => c.Type == "Rabbit:Update" && c.Value == "Own");
             var hasPermissionToUpdateAll = userClaims.Any(c => c.Type == "Rabbit:Update" && c.Value == "Any");
 
-            var rabbit_InDB = await GetRabbit_ByEarCombIdAsync(earCombId);
+            var rabbit_InDB = await Get_Rabbit_ByEarCombId(earCombId);
             if (rabbit_InDB == null)
             {
                 return null;
@@ -284,12 +304,12 @@ namespace DB_AngoraLib.Services.RabbitService
 
 
         //---------------------: DELETE
-        public async Task<Rabbit_PreviewDTO> DeleteRabbit_RBAC_Async(string userId, string earCombId, IList<Claim> userClaims)
+        public async Task<Rabbit_PreviewDTO> DeleteRabbit_RBAC(string userId, string earCombId, IList<Claim> userClaims)
         {
             var hasPermissionToDeleteOwn = userClaims.Any(c => c.Type == "Rabbit:Delete" && c.Value == "Own"); // tilføj evt. "SpecialPermission" "Delete_Own_Rabbit"
             var hasPermissionToDeleteAll = userClaims.Any(c => c.Type == "Rabbit:Delete" && c.Value == "Any"); // tilføj evt. "SpecialPermission" "Delete_Any_Rabbit"
 
-            var rabbitToDelete = await GetRabbit_ByEarCombIdAsync(earCombId);
+            var rabbitToDelete = await Get_Rabbit_ByEarCombId(earCombId);
             if (rabbitToDelete == null)
             {
                 throw new InvalidOperationException("Ingen kanin med den angivne ørermærke-kombi eksistere");
@@ -313,34 +333,11 @@ namespace DB_AngoraLib.Services.RabbitService
 
 
         //---------------------: TRANSFER
-        public async Task RequestRabbitTransfer(string earCombId, string breederRegNo)
+        public async Task UpdateRabbitOwnershipAsync(Rabbit rabbit)
         {
-            // Check if the new owner exists in the database
-            var newOwner = await _accountService.GetUserByBreederRegNoAsync(breederRegNo);
-            if (newOwner == null)
-            {
-                throw new Exception("New owner not found");
-            }
-
-            // Find the rabbit to transfer
-            var rabbit = await GetRabbit_ByEarCombIdAsync(earCombId);
-            if (rabbit == null)
-            {
-                throw new Exception("Rabbit not found");
-            }
-
-            // Create a new transfer request
-            var transferRequest = new RabbitTransferRequest
-            {
-                EarCombId = earCombId,
-                CurrentOwnerId = rabbit.OwnerId,
-                NewOwnerId = breederRegNo,
-                IsAccepted = false
-            };
-
-            // Save the transfer request to the database
-            //await _transferRequestRepository.AddObjectAsync(transferRequest);
+            await _dbRepository.UpdateObjectAsync(rabbit);
         }
+
 
         //---------------------: HELPER METHODs
 
@@ -351,17 +348,20 @@ namespace DB_AngoraLib.Services.RabbitService
         /// </summary>
         /// <param name="rabbit">Rabbit object hvis ParentId_Placeholders skal undersøges</param>
         /// <returns></returns>
-        private async Task ParentsFK_SetupAsync(Rabbit rabbit)
+        private async Task ParentsFK_SetupAsync(Rabbit rabbit)  
         {
+            // TODO: Istedet for at tage imod et helt rabbit objekt,
+            // ... tag istedet imod en string FatherId_Placeholder og MotherId_Placeholder?
+
             // Antag at Rabbit modellen har properties for FatherId_Placeholder og MotherId_Placeholder
             string? fatherIdPlaceholder = rabbit.FatherId_Placeholder;
             string? motherIdPlaceholder = rabbit.MotherId_Placeholder;
 
             // Forsøg at finde en eksisterende far kanin, hvis placeholder ikke er null
-            Rabbit existingFather = null;
+            Rabbit? existingFather = null;
             if (fatherIdPlaceholder != null)
             {
-                existingFather = await GetRabbit_ByEarCombIdAsync(fatherIdPlaceholder);
+                existingFather = await Get_Rabbit_ByEarCombId(fatherIdPlaceholder);
             }
 
             // Opdater Father_EarCombId kun hvis en gyldig far kanin findes
@@ -375,10 +375,10 @@ namespace DB_AngoraLib.Services.RabbitService
             }
 
             // Samme som oven, men for Mother_EarCombId
-            Rabbit existingMother = null;
+            Rabbit? existingMother = null;
             if (motherIdPlaceholder != null)
             {
-                existingMother = await GetRabbit_ByEarCombIdAsync(motherIdPlaceholder);
+                existingMother = await Get_Rabbit_ByEarCombId(motherIdPlaceholder);
             }
 
             if (existingMother != null && existingMother.Gender == Gender.Hun)
@@ -443,7 +443,7 @@ namespace DB_AngoraLib.Services.RabbitService
         {
             //string? rightEarId = rabbit.RightEarId;
             // Find the user with the BreederRegNo that matches the rabbit's RightEarId
-            var user = await _accountService.GetUserByBreederRegNoAsync(rabbit.RightEarId);
+            var user = await _accountService.Get_UserByBreederRegNoAsync(rabbit.RightEarId);
 
             if (user != null)
             {

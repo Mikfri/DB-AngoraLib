@@ -99,7 +99,7 @@ namespace DB_AngoraMST.Services_InMemTest
 
 
             // Act
-            await _rabbitService.AddRabbit_ToMyCollectionAsync(currentUser.Id, newUniqRabbit);
+            await _rabbitService.AddRabbit_ToMyCollection(currentUser.Id, newUniqRabbit);
 
             // Assert
             var addedRabbit = await _context.Rabbits.FirstOrDefaultAsync(r => r.RightEarId == newUniqRabbit.RightEarId && r.LeftEarId == newUniqRabbit.LeftEarId);
@@ -109,7 +109,7 @@ namespace DB_AngoraMST.Services_InMemTest
             // Act & Assert
             var existingRabbitDto = new Rabbit_CreateDTO { RightEarId = existingRabbit.RightEarId, LeftEarId = existingRabbit.LeftEarId };
             await Assert.ThrowsExceptionAsync<InvalidOperationException>(
-                () => _rabbitService.AddRabbit_ToMyCollectionAsync(currentUser.Id, existingRabbitDto));
+                () => _rabbitService.AddRabbit_ToMyCollection(currentUser.Id, existingRabbitDto));
            
         }
 
@@ -120,14 +120,14 @@ namespace DB_AngoraMST.Services_InMemTest
         /// </summary>
         /// <returns></returns>
         [TestMethod]
-        public async Task GetAllRabbits_ByBreederRegAsync_TEST()
+        public async Task Get_AllRabbits_ByBreederReg_TEST()
         {
             // Arrange
             var breederRegNo = "5053";
             var expectedRabbitsCount = 19;
 
             // Act
-            var rabbits = await _rabbitService.GetAllRabbits_ByBreederRegAsync(breederRegNo);
+            var rabbits = await _rabbitService.Get_AllRabbits_ByBreederReg(breederRegNo);
 
             Console.WriteLine($"User.BreederRegNo: {breederRegNo}");
             int i = 0;
@@ -142,7 +142,7 @@ namespace DB_AngoraMST.Services_InMemTest
         }
 
         [TestMethod]
-        public async Task GetRabbit_ProfileAsync_MODERATOR_Async_TEST()
+        public async Task Get_Rabbit_Profile_MODERATOR_TEST()
         {
             // Arrange
             var mockUser = _context.Users.First();
@@ -161,8 +161,8 @@ namespace DB_AngoraMST.Services_InMemTest
             }
 
             // Act
-            var resultOwned = await _rabbitService.GetRabbit_ProfileAsync(mockUser.Id, mockRabbitOwned.EarCombId, mockUserClaims);
-            var resultNotOwned = await _rabbitService.GetRabbit_ProfileAsync(mockUser.Id, mockRabbitNotOwned.EarCombId, mockUserClaims);
+            var resultOwned = await _rabbitService.Get_Rabbit_Profile(mockUser.Id, mockRabbitOwned.EarCombId, mockUserClaims);
+            var resultNotOwned = await _rabbitService.Get_Rabbit_Profile(mockUser.Id, mockRabbitNotOwned.EarCombId, mockUserClaims);
 
             // Assert
             Assert.IsNotNull(resultOwned, "Expected to retrieve profile of owned rabbit");
@@ -170,7 +170,7 @@ namespace DB_AngoraMST.Services_InMemTest
         }
 
         [TestMethod]
-        public async Task GetRabbit_ProfileAsync_BREEDER_Async_TEST()
+        public async Task Get_Rabbit_Profile_BREEDER_TEST()
         {
             // Arrange
             var mockUser = _context.Users.Skip(1).First();
@@ -189,8 +189,8 @@ namespace DB_AngoraMST.Services_InMemTest
             }
 
             // Act
-            var resultOwned = await _rabbitService.GetRabbit_ProfileAsync(mockUser.Id, mockRabbitOwned.EarCombId, mockUserClaims);
-            var resultNotOwned = await _rabbitService.GetRabbit_ProfileAsync(mockUser.Id, mockRabbitNotOwned.EarCombId, mockUserClaims);
+            var resultOwned = await _rabbitService.Get_Rabbit_Profile(mockUser.Id, mockRabbitOwned.EarCombId, mockUserClaims);
+            var resultNotOwned = await _rabbitService.Get_Rabbit_Profile(mockUser.Id, mockRabbitNotOwned.EarCombId, mockUserClaims);
 
             // Assert
             Assert.IsNotNull(resultOwned, "Expected to retrieve profile of owned rabbit");
@@ -199,7 +199,7 @@ namespace DB_AngoraMST.Services_InMemTest
 
 
         [TestMethod]
-        public async Task GetAllRabbits_ForSale_Filtered_TEST()
+        public async Task Get_AllRabbits_ForSale_Filtered_TEST()
         {
             // Arrange
             var expectedRace = Race.Angora;
@@ -224,7 +224,7 @@ namespace DB_AngoraMST.Services_InMemTest
 
             // Act
             var filter = new Rabbit_ForsaleFilterDTO { Race = expectedRace };
-            var rabbits = await _rabbitService.GetAllRabbits_Forsale_Filtered(filter);
+            var rabbits = await _rabbitService.Get_AllRabbits_Forsale_Filtered(filter);
 
 
             foreach (var rabbit in rabbits)
@@ -239,8 +239,36 @@ namespace DB_AngoraMST.Services_InMemTest
            
         }
 
+        //[TestMethod]
+        //public async Task Get_Rabbit_Pedigree_TEST()
+        //{
+        //    // Arrange
+        //    var earCombId = "5053-0124";
+        //    // Antag at _rabbitService allerede er initialiseret og klar til brug.
+        //    // Sørg for, at _context indeholder den nødvendige data for "Jester" og dens aner.
+
+        //    // Act
+        //    var pedigree = await _rabbitService.Get_RabbitPedigree(earCombId, 3); // Antager vi ønsker 3 generationer.
+
+        //    // Assert
+        //    Assert.IsNotNull(pedigree);
+        //    Assert.AreEqual(earCombId, pedigree.EarCombId);
+        //    // Bekræft basale informationer for "Jester"
+        //    Assert.AreEqual("Jester", pedigree.NickName);
+        //    // Bekræft at der er data for forældre
+        //    Assert.IsNotNull(pedigree.Father);
+        //    Assert.IsNotNull(pedigree.Mother);
+        //    // Bekræft at der er data for bedsteforældre (farfar, farmor, morfar, mormor)
+        //    Assert.IsNotNull(pedigree.Father.Father);
+        //    Assert.IsNotNull(pedigree.Father.Mother);
+        //    Assert.IsNotNull(pedigree.Mother.Father);
+        //    Assert.IsNotNull(pedigree.Mother.Mother);
+        //    // Du kan tilføje flere asserts for at validere specifikke detaljer om forældre og bedsteforældre
+        //}
+
+
         [TestMethod]
-        public async Task GetRabbit_ChildCollectionAsync_TEST()
+        public async Task Get_Rabbit_ChildCollection_TEST()
         {
             // Arrange
             var earCombId = "4977-206";
@@ -259,7 +287,7 @@ namespace DB_AngoraMST.Services_InMemTest
             }
 
             // Act
-            var rabbitCollection = await _rabbitService.GetRabbit_ChildCollection(earCombId);
+            var rabbitCollection = await _rabbitService.Get_Rabbit_ChildCollection(earCombId);
 
             // Assert
             Assert.IsNotNull(rabbitCollection);
@@ -271,7 +299,7 @@ namespace DB_AngoraMST.Services_InMemTest
         //-------------------------: UPDATE TESTS
 
         [TestMethod]
-        public async Task UpdateRabbit_MODERATOR_Async_TEST()
+        public async Task UpdateRabbit_MODERATOR_TEST()
         {
             // Arrange
             var mockUser = _context.Users.First();
@@ -292,8 +320,8 @@ namespace DB_AngoraMST.Services_InMemTest
             }
 
             // Act
-            var updatedOwnedRabbit = await _rabbitService.UpdateRabbit_RBAC_Async(mockUser.Id, mockRabbitOwned.EarCombId, updatedOwnedRabbitDTO, mockUserClaims);
-            var updatedNotOwnedRabbit = await _rabbitService.UpdateRabbit_RBAC_Async(mockUser.Id, mockRabbitNotOwned.EarCombId, updatedNotOwnedRabbitDTO, mockUserClaims);
+            var updatedOwnedRabbit = await _rabbitService.UpdateRabbit_RBAC(mockUser.Id, mockRabbitOwned.EarCombId, updatedOwnedRabbitDTO, mockUserClaims);
+            var updatedNotOwnedRabbit = await _rabbitService.UpdateRabbit_RBAC(mockUser.Id, mockRabbitNotOwned.EarCombId, updatedNotOwnedRabbitDTO, mockUserClaims);
 
             // Assert
             Assert.AreEqual("UpdatedOwnedName", updatedOwnedRabbit.NickName);
@@ -302,7 +330,7 @@ namespace DB_AngoraMST.Services_InMemTest
 
 
         [TestMethod]
-        public async Task UpdateRabbit_BREEDER_Async_TEST()
+        public async Task UpdateRabbit_BREEDER_TEST()
         {
             // Arrange
             var mockUser = _context.Users.Skip(1).First();
@@ -323,8 +351,8 @@ namespace DB_AngoraMST.Services_InMemTest
             }
 
             // Act
-            var updatedOwnedRabbit = await _rabbitService.UpdateRabbit_RBAC_Async(mockUser.Id, mockRabbitOwned.EarCombId, updatedOwnedRabbitDTO, mockUserClaims);
-            var updatedNotOwnedRabbit = await _rabbitService.UpdateRabbit_RBAC_Async(mockUser.Id, mockRabbitNotOwned.EarCombId, updatedNotOwnedRabbitDTO, mockUserClaims);
+            var updatedOwnedRabbit = await _rabbitService.UpdateRabbit_RBAC(mockUser.Id, mockRabbitOwned.EarCombId, updatedOwnedRabbitDTO, mockUserClaims);
+            var updatedNotOwnedRabbit = await _rabbitService.UpdateRabbit_RBAC(mockUser.Id, mockRabbitNotOwned.EarCombId, updatedNotOwnedRabbitDTO, mockUserClaims);
 
             // Assert
             Assert.AreEqual("UpdatedOwnedName", updatedOwnedRabbit.NickName);
@@ -334,7 +362,7 @@ namespace DB_AngoraMST.Services_InMemTest
 
         //-------------------------: DELETE TESTS
         [TestMethod]
-        public async Task DeleteRabbit_MODERATOR_Async_TEST()
+        public async Task DeleteRabbit_MODERATOR_TEST()
         {
             // Arrange
             var mockUser = _context.Users.First(); // Get the first user from the database
@@ -355,8 +383,8 @@ namespace DB_AngoraMST.Services_InMemTest
             }
 
             // Act
-            await _rabbitService.DeleteRabbit_RBAC_Async(mockUser.Id, mockRabbitOwned.EarCombId, mockUserClaims);
-            await _rabbitService.DeleteRabbit_RBAC_Async(mockUser.Id, mockRabbitNotOwned.EarCombId, mockUserClaims);
+            await _rabbitService.DeleteRabbit_RBAC(mockUser.Id, mockRabbitOwned.EarCombId, mockUserClaims);
+            await _rabbitService.DeleteRabbit_RBAC(mockUser.Id, mockRabbitNotOwned.EarCombId, mockUserClaims);
 
             // Assert
             // Verify that both rabbits was deleted from the database
@@ -371,7 +399,7 @@ namespace DB_AngoraMST.Services_InMemTest
 
 
         [TestMethod]
-        public async Task DeleteRabbit_BREEDER_Async_TEST()
+        public async Task DeleteRabbit_BREEDER_TEST()
         {
             // Arrange
             var mockUser = _context.Users.Skip(1).First(); // Get the second user from the database
@@ -394,10 +422,10 @@ namespace DB_AngoraMST.Services_InMemTest
             // Act & Assert
             // Expect an exception to be thrown because the user does not own the rabbit
             await Assert.ThrowsExceptionAsync<InvalidOperationException>(
-                () => _rabbitService.DeleteRabbit_RBAC_Async(mockUser.Id, mockRabbitNotOwned.EarCombId, mockUserClaims));
+                () => _rabbitService.DeleteRabbit_RBAC(mockUser.Id, mockRabbitNotOwned.EarCombId, mockUserClaims));
             
             // Act
-            await _rabbitService.DeleteRabbit_RBAC_Async(mockUser.Id, mockRabbitOwned.EarCombId, mockUserClaims);
+            await _rabbitService.DeleteRabbit_RBAC(mockUser.Id, mockRabbitOwned.EarCombId, mockUserClaims);
 
             // Assert
             // Verify that the rabbit was deleted from the database

@@ -6,14 +6,15 @@ using System.Threading.Tasks;
 
 namespace DB_AngoraLib.Models
 {
-    public enum BreederRequestStatus
+    public enum RequestStatus
     {
         Pending,
         Approved,
-        Rejected
+        Rejected,
+        Expired
     }
 
-    public class BreederApplication         // TODO: Følg op på denne opsætning. Relation til User og BreederRole?
+    public class BreederApplication
     {
         // Da navnet 'Id' følger EF Core namingkonvention, behøves der ikke at være en [Key] annotation,
         // eller angivning i DbContext OnModelCreating
@@ -25,8 +26,9 @@ namespace DB_AngoraLib.Models
 
         public string RequestedBreederRegNo { get; set; }
         public string DocumentationPath { get; set; }
-        public BreederRequestStatus Status { get; set; } = BreederRequestStatus.Pending;
+        public RequestStatus Status { get; set; } = RequestStatus.Pending;
         public string? RejectionReason { get; set; }
 
+        public BreederApplication() { }
     }
 }

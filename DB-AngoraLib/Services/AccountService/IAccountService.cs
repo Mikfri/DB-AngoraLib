@@ -9,16 +9,14 @@ namespace DB_AngoraLib.Services.AccountService
     public interface IAccountService
     {
         Task<Register_ResponseDTO> Register_BasicUserAsync(Register_CreateBasicUserDTO newUserDto);
-        Task<List<User>> GetAllUsersAsync();
-        Task<User> GetUserByUserNameOrEmailAsync(string userNameOrEmail);
-        Task<User> GetUserByIdAsync(string userId);
-        Task<User> GetUserByBreederRegNoAsync(string breederRegNo);
+        Task<List<User>> Get_AllUsersAsync();
+        Task<User> Get_UserByUserNameOrEmailAsync(string userNameOrEmail);
+        Task<User> Get_UserByIdAsync(string userId);
+        Task<User> Get_UserByBreederRegNoAsync(string breederRegNo);
 
-        Task<List<Rabbit_PreviewDTO>> GetMyRabbitCollection(string userId);
-        Task<List<Rabbit_PreviewDTO>> GetMyRabbitCollection_Filtered(
-            string userId, string rightEarId = null, string leftEarId = null, string nickName = null, Race? race = null, Color? color = null, Gender? gender = null, bool? isJuvenile = null, bool? approvedRaceColorCombination = null);
-        Task<List<Rabbit_PreviewDTO>> GetMyRabbitLinkedCollection(string userId);
-        Task<List<Rabbit_PreviewDTO>> GetMyRabbitCollection_Filtered2(string userId, Rabbit_FilteredRequestDTO filter);
+        Task<List<Rabbit_PreviewDTO>> Get_MyRabbitCollection(string userId);
+        Task<List<Rabbit_PreviewDTO>> Get_Rabbits_FromMyFold(string userId);
+        Task<List<Rabbit_PreviewDTO>> Get_Rabbits_OwnedAlive_FilteredAsync(string userId, Rabbit_FilteredRequestDTO filter);
 
         Task Send_EmailConfirmAsync(string userId, string token);
         Task Formular_ResetPWAsync(string userId, string token, string newPassword);

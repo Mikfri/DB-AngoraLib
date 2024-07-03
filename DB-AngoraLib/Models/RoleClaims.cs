@@ -21,11 +21,13 @@ public static class RoleClaims
             ("Rabbit:Read", "Any", new List<string> { "Admin", "Moderator" }),
             ("Rabbit:Update", "Any", new List<string> { "Admin", "Moderator" }),
             ("Rabbit:Delete", "Any", new List<string> { "Admin", "Moderator" }),
+            //("Rabbit:Transfer", "Any", new List<string> { "Admin", "Moderator" }),
 
             ("Rabbit:Create", "Own", new List<string> { "Breeder" }),
             ("Rabbit:Read", "Own", new List<string> { "Breeder" }),
             ("Rabbit:Update", "Own", new List<string> { "Breeder" }),
-            ("Rabbit:Delete", "Own", new List<string> { "Breeder" })
+            ("Rabbit:Delete", "Own", new List<string> { "Breeder" }),
+            //("Rabbit:Transfer", "Own", new List<string> { "Breeder" })
         };
 
         foreach (var permission in rolePermissions)
