@@ -19,23 +19,25 @@ namespace DB_AngoraLib.Services.TransferService
         private readonly IGRepository<RabbitTransfer> _dbRepository;
         private readonly IRabbitService _rabbitServices;
         private readonly IAccountService _accountService;
+        private readonly NotificationService _notificationService;
 
-
-        public TransferServices(IGRepository<RabbitTransfer> dbRepository, IRabbitService rabbitService ,IAccountService userService)
+        public TransferServices(IGRepository<RabbitTransfer> dbRepository, IRabbitService rabbitService, IAccountService userService, NotificationService notificationService)
         {
             _dbRepository = dbRepository;
             _rabbitServices = rabbitService;
             _accountService = userService;
+            _notificationService = notificationService;
         }
 
-        public async Task<RabbitTransfer_PreviewDTO> CreateTransferRequestAsync(string userId, RabbitTransfer_CreateDTO transferDTO)
+        //----------------------------------------------: CREATE :----------------------------------------------
+        public async Task<RabbitTransfer_ContractDTO> CreateTransferRequest(string userId, RabbitTransfer_CreateDTO createTransferDTO)
         {
             // Valider input (Dette trin kan udvides med mere detaljerede valideringer)
-            if (transferDTO == null)
-                throw new ArgumentNullException(nameof(transferDTO));
+            if (createTransferDTO == null)
+                throw new ArgumentNullException(nameof(createTransferDTO));
 
             // Tjek for eksisterende kanin
-            var rabbit = await _rabbitServices.Get_Rabbit_ByEarCombId(transferDTO.EarCombId) 
+            var rabbit = await _rabbitServices.Get_Rabbit_ByEarCombId(createTransferDTO.EarCombId) 
                 ?? throw new ArgumentException("Kaninen blev ikke fundet");
 
             // Tjek for eksisterende nuværende ejer
@@ -45,115 +47,184 @@ namespace DB_AngoraLib.Services.TransferService
             if (rabbit.OwnerId != userId)
                 throw new InvalidOperationException("Du er ikke den nuværende ejer af denne kanin.");
 
-            var proposedOwner = await _accountService.Get_UserByBreederRegNoAsync(transferDTO.ProposedOwnerBreederRegNo)
+            var proposedOwner = await _accountService.Get_UserByBreederRegNoAsync(createTransferDTO.ProposedOwner_BreederRegNo)
                 ?? throw new ArgumentException("Foreslået ejer blev ikke fundet.");
 
             // Tjek for eksisterende aktive RabbitTransfer anmodninger for den samme kanin
-            var existingTransfers = await _dbRepository.GetDbSet()
-                .Where(rt => rt.RabbitId == rabbit.EarCombId && rt.Status == RequestStatus.Pending)
-                .ToListAsync();
+            var existingTransfer = await _dbRepository.GetDbSet()
+                .FirstOrDefaultAsync(rt => rt.RabbitId == rabbit.EarCombId && rt.Status == RequestStatus.Pending);
 
-            if (existingTransfers.Any())
+            if (existingTransfer is not null)
             {
-                throw new InvalidOperationException("Der findes allerede en aktiv overførselsanmodning for denne kanin.");
+                throw new InvalidOperationException($"Der findes allerede en aktiv overførselsanmodning for denne kanin. (RabbitTransfer.{existingTransfer.Id})");
             }
 
-
             // Opret overførselsanmodning
-            var transferRequest = new RabbitTransfer
+            var newTransferRequest = new RabbitTransfer
             {
                 Status = RequestStatus.Pending,
-                RequestDate = DateTime.Now,
-                ExpirationDate = DateTime.Now.AddDays(7), // Antager 7 dages udløb
 
                 CurrentOwnerId = userId,
                 RabbitId = rabbit.EarCombId,
+                Price = createTransferDTO.Price,
+                SaleConditions = createTransferDTO.SaleConditions,
                 ProposedOwnerId = proposedOwner.Id,
                 //ResponseDate = null,
             };
 
-            await _dbRepository.AddObjectAsync(transferRequest);
+            await _dbRepository.AddObjectAsync(newTransferRequest);
+            
+            await _notificationService.CreateNotificationAsync(
+                proposedOwner.Id, $"Ny anmodning om at overtagning af ejerskab for kaninen {rabbit.EarCombId}: {rabbit.NickName}");
+
 
             // Returner en bekræftelse
-            return new RabbitTransfer_PreviewDTO
+            return new RabbitTransfer_ContractDTO
             {
-                Id = transferRequest.Id,
-                Status = transferRequest.Status,
-                RequestDate = transferRequest.RequestDate,
-                ExpirationDate = transferRequest.ExpirationDate,
+                Id = newTransferRequest.Id,
+                Status = newTransferRequest.Status,
 
-                CurrentOwnerId = transferRequest.CurrentOwnerId,
-                RabbitId = transferRequest.RabbitId,
-                ProposedOwnerId = transferRequest.ProposedOwnerId,
-
-                ResponseDate = transferRequest.ResponseDate, // Vil være null, da dette er en ny anmodning
+                CurrentOwner_BreederRegNo = currentOwner.BreederRegNo,
+                EarCombId = newTransferRequest.RabbitId,
+                Price = newTransferRequest.Price,
+                SaleConditions = newTransferRequest.SaleConditions,
+                ProposedOwner_BreederRegNo = proposedOwner.BreederRegNo,
             };
         }
 
-        public async Task<RabbitTransfer_PreviewDTO> RespondToTransferRequestAsync(string respondingUserId, int transferId, bool accept)
+
+        //----------------------------------------------: GET/READ :----------------------------------------------
+
+        public async Task<RabbitTransfer_ContractDTO> Get_RabbitTransfer_Contract(string userId, int transferId)
         {
             var transfer = await _dbRepository.GetDbSet()
                 .Include(rt => rt.RabbitInTrans)
+                .Include(rt => rt.UserCurrentOwner.BreederRegNo)
+                .Include(rt => rt.UserProposedOwner.BreederRegNo)
                 .FirstOrDefaultAsync(rt => rt.Id == transferId);
+
+            var user = await _accountService.Get_UserByIdAsync(userId)
+                ?? throw new ArgumentException("Bruger ikke fundet.");
+
+            if (userId != transfer.CurrentOwnerId && userId != transfer.ProposedOwnerId)
+            {
+                throw new InvalidOperationException("Du har ikke tilladelse til at se denne anmodning.");
+            }
 
             if (transfer == null)
             {
                 throw new ArgumentException("Overførselsanmodning ikke fundet.");
             }
 
-            if (transfer.Status != RequestStatus.Pending)
+            if (transfer.Status == RequestStatus.Pending)
             {
-                throw new InvalidOperationException("Denne anmodning er ikke længere aktiv.");
+                return new RabbitTransfer_ContractDTO
+                {
+                    Id = transfer.Id,
+                    Status = transfer.Status,
+                    CurrentOwner_BreederRegNo = transfer.UserCurrentOwner.BreederRegNo,
+
+                    Issuer_FullName = $"{transfer.UserCurrentOwner.FirstName} {transfer.UserCurrentOwner.LastName}",
+                    Issuer_Email = transfer.UserCurrentOwner.Email,
+                    Issuer_RoadNameAndNo = transfer.UserCurrentOwner.RoadNameAndNo,
+                    Issuer_ZipCode = transfer.UserCurrentOwner.ZipCode,
+                    Issuer_City = transfer.UserCurrentOwner.City,
+
+                    EarCombId = transfer.RabbitInTrans.EarCombId,
+                    Price = transfer.Price,
+                    SaleConditions = transfer.SaleConditions,
+
+                    ProposedOwner_BreederRegNo = transfer.UserProposedOwner.BreederRegNo,
+                    DateAccepted = transfer.DateAccepted,
+                };
+            }
+            else
+            {
+                return new RabbitTransfer_ContractDTO
+                {
+                    Id = transfer.Id,
+                    Status = transfer.Status,
+                    CurrentOwner_BreederRegNo = transfer.UserCurrentOwner.BreederRegNo,
+
+                    Issuer_FullName = $"{transfer.UserCurrentOwner.FirstName} {transfer.UserCurrentOwner.LastName}",
+                    Issuer_Email = transfer.UserCurrentOwner.Email,
+                    Issuer_RoadNameAndNo = transfer.UserCurrentOwner.RoadNameAndNo,
+                    Issuer_ZipCode = transfer.UserCurrentOwner.ZipCode,
+                    Issuer_City = transfer.UserCurrentOwner.City,
+
+                    EarCombId = transfer.RabbitInTrans.EarCombId,
+                    Price = transfer.Price,
+                    SaleConditions = transfer.SaleConditions,
+                    ProposedOwner_BreederRegNo = transfer.UserProposedOwner.BreederRegNo,
+                    DateAccepted = transfer.DateAccepted,
+
+                    Recipent_FullName = $"{transfer.UserProposedOwner.FirstName} {transfer.UserProposedOwner.LastName}",
+                    Recipent_Email = transfer.UserProposedOwner.Email,
+                    Recipent_RoadNameAndNo = transfer.UserProposedOwner.RoadNameAndNo,
+                    Recipent_ZipCode = transfer.UserProposedOwner.ZipCode,
+                    Recipent_City = transfer.UserProposedOwner.City,
+                };
+            }
+        }
+
+        public async Task<RabbitTransfer_ContractDTO> Respond_TransferRequest(string proposedUserId, int transferId, bool accept)
+        {
+            var transferReq = await _dbRepository.GetDbSet()
+                .Include(rt => rt.RabbitInTrans)
+                .Include(rt => rt.UserCurrentOwner.BreederRegNo)
+                .Include(rt => rt.UserProposedOwner.BreederRegNo)
+                .FirstOrDefaultAsync(rt => rt.Id == transferId);
+
+            var proposedOwner = await _accountService.Get_UserByIdAsync(proposedUserId);
+
+            if (transferReq == null)
+            {
+                throw new ArgumentException("Overførselsanmodning ikke fundet.");
             }
 
-            if (transfer.ProposedOwnerId != respondingUserId)
+            if (transferReq.ProposedOwnerId != proposedUserId)
             {
                 throw new InvalidOperationException("Du har ikke tilladelse til at svare på denne anmodning.");
             }
 
-            if (transfer.ExpirationDate < DateTime.Now)
+            if (transferReq.Status != RequestStatus.Pending)
             {
-                throw new InvalidOperationException("Denne anmodning er udløbet.");
+                throw new InvalidOperationException("Denne anmodning er ikke længere aktiv.");
             }
 
-            transfer.Status = accept ? RequestStatus.Approved : RequestStatus.Rejected;
-            transfer.ResponseDate = DateTime.Now;
+            transferReq.Status = accept ? RequestStatus.Approved : RequestStatus.Rejected;
 
             if (accept)
             {
-                transfer.RabbitInTrans.OwnerId = transfer.ProposedOwnerId;
-                // Opdater kaninen i databasen
-                await _rabbitServices.UpdateRabbitOwnershipAsync(transfer.RabbitInTrans);
+                transferReq.Status = RequestStatus.Approved;
+                transferReq.RabbitInTrans.OwnerId = transferReq.ProposedOwnerId;
+                transferReq.DateAccepted = DateOnly.FromDateTime(DateTime.Now); // Sætter den aktuelle dato
+
+                await _rabbitServices.UpdateRabbitOwnershipAsync(transferReq.RabbitInTrans);
+
+                // Notify current owner
+                await _notificationService.CreateNotificationAsync(transferReq.CurrentOwnerId,
+                    $"Din anmodning om at overføre ejerskab af kaninen {transferReq.RabbitInTrans.NickName} er blevet accepteret");
+                
+                return Get_RabbitTransfer_Contract(proposedUserId, transferId).Result;
             }
-
-            await _dbRepository.UpdateObjectAsync(transfer);
-
-            return new RabbitTransfer_PreviewDTO
+            else
             {
-                Id = transfer.Id,
-                Status = transfer.Status,
-                RequestDate = transfer.RequestDate,
-                ExpirationDate = transfer.ExpirationDate,
-                CurrentOwnerId = transfer.CurrentOwnerId,
-                RabbitId = transfer.RabbitId,
-                ProposedOwnerId = transfer.ProposedOwnerId,
-                ResponseDate = transfer.ResponseDate
-            };
+                transferReq.Status = RequestStatus.Rejected;
+
+                // Notify current owner
+                await _notificationService.CreateNotificationAsync(transferReq.CurrentOwnerId,
+                    $"Din anmodning om at overføre ejerskab af kaninen {transferReq.RabbitInTrans.NickName} er blevet afvist");
+
+                // Delete transfer
+                await _dbRepository.DeleteObjectAsync(transferReq);
+
+                return null;
+            }
         }
 
-        public async Task HandleExpiredTransfersAsync()
-        {
-            var expiredTransfers = await _dbRepository.GetDbSet()
-                .Where(rt => rt.Status == RequestStatus.Pending && rt.ExpirationDate < DateTime.Now)
-                .ToListAsync();
 
-            foreach (var transfer in expiredTransfers)
-            {
-                transfer.Status = RequestStatus.Expired;
-            }
-
-            await _dbRepository.UpdateObjectsListAsync(expiredTransfers);
-        }
+        //---------------------------------: HELPER METHODS :---------------------------------
 
     }
 }

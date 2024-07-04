@@ -36,6 +36,10 @@ namespace DB_AngoraLib.Models
         public ICollection<Rabbit> RabbitsOwned { get; set; }
         public ICollection<Rabbit> RabbitsLinked { get; set; }
 
+        public virtual ICollection<RabbitTransfer> SentRabbitTransferRequests { get; set; }
+        public virtual ICollection<RabbitTransfer> ReceivedRabbitTransferRequests { get; set; }
+
+
 
         public User(string? breederRegNo, string firstName, string lastName, string roadName, int zipCode, string city, string email, string phone, string password)
         {
@@ -53,6 +57,10 @@ namespace DB_AngoraLib.Models
             Password = password;
             //PasswordHash = BCrypt.Net.BCrypt.HashPassword(password);
         }
-        public User() { }
+        public User() 
+        {
+            SentRabbitTransferRequests = new List<RabbitTransfer>();
+            ReceivedRabbitTransferRequests = new List<RabbitTransfer>();
+        }
     }
 }

@@ -60,9 +60,11 @@ namespace DB_AngoraLib.Services.ApplicationServices
         }
 
 
+        // TODO: Se om Approve/reject application kan laves til een metode med en bool parameter ala,
+        // Respond_ApplicationRequest(int applicationId, bool isApproved, string reason = null)
 
         //----------------: Approve application (Create 'Breeder')
-        public async Task ApproveApplicationAsync(int applicationId)
+        public async Task ApproveApplicationAsync(int applicationId)    
         {
             // Find ansøgningen ved hjælp af GRepository
             var application = await _dbRepository.GetObject_ByIntKEYAsync(applicationId);

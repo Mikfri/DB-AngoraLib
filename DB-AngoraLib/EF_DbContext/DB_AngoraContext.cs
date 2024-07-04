@@ -41,7 +41,10 @@ namespace DB_AngoraLib.EF_DbContext
 
             // Konfigurer primær nøgle for Rabbit
             modelBuilder.Entity<Rabbit>()
-                    .HasKey(r => r.EarCombId);
+                .HasKey(r => r.EarCombId);
+
+            modelBuilder.Entity<RabbitTransfer>()
+                .HasIndex(rt => rt.RabbitId);
 
 
             //------------------- FK SETUP -------------------
@@ -94,22 +97,27 @@ namespace DB_AngoraLib.EF_DbContext
 
             // Konfigurer RabbitTransferRequest relationer
             modelBuilder.Entity<RabbitTransfer>()
-                .HasOne(rtr => rtr.RabbitInTrans) // En RabbitTransferRequest har en Rabbit (RabbitInTrans)
-                .WithMany() // Rabbit er ikke konfigureret til at have en navigationsegenskab tilbage til RabbitTransferRequest
-                .HasForeignKey(rtr => rtr.RabbitId); // ForeignKey i RabbitTransferRequest der peger på Rabbit
+                .HasOne(rt => rt.RabbitInTrans)
+                .WithMany(rt => rt.PreviousOwners)
+                .HasForeignKey(rt => rt.RabbitId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<RabbitTransfer>()
-                .HasOne(rtr => rtr.UserCurrentOwner) // En RabbitTransferRequest har en User (UserCurrentOwner)
-                .WithMany() // User er ikke konfigureret til at have en navigationsegenskab tilbage til RabbitTransferRequest
-                .HasForeignKey(rtr => rtr.CurrentOwnerId); // ForeignKey i RabbitTransferRequest der peger på User
+                .HasOne(rt => rt.UserCurrentOwner)
+                .WithMany(rt => rt.SentRabbitTransferRequests)
+                .HasForeignKey(rt => rt.CurrentOwnerId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<RabbitTransfer>()
-                .HasOne(rtr => rtr.UserProposedOwner) // En RabbitTransferRequest har en User (UserProposedOwner)
-                .WithMany() // User er ikke konfigureret til at have en navigationsegenskab tilbage til RabbitTransferRequest
-                .HasForeignKey(rtr => rtr.ProposedOwnerId); // ForeignKey i RabbitTransferRequest der peger på User
+                .HasOne(rt => rt.UserProposedOwner)
+                .WithMany(rt => rt.ReceivedRabbitTransferRequests)
+                .HasForeignKey(rt => rt.ProposedOwnerId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
+
         public DbSet<BreederApplication> BreederApplications { get; set; }
         public DbSet<Rabbit> Rabbits { get; set; }
+        public DbSet<RabbitTransfer> RabbitTransfers { get; set; }
         public DbSet<Rating> Ratings { get; set; }
         public DbSet<Photo> Photos { get; set; }
     }

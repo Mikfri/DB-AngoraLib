@@ -70,7 +70,12 @@ namespace DB_AngoraLib.Services.RabbitService
                 //Mother_EarCombId = newRabbitDto.Mother_EarCombId,
             };
 
-            //newRabbit.EarCombId = $"{newRabbit.RightEarId}-{newRabbit.LeftEarId}";
+            var existingRabbit = await Get_Rabbit_ByEarCombId($"{newRabbit.RightEarId}-{newRabbit.LeftEarId}");
+            if (existingRabbit != null)
+            {
+                throw new InvalidOperationException("En kanin med den angivne ørermærke-kombi eksistere allerede");
+            }
+
             _validatorService.ValidateRabbit(newRabbit);
 
             await _dbRepository.AddObjectAsync(newRabbit); // Add the new rabbit to the database
@@ -139,7 +144,7 @@ namespace DB_AngoraLib.Services.RabbitService
         }
 
 
-        public async Task<Rabbit?> Get_Rabbit_ByEarCombId(string earCombId) // TODO: Lav tænd/sluk for .Include() afhængig af behov
+        private async Task<Rabbit?> Get_Rabbit_ByEarCombId_IncludingUserRelations(string earCombId)
         {
             return await _dbRepository
                 .GetDbSet()
@@ -150,10 +155,10 @@ namespace DB_AngoraLib.Services.RabbitService
         }
 
 
-        //public async Task<Rabbit> Get_Rabbit_ByEarCombId(string earCombId)
-        //{
-        //    return await _dbRepository.GetObject_ByStringKEYAsync(earCombId);
-        //}
+        public async Task<Rabbit> Get_Rabbit_ByEarCombId(string earCombId)
+        {
+            return await _dbRepository.GetObject_ByStringKEYAsync(earCombId);
+        }
 
         public async Task<Rabbit_ProfileDTO> Get_Rabbit_Profile(string userId, string earCombId, IList<Claim> userClaims)
         {
@@ -225,7 +230,7 @@ namespace DB_AngoraLib.Services.RabbitService
         {
             int maxGeneration = 3; // Eksempel: Sætter maksimalt antal generationer til 3
 
-            var rabbit = await Get_Rabbit_ByEarCombId(earCombId); // Antager denne metode returnerer en Rabbit inklusiv UserOrigin og UserOwner
+            var rabbit = await Get_Rabbit_ByEarCombId_IncludingUserRelations(earCombId); // Antager denne metode returnerer en Rabbit inklusiv UserOrigin og UserOwner
             if (rabbit == null) return null;
             return await Get_Rabbit_PedigreeRecursive(rabbit, 0, maxGeneration, "Selv");
         }
@@ -237,8 +242,8 @@ namespace DB_AngoraLib.Services.RabbitService
                 return null;
             }
 
-            var father = await Get_Rabbit_ByEarCombId(rabbit.Father_EarCombId);
-            var mother = await Get_Rabbit_ByEarCombId(rabbit.Mother_EarCombId);
+            var father = await Get_Rabbit_ByEarCombId_IncludingUserRelations(rabbit.Father_EarCombId);
+            var mother = await Get_Rabbit_ByEarCombId_IncludingUserRelations(rabbit.Mother_EarCombId);
 
             // Opbyg relation for far og mor baseret på den nuværende relationPrefix
             string fatherRelation = BuildRelation(relationPrefix, "Far");
@@ -306,9 +311,8 @@ namespace DB_AngoraLib.Services.RabbitService
         //---------------------: DELETE
         public async Task<Rabbit_PreviewDTO> DeleteRabbit_RBAC(string userId, string earCombId, IList<Claim> userClaims)
         {
-            var hasPermissionToDeleteOwn = userClaims.Any(c => c.Type == "Rabbit:Delete" && c.Value == "Own"); // tilføj evt. "SpecialPermission" "Delete_Own_Rabbit"
-            var hasPermissionToDeleteAll = userClaims.Any(c => c.Type == "Rabbit:Delete" && c.Value == "Any"); // tilføj evt. "SpecialPermission" "Delete_Any_Rabbit"
-
+            var hasPermissionToDeleteOwn = userClaims.Any(c => c.Type == "Rabbit:Delete" && c.Value == "Own");
+            var hasPermissionToDeleteAll = userClaims.Any(c => c.Type == "Rabbit:Delete" && c.Value == "Any");
             var rabbitToDelete = await Get_Rabbit_ByEarCombId(earCombId);
             if (rabbitToDelete == null)
             {
@@ -321,12 +325,19 @@ namespace DB_AngoraLib.Services.RabbitService
             }
 
             // Create a new Rabbit_PreviewDTO and copy properties from rabbitToDelete
-            var rabbitPreviewDTO = new Rabbit_PreviewDTO();
-            HelperServices.CopyPropertiesTo(rabbitToDelete, rabbitPreviewDTO);
 
             await _dbRepository.DeleteObjectAsync(rabbitToDelete);
 
-            return rabbitPreviewDTO; // Return the rabbit to be deleted as a Rabbit_PreviewDTO
+            return new Rabbit_PreviewDTO()
+            {
+                EarCombId = rabbitToDelete.EarCombId,
+                NickName = rabbitToDelete.NickName,
+                Race = rabbitToDelete.Race,
+                Color = rabbitToDelete.Color,
+                Gender = rabbitToDelete.Gender,
+                UserOwner = rabbitToDelete.UserOwner != null ? $"{rabbitToDelete.UserOwner.FirstName} {rabbitToDelete.UserOwner.LastName}" : null,
+                UserOrigin = rabbitToDelete.UserOrigin != null ? $"{rabbitToDelete.UserOrigin.FirstName} {rabbitToDelete.UserOrigin.LastName}" : null,
+            };
         }
 
 
@@ -344,15 +355,12 @@ namespace DB_AngoraLib.Services.RabbitService
         /// <summary>
         /// Kigger efter om der findes eksisterende Rabbit-parents i systemet,
         /// hvor den angivne Rabbit's <Parent>_EarCombIds, mathcher andre Rabbits. 
-        /// Hvis ja, etableres en forbindelse efter forbehold
+        /// Hvis ja, UPDATEs rabbit, med en etableret forbindelse efter forbehold
         /// </summary>
         /// <param name="rabbit">Rabbit object hvis ParentId_Placeholders skal undersøges</param>
         /// <returns></returns>
         private async Task ParentsFK_SetupAsync(Rabbit rabbit)  
         {
-            // TODO: Istedet for at tage imod et helt rabbit objekt,
-            // ... tag istedet imod en string FatherId_Placeholder og MotherId_Placeholder?
-
             // Antag at Rabbit modellen har properties for FatherId_Placeholder og MotherId_Placeholder
             string? fatherIdPlaceholder = rabbit.FatherId_Placeholder;
             string? motherIdPlaceholder = rabbit.MotherId_Placeholder;
@@ -408,11 +416,11 @@ namespace DB_AngoraLib.Services.RabbitService
 
             if (gender == Gender.Han)
             {
-                var children = await _dbRepository.GetDbSet()
+                var maleChildrenList = await _dbRepository.GetDbSet()
                     .Where(r => r.FatherId_Placeholder == earCombId)
                     .ToListAsync();
 
-                foreach (var child in children)
+                foreach (var child in maleChildrenList)
                 {
                     child.Father_EarCombId = earCombId;
                     rabbitsToUpdateList.Add(child);
@@ -420,11 +428,11 @@ namespace DB_AngoraLib.Services.RabbitService
             }
             else if (gender == Gender.Hun)
             {
-                var children = await _dbRepository.GetDbSet()
+                var femaleChildrenList = await _dbRepository.GetDbSet()
                     .Where(r => r.MotherId_Placeholder == earCombId)
                     .ToListAsync();
 
-                foreach (var child in children)
+                foreach (var child in femaleChildrenList)
                 {
                     child.Mother_EarCombId = earCombId;
                     rabbitsToUpdateList.Add(child);
@@ -439,6 +447,11 @@ namespace DB_AngoraLib.Services.RabbitService
         }
 
 
+        /// <summary>
+        /// Opdaterer Rabbit.OriginId baseret på Rabbit.RightEarId og User.BreederRegNo
+        /// </summary>
+        /// <param name="rabbit"></param>
+        /// <returns></returns>
         private async Task UserOriginFK_SetupAsync(Rabbit rabbit)
         {
             //string? rightEarId = rabbit.RightEarId;
@@ -457,7 +470,7 @@ namespace DB_AngoraLib.Services.RabbitService
             }
 
             // Update the rabbit in the database
-            await _dbRepository.UpdateObjectAsync(rabbit); // Update the rabbit in the database
+            await _dbRepository.UpdateObjectAsync(rabbit);
         }
 
         /// <summary>
@@ -482,7 +495,5 @@ namespace DB_AngoraLib.Services.RabbitService
             }
             await _dbRepository.UpdateObjectsListAsync(rabbitsToUpdateList);
         }
-
-
     }
 }

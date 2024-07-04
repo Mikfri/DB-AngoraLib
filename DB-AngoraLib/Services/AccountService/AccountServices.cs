@@ -86,9 +86,22 @@ namespace DB_AngoraLib.Services.AccountService
         }
 
         //------------: GET USER BY ID
-        public async Task<User> Get_UserByIdAsync(string userId)
+        public async Task<User?> Get_UserByIdAsync(string userId)
         {
             return await _dbRepository.GetObject_ByStringKEYAsync(userId);
+        }
+
+        public async Task<User?> Get_UserById_IncludingCollections(string userId)
+        {
+            return await _dbRepository.GetDbSet()
+                //.AsNoTracking()
+                //.Include(u => u.RabbitsOwned)
+                //.Include(u => u.RabbitsLinked)
+                .Include(u => u.SentRabbitTransferRequests)
+                    .ThenInclude(rt => rt.Status == RequestStatus.Pending)
+                .Include(u => u.ReceivedRabbitTransferRequests)
+                    .ThenInclude(rt => rt.Status == RequestStatus.Pending)
+                .FirstOrDefaultAsync(u => u.Id == userId);
         }
 
         //------------: GET USER BY BREEDER-REG-NO
@@ -249,6 +262,25 @@ namespace DB_AngoraLib.Services.AccountService
                 })
                 .ToList();
         }
+
+        public async Task<List<RabbitTransfer_ContractDTO>> Get_ActiveTransfersForUserAsync(string userId)
+        {
+            var user = Get_UserById_IncludingCollections(userId) ??
+                throw new ArgumentException("User not found");
+
+
+            // Konverter til DTO'er hvis nødvendigt
+            // Dette trin afhænger af, hvordan din RabbitTransfer_PreviewDTO ser ud og hvilke informationer den skal indeholde
+
+            // Saml og returner resultaterne
+            var activeTransfers = new List<RabbitTransfer_ContractDTO>();
+            // Tilføj logik for at konvertere til DTO'er og tilføje til activeTransfers
+
+            return activeTransfers;
+        }
+
+
+
 
 
         //---------------------------------: EMAIL METHODs :-------------------------------

@@ -11,7 +11,7 @@ namespace DB_AngoraLib.Services.AccountService
         Task<Register_ResponseDTO> Register_BasicUserAsync(Register_CreateBasicUserDTO newUserDto);
         Task<List<User>> Get_AllUsersAsync();
         Task<User> Get_UserByUserNameOrEmailAsync(string userNameOrEmail);
-        Task<User> Get_UserByIdAsync(string userId);
+        Task<User?> Get_UserByIdAsync(string userId);
         Task<User> Get_UserByBreederRegNoAsync(string breederRegNo);
 
         Task<List<Rabbit_PreviewDTO>> Get_MyRabbitCollection(string userId);

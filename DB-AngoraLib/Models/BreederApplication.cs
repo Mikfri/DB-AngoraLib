@@ -11,7 +11,6 @@ namespace DB_AngoraLib.Models
         Pending,
         Approved,
         Rejected,
-        Expired
     }
 
     public class BreederApplication
