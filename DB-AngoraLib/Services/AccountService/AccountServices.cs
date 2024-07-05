@@ -97,9 +97,9 @@ namespace DB_AngoraLib.Services.AccountService
                 //.AsNoTracking()
                 //.Include(u => u.RabbitsOwned)
                 //.Include(u => u.RabbitsLinked)
-                .Include(u => u.SentRabbitTransferRequests)
+                .Include(u => u.RabbitTransfers_Issued)
                     .ThenInclude(rt => rt.Status == RequestStatus.Pending)
-                .Include(u => u.ReceivedRabbitTransferRequests)
+                .Include(u => u.RabbitTransfers_Received)
                     .ThenInclude(rt => rt.Status == RequestStatus.Pending)
                 .FirstOrDefaultAsync(u => u.Id == userId);
         }
@@ -151,6 +151,7 @@ namespace DB_AngoraLib.Services.AccountService
         public async Task<List<Rabbit_PreviewDTO>> Get_Rabbits_OwnedAlive_FilteredAsync(
            string userId, Rabbit_FilteredRequestDTO filter)
         {
+            // TODO: Lav metoden så der enten filtreres på døde eller levende kaniner
             //var query = _dbRepository.GetDbSet()
             //    .AsNoTracking()
             //    .Include(u => u.RabbitsOwned)
@@ -263,24 +264,57 @@ namespace DB_AngoraLib.Services.AccountService
                 .ToList();
         }
 
-        public async Task<List<RabbitTransfer_ContractDTO>> Get_ActiveTransfersForUserAsync(string userId)
+
+        // TODO: Metoden 'Get_TransferRequests_Received' er klar til implementering + test via RESTful API
+        public async Task<List<TransferRequest_ReceivedDTO>> Get_TransferRequests_Received(string userId, TransferRequest_ReceivedFilterDTO filter)
         {
-            var user = Get_UserById_IncludingCollections(userId) ??
-                throw new ArgumentException("User not found");
+            var query = _dbRepository.GetDbSet()
+                .AsNoTracking()
+                .Include(u => u.RabbitTransfers_Received)
+                    .ThenInclude(transfer => transfer.UserIssuer)
+                .Include(u => u.RabbitTransfers_Received)
+                    .ThenInclude(transfer => transfer.Rabbit)
+                .Where(u => u.Id == userId)
+                .SelectMany(u => u.RabbitTransfers_Received)
+                .AsQueryable();
 
+            if (filter.Status.HasValue)
+            {
+                query = query.Where(transfer => transfer.Status == filter.Status.Value);
+            }
 
-            // Konverter til DTO'er hvis nødvendigt
-            // Dette trin afhænger af, hvordan din RabbitTransfer_PreviewDTO ser ud og hvilke informationer den skal indeholde
+            if (filter.Rabbit_EarCombId != null)
+                query = query.Where(t => EF.Functions.Like(t.RabbitId, $"%{filter.Rabbit_EarCombId}%"));
 
-            // Saml og returner resultaterne
-            var activeTransfers = new List<RabbitTransfer_ContractDTO>();
-            // Tilføj logik for at konvertere til DTO'er og tilføje til activeTransfers
+            if (filter.Rabbit_NickName != null)
+                query = query.Where(t => EF.Functions.Like(t.Rabbit.NickName, $"%{filter.Rabbit_NickName}%"));
 
-            return activeTransfers;
+            if (filter.Issuer_BreederRegNo != null)
+                query = query.Where(t => EF.Functions.Like(t.UserIssuer.BreederRegNo, $"%{filter.Issuer_BreederRegNo}%"));
+
+            if (filter.Issuer_FirstName != null)
+                query = query.Where(t => EF.Functions.Like(t.UserIssuer.FirstName, $"%{filter.Issuer_FirstName}%"));
+
+            if (filter.From_DateAccepted.HasValue)
+            {
+                query = query.Where(transfer => transfer.DateAccepted >= filter.From_DateAccepted.Value);
+            }
+
+            var transferRequests = await query.Select(transfer => new TransferRequest_ReceivedDTO
+            {
+                Id = transfer.Id,
+                Status = transfer.Status,
+                DateAccepted = transfer.DateAccepted,
+                Rabbit_EarCombId = transfer.Rabbit.EarCombId,
+                Rabbit_NickName = transfer.Rabbit.NickName,
+                Issuer_BreederRegNo = transfer.UserIssuer.BreederRegNo,
+                Issuer_FirstName = transfer.UserIssuer.FirstName,
+                Price = transfer.Price,
+                SaleConditions = transfer.SaleConditions,
+            }).ToListAsync();
+
+            return transferRequests;
         }
-
-
-
 
 
         //---------------------------------: EMAIL METHODs :-------------------------------

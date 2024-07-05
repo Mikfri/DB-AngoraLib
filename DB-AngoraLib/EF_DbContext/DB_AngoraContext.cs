@@ -43,7 +43,7 @@ namespace DB_AngoraLib.EF_DbContext
             modelBuilder.Entity<Rabbit>()
                 .HasKey(r => r.EarCombId);
 
-            modelBuilder.Entity<RabbitTransfer>()
+            modelBuilder.Entity<TransferRequst>()
                 .HasIndex(rt => rt.RabbitId);
 
 
@@ -96,28 +96,29 @@ namespace DB_AngoraLib.EF_DbContext
 
 
             // Konfigurer RabbitTransferRequest relationer
-            modelBuilder.Entity<RabbitTransfer>()
-                .HasOne(rt => rt.RabbitInTrans)
-                .WithMany(rt => rt.PreviousOwners)
+            modelBuilder.Entity<TransferRequst>()
+                .HasOne(rt => rt.Rabbit)
+                .WithMany()
                 .HasForeignKey(rt => rt.RabbitId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<RabbitTransfer>()
-                .HasOne(rt => rt.UserCurrentOwner)
-                .WithMany(rt => rt.SentRabbitTransferRequests)
-                .HasForeignKey(rt => rt.CurrentOwnerId)
+            modelBuilder.Entity<TransferRequst>()
+                .HasOne(rt => rt.UserIssuer)
+                .WithMany(rt => rt.RabbitTransfers_Issued)
+                .HasForeignKey(rt => rt.IssuerId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<RabbitTransfer>()
-                .HasOne(rt => rt.UserProposedOwner)
-                .WithMany(rt => rt.ReceivedRabbitTransferRequests)
-                .HasForeignKey(rt => rt.ProposedOwnerId)
+            modelBuilder.Entity<TransferRequst>()
+                .HasOne(rt => rt.UserRecipent)
+                .WithMany(rt => rt.RabbitTransfers_Received)
+                .HasForeignKey(rt => rt.RecipentId)
                 .OnDelete(DeleteBehavior.Restrict);
         }
 
         public DbSet<BreederApplication> BreederApplications { get; set; }
         public DbSet<Rabbit> Rabbits { get; set; }
-        public DbSet<RabbitTransfer> RabbitTransfers { get; set; }
+        public DbSet<Notification> Notifications { get; set; }
+        public DbSet<TransferRequst> TransferRequests { get; set; }
         public DbSet<Rating> Ratings { get; set; }
         public DbSet<Photo> Photos { get; set; }
     }

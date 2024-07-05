@@ -17,6 +17,7 @@ namespace DB_AngoraLib.Services.AccountService
         Task<List<Rabbit_PreviewDTO>> Get_MyRabbitCollection(string userId);
         Task<List<Rabbit_PreviewDTO>> Get_Rabbits_FromMyFold(string userId);
         Task<List<Rabbit_PreviewDTO>> Get_Rabbits_OwnedAlive_FilteredAsync(string userId, Rabbit_FilteredRequestDTO filter);
+        Task<List<TransferRequest_ReceivedDTO>> Get_TransferRequests_Received(string userId, TransferRequest_ReceivedFilterDTO filter);
 
         Task Send_EmailConfirmAsync(string userId, string token);
         Task Formular_ResetPWAsync(string userId, string token, string newPassword);

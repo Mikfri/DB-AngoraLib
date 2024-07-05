@@ -36,8 +36,8 @@ namespace DB_AngoraLib.Models
         public ICollection<Rabbit> RabbitsOwned { get; set; }
         public ICollection<Rabbit> RabbitsLinked { get; set; }
 
-        public virtual ICollection<RabbitTransfer> SentRabbitTransferRequests { get; set; }
-        public virtual ICollection<RabbitTransfer> ReceivedRabbitTransferRequests { get; set; }
+        public virtual ICollection<TransferRequst> RabbitTransfers_Issued { get; set; }
+        public virtual ICollection<TransferRequst> RabbitTransfers_Received { get; set; }
 
 
 
@@ -59,8 +59,8 @@ namespace DB_AngoraLib.Models
         }
         public User() 
         {
-            SentRabbitTransferRequests = new List<RabbitTransfer>();
-            ReceivedRabbitTransferRequests = new List<RabbitTransfer>();
+            RabbitTransfers_Issued = new List<TransferRequst>();
+            RabbitTransfers_Received = new List<TransferRequst>();
         }
     }
 }

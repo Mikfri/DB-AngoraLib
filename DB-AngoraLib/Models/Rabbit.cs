@@ -187,7 +187,7 @@ namespace DB_AngoraLib.Models
         public virtual ICollection<Rabbit> MotheredChildren { get; set; } // Er altid null hvis, Rabbit er far/Han
         public virtual ICollection<Rabbit> FatheredChildren { get; set; } // Er altid null hvis, Rabbit er mor/Hun
         public virtual ICollection<Photo> Photos { get; set; }
-        public virtual ICollection<RabbitTransfer> PreviousOwners { get; set; }
+        //public virtual ICollection<RabbitTransfer> PreviousOwners { get; set; }
 
 
         public Rabbit(string rightEarId, string leftEarId, string? originId, string? ownerId, string? nickName, Race race, Color color, DateOnly dateOfBirth, DateOnly? dateOfDeath, Gender gender, ForSale? forSale, string? fatherId_Placeholder, string? motherId_Placeholder)

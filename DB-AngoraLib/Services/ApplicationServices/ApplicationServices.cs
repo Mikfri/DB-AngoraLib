@@ -62,6 +62,7 @@ namespace DB_AngoraLib.Services.ApplicationServices
 
         // TODO: Se om Approve/reject application kan laves til een metode med en bool parameter ala,
         // Respond_ApplicationRequest(int applicationId, bool isApproved, string reason = null)
+        // .. måske den pågældende bruger skal modtage en notifikation/email om afvisning/success
 
         //----------------: Approve application (Create 'Breeder')
         public async Task ApproveApplicationAsync(int applicationId)    
@@ -109,6 +110,8 @@ namespace DB_AngoraLib.Services.ApplicationServices
 
         //---------------------------------: READ/GET :---------------------------------
         //----------------: Get pending applications
+
+        // TODO: Skal returnere en DTO i stedet for modellen
         public async Task<IEnumerable<BreederApplication>> GetPendingApplicationsAsync()
         {
             // Brug _dbRepository til at hente alle ansøgninger med status 'Pending'
