@@ -15,7 +15,6 @@ namespace DB_AngoraLib.MockData
             //---------------------: IDAS RABBIT COLLECTION
 
             new Rabbit(
-            //1,
             "5095",                 // RightEarId
             "002",                  // LeftEarId
             "IdasId",               // OriginId (User UserOrigin)      
@@ -31,7 +30,6 @@ namespace DB_AngoraLib.MockData
             "5095-001"),            // Mother_EarCombId
 
             new Rabbit(
-            //2,
             "5095",
             "001",
             "IdasId",
@@ -47,7 +45,6 @@ namespace DB_AngoraLib.MockData
             null),
 
             new Rabbit(
-            //3,
             "5095",
             "003",
             "IdasId",
@@ -63,7 +60,6 @@ namespace DB_AngoraLib.MockData
             "5095-001"),
 
             new Rabbit(
-            //4,
             "4640",
             "120",
             null,
@@ -79,7 +75,6 @@ namespace DB_AngoraLib.MockData
             null),
 
             new Rabbit(
-            //5,
             "4640",
             "105",
             null,
@@ -96,7 +91,6 @@ namespace DB_AngoraLib.MockData
 
             //---------------------: MAJAS RABBIT COLLECTION
             new Rabbit(
-            //6,
             "4398",
             "3020",
             null,
@@ -112,13 +106,12 @@ namespace DB_AngoraLib.MockData
             null),
 
             new Rabbit(
-            //7,
             "5053",
             "0223",
             "MajasId",
             "MajasId",
             "Chinchou",
-            Race.Satinangora,
+            Race.Satin_Angora,
             Color.Blå,
             new DateOnly(2023, 05, 30),
             null,
@@ -128,13 +121,12 @@ namespace DB_AngoraLib.MockData
             "4977-213"),
 
             new Rabbit(
-            //8,
             "5053",
             "0723",
             "MajasId",
             "MajasId",
             "Sandshrew",
-            Race.Satinangora,
+            Race.Satin_Angora,
             Color.Brun_Havana,
             new DateOnly(2023, 10, 15),
             null,
@@ -144,13 +136,12 @@ namespace DB_AngoraLib.MockData
             "4977-315"),
 
             new Rabbit(
-            //9,
             "5053",
             "1023",
             "MajasId",
             "MajasId",
             "Marabou",
-            Race.Satinangora,
+            Race.Satin_Angora,
             Color.Brun_Havana,
             new DateOnly(2023, 10, 15),
             null,
@@ -160,13 +151,12 @@ namespace DB_AngoraLib.MockData
             "4977-315"),
 
             new Rabbit(
-            //10,
             "M63",
             "2104",
             null,
             "MajasId",
             "Ortovi",
-            Race.Satinangora,
+            Race.Satin_Angora,
             Color.Elfenben,
             new DateOnly(2023, 05, 22),
             null,
@@ -176,13 +166,12 @@ namespace DB_AngoraLib.MockData
             "M63-164"),
 
             new Rabbit(
-            //11,
             "5053",
             "0823",
             "MajasId",
             "MajasId",
             "Pepsi",
-            Race.Satinangora,
+            Race.Satin_Angora,
             Color.Kanel,
             new DateOnly(2023, 10, 15),
             null,
@@ -192,13 +181,12 @@ namespace DB_AngoraLib.MockData
             "4977-315"),
 
             new Rabbit(
-            //12,
             "5053",
             "0923",
             "MajasId",
             "MajasId",
             "Cola",
-            Race.Satinangora,
+            Race.Satin_Angora,
             Color.Rødbrun_Madagascar,
             new DateOnly(2023, 10, 15),
             null,
@@ -208,13 +196,12 @@ namespace DB_AngoraLib.MockData
             "4977-315"),
 
             new Rabbit(
-            //13,
             "5053",
             "0623",
             "MajasId",
             "MajasId",
             "Karla",
-            Race.Satinangora,
+            Race.Satin_Angora,
             Color.Gråblå_MarburgerEgern,
             new DateOnly(2023, 08, 17),
             null,
@@ -224,13 +211,12 @@ namespace DB_AngoraLib.MockData
             "4977-213"),
 
             new Rabbit(
-            //14,
             "M63",
             "3102",
             null,
             "MajasId",
             "Xådda",
-            Race.Satinangora,
+            Race.Satin_Angora,
             Color.Gråblå_MarburgerEgern,
             new DateOnly(2023, 09, 23),
             null,
@@ -240,13 +226,12 @@ namespace DB_AngoraLib.MockData
             "M63-0000"),
 
             new Rabbit(
-            //15,
             "4977",
             "206",
             null,
             "MajasId",
             "Dario",
-            Race.Satinangora,
+            Race.Satin_Angora,
             Color.Sort_Alaska,
             new DateOnly(2022, 02, 02),
             new DateOnly(2024, 04, 05),
@@ -256,13 +241,12 @@ namespace DB_AngoraLib.MockData
             "M63-989"),
 
             new Rabbit(
-            //16,
             "4977",
             "315",
             null,
             "MajasId",
             "Miranda",
-            Race.Satinangora,
+            Race.Satin_Angora,
             Color.Sort_Alaska,
             new DateOnly(2023, 01, 13),
             new DateOnly(2024, 04, 15),
@@ -272,13 +256,12 @@ namespace DB_AngoraLib.MockData
             "13-232"),
 
             new Rabbit(
-            //17,
             "5053",
             "0423",
             "MajasId",
             "MajasId",
             "Gastly",
-            Race.Satinangora,
+            Race.Satin_Angora,
             Color.Sort_Alaska,
             new DateOnly(2023, 05, 30),
             null,
@@ -288,13 +271,12 @@ namespace DB_AngoraLib.MockData
             "4977-213"),
 
             new Rabbit(
-            //18,
             "V23",
             "023",
             null,
             "MajasId",
             "Aslan",
-            Race.Satinangora,
+            Race.Satin_Angora,
             Color.Vildtbrun,
             new DateOnly(2020, 04, 10),
             new DateOnly(2024, 04, 23),
@@ -304,13 +286,12 @@ namespace DB_AngoraLib.MockData
             null),
 
             new Rabbit(
-            //19,
             "4977",
             "213",
             null,
             "MajasId",
             "Frida",
-            Race.Satinangora,
+            Race.Satin_Angora,
             Color.Vildtrød_Harefarvet,
             new DateOnly(2022, 03, 24),
             null,
@@ -320,7 +301,6 @@ namespace DB_AngoraLib.MockData
             "M63-155"),
 
             new Rabbit(
-            //20,
             "5053",
             "0120",
             "MajasId",
@@ -336,7 +316,6 @@ namespace DB_AngoraLib.MockData
             null),
 
             new Rabbit(
-            //21,
             "3658",
             "0819",
             null,
@@ -352,13 +331,12 @@ namespace DB_AngoraLib.MockData
             null),
 
             new Rabbit(
-           //22,
             "5053",
             "0523",
             "MajasId",
             "MajasId",
             "Charizard",
-            Race.Satinangora,
+            Race.Satin_Angora,
             Color.Vildtrød_Harefarvet,
             new DateOnly(2023, 08, 17),
             null,
@@ -373,7 +351,7 @@ namespace DB_AngoraLib.MockData
             "MajasId",
             "MajasId",
             "Pichu",
-            Race.Satinangora,
+            Race.Satin_Angora,
             Color.Vildtrød_Harefarvet,
             new DateOnly(2023, 05, 30),
             null,
@@ -388,7 +366,7 @@ namespace DB_AngoraLib.MockData
             "MajasId",
             "MajasId",
             "Hunter",
-            Race.Satinangora,
+            Race.Satin_Angora,
             Color.Sort_Alaska,
             new DateOnly(2023, 08, 17),
             new DateOnly(2023, 12, 18),
@@ -403,7 +381,7 @@ namespace DB_AngoraLib.MockData
             "MajasId",
             "MajasId",
             "Jester",
-            Race.Satinangora,
+            Race.Satin_Angora,
             Color.Vildtrød_Harefarvet,
             new DateOnly(2024, 04, 1),
             null,
@@ -418,7 +396,7 @@ namespace DB_AngoraLib.MockData
             "MajasId",
             "MajasId",
             "Chokolade",
-            Race.Satinangora,
+            Race.Satin_Angora,
             Color.Gråblå_LilleEgern,
             new DateOnly(2024, 04, 18),
             null,
@@ -433,7 +411,7 @@ namespace DB_AngoraLib.MockData
             "MajasId",
             "MajasId",
             "Grizzle",
-            Race.Satinangora,
+            Race.Satin_Angora,
             Color.Gråblå_LilleEgern,
             new DateOnly(2024, 04, 18),
             null,
@@ -448,7 +426,7 @@ namespace DB_AngoraLib.MockData
             "MajasId",
             "MajasId",
             "Gruzzle",
-            Race.Satinangora,
+            Race.Satin_Angora,
             Color.Brun_Havana,
             new DateOnly(2024, 04, 18),
             null,
@@ -463,7 +441,7 @@ namespace DB_AngoraLib.MockData
             "MajasId",
             "MajasId",
             "Ice Beam",
-            Race.Satinangora,
+            Race.Satin_Angora,
             Color.Gråblå_LilleEgern,
             new DateOnly(2024, 04, 18),
             null,

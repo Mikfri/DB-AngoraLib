@@ -10,10 +10,8 @@ namespace DB_AngoraLib.Services.ApplicationServices
 {
     public interface IApplicationService
     {
-        Task ApplyForBreederRoleAsync(string userId, Application_BreederDTO applicationDTO);
-        Task ApproveApplicationAsync(int applicationId);
-        Task RejectApplicationAsync(int applicationId, string rejectionReason);
-
-        Task<IEnumerable<ApplicationBreeder>> GetPendingApplicationsAsync();
+        Task Apply_ApplicationBreeder(string userId, ApplicationBreeder_CreateDTO applicationDTO);
+        Task Respond_ApplicationBreeder(int applicationId, ApplicationBreeder_ResponseDTO responseDTO);
+        Task<IEnumerable<ApplicationBreeder>> GetAll_ApplicationBreeder_Pending();
     }
 }

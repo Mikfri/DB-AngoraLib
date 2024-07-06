@@ -31,10 +31,10 @@ namespace DB_AngoraLib.Models
         //public virtual ICollection<IdentityUserLogin<string>> Logins { get; set; }
         //public virtual ICollection<IdentityUserToken<string>> Tokens { get; set; }
         //public virtual ICollection<IdentityUserRole<string>> UserRoles { get; set; }
-        public ICollection<ApplicationBreeder> BreederApplications { get; set; }
+        public virtual ICollection<ApplicationBreeder> BreederApplications { get; set; }
 
-        public ICollection<Rabbit> RabbitsOwned { get; set; }
-        public ICollection<Rabbit> RabbitsLinked { get; set; }
+        public virtual ICollection<Rabbit> RabbitsOwned { get; set; }
+        public virtual ICollection<Rabbit> RabbitsLinked { get; set; }  //RabbitsRaised?
 
         public virtual ICollection<TransferRequst> RabbitTransfers_Issued { get; set; }
         public virtual ICollection<TransferRequst> RabbitTransfers_Received { get; set; }

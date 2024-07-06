@@ -94,6 +94,62 @@ namespace DB_AngoraLib.Services.TransferService
         }
 
 
+        public async Task<TransferRequest_ContractDTO> Response_TransferRequest(string recipentId, int transferId, TransferRequest_ResponseDTO responseDTO)
+        {
+            var transferReq = await _dbRepository.GetDbSet()
+                .Include(rt => rt.Rabbit)
+                .Include(rt => rt.UserIssuer)
+                .Include(rt => rt.UserRecipent)
+                .FirstOrDefaultAsync(rt => rt.Id == transferId);
+
+            var proposedOwner = await _accountService.Get_UserByIdAsync(recipentId);
+
+            if (transferReq == null)
+            {
+                throw new ArgumentException("Overførselsanmodning ikke fundet.");
+            }
+
+            if (transferReq.RecipentId != recipentId)
+            {
+                throw new InvalidOperationException("Du har ikke tilladelse til at svare på denne anmodning.");
+            }
+
+            if (transferReq.Status != RequestStatus.Pending)
+            {
+                throw new InvalidOperationException("Denne anmodning er ikke længere aktiv.");
+            }
+
+            transferReq.Status = responseDTO.Accept ? RequestStatus.Approved : RequestStatus.Rejected;
+
+            if (responseDTO.Accept)
+            {
+                transferReq.Status = RequestStatus.Approved;
+                transferReq.Rabbit.OwnerId = transferReq.RecipentId;
+                transferReq.DateAccepted = DateOnly.FromDateTime(DateTime.Now); // Sætter den aktuelle dato
+
+                await _rabbitServices.UpdateRabbitOwnershipAsync(transferReq.Rabbit);
+
+                // Notify current owner
+                await _notificationService.CreateNotificationAsync(transferReq.IssuerId,
+                    $"Din anmodning om at overføre ejerskab af kaninen {transferReq.Rabbit.NickName} er blevet accepteret");
+
+                return await Get_RabbitTransfer_Contract(recipentId, transferId);
+            }
+            else
+            {
+                transferReq.Status = RequestStatus.Rejected;
+
+                // Notify current owner
+                await _notificationService.CreateNotificationAsync(transferReq.IssuerId,
+                    $"Din anmodning om at overføre ejerskab af kaninen {transferReq.Rabbit.NickName} er blevet afvist");
+
+                // Delete transfer
+                await _dbRepository.DeleteObjectAsync(transferReq);
+
+                return null;
+            }
+        }
+
         //----------------------------------------------: GET/READ :----------------------------------------------
 
         public async Task<TransferRequest_ContractDTO> Get_RabbitTransfer_Contract(string userId, int transferId)
@@ -171,61 +227,7 @@ namespace DB_AngoraLib.Services.TransferService
             }
         }
 
-        public async Task<TransferRequest_ContractDTO> Response_TransferRequest(string recipentId, int transferId, TransferRequest_ResponseDTO responseDTO)
-        {
-            var transferReq = await _dbRepository.GetDbSet()
-                .Include(rt => rt.Rabbit)
-                .Include(rt => rt.UserIssuer)
-                .Include(rt => rt.UserRecipent)
-                .FirstOrDefaultAsync(rt => rt.Id == transferId);
-
-            var proposedOwner = await _accountService.Get_UserByIdAsync(recipentId);
-
-            if (transferReq == null)
-            {
-                throw new ArgumentException("Overførselsanmodning ikke fundet.");
-            }
-
-            if (transferReq.RecipentId != recipentId)
-            {
-                throw new InvalidOperationException("Du har ikke tilladelse til at svare på denne anmodning.");
-            }
-
-            if (transferReq.Status != RequestStatus.Pending)
-            {
-                throw new InvalidOperationException("Denne anmodning er ikke længere aktiv.");
-            }
-
-            transferReq.Status = responseDTO.Accept ? RequestStatus.Approved : RequestStatus.Rejected;
-
-            if (responseDTO.Accept)
-            {
-                transferReq.Status = RequestStatus.Approved;
-                transferReq.Rabbit.OwnerId = transferReq.RecipentId;
-                transferReq.DateAccepted = DateOnly.FromDateTime(DateTime.Now); // Sætter den aktuelle dato
-
-                await _rabbitServices.UpdateRabbitOwnershipAsync(transferReq.Rabbit);
-
-                // Notify current owner
-                await _notificationService.CreateNotificationAsync(transferReq.IssuerId,
-                    $"Din anmodning om at overføre ejerskab af kaninen {transferReq.Rabbit.NickName} er blevet accepteret");
-
-                return await Get_RabbitTransfer_Contract(recipentId, transferId);
-            }
-            else
-            {
-                transferReq.Status = RequestStatus.Rejected;
-
-                // Notify current owner
-                await _notificationService.CreateNotificationAsync(transferReq.IssuerId,
-                    $"Din anmodning om at overføre ejerskab af kaninen {transferReq.Rabbit.NickName} er blevet afvist");
-
-                // Delete transfer
-                await _dbRepository.DeleteObjectAsync(transferReq);
-
-                return null;
-            }
-        }
+      
 
 
         //---------------------------------: HELPER METHODS :---------------------------------

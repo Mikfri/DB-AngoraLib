@@ -64,7 +64,7 @@ namespace DB_AngoraMST.Services_InMemTest
             _context.Dispose();
         }
 
-        // Add your test methods here
+        //---------------------------------: GET TESTS :---------------------------------
         [TestMethod]
         public async Task GetAllUsersAsync_TEST()
         {
@@ -110,32 +110,13 @@ namespace DB_AngoraMST.Services_InMemTest
             Assert.AreEqual(expectedUser.Email, actualUserByEmail.Email);
         }
 
-        [TestMethod]
-        public async Task GetMyRabbitCollection_TEST()
-        {
-            // Arrange
-            var userId = "MajasId";
-
-            // Act
-            var rabbitCollection = await _accountService.Get_MyRabbitCollection(userId);
-
-            foreach (var rabbit in rabbitCollection)
-            {
-                Console.WriteLine(rabbit.NickName);
-            }
-
-            // Assert
-            Assert.IsNotNull(rabbitCollection);
-            // Add more assertions based on your test expectations
-        }
-
 
         [TestMethod]
         public async Task Get_Rabbits_OwnedAlive_Filtered_TEST()
         {
             // Arrange
             var userId = "MajasId";
-            var race = Race.Satinangora;
+            var race = Race.Satin_Angora;
             var dateOfBirth = new DateOnly(2024, 3, 1);
 
             var filter = new Rabbit_FilteredRequestDTO

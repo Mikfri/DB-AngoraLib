@@ -26,6 +26,6 @@ namespace DB_AngoraLib.Services.RabbitService
         Task UpdateRabbitOwnershipAsync(Rabbit rabbit);
         Task<Rabbit_PreviewDTO> DeleteRabbit_RBAC(string userId, string earCombId, IList<Claim> userClaims);
 
-        Task LinkRabbits_ToNewBreederAsync(string breederRegNo, string userId);
+        Task LinkRabbits_ToNewBreederAsync(string userId, string breederRegNo);
     }
 }

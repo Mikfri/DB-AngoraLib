@@ -39,7 +39,7 @@ namespace DB_AngoraLib.Models
         Rex,
         Sallander,
         Satin,
-        Satinangora,
+        Satin_Angora,
 
         Stor_Chinchilla,
         Stor_Havana,
@@ -150,7 +150,7 @@ namespace DB_AngoraLib.Models
         {
             get
             {
-                if (RabbitValidator.NotApprovedColorsByRace.TryGetValue(Race, out var notApprovedColors))
+                if (Rabbit_Validator.NotApprovedColorsByRace.TryGetValue(Race, out var notApprovedColors))
                 {
                     return !notApprovedColors.Contains(Color);
                 }

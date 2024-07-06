@@ -84,9 +84,9 @@ namespace DB_AngoraLib.EF_DbContext
 
 
             modelBuilder.Entity<ApplicationBreeder>()
-                .HasOne(ba => ba.UserApplicant)         // BreederApplication har én UserApplicant
-                .WithMany(u => u.BreederApplications)   // User har mange BreederApplications
-                .HasForeignKey(ba => ba.UserId);        // ForeignKey i BreederApplication der peger på User
+                .HasOne(ba => ba.UserApplicant)           // ApplicationBreeder har én UserApplicant
+                .WithMany(u => u.BreederApplications)     // User har mange ApplicationBreeder
+                .HasForeignKey(ba => ba.UserApplicantId); // ForeignKey i ApplicationBreeder der peger på User
 
 
             //modelBuilder.Entity<Rating>()

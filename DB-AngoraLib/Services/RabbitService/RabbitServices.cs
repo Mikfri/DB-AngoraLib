@@ -16,9 +16,9 @@ namespace DB_AngoraLib.Services.RabbitService
     {
         private readonly IGRepository<Rabbit> _dbRepository;
         private readonly IAccountService _accountService;
-        private readonly RabbitValidator _validatorService;
+        private readonly Rabbit_Validator _validatorService;
 
-        public RabbitServices(IGRepository<Rabbit> dbRepository, IAccountService userService, RabbitValidator validatorService)
+        public RabbitServices(IGRepository<Rabbit> dbRepository, IAccountService userService, Rabbit_Validator validatorService)
         {
             _dbRepository = dbRepository;
             _accountService = userService;
@@ -480,7 +480,7 @@ namespace DB_AngoraLib.Services.RabbitService
         /// <param name="breederRegNo">Brugerens avlernummer</param>
         /// <param name="userId">Brugerens ID</param>
         /// <returns></returns>
-        public async Task LinkRabbits_ToNewBreederAsync(string breederRegNo, string userId)
+        public async Task LinkRabbits_ToNewBreederAsync(string userId, string breederRegNo)
         {
             // Filtrer kaniner baseret på RightEarId, der matcher breederRegNo, direkte i databasen
             var rabbitsToUpdateList = await _dbRepository.GetDbSet()

@@ -52,7 +52,7 @@ namespace DB_AngoraMST.Services_InMemTest
             _accountService = new AccountServices(userRepository, _emailServiceMock.Object, _userManagerMock.Object);
 
             var rabbitRepository = new GRepository<Rabbit>(_context);
-            var validatorService = new RabbitValidator();
+            var validatorService = new Rabbit_Validator();
             _rabbitService = new RabbitServices(rabbitRepository, _accountService, validatorService); // Changed from _userService
         }
 

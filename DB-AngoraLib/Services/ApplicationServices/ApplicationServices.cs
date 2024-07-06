@@ -31,7 +31,7 @@ namespace DB_AngoraLib.Services.ApplicationServices
 
         //---------------------------------: CREATE/POST :---------------------------------
         //----------------: Create application
-        public async Task ApplyForBreederRoleAsync(string userId, Application_BreederDTO applicationDTO)
+        public async Task Apply_ApplicationBreeder(string userId, ApplicationBreeder_CreateDTO applicationDTO)
         {
             // Brug GetUserByIdAsync fra IAccountService til at hente den aktuelt loggede ind brugers oplysninger
             var user = await _accountServices.Get_UserByIdAsync(userId);
@@ -42,7 +42,7 @@ namespace DB_AngoraLib.Services.ApplicationServices
                 throw new Exception("Du er allerede registreret som avler");
             }
 
-            var existingApplication = await _dbRepository.GetObject_ByFilterAsync(ba => ba.UserId == userId && ba.Status == RequestStatus.Pending);
+            var existingApplication = await _dbRepository.GetObject_ByFilterAsync(ba => ba.UserApplicantId == userId && ba.Status == RequestStatus.Pending);
             if (existingApplication != null)
             {
                 throw new Exception("Du har allerede en afventende ansøgning om optagelse som avler! Vent venligst");
@@ -50,7 +50,7 @@ namespace DB_AngoraLib.Services.ApplicationServices
 
             var application = new ApplicationBreeder
             {
-                UserId = userId,
+                UserApplicantId = userId,
                 RequestedBreederRegNo = applicationDTO.RequestedBreederRegNo,
                 DocumentationPath = applicationDTO.DocumentationPath,
                 Status = RequestStatus.Pending
@@ -60,61 +60,45 @@ namespace DB_AngoraLib.Services.ApplicationServices
         }
 
 
-        // TODO: Se om Approve/reject application kan laves til een metode med en bool parameter ala,
-        // Respond_ApplicationRequest(int applicationId, bool isApproved, string reason = null)
-        // .. måske den pågældende bruger skal modtage en notifikation/email om afvisning/success
-
-        //----------------: Approve application (Create 'Breeder')
-        public async Task ApproveApplicationAsync(int applicationId)    
+        // TODO: Se om den pågældende bruger skal modtage en notifikation/email om afvisning/success
+        public async Task Respond_ApplicationBreeder(int applicationId, ApplicationBreeder_ResponseDTO responseDTO)
         {
-            // Find ansøgningen ved hjælp af GRepository
             var application = await _dbRepository.GetObject_ByIntKEYAsync(applicationId);
-            if (application == null) throw new Exception("Application not found");
+            if (application == null) throw new Exception("Ansøgning ikke fundet");
 
-            // Opdater ansøgningens status
-            application.Status = RequestStatus.Approved;
-
-            // Find brugeren og opdater deres rolle og BreederRegNo
-            var user = await _accountServices.Get_UserByIdAsync(application.UserId);
-            if (user == null) throw new Exception("User not found");
-
-            var addToRoleResult = await _userManager.AddToRoleAsync(user, "Breeder");
-            if (!addToRoleResult.Succeeded)
+            if (responseDTO.IsApproved)
             {
-                throw new Exception("Failed to add user to Breeder role");
+                application.Status = RequestStatus.Approved;
+
+                var user = await _accountServices.Get_UserByIdAsync(application.UserApplicantId);
+                if (user == null) throw new Exception("Bruger ikke fundet");
+
+                var addToRoleResult = await _userManager.AddToRoleAsync(user, "Breeder");
+                if (!addToRoleResult.Succeeded)
+                {
+                    throw new Exception("Brugerollen 'Breeder' kunne ikke tildeles");
+                }
+
+                user.BreederRegNo = application.RequestedBreederRegNo;
+                await _rabbitServices.LinkRabbits_ToNewBreederAsync(user.Id, user.BreederRegNo);
+            }
+            else
+            {
+                application.Status = RequestStatus.Rejected;
+                application.RejectionReason = responseDTO.RejectionReason ?? "Venligst kontakt DB-Angoras service på yyy@yyy.dk, for hjælp";
             }
 
-            user.BreederRegNo = application.RequestedBreederRegNo;
-
-            // Gem ændringerne i ansøgningen
-            await _dbRepository.UpdateObjectAsync(application);
-
-            // Link relevante kaniner til den nye avler
-            await _rabbitServices.LinkRabbits_ToNewBreederAsync(user.BreederRegNo, user.Id);
-        }
-
-        //----------------: Reject application
-        public async Task RejectApplicationAsync(int applicationId, string reason)
-        {
-            // Find ansøgningen ved hjælp af GRepository
-            var application = await _dbRepository.GetObject_ByIntKEYAsync(applicationId);
-            if (application == null) throw new Exception("Application not found");
-
-            // Opdater ansøgningens status og tilføj afvisningsårsagen
-            application.Status = RequestStatus.Rejected;
-            application.RejectionReason = reason;
-
-            // Gem ændringerne i ansøgningen
             await _dbRepository.UpdateObjectAsync(application);
         }
+
+
 
         //---------------------------------: READ/GET :---------------------------------
         //----------------: Get pending applications
 
         // TODO: Skal returnere en DTO i stedet for modellen
-        public async Task<IEnumerable<ApplicationBreeder>> GetPendingApplicationsAsync()
+        public async Task<IEnumerable<ApplicationBreeder>> GetAll_ApplicationBreeder_Pending()
         {
-            // Brug _dbRepository til at hente alle ansøgninger med status 'Pending'
             var pendingApplications = await _dbRepository.GetAllObjectsAsync();
             return pendingApplications.Where(a => a.Status == RequestStatus.Pending);
         }

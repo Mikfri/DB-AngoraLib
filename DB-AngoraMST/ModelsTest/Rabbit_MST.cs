@@ -8,7 +8,7 @@ namespace DB_AngoraMST.ModelsTest
     public class Rabbit_MST
     {
         // Arrange
-        private RabbitValidator rabbitValidator = new RabbitValidator(); 
+        private Rabbit_Validator rabbitValidator = new Rabbit_Validator(); 
 
         private Rabbit rabbit = new() { RightEarId = "5053", LeftEarId = "001", Race = Race.Angora, Color = Color.Blå, };
 
@@ -136,7 +136,7 @@ namespace DB_AngoraMST.ModelsTest
         /////////////// Race && Color
         [TestMethod]
         [DataRow(Race.Angora, Color.Hvid_Albino)]           // Kombi GYLDIG
-        [DataRow(Race.Satinangora, Color.Hvid_Blåøjet)]
+        [DataRow(Race.Satin_Angora, Color.Hvid_Blåøjet)]
         //[DataRow(Race.Satinangora, Color.Gouwenaar)]
         public void ColorForRace_ValidTest(Race race, Color color)
         {

@@ -112,42 +112,9 @@ namespace DB_AngoraLib.Services.AccountService
         }
 
 
-        //---------------------------------: GET USERs ICOLLECTION METHODS :--------------------       
-        public async Task<List<Rabbit_PreviewDTO>> Get_MyRabbitCollection(string userId)
-        {
-            var currentUserCollection = await _dbRepository.GetDbSet()
-                .AsNoTracking()
-                .Include(u => u.RabbitsOwned)
-                .FirstOrDefaultAsync(u => u.Id == userId);
-
-            if (currentUserCollection == null)
-            {
-                Console.WriteLine("User not found");
-                return new List<Rabbit_PreviewDTO>();
-            }
-
-            if (currentUserCollection.RabbitsOwned.Count < 1)
-            {
-                Console.WriteLine("No rabbits found in collection");
-                return new List<Rabbit_PreviewDTO>();
-            }
-
-            return currentUserCollection.RabbitsOwned
-                .Select(rabbit => new Rabbit_PreviewDTO
-                {
-                    EarCombId = rabbit.EarCombId,
-                    NickName = rabbit.NickName,
-                    Race = rabbit.Race,
-                    Color = rabbit.Color,
-                    Gender = rabbit.Gender,
-                    //UserOwner = rabbit.UserOwner != null ? $"{rabbit.UserOwner.FirstName} {rabbit.UserOwner.LastName}" : null,
-                    UserOwner = rabbit.UserOwner?.FirstName + rabbit.UserOwner?.LastName,
-                    //UserOrigin = rabbit.UserOrigin != null ? $"{rabbit.UserOrigin.FirstName} {rabbit.UserOrigin.LastName}" : null,
-                    UserOrigin = rabbit.UserOrigin?.FirstName + rabbit.UserOrigin?.LastName,
-                })
-                .ToList();
-        }
-
+        //---------------------------------: GET USERs ICOLLECTION METHODS :--------------------
+        //-----------: Rabbits
+       
         public async Task<List<Rabbit_PreviewDTO>> Get_Rabbits_OwnedAlive_FilteredAsync(
            string userId, Rabbit_FilteredRequestDTO filter)
         {
@@ -224,7 +191,6 @@ namespace DB_AngoraLib.Services.AccountService
             return rabbitPreviewDTOsList;
         }
 
-
         public async Task<List<Rabbit_PreviewDTO>> Get_Rabbits_FromMyFold(string userId)
         {
             var userWithRabbitsLinked = await _dbRepository.GetDbSet()
@@ -258,7 +224,7 @@ namespace DB_AngoraLib.Services.AccountService
                 .ToList();
         }
 
-
+        //-----------: TransferRequests
         public async Task<List<TransferRequest_ReceivedDTO>> Get_TransferRequests_Received(
             string userId, TransferRequest_ReceivedFilterDTO filter)
         {
@@ -308,6 +274,42 @@ namespace DB_AngoraLib.Services.AccountService
             }).ToListAsync();
 
             return transferRequests;
+        }
+
+        // TODO: Implementer Get_TransferRequests_Issued
+
+        //-----------: ApplicationBreeder
+        public async Task<List<ApplicationBreeder_PreviewDTO>> GetAll_ApplicationBreeder(string userId)
+        {
+            var user = await _dbRepository.GetDbSet()
+                .AsNoTracking()
+                .Include(u => u.BreederApplications)
+                .FirstOrDefaultAsync(u => u.Id == userId);
+
+            if (user == null)
+            {
+                Console.WriteLine("Bruger ikke fundet");
+                return new List<ApplicationBreeder_PreviewDTO>();
+            }
+
+            if (user.BreederApplications.Count < 1)
+            {
+                Console.WriteLine("Ingen ansøgninger for blive Breeder eksistere");
+                return new List<ApplicationBreeder_PreviewDTO>();
+            }
+
+            return user.BreederApplications
+                .Select(applicationBreeder => new ApplicationBreeder_PreviewDTO
+                {
+                    Id = applicationBreeder.Id,
+                    Status = applicationBreeder.Status,
+                    DateSubmitted = applicationBreeder.DateSubmitted,
+                    UserApplicant_FullName = $"{applicationBreeder.UserApplicant.FirstName} {applicationBreeder.UserApplicant.LastName}",
+                    UserApplicant_RequestedBreederRegNo = applicationBreeder.RequestedBreederRegNo,
+                    UserApplicant_DocumentationPath = applicationBreeder.DocumentationPath,
+                    RejectionReason = applicationBreeder.RejectionReason,                   
+                })
+                .ToList();
         }
 
 

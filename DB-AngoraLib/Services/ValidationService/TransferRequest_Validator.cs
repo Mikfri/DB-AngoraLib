@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DB_AngoraLib.Services.ValidationService
 {
-    public class RabbitTransferValidator
+    public class TransferRequest_Validator
     {
 
     }
