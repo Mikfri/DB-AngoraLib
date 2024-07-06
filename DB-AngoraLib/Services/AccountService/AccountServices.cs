@@ -151,13 +151,7 @@ namespace DB_AngoraLib.Services.AccountService
         public async Task<List<Rabbit_PreviewDTO>> Get_Rabbits_OwnedAlive_FilteredAsync(
            string userId, Rabbit_FilteredRequestDTO filter)
         {
-            // TODO: Lav metoden så der enten filtreres på døde eller levende kaniner
-            //var query = _dbRepository.GetDbSet()
-            //    .AsNoTracking()
-            //    .Include(u => u.RabbitsOwned)
-            //    .Where(u => u.Id == userId)
-            //    .SelectMany(u => u.RabbitsOwned)
-            //    .AsQueryable();
+
             var query = _dbRepository.GetDbSet()
                 .AsNoTracking()
                 .Include(u => u.RabbitsOwned)
@@ -265,8 +259,8 @@ namespace DB_AngoraLib.Services.AccountService
         }
 
 
-        // TODO: Metoden 'Get_TransferRequests_Received' er klar til implementering + test via RESTful API
-        public async Task<List<TransferRequest_ReceivedDTO>> Get_TransferRequests_Received(string userId, TransferRequest_ReceivedFilterDTO filter)
+        public async Task<List<TransferRequest_ReceivedDTO>> Get_TransferRequests_Received(
+            string userId, TransferRequest_ReceivedFilterDTO filter)
         {
             var query = _dbRepository.GetDbSet()
                 .AsNoTracking()

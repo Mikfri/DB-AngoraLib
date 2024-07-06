@@ -24,46 +24,33 @@ namespace DB_AngoraLib.Services.ValidationService
         }
 
 
-        public bool ValidateRaceAndColorCombo(Rabbit rabbit)
+        public bool ValidateRaceAndColorCombo(Race race, Color color)
         {
-            Race race = rabbit.Race;
-            Color color = rabbit.Color;
-
-            if (RabbitValidator.NotApprovedColorsByRace.TryGetValue(race, out var selectedColor))
+            if (NotApprovedColorsByRace.TryGetValue(race, out var notApprovedColors))
             {
-                return !selectedColor.Contains(color);
+                return !notApprovedColors.Contains(color);
             }
-            else
-            {
-                return false;
-            }
+            return false;
         }
 
 
-        public void ValidateRace(Rabbit rabbit)
+        public void ValidateRace(Race race)
         {
-            string raceStr = rabbit.Race.ToString();
-
-            if (string.IsNullOrEmpty(raceStr))
-            {
-                throw new ArgumentNullException("Kanin.Race: Feldtet skal udfyldes");
-            }
-
-            if (!Enum.IsDefined(typeof(Race), rabbit.Race))
+            if (!Enum.IsDefined(typeof(Race), race))
             {
                 throw new ArgumentException("Kanin.Race: Vælg en gyldig race fra listen");
             }
         }
 
-        public void ValidateColor(Rabbit rabbit)
-        {
-            Color color = rabbit.Color;
 
+        public void ValidateColor(Color color)
+        {
             if (!Enum.IsDefined(typeof(Color), color))
             {
                 throw new ArgumentException("Ugyldig farve! Vælg fra listen");
             }
         }
+
 
         public void ValidateRightEarId(string rightEarId)
         {
@@ -96,23 +83,17 @@ namespace DB_AngoraLib.Services.ValidationService
             {
                 throw new ArgumentException("Kanin.Id, skal være imellem 3 og 5 numeriske tal");
             }
-        }        
+        }
 
 
-        public void ValidateGender(Rabbit rabbit)
+        public void ValidateGender(Gender gender)
         {
-            string genderStr = rabbit.Gender.ToString();
-
-            if (string.IsNullOrEmpty(genderStr))
-            {
-                throw new ArgumentNullException("Kanin.Køn: Feldtet skal udfyldes");
-            }
-
-            if (!Enum.IsDefined(typeof(Gender), rabbit.Gender))
+            if (!Enum.IsDefined(typeof(Gender), gender))
             {
                 throw new ArgumentException("Kanin.Køn: Vælg et gyldigt køn (Han/Hun)");
             }
         }
+
 
         public void ValidateParentId(string parentId)
         {
@@ -137,10 +118,10 @@ namespace DB_AngoraLib.Services.ValidationService
             ValidateRightEarId(rabbit.RightEarId);
             ValidateLeftEarId(rabbit.LeftEarId);
 
-            ValidateRace(rabbit);
-            ValidateColor(rabbit);
-            ValidateRaceAndColorCombo(rabbit);
-            ValidateGender(rabbit);
+            ValidateRace(rabbit.Race);
+            ValidateColor(rabbit.Color);
+            ValidateRaceAndColorCombo(rabbit.Race, rabbit.Color);
+            ValidateGender(rabbit.Gender);
 
             //ValidateParentId(rabbit.FatherId);
             //ValidateParentId(rabbit.MotherId);

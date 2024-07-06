@@ -83,7 +83,7 @@ namespace DB_AngoraLib.EF_DbContext
                 .OnDelete(DeleteBehavior.Restrict); // Prevent cascade delete
 
 
-            modelBuilder.Entity<BreederApplication>()
+            modelBuilder.Entity<ApplicationBreeder>()
                 .HasOne(ba => ba.UserApplicant)         // BreederApplication har én UserApplicant
                 .WithMany(u => u.BreederApplications)   // User har mange BreederApplications
                 .HasForeignKey(ba => ba.UserId);        // ForeignKey i BreederApplication der peger på User
@@ -115,7 +115,7 @@ namespace DB_AngoraLib.EF_DbContext
                 .OnDelete(DeleteBehavior.Restrict);
         }
 
-        public DbSet<BreederApplication> BreederApplications { get; set; }
+        public DbSet<ApplicationBreeder> BreederApplications { get; set; }
         public DbSet<Rabbit> Rabbits { get; set; }
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<TransferRequst> TransferRequests { get; set; }

@@ -14,6 +14,6 @@ namespace DB_AngoraLib.Services.ApplicationServices
         Task ApproveApplicationAsync(int applicationId);
         Task RejectApplicationAsync(int applicationId, string rejectionReason);
 
-        Task<IEnumerable<BreederApplication>> GetPendingApplicationsAsync();
+        Task<IEnumerable<ApplicationBreeder>> GetPendingApplicationsAsync();
     }
 }

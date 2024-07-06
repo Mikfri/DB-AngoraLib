@@ -15,12 +15,12 @@ namespace DB_AngoraLib.Services.ApplicationServices
 {
     public class ApplicationServices : IApplicationService
     {
-        private readonly IGRepository<BreederApplication> _dbRepository;
+        private readonly IGRepository<ApplicationBreeder> _dbRepository;
         private readonly IRabbitService _rabbitServices;
         private readonly IAccountService _accountServices;
         private readonly UserManager<User> _userManager;
 
-        public ApplicationServices(IGRepository<BreederApplication> breederAppRepository, IRabbitService rabbitService, IAccountService accountService, UserManager<User> userManager)
+        public ApplicationServices(IGRepository<ApplicationBreeder> breederAppRepository, IRabbitService rabbitService, IAccountService accountService, UserManager<User> userManager)
         {
             _dbRepository = breederAppRepository;
             _rabbitServices = rabbitService;
@@ -48,7 +48,7 @@ namespace DB_AngoraLib.Services.ApplicationServices
                 throw new Exception("Du har allerede en afventende ansøgning om optagelse som avler! Vent venligst");
             }
 
-            var application = new BreederApplication
+            var application = new ApplicationBreeder
             {
                 UserId = userId,
                 RequestedBreederRegNo = applicationDTO.RequestedBreederRegNo,
@@ -112,7 +112,7 @@ namespace DB_AngoraLib.Services.ApplicationServices
         //----------------: Get pending applications
 
         // TODO: Skal returnere en DTO i stedet for modellen
-        public async Task<IEnumerable<BreederApplication>> GetPendingApplicationsAsync()
+        public async Task<IEnumerable<ApplicationBreeder>> GetPendingApplicationsAsync()
         {
             // Brug _dbRepository til at hente alle ansøgninger med status 'Pending'
             var pendingApplications = await _dbRepository.GetAllObjectsAsync();

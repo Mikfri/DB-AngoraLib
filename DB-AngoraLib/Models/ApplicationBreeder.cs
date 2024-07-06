@@ -13,7 +13,7 @@ namespace DB_AngoraLib.Models
         Rejected,
     }
 
-    public class BreederApplication
+    public class ApplicationBreeder
     {
         // Da navnet 'Id' følger EF Core namingkonvention, behøves der ikke at være en [Key] annotation,
         // eller angivning i DbContext OnModelCreating
@@ -28,6 +28,6 @@ namespace DB_AngoraLib.Models
         public RequestStatus Status { get; set; } = RequestStatus.Pending;
         public string? RejectionReason { get; set; }
 
-        public BreederApplication() { }
+        public ApplicationBreeder() { }
     }
 }
