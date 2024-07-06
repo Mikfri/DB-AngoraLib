@@ -4,10 +4,12 @@ using DB_AngoraLib.Repository;
 using DB_AngoraLib.Services.AccountService;
 using DB_AngoraLib.Services.RabbitService;
 using DB_AngoraLib.Services.ValidationService;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.Xml;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -30,14 +32,15 @@ namespace DB_AngoraLib.Services.TransferService
         }
 
         //----------------------------------------------: CREATE :----------------------------------------------
-        public async Task<TransferRequest_PreviewDTO> CreateTransferRequest(string issuerId, TransferRequest_CreateDTO createTransferDTO)
+        public async Task<TransferRequest_ContractDTO> CreateTransferRequest(string issuerId, TransferRequest_CreateDTO createTransferDTO)
+        //public async Task<TransferRequest_PreviewDTO> CreateTransferRequest(string issuerId, TransferRequest_CreateDTO createTransferDTO)
         {
             // Valider input (Dette trin kan udvides med mere detaljerede valideringer)
             if (createTransferDTO == null)
                 throw new ArgumentNullException(nameof(createTransferDTO));
 
             // Tjek for eksisterende kanin
-            var rabbit = await _rabbitServices.Get_Rabbit_ByEarCombId(createTransferDTO.EarCombId) 
+            var rabbit = await _rabbitServices.Get_Rabbit_ByEarCombId(createTransferDTO.Rabbit_EarCombId) 
                 ?? throw new ArgumentException("Kaninen blev ikke fundet");
 
             // Tjek for eksisterende nuværende ejer
@@ -64,13 +67,13 @@ namespace DB_AngoraLib.Services.TransferService
             {
                 IssuerId = issuerId,
 
-                RabbitId = createTransferDTO.EarCombId,
+                RabbitId = createTransferDTO.Rabbit_EarCombId,
                 RecipentId = userRecipent.Id,
                 Price = createTransferDTO.Price,
 
                 SaleConditions = createTransferDTO.SaleConditions,
                 Status = RequestStatus.Pending,
-                //ResponseDate = null,
+                DateAccepted = null,
             };
 
             await _dbRepository.AddObjectAsync(newTransferRequest);
@@ -78,16 +81,37 @@ namespace DB_AngoraLib.Services.TransferService
             await _notificationService.CreateNotificationAsync(
                 userRecipent.Id, $"Ny anmodning om at overtagning af ejerskab for kaninen {rabbit.EarCombId}: {rabbit.NickName}");
 
-            return new TransferRequest_PreviewDTO
+            //return new TransferRequest_PreviewDTO
+            //{
+            //    Id = newTransferRequest.Id,
+            //    Status = newTransferRequest.Status,
+            //    DateAccepted = newTransferRequest.DateAccepted,
+
+            //    Rabbit_EarCombId = newTransferRequest.RabbitId,
+            //    Issuer_BreederRegNo = userIssuer.BreederRegNo,
+            //    Recipent_BreederRegNo = userRecipent.BreederRegNo,
+
+            //    Price = newTransferRequest.Price,
+            //    SaleConditions = newTransferRequest.SaleConditions,
+            //};
+
+            return new TransferRequest_ContractDTO
             {
                 Id = newTransferRequest.Id,
                 Status = newTransferRequest.Status,
+                Issuer_BreederRegNo = newTransferRequest.UserIssuer.BreederRegNo,
+
+                Issuer_FullName = $"{newTransferRequest.UserIssuer.FirstName} {newTransferRequest.UserIssuer.LastName}",
+                Issuer_Email = newTransferRequest.UserIssuer.Email,
+                Issuer_RoadNameAndNo = newTransferRequest.UserIssuer.RoadNameAndNo,
+                Issuer_ZipCode = newTransferRequest.UserIssuer.ZipCode,
+                Issuer_City = newTransferRequest.UserIssuer.City,
+
+                Recipent_BreederRegNo = newTransferRequest.UserRecipent.BreederRegNo,
                 DateAccepted = newTransferRequest.DateAccepted,
 
-                EarCombId = newTransferRequest.RabbitId,
-                Issuer_BreederRegNo = userIssuer.BreederRegNo,
-                Recipent_BreederRegNo = userRecipent.BreederRegNo,
-
+                EarCombId = newTransferRequest.Rabbit.EarCombId,
+                NickName = newTransferRequest.Rabbit.NickName,
                 Price = newTransferRequest.Price,
                 SaleConditions = newTransferRequest.SaleConditions,
             };
@@ -163,15 +187,15 @@ namespace DB_AngoraLib.Services.TransferService
             var user = await _accountService.Get_UserByIdAsync(userId)
                 ?? throw new ArgumentException("Bruger ikke fundet.");
 
-            if (userId != transfer.IssuerId && userId != transfer.RecipentId)
-            {
-                throw new InvalidOperationException("Du har ikke tilladelse til at se denne anmodning");
-            }
-
             if (transfer == null)
             {
                 throw new ArgumentException("Overførselsanmodning ikke fundet.");
             }
+
+            if (userId != transfer.IssuerId && userId != transfer.RecipentId)
+            {
+                throw new UnauthorizedAccessException("Du har ikke tilladelse til at se denne anmodning");
+            }            
 
             if (transfer.Status == RequestStatus.Pending)
             {

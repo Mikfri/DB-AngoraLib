@@ -31,6 +31,8 @@ namespace DB_AngoraLib.Services.ApplicationServices
 
         //---------------------------------: CREATE/POST :---------------------------------
         //----------------: Create application
+
+        //TODO: Skal returnere en DTO for at opnå 201 Created
         public async Task Apply_ApplicationBreeder(string userId, ApplicationBreeder_CreateDTO applicationDTO)
         {
             // Brug GetUserByIdAsync fra IAccountService til at hente den aktuelt loggede ind brugers oplysninger

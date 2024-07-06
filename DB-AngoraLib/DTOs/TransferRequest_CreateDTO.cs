@@ -8,7 +8,7 @@ namespace DB_AngoraLib.DTOs
 {
     public record TransferRequest_CreateDTO
     {
-        public string EarCombId { get; init; }
+        public string Rabbit_EarCombId { get; init; }
         public string Recipent_BreederRegNo { get; init; }
 
         public int? Price { get; init; }

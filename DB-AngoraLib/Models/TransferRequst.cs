@@ -26,7 +26,7 @@ namespace DB_AngoraLib.Models
         public string? SaleConditions { get; set; }
 
         public RequestStatus Status { get; set; } = RequestStatus.Pending;
-        public DateOnly DateAccepted { get; set; }
+        public DateOnly? DateAccepted { get; set; }
 
         //public bool IsDeleted { get; set; } = false;
     }
