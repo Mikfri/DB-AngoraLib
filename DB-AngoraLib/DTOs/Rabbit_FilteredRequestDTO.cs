@@ -10,7 +10,7 @@ namespace DB_AngoraLib.DTOs
 {
     public record Rabbit_FilteredRequestDTO
     {
-        public bool IncludeDeceased { get; init; } = false;
+        public bool? OnlyDeceased { get; init; } = false;
 
         public string? RightEarId { get; init; }
         public string? LeftEarId { get; init; }

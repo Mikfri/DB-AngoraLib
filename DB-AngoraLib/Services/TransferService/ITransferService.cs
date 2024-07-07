@@ -13,5 +13,6 @@ namespace DB_AngoraLib.Services.TransferService
         Task<TransferRequest_ContractDTO> CreateTransferRequest(string issuerId, TransferRequest_CreateDTO createTransferDTO);
         Task<TransferRequest_ContractDTO> Get_RabbitTransfer_Contract(string userId, int transferId);
         Task<TransferRequest_ContractDTO> Response_TransferRequest(string recipentId, int transferId, TransferRequest_ResponseDTO responseDTO);
+        Task<TransferRequest_PreviewDTO> DeleteTransferRequest(string userId, int transferRequestId);
     }
 }

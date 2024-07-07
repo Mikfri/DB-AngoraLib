@@ -313,6 +313,7 @@ namespace DB_AngoraLib.Services.RabbitService
         {
             var hasPermissionToDeleteOwn = userClaims.Any(c => c.Type == "Rabbit:Delete" && c.Value == "Own");
             var hasPermissionToDeleteAll = userClaims.Any(c => c.Type == "Rabbit:Delete" && c.Value == "Any");
+            
             var rabbitToDelete = await Get_Rabbit_ByEarCombId(earCombId);
             if (rabbitToDelete == null)
             {

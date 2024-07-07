@@ -123,7 +123,7 @@ namespace DB_AngoraMST.Services_InMemTest
             {
                 Race = race,
                 FromDateOfBirth = dateOfBirth,
-                IncludeDeceased = true
+                OnlyDeceased = false
             };
 
             // Get the user's rabbit collection for comparison
@@ -146,7 +146,7 @@ namespace DB_AngoraMST.Services_InMemTest
 
 
             // Act
-            var filteredRabbitCollection = await _accountService.Get_Rabbits_OwnedAlive_FilteredAsync(userId, filter);
+            var filteredRabbitCollection = await _accountService.GetAll_RabbitsOwned_Filtered(userId, filter);
 
             // Assert
             Assert.IsNotNull(filteredRabbitCollection); // Check that the result is not null

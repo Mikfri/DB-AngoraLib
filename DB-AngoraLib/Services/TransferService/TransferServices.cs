@@ -110,8 +110,8 @@ namespace DB_AngoraLib.Services.TransferService
                 Recipent_BreederRegNo = newTransferRequest.UserRecipent.BreederRegNo,
                 DateAccepted = newTransferRequest.DateAccepted,
 
-                EarCombId = newTransferRequest.Rabbit.EarCombId,
-                NickName = newTransferRequest.Rabbit.NickName,
+                Rabbit_EarCombId = newTransferRequest.Rabbit.EarCombId,
+                Rabbit_NickName = newTransferRequest.Rabbit.NickName,
                 Price = newTransferRequest.Price,
                 SaleConditions = newTransferRequest.SaleConditions,
             };
@@ -120,18 +120,7 @@ namespace DB_AngoraLib.Services.TransferService
 
         public async Task<TransferRequest_ContractDTO> Response_TransferRequest(string recipentId, int transferId, TransferRequest_ResponseDTO responseDTO)
         {
-            var transferReq = await _dbRepository.GetDbSet()
-                .Include(rt => rt.Rabbit)
-                .Include(rt => rt.UserIssuer)
-                .Include(rt => rt.UserRecipent)
-                .FirstOrDefaultAsync(rt => rt.Id == transferId);
-
-            var proposedOwner = await _accountService.Get_UserByIdAsync(recipentId);
-
-            if (transferReq == null)
-            {
-                throw new ArgumentException("Overførselsanmodning ikke fundet.");
-            }
+            var transferReq = await Get_TransferRequest(transferId);
 
             if (transferReq.RecipentId != recipentId)
             {
@@ -161,14 +150,12 @@ namespace DB_AngoraLib.Services.TransferService
             }
             else
             {
-                transferReq.Status = RequestStatus.Rejected;
+                // Brug den opdaterede DeleteTransferRequest metode
+                await DeleteTransferRequest(recipentId, transferId);
 
                 // Notify current owner
                 await _notificationService.CreateNotificationAsync(transferReq.IssuerId,
                     $"Din anmodning om at overføre ejerskab af kaninen {transferReq.Rabbit.NickName} er blevet afvist");
-
-                // Delete transfer
-                await _dbRepository.DeleteObjectAsync(transferReq);
 
                 return null;
             }
@@ -176,21 +163,25 @@ namespace DB_AngoraLib.Services.TransferService
 
         //----------------------------------------------: GET/READ :----------------------------------------------
 
-        public async Task<TransferRequest_ContractDTO> Get_RabbitTransfer_Contract(string userId, int transferId)
+        private async Task<TransferRequst> Get_TransferRequest(int transferId)
         {
-            var transfer = await _dbRepository.GetDbSet()
+            var transferRequest = await _dbRepository.GetDbSet()
                 .Include(rt => rt.Rabbit)
                 .Include(rt => rt.UserIssuer)
                 .Include(rt => rt.UserRecipent)
                 .FirstOrDefaultAsync(rt => rt.Id == transferId);
 
-            var user = await _accountService.Get_UserByIdAsync(userId)
-                ?? throw new ArgumentException("Bruger ikke fundet.");
-
-            if (transfer == null)
+            if (transferRequest == null)
             {
                 throw new ArgumentException("Overførselsanmodning ikke fundet.");
             }
+            return transferRequest;
+        }
+
+        public async Task<TransferRequest_ContractDTO> Get_RabbitTransfer_Contract(string userId, int transferId)
+        {
+            var transfer = await Get_TransferRequest(transferId);
+
 
             if (userId != transfer.IssuerId && userId != transfer.RecipentId)
             {
@@ -214,8 +205,8 @@ namespace DB_AngoraLib.Services.TransferService
                     Recipent_BreederRegNo = transfer.UserRecipent.BreederRegNo,
                     DateAccepted = transfer.DateAccepted,
 
-                    EarCombId = transfer.Rabbit.EarCombId,
-                    NickName = transfer.Rabbit.NickName,
+                    Rabbit_EarCombId = transfer.Rabbit.EarCombId,
+                    Rabbit_NickName = transfer.Rabbit.NickName,
                     Price = transfer.Price,
                     SaleConditions = transfer.SaleConditions,
                 };
@@ -243,16 +234,47 @@ namespace DB_AngoraLib.Services.TransferService
                     Recipent_ZipCode = transfer.UserRecipent.ZipCode,
                     Recipent_City = transfer.UserRecipent.City,
 
-                    EarCombId = transfer.Rabbit.EarCombId,
-                    NickName = transfer.Rabbit.NickName,
+                    Rabbit_EarCombId = transfer.Rabbit.EarCombId,
+                    Rabbit_NickName = transfer.Rabbit.NickName,
                     Price = transfer.Price,
                     SaleConditions = transfer.SaleConditions,
                 };
             }
         }
 
-      
+        //----------------------------------------------: DELETE :----------------------------------------------
+        public async Task<TransferRequest_PreviewDTO> DeleteTransferRequest(string userId, int transferRequestId)
+        {
+            var transferRequest = await _dbRepository.GetObject_ByIntKEYAsync(transferRequestId);
 
+            if (userId != transferRequest.IssuerId && userId != transferRequest.RecipentId)
+            {
+                throw new UnauthorizedAccessException("Du har ikke tilladelse til at slette denne anmodning.");
+            }
+
+            if (transferRequest.Status != RequestStatus.Pending)
+            {
+                throw new InvalidOperationException("Kun anmodninger i 'Pending' status kan slettes.");
+            }
+
+            await _dbRepository.DeleteObjectAsync(transferRequest);
+
+            // Opretter og returnerer en DTO for det slettede objekt
+            return new TransferRequest_PreviewDTO
+            {
+                Id = transferRequest.Id,
+                Status = transferRequest.Status,
+                DateAccepted = transferRequest.DateAccepted,
+
+                Rabbit_EarCombId = transferRequest.RabbitId,
+                Issuer_BreederRegNo = transferRequest.UserIssuer.BreederRegNo,
+                Recipent_BreederRegNo = transferRequest.UserRecipent.BreederRegNo,
+
+                Price = transferRequest.Price,
+                SaleConditions = transferRequest.SaleConditions,
+            };
+
+        }
 
         //---------------------------------: HELPER METHODS :---------------------------------
 

@@ -115,7 +115,7 @@ namespace DB_AngoraLib.Services.AccountService
         //---------------------------------: GET USERs ICOLLECTION METHODS :--------------------
         //-----------: Rabbits
        
-        public async Task<List<Rabbit_PreviewDTO>> Get_Rabbits_OwnedAlive_FilteredAsync(
+        public async Task<List<Rabbit_PreviewDTO>> GetAll_RabbitsOwned_Filtered(
            string userId, Rabbit_FilteredRequestDTO filter)
         {
 
@@ -129,9 +129,24 @@ namespace DB_AngoraLib.Services.AccountService
                 .SelectMany(u => u.RabbitsOwned)
                 .AsQueryable();
 
-            if (!filter.IncludeDeceased)
+            //if (!filter.IncludeDeceased)
+            //{
+            //    query = query.Where(r => r.DateOfDeath == null);
+            //}
+
+            // Filtrer baseret på død/levende status
+            if (filter.OnlyDeceased.HasValue)
             {
-                query = query.Where(r => r.DateOfDeath == null);
+                if (filter.OnlyDeceased.Value)
+                {
+                    // Vis kun døde kaniner
+                    query = query.Where(r => r.DateOfDeath != null);
+                }
+                else
+                {
+                    // Vis kun levende kaniner
+                    query = query.Where(r => r.DateOfDeath == null);
+                }
             }
 
             // Anvend filtrering baseret på Rabbit_FilteredRequestDTO
@@ -196,6 +211,7 @@ namespace DB_AngoraLib.Services.AccountService
             var userWithRabbitsLinked = await _dbRepository.GetDbSet()
                 .AsNoTracking()
                 .Include(u => u.RabbitsLinked)
+                    .ThenInclude(rabbit => rabbit.UserOwner)
                 .FirstOrDefaultAsync(u => u.Id == userId);
 
             if (userWithRabbitsLinked == null)
@@ -276,7 +292,58 @@ namespace DB_AngoraLib.Services.AccountService
             return transferRequests;
         }
 
-        // TODO: Implementer Get_TransferRequests_Issued
+        public async Task<List<TransferRequest_SentDTO>> Get_TransferRequests_Sent(
+            string userId, TransferRequest_SentFilterDTO filter)
+        {
+            var query = _dbRepository.GetDbSet()
+                .AsNoTracking()
+                .Include(u => u.RabbitTransfers_Issued)
+                    .ThenInclude(transfer => transfer.UserIssuer)
+                .Include(u => u.RabbitTransfers_Issued)
+                    .ThenInclude(transfer => transfer.Rabbit)
+                .Where(u => u.Id == userId)
+                .SelectMany(u => u.RabbitTransfers_Issued)
+                .AsQueryable();
+
+
+            if (filter.Status.HasValue)
+            {
+                query = query.Where(transfer => transfer.Status == filter.Status.Value);
+            }
+
+            if (filter.Rabbit_EarCombId != null)
+                query = query.Where(t => EF.Functions.Like(t.RabbitId, $"%{filter.Rabbit_EarCombId}%"));
+
+            if (filter.Rabbit_NickName != null)
+                query = query.Where(t => EF.Functions.Like(t.Rabbit.NickName, $"%{filter.Rabbit_NickName}%"));
+
+            if (filter.Recipent_BreederRegNo != null)
+                query = query.Where(t => EF.Functions.Like(t.UserRecipent.BreederRegNo, $"%{filter.Recipent_BreederRegNo}%"));
+
+            if (filter.Recipent_FirstName != null)
+                query = query.Where(t => EF.Functions.Like(t.UserRecipent.FirstName, $"%{filter.Recipent_FirstName}%"));
+
+            if (filter.From_DateAccepted.HasValue)
+            {
+                query = query.Where(transfer => transfer.DateAccepted >= filter.From_DateAccepted.Value);
+            }
+
+            // Konverter til TransferRequest_SentDTO
+            var result = await query.Select(t => new TransferRequest_SentDTO
+            {
+                Id = t.Id,
+                Status = t.Status,
+                DateAccepted = t.DateAccepted,
+                Rabbit_EarCombId = t.Rabbit.EarCombId,
+                Rabbit_NickName = t.Rabbit.NickName,
+                Recipent_BreederRegNo = t.UserRecipent.BreederRegNo,
+                Recipent_FirstName = t.UserRecipent.FirstName,
+                Price = t.Price,
+                SaleConditions = t.SaleConditions
+            }).ToListAsync();
+
+            return result;
+        }
 
         //-----------: ApplicationBreeder
         public async Task<List<ApplicationBreeder_PreviewDTO>> GetAll_ApplicationBreeder(string userId)

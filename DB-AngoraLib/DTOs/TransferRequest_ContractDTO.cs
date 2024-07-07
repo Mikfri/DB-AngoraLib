@@ -27,8 +27,8 @@ namespace DB_AngoraLib.DTOs
         public int Recipent_ZipCode { get; init; }
         public string Recipent_City { get; init; }
         //-------------: Rabbit
-        public string EarCombId { get; init; }
-        public string? NickName { get; init; }
+        public string Rabbit_EarCombId { get; init; }
+        public string? Rabbit_NickName { get; init; }
         public int? Price { get; init; }
         public string? SaleConditions { get; init; }
 
