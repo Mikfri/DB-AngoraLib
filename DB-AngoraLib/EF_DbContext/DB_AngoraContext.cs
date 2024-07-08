@@ -113,10 +113,18 @@ namespace DB_AngoraLib.EF_DbContext
                 .WithMany(rt => rt.RabbitTransfers_Received)
                 .HasForeignKey(rt => rt.RecipentId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            // Konfigurer RefreshToken relationen
+            modelBuilder.Entity<RefreshToken>()
+                .HasOne(rt => rt.User) // Antager at RefreshToken har en navigationsegenskab 'User'
+                .WithMany(u => u.RefreshTokens) // Bruger 'RefreshTokens' som den inverse navigationsegenskab
+                .HasForeignKey(rt => rt.UserId); // Antager at RefreshToken har en 'UserId' foreign key
+
         }
 
         public DbSet<ApplicationBreeder> BreederApplications { get; set; }
         public DbSet<Rabbit> Rabbits { get; set; }
+        public DbSet<RefreshToken> RefreshTokens { get; set; }
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<TransferRequst> TransferRequests { get; set; }
         public DbSet<Rating> Ratings { get; set; }

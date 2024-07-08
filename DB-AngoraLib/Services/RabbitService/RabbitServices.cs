@@ -134,7 +134,7 @@ namespace DB_AngoraLib.Services.RabbitService
 
         public async Task<List<Rabbit>> Get_AllRabbits_ByBreederReg(string breederRegNo)
         {
-            var user = await _accountService.Get_UserByBreederRegNoAsync(breederRegNo);
+            var user = await _accountService.Get_UserByBreederRegNo(breederRegNo);
             if (user == null)
             {
                 return null;
@@ -457,7 +457,7 @@ namespace DB_AngoraLib.Services.RabbitService
         {
             //string? rightEarId = rabbit.RightEarId;
             // Find the user with the BreederRegNo that matches the rabbit's RightEarId
-            var user = await _accountService.Get_UserByBreederRegNoAsync(rabbit.RightEarId);
+            var user = await _accountService.Get_UserByBreederRegNo(rabbit.RightEarId);
 
             if (user != null)
             {

@@ -72,7 +72,7 @@ namespace DB_AngoraMST.Services_InMemTest
             var expectedUsersCount = 3; // Replace with the actual number of mock users
 
             // Act
-            var users = await _accountService.Get_AllUsersAsync();
+            var users = await _accountService.GetAll_Users();
 
             // Assert
             Assert.AreEqual(expectedUsersCount, users.Count);
@@ -86,7 +86,7 @@ namespace DB_AngoraMST.Services_InMemTest
             var breederRegNo = expectedUser.BreederRegNo;
 
             // Act
-            var actualUser = await _accountService.Get_UserByBreederRegNoAsync(breederRegNo);
+            var actualUser = await _accountService.Get_UserByBreederRegNo(breederRegNo);
 
             // Assert
             Assert.IsNotNull(actualUser);
@@ -100,8 +100,8 @@ namespace DB_AngoraMST.Services_InMemTest
             var expectedUser = _context.Users.First();
 
             // Act
-            var actualUserByUsername = await _accountService.Get_UserByUserNameOrEmailAsync(expectedUser.UserName);
-            var actualUserByEmail = await _accountService.Get_UserByUserNameOrEmailAsync(expectedUser.Email);
+            var actualUserByUsername = await _accountService.Get_UserByUserNameOrEmail(expectedUser.UserName);
+            var actualUserByEmail = await _accountService.Get_UserByUserNameOrEmail(expectedUser.Email);
 
             // Assert
             Assert.IsNotNull(actualUserByUsername);

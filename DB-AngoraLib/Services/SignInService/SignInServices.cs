@@ -1,6 +1,7 @@
 ﻿using DB_AngoraLib.DTOs;
 using DB_AngoraLib.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -9,6 +10,7 @@ using System.Data;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -29,6 +31,7 @@ namespace DB_AngoraLib.Services.SigninService
             _configuration = configuration;
         }
 
+        //---------------------------------------: LOGIN :---------------------------------------
         
         public async Task<Login_ResponseDTO> LoginAsync(Login_RequestDTO loginRequestDTO)
         {
@@ -59,6 +62,14 @@ namespace DB_AngoraLib.Services.SigninService
 
             return loginResponseDTO;
         }
+
+        public async Task LogoutAsync()
+        {
+            await _signInManager.SignOutAsync();
+        }
+
+
+        //---------------------------------------: TOKEN SETUP :---------------------------------------
 
         private async Task<JwtSecurityToken> GenerateToken(User user)
         {
@@ -104,7 +115,6 @@ namespace DB_AngoraLib.Services.SigninService
             return token;
         }
 
-
         //private async Task<JwtSecurityToken> GenerateToken(User user)
         //{
         //    var keyString = _configuration["Jwt:Key"];
@@ -114,115 +124,120 @@ namespace DB_AngoraLib.Services.SigninService
         //    var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(keyString));
         //    var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-        //    var claims = new List<Claim>();
-
-        //    // Tilføjer brugerens roller som claims
-        //    var userRoles = await _userManager.GetRolesAsync(user);
-        //    foreach (var role in userRoles)
-        //    {
-        //        claims.Add(new Claim(ClaimTypes.Role, role));
-
-        //        // Tilføjer RoleClaims til token claims
-        //        var identityRole = await _roleManager.FindByNameAsync(role);
-        //        var roleClaims = await _roleManager.GetClaimsAsync(identityRole);
-        //        claims.AddRange(roleClaims);
-        //    }
+        //    var claimsList = new List<Claim>();
 
         //    // Tilføjer UserClaims til token claims
         //    var userClaims = await _userManager.GetClaimsAsync(user);
-        //    claims.AddRange(userClaims);
+        //    claimsList.AddRange(userClaims);
 
-        //    claims.Add(new Claim(ClaimTypes.NameIdentifier, user.Id));
-        //    claims.Add(new Claim(ClaimTypes.Name, $"{user.FirstName} {user.LastName}"));
-        //    claims.Add(new Claim(ClaimTypes.Email, user.Email));
-
-        //    var token = new JwtSecurityToken(
-        //        issuer: issuer,
-        //        audience: audience,
-        //        claims: claims,
-        //        expires: DateTime.Now.AddHours(1),
-        //        signingCredentials: creds);
-
-        //    return token;
-        //}
-
-
-        //private async Task<JwtSecurityToken> GenerateToken(User user, IList<Claim> claims)
-        //{
-        //    var keyString = _configuration["Jwt:Key"];
-        //    var issuer = _configuration["Jwt:Issuer"];
-        //    var audience = _configuration["Jwt:Audience"];
-
-        //    var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(keyString));
-        //    var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-        //    //-------------:  ADD
-        //    claims.Add(new Claim(ClaimTypes.NameIdentifier, user.Id));
-
-        //    // Tilføjer brugerens roller som claims
+        //    //Tilføjer RoleClaims til token claims
         //    var userRoles = await _userManager.GetRolesAsync(user);
-        //    foreach (var role in userRoles)
-        //    {
-        //        claims.Add(new Claim(ClaimTypes.Role, role));
-        //    }
-
-        //    claims.Add(new Claim(ClaimTypes.Name, $"{user.FirstName} {user.LastName}"));
-        //    claims.Add(new Claim(ClaimTypes.Email, user.Email));
-
-        //    var token = new JwtSecurityToken(
-        //        issuer: issuer,
-        //        audience: audience,
-        //        claims: claims,
-        //        expires: DateTime.Now.AddHours(1),
-        //        signingCredentials: creds);
-
-        //    return token;
-        //}
-
-
-
-        //public async Task SynchronizeUserClaims(User user) // TODO: Benyt evt denne til LoginAsync
-        //{
-        //    var userRoles = await _userManager.GetRolesAsync(user);
-        //    var allUserRoleClaims = new List<Claim>();
-
-        //    // Laver en liste af af RoleClaims baseret på brugerens roller
         //    foreach (var roleName in userRoles)
         //    {
-        //        var aConfirmedUserRole = await _roleManager.FindByNameAsync(roleName);
-        //        var confirmedRoleClaims = await _roleManager.GetClaimsAsync(aConfirmedUserRole);
-        //        allUserRoleClaims.AddRange(confirmedRoleClaims);
+        //        var role = await _roleManager.FindByNameAsync(roleName);
+        //        var roleClaims = await _roleManager.GetClaimsAsync(role);
+        //        claimsList.AddRange(roleClaims);
         //    }
 
-        //    var userClaims = await _userManager.GetClaimsAsync(user);
-
-        //    // For hver UserClaim, brugeren har
-        //    foreach (var claim in userClaims)
+        //    // Tilføjer brugerens roller som claims
+        //    foreach (var role in userRoles)
         //    {
-        //        // Hvis der findes UserClaims som ikke stemmer overens med brugerens liste af RoleClaims
-        //        if (!allUserRoleClaims.Any(rc => rc.Type == claim.Type && rc.Value == claim.Value)) /* && !userClaims.Any(uc => uc.Type == "SpecialPermission" && uc.Value == claim.Value))*/
-        //        {
-        //            // Fjerner specifikke UserClaim fra brugeren
-        //            await _userManager.RemoveClaimAsync(user, claim);
-        //        }
+        //        claimsList.Add(new Claim(ClaimTypes.Role, role));
         //    }
-        //    // For hver Claim i brugerens liste af RoleClaims
-        //    foreach (var claim in allUserRoleClaims)
+
+        //    claimsList.Add(new Claim(ClaimTypes.NameIdentifier, user.Id));
+        //    claimsList.Add(new Claim(ClaimTypes.Name, $"{user.FirstName} {user.LastName}"));
+        //    claimsList.Add(new Claim(ClaimTypes.Email, user.Email));
+
+        //    // Tilføj standard claims
+        //    var now = DateTime.UtcNow;
+        //    var expires = now.AddHours(1);
+
+        //    claimsList.Add(new Claim(JwtRegisteredClaimNames.Iat, now.ToUniversalTime().ToString(), ClaimValueTypes.Integer64));
+        //    //claimsList.Add(new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()));
+        //    // 'exp' claim tilføjes automatisk af JwtSecurityToken baseret på 'expires' parameteren
+
+        //    var token = new JwtSecurityToken(
+        //        issuer: issuer,
+        //        audience: audience,
+        //        claims: claimsList,
+        //        notBefore: now,
+        //        expires: expires,
+        //        signingCredentials: creds);
+
+        //    return token;
+        //}
+
+        //public async Task<Token_ResponseDTO> RefreshTokenAsync(string refreshToken)
+        //{
+        //    var user = await GetUserByRefreshToken(refreshToken);
+        //    if (user == null || !IsRefreshTokenValid(user, refreshToken))
         //    {
-        //        // Hvis brugeren mangler en UserClaim, som findes i brugeren liste af RoleClaims
-        //        if (!userClaims.Any(uc => uc.Type == claim.Type && uc.Value == claim.Value))
-        //        {
-        //            // Tilføjer UserClaim til brugeren
-        //            await _userManager.AddClaimAsync(user, claim);
-        //        }
+        //        return null; // Eller en fejlmeddelelse
+        //    }
+
+        //    var newAccessToken = await GenerateToken(user);
+        //    var newRefreshToken = GenerateRefreshToken();
+
+        //    // Opdater brugerens refresh token i databasen
+        //    await UpdateRefreshTokenForUser(user, newRefreshToken);
+
+        //    return new Token_ResponseDTO
+        //    {
+        //        AccessToken = new JwtSecurityTokenHandler().WriteToken(newAccessToken),
+        //        RefreshToken = newRefreshToken
+        //    };
+        //}
+
+        //private string GenerateRefreshToken()
+        //{
+        //    // Generer en tilfældig streng som refresh token
+        //    var randomNumber = new byte[32];
+        //    using (var rng = RandomNumberGenerator.Create())
+        //    {
+        //        rng.GetBytes(randomNumber);
+        //        return Convert.ToBase64String(randomNumber);
         //    }
         //}
 
+        //// Antag at denne metode opdaterer brugerens refresh token i databasen
+        //private async Task UpdateRefreshTokenForUser(User user, string newRefreshToken)
+        //{
+        //    var refreshToken = new RefreshToken
+        //    {
+        //        Token = newRefreshToken,
+        //        Expires = DateTime.UtcNow.AddDays(7), // Sæt en udløbsdato, f.eks. 7 dage fra nu
+        //        Created = DateTime.UtcNow,
+        //        CreatedByIp = "" // Hvis du har brugerens IP, kan du sætte den her
+        //    };
 
-        public async Task LogoutAsync()
-        {
-            await _signInManager.SignOutAsync();
-        }
+        //    user.RefreshTokens.Add(refreshToken);
+        //    await _userManager.UpdateAsync(user);
+        //}
+
+
+        //// Antag at denne metode finder en bruger baseret på et refresh token
+        //private async Task<User> GetUserByRefreshToken(string refreshToken)
+        //{
+        //    var user = await _userManager.Users
+        //        .Include(u => u.RefreshTokens) // Sørg for at inkludere RefreshTokens i din query
+        //        .FirstOrDefaultAsync(u => u.RefreshTokens.Any(t => t.Token == refreshToken && t.IsActive));
+
+        //    return user;
+        //}
+
+
+        //// Validerer om et refresh token er gyldigt (ikke udløbet og tilhører brugeren)
+        //private bool IsRefreshTokenValid(User user, string refreshToken)
+        //{
+        //    return user.RefreshTokens.Any(t => t.Token == refreshToken && t.IsActive);
+        //}
+
+
+
+
+
+        //---------------------------------------: EXTERNAL LOGIN :---------------------------------------
 
         public async Task<SignInResult> ExternalLoginSignInAsync(string loginProvider, string providerKey, bool isPersistent)
         {

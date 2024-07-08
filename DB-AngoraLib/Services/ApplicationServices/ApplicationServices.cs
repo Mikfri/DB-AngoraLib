@@ -36,7 +36,7 @@ namespace DB_AngoraLib.Services.ApplicationServices
         public async Task Apply_ApplicationBreeder(string userId, ApplicationBreeder_CreateDTO applicationDTO)
         {
             // Brug GetUserByIdAsync fra IAccountService til at hente den aktuelt loggede ind brugers oplysninger
-            var user = await _accountServices.Get_UserByIdAsync(userId);
+            var user = await _accountServices.Get_UserById(userId);
             if (user == null) throw new Exception("User not found");
 
             if (user.BreederRegNo is not null)
@@ -72,7 +72,7 @@ namespace DB_AngoraLib.Services.ApplicationServices
             {
                 application.Status = RequestStatus.Approved;
 
-                var user = await _accountServices.Get_UserByIdAsync(application.UserApplicantId);
+                var user = await _accountServices.Get_UserById(application.UserApplicantId);
                 if (user == null) throw new Exception("Bruger ikke fundet");
 
                 var addToRoleResult = await _userManager.AddToRoleAsync(user, "Breeder");

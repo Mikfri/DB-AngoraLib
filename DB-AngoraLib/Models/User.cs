@@ -39,6 +39,7 @@ namespace DB_AngoraLib.Models
         public virtual ICollection<TransferRequst> RabbitTransfers_Issued { get; set; }
         public virtual ICollection<TransferRequst> RabbitTransfers_Received { get; set; }
 
+        public virtual ICollection<RefreshToken> RefreshTokens { get; set; }
 
 
         public User(string? breederRegNo, string firstName, string lastName, string roadName, int zipCode, string city, string email, string phone, string password)

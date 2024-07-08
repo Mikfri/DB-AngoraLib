@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DB_AngoraLib.Models
 {
-    public class EmailSettings
+    public class Settings_Email
     {
         public string SmtpHost { get; set; }
         public int SmtpPort { get; set; }

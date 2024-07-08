@@ -60,7 +60,7 @@ namespace DB_AngoraLib.Services.AccountService
                 var token = await _userManager.GenerateEmailConfirmationTokenAsync(newUser);
 
                 // Send bekræftelses e-mail
-                await Send_EmailConfirmAsync(newUser.Id, token);
+                await Send_EmailConfirm(newUser.Id, token);
 
 
                 //// Trigger UserRegisteredEvent
@@ -73,20 +73,20 @@ namespace DB_AngoraLib.Services.AccountService
 
         //---------------------------------: GET USER METHODS :---------------------------------
         //------------: GET ALL USERS
-        public async Task<List<User>> Get_AllUsersAsync()
+        public async Task<List<User>> GetAll_Users()
         {
             return (await _dbRepository.GetAllObjectsAsync()).ToList();
         }
 
         //------------: GET USER BY USERNAME OR EMAIL
-        public async Task<User> Get_UserByUserNameOrEmailAsync(string userNameOrEmail)
+        public async Task<User> Get_UserByUserNameOrEmail(string userNameOrEmail)
         {
             return await _dbRepository.GetDbSet()
                 .FirstOrDefaultAsync(u => u.UserName == userNameOrEmail || u.Email == userNameOrEmail);
         }
 
         //------------: GET USER BY ID
-        public async Task<User?> Get_UserByIdAsync(string userId)
+        public async Task<User?> Get_UserById(string userId)
         {
             return await _dbRepository.GetObject_ByStringKEYAsync(userId);
         }
@@ -105,7 +105,7 @@ namespace DB_AngoraLib.Services.AccountService
         }
 
         //------------: GET USER BY BREEDER-REG-NO
-        public async Task<User?> Get_UserByBreederRegNoAsync(string breederRegNo)
+        public async Task<User?> Get_UserByBreederRegNo(string breederRegNo)
         {
             return await _dbRepository.GetDbSet()
                 .FirstOrDefaultAsync(u => u.BreederRegNo == breederRegNo);
@@ -129,10 +129,7 @@ namespace DB_AngoraLib.Services.AccountService
                 .SelectMany(u => u.RabbitsOwned)
                 .AsQueryable();
 
-            //if (!filter.IncludeDeceased)
-            //{
-            //    query = query.Where(r => r.DateOfDeath == null);
-            //}
+
 
             // Filtrer baseret på død/levende status
             if (filter.OnlyDeceased.HasValue)
@@ -206,7 +203,7 @@ namespace DB_AngoraLib.Services.AccountService
             return rabbitPreviewDTOsList;
         }
 
-        public async Task<List<Rabbit_PreviewDTO>> Get_Rabbits_FromMyFold(string userId)
+        public async Task<List<Rabbit_PreviewDTO>> GetAll_Rabbits_FromMyFold(string userId)
         {
             var userWithRabbitsLinked = await _dbRepository.GetDbSet()
                 .AsNoTracking()
@@ -241,7 +238,7 @@ namespace DB_AngoraLib.Services.AccountService
         }
 
         //-----------: TransferRequests
-        public async Task<List<TransferRequest_ReceivedDTO>> Get_TransferRequests_Received(
+        public async Task<List<TransferRequest_ReceivedDTO>> GetAll_TransferRequests_Received(
             string userId, TransferRequest_ReceivedFilterDTO filter)
         {
             var query = _dbRepository.GetDbSet()
@@ -292,7 +289,7 @@ namespace DB_AngoraLib.Services.AccountService
             return transferRequests;
         }
 
-        public async Task<List<TransferRequest_SentDTO>> Get_TransferRequests_Sent(
+        public async Task<List<TransferRequest_SentDTO>> GetAll_TransferRequests_Sent(
             string userId, TransferRequest_SentFilterDTO filter)
         {
             var query = _dbRepository.GetDbSet()
@@ -382,7 +379,7 @@ namespace DB_AngoraLib.Services.AccountService
 
         //---------------------------------: EMAIL METHODs :-------------------------------
 
-        public async Task Send_EmailConfirmAsync(string userId, string token)
+        public async Task Send_EmailConfirm(string userId, string token)
         {
             var user = await _userManager.FindByIdAsync(userId) 
                 ?? throw new Exception("User not found");
@@ -401,7 +398,7 @@ namespace DB_AngoraLib.Services.AccountService
         }
 
 
-        public async Task Send_PWResetRequestAsync(string userEmail)
+        public async Task Send_PWResetRequest(string userEmail)
         {
             var user = await _userManager.FindByEmailAsync(userEmail);
             if (user == null)
@@ -436,7 +433,7 @@ namespace DB_AngoraLib.Services.AccountService
         /// <param name="newPassword"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public async Task Formular_ResetPWAsync(string userId, string token, string newPassword)
+        public async Task Formular_ResetPW(string userId, string token, string newPassword)
         {
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
@@ -453,7 +450,7 @@ namespace DB_AngoraLib.Services.AccountService
 
 
         //---------------------------------: UPDATE ACCOUNT Settings :-----------------------------------
-        public async Task<IdentityResult> User_ChangePasswordAsync(User_ChangePasswordDTO userPwConfig)
+        public async Task<IdentityResult> User_ChangePassword(User_ChangePasswordDTO userPwConfig)
         {
             var user = await _userManager.FindByIdAsync(userPwConfig.UserId);
             if (user == null)

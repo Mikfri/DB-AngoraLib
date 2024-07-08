@@ -44,13 +44,13 @@ namespace DB_AngoraLib.Services.TransferService
                 ?? throw new ArgumentException("Kaninen blev ikke fundet");
 
             // Tjek for eksisterende nuværende ejer
-            var userIssuer = await _accountService.Get_UserByIdAsync(issuerId)
+            var userIssuer = await _accountService.Get_UserById(issuerId)
                 ?? throw new ArgumentException("Nuværende ejer blev ikke fundet");
 
             if (rabbit.OwnerId != issuerId)
                 throw new InvalidOperationException("Du er ikke den nuværende ejer af denne kanin");
 
-            var userRecipent = await _accountService.Get_UserByBreederRegNoAsync(createTransferDTO.Recipent_BreederRegNo)
+            var userRecipent = await _accountService.Get_UserByBreederRegNo(createTransferDTO.Recipent_BreederRegNo)
                 ?? throw new ArgumentException("Foreslået ejer blev ikke fundet");
 
             // Tjek for eksisterende aktive RabbitTransfer anmodninger for den samme kanin
@@ -245,7 +245,7 @@ namespace DB_AngoraLib.Services.TransferService
         //----------------------------------------------: DELETE :----------------------------------------------
         public async Task<TransferRequest_PreviewDTO> DeleteTransferRequest(string userId, int transferRequestId)
         {
-            var transferRequest = await _dbRepository.GetObject_ByIntKEYAsync(transferRequestId);
+            var transferRequest = await Get_TransferRequest(transferRequestId);
 
             if (userId != transferRequest.IssuerId && userId != transferRequest.RecipentId)
             {
@@ -257,23 +257,22 @@ namespace DB_AngoraLib.Services.TransferService
                 throw new InvalidOperationException("Kun anmodninger i 'Pending' status kan slettes.");
             }
 
-            await _dbRepository.DeleteObjectAsync(transferRequest);
-
-            // Opretter og returnerer en DTO for det slettede objekt
-            return new TransferRequest_PreviewDTO
+            // Capture the necessary data before deletion
+            var dto = new TransferRequest_PreviewDTO
             {
                 Id = transferRequest.Id,
                 Status = transferRequest.Status,
                 DateAccepted = transferRequest.DateAccepted,
-
                 Rabbit_EarCombId = transferRequest.RabbitId,
-                Issuer_BreederRegNo = transferRequest.UserIssuer.BreederRegNo,
-                Recipent_BreederRegNo = transferRequest.UserRecipent.BreederRegNo,
-
+                Issuer_BreederRegNo = transferRequest.UserIssuer?.BreederRegNo, // Use safe navigation operator to avoid null reference
+                Recipent_BreederRegNo = transferRequest.UserRecipent?.BreederRegNo, // Use safe navigation operator to avoid null reference
                 Price = transferRequest.Price,
                 SaleConditions = transferRequest.SaleConditions,
             };
 
+            await _dbRepository.DeleteObjectAsync(transferRequest);
+
+            return dto;
         }
 
         //---------------------------------: HELPER METHODS :---------------------------------

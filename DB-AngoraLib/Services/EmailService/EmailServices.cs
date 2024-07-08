@@ -13,9 +13,9 @@ namespace DB_AngoraLib.Services.EmailService
 {
     public class EmailServices : IEmailService
     {
-        private readonly EmailSettings _emailSettings;
+        private readonly Settings_Email _emailSettings;
 
-        public EmailServices(IOptions<EmailSettings> emailSettings)
+        public EmailServices(IOptions<Settings_Email> emailSettings)
         {
             _emailSettings = emailSettings.Value;
         }
