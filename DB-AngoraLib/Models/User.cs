@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
+using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -13,9 +14,10 @@ namespace DB_AngoraLib.Models
     //https://learn.microsoft.com/en-us/aspnet/core/security/authentication/customize-identity-model?view=aspnetcore-8.0
     public class User : IdentityUser
     {
+
         public string? BreederRegNo { get; set; } // unik property for Breeder role, med unik string
         //public string? MemberNo { get; set; }     // unik property for Member role, med unik string
-
+        //2 første numre = forneing = 3 nummer = forennings type = sidste to single eller familie medlem
         public string FirstName { get; set; }
         public string LastName { get; set; }
 

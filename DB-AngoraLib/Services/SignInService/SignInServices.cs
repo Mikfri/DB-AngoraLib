@@ -71,6 +71,7 @@ namespace DB_AngoraLib.Services.SigninService
 
         //---------------------------------------: TOKEN SETUP :---------------------------------------
 
+
         private async Task<JwtSecurityToken> GenerateToken(User user)
         {
             var keyString = _configuration["Jwt:Key"];
@@ -80,11 +81,11 @@ namespace DB_AngoraLib.Services.SigninService
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(keyString));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-            var claims = new List<Claim>();
+            var claimsList = new List<Claim>();
 
             // Tilføjer UserClaims til token claims
             var userClaims = await _userManager.GetClaimsAsync(user);
-            claims.AddRange(userClaims);
+            claimsList.AddRange(userClaims);
 
             //Tilføjer RoleClaims til token claims
             var userRoles = await _userManager.GetRolesAsync(user);
@@ -92,147 +93,100 @@ namespace DB_AngoraLib.Services.SigninService
             {
                 var role = await _roleManager.FindByNameAsync(roleName);
                 var roleClaims = await _roleManager.GetClaimsAsync(role);
-                claims.AddRange(roleClaims);
+                claimsList.AddRange(roleClaims);
             }
 
             // Tilføjer brugerens roller som claims
             foreach (var role in userRoles)
             {
-                claims.Add(new Claim(ClaimTypes.Role, role));
+                claimsList.Add(new Claim(ClaimTypes.Role, role));
             }
 
-            claims.Add(new Claim(ClaimTypes.NameIdentifier, user.Id));
-            claims.Add(new Claim(ClaimTypes.Name, $"{user.FirstName} {user.LastName}"));
-            claims.Add(new Claim(ClaimTypes.Email, user.Email));
+            // Tilføj standard claims
+            var iat = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+
+            claimsList.Add(new Claim(ClaimTypes.NameIdentifier, user.Id));
+            claimsList.Add(new Claim(ClaimTypes.Name, $"{user.FirstName} {user.LastName}"));
+            claimsList.Add(new Claim(ClaimTypes.Email, user.Email));
+            claimsList.Add(new Claim(JwtRegisteredClaimNames.Iat, iat.ToString(), ClaimValueTypes.Integer64));
+
+            var expires = DateTime.UtcNow.AddHours(1);
 
             var token = new JwtSecurityToken(
                 issuer: issuer,
                 audience: audience,
-                claims: claims,
-                expires: DateTime.Now.AddHours(1),
+                claims: claimsList,
+                notBefore: DateTime.UtcNow,
+                expires: expires,
                 signingCredentials: creds);
 
             return token;
         }
 
-        //private async Task<JwtSecurityToken> GenerateToken(User user)
-        //{
-        //    var keyString = _configuration["Jwt:Key"];
-        //    var issuer = _configuration["Jwt:Issuer"];
-        //    var audience = _configuration["Jwt:Audience"];
+        public async Task<Token_ResponseDTO> RefreshTokenAsync(string refreshToken)
+        {
+            var user = await GetUserByRefreshToken(refreshToken);
+            if (user == null || !IsRefreshTokenValid(user, refreshToken))
+            {
+                return null; // Eller en fejlmeddelelse
+            }
 
-        //    var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(keyString));
-        //    var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            var newAccessToken = await GenerateToken(user);
+            var newRefreshToken = GenerateRefreshToken();
 
-        //    var claimsList = new List<Claim>();
+            // Opdater brugerens refresh token i databasen
+            await UpdateRefreshTokenForUser(user, newRefreshToken);
 
-        //    // Tilføjer UserClaims til token claims
-        //    var userClaims = await _userManager.GetClaimsAsync(user);
-        //    claimsList.AddRange(userClaims);
+            return new Token_ResponseDTO
+            {
+                AccessToken = new JwtSecurityTokenHandler().WriteToken(newAccessToken),
+                RefreshToken = newRefreshToken
+            };
+        }
 
-        //    //Tilføjer RoleClaims til token claims
-        //    var userRoles = await _userManager.GetRolesAsync(user);
-        //    foreach (var roleName in userRoles)
-        //    {
-        //        var role = await _roleManager.FindByNameAsync(roleName);
-        //        var roleClaims = await _roleManager.GetClaimsAsync(role);
-        //        claimsList.AddRange(roleClaims);
-        //    }
+        private string GenerateRefreshToken()
+        {
+            // Generer en tilfældig streng som refresh token
+            var randomNumber = new byte[32];
+            using (var rng = RandomNumberGenerator.Create())
+            {
+                rng.GetBytes(randomNumber);
+                return Convert.ToBase64String(randomNumber);
+            }
+        }
 
-        //    // Tilføjer brugerens roller som claims
-        //    foreach (var role in userRoles)
-        //    {
-        //        claimsList.Add(new Claim(ClaimTypes.Role, role));
-        //    }
+        // Antag at denne metode opdaterer brugerens refresh token i databasen
+        private async Task UpdateRefreshTokenForUser(User user, string newRefreshToken)
+        {
+            var refreshToken = new RefreshToken
+            {
+                Token = newRefreshToken,
+                Expires = DateTime.UtcNow.AddDays(7), // Sæt en udløbsdato, f.eks. 7 dage fra nu
+                Created = DateTime.UtcNow,
+                CreatedByIp = "" // Hvis du har brugerens IP, kan du sætte den her
+            };
 
-        //    claimsList.Add(new Claim(ClaimTypes.NameIdentifier, user.Id));
-        //    claimsList.Add(new Claim(ClaimTypes.Name, $"{user.FirstName} {user.LastName}"));
-        //    claimsList.Add(new Claim(ClaimTypes.Email, user.Email));
-
-        //    // Tilføj standard claims
-        //    var now = DateTime.UtcNow;
-        //    var expires = now.AddHours(1);
-
-        //    claimsList.Add(new Claim(JwtRegisteredClaimNames.Iat, now.ToUniversalTime().ToString(), ClaimValueTypes.Integer64));
-        //    //claimsList.Add(new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()));
-        //    // 'exp' claim tilføjes automatisk af JwtSecurityToken baseret på 'expires' parameteren
-
-        //    var token = new JwtSecurityToken(
-        //        issuer: issuer,
-        //        audience: audience,
-        //        claims: claimsList,
-        //        notBefore: now,
-        //        expires: expires,
-        //        signingCredentials: creds);
-
-        //    return token;
-        //}
-
-        //public async Task<Token_ResponseDTO> RefreshTokenAsync(string refreshToken)
-        //{
-        //    var user = await GetUserByRefreshToken(refreshToken);
-        //    if (user == null || !IsRefreshTokenValid(user, refreshToken))
-        //    {
-        //        return null; // Eller en fejlmeddelelse
-        //    }
-
-        //    var newAccessToken = await GenerateToken(user);
-        //    var newRefreshToken = GenerateRefreshToken();
-
-        //    // Opdater brugerens refresh token i databasen
-        //    await UpdateRefreshTokenForUser(user, newRefreshToken);
-
-        //    return new Token_ResponseDTO
-        //    {
-        //        AccessToken = new JwtSecurityTokenHandler().WriteToken(newAccessToken),
-        //        RefreshToken = newRefreshToken
-        //    };
-        //}
-
-        //private string GenerateRefreshToken()
-        //{
-        //    // Generer en tilfældig streng som refresh token
-        //    var randomNumber = new byte[32];
-        //    using (var rng = RandomNumberGenerator.Create())
-        //    {
-        //        rng.GetBytes(randomNumber);
-        //        return Convert.ToBase64String(randomNumber);
-        //    }
-        //}
-
-        //// Antag at denne metode opdaterer brugerens refresh token i databasen
-        //private async Task UpdateRefreshTokenForUser(User user, string newRefreshToken)
-        //{
-        //    var refreshToken = new RefreshToken
-        //    {
-        //        Token = newRefreshToken,
-        //        Expires = DateTime.UtcNow.AddDays(7), // Sæt en udløbsdato, f.eks. 7 dage fra nu
-        //        Created = DateTime.UtcNow,
-        //        CreatedByIp = "" // Hvis du har brugerens IP, kan du sætte den her
-        //    };
-
-        //    user.RefreshTokens.Add(refreshToken);
-        //    await _userManager.UpdateAsync(user);
-        //}
+            user.RefreshTokens.Add(refreshToken);
+            await _userManager.UpdateAsync(user);
+        }
 
 
-        //// Antag at denne metode finder en bruger baseret på et refresh token
-        //private async Task<User> GetUserByRefreshToken(string refreshToken)
-        //{
-        //    var user = await _userManager.Users
-        //        .Include(u => u.RefreshTokens) // Sørg for at inkludere RefreshTokens i din query
-        //        .FirstOrDefaultAsync(u => u.RefreshTokens.Any(t => t.Token == refreshToken && t.IsActive));
+        // Antag at denne metode finder en bruger baseret på et refresh token
+        private async Task<User> GetUserByRefreshToken(string refreshToken)
+        {
+            var user = await _userManager.Users
+                .Include(u => u.RefreshTokens) // Sørg for at inkludere RefreshTokens i din query
+                .FirstOrDefaultAsync(u => u.RefreshTokens.Any(t => t.Token == refreshToken && t.IsActive));
 
-        //    return user;
-        //}
+            return user;
+        }
 
 
-        //// Validerer om et refresh token er gyldigt (ikke udløbet og tilhører brugeren)
-        //private bool IsRefreshTokenValid(User user, string refreshToken)
-        //{
-        //    return user.RefreshTokens.Any(t => t.Token == refreshToken && t.IsActive);
-        //}
-
+        // Validerer om et refresh token er gyldigt (ikke udløbet og tilhører brugeren)
+        private bool IsRefreshTokenValid(User user, string refreshToken)
+        {
+            return user.RefreshTokens.Any(t => t.Token == refreshToken && t.IsActive);
+        }
 
 
 
