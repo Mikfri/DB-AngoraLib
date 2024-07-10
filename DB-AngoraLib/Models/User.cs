@@ -62,8 +62,12 @@ namespace DB_AngoraLib.Models
         }
         public User() 
         {
+            BreederApplications = new List<ApplicationBreeder>();
+            RabbitsOwned = new List<Rabbit>();
+            RabbitsLinked = new List<Rabbit>();
             RabbitTransfers_Issued = new List<TransferRequst>();
             RabbitTransfers_Received = new List<TransferRequst>();
+            RefreshTokens = new List<RefreshToken>();
         }
     }
 }

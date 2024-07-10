@@ -1,5 +1,7 @@
 ﻿using DB_AngoraLib.DTOs;
 using DB_AngoraLib.Models;
+using DB_AngoraLib.Services.TokenService;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -22,18 +24,20 @@ namespace DB_AngoraLib.Services.SigninService
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly SignInManager<User> _signInManager;
         private readonly IConfiguration _configuration;
+        private readonly ITokenService _tokenService;
 
-        public SigninServices(UserManager<User> userManager, RoleManager<IdentityRole> roleManager, SignInManager<User> signInManager, IConfiguration configuration)
+        public SigninServices(UserManager<User> userManager, RoleManager<IdentityRole> roleManager, SignInManager<User> signInManager,IConfiguration configuration, ITokenService tokenService)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _signInManager = signInManager;
             _configuration = configuration;
+            _tokenService = tokenService;
         }
 
         //---------------------------------------: LOGIN :---------------------------------------
-        
-        public async Task<Login_ResponseDTO> LoginAsync(Login_RequestDTO loginRequestDTO)
+
+        public async Task<Login_ResponseDTO> LoginAsync(string userIP, Login_RequestDTO loginRequestDTO)
         {
             var result = await _signInManager.PasswordSignInAsync(
                 loginRequestDTO.UserName,
@@ -47,13 +51,19 @@ namespace DB_AngoraLib.Services.SigninService
             {
                 var user = await _userManager.FindByNameAsync(loginRequestDTO.UserName);
 
-                // Generate the token with the user's claims
-                var token = await GenerateToken(user);
+                // Brug TokenServices til at generere tokens
+                var accessToken = await _tokenService.GenerateAccessToken(user);
+                var refreshToken = _tokenService.GenerateRefreshToken();
+
+                // Opdater brugerens refresh token i databasen med den videregivne IP-adresse
+                await _tokenService.UpdateRefreshTokenForUser(user, refreshToken, userIP);
+
                 var tokenHandler = new JwtSecurityTokenHandler();
 
                 loginResponseDTO.UserName = user.UserName;
-                loginResponseDTO.Token = tokenHandler.WriteToken(token);
-                loginResponseDTO.ExpiryDate = token.ValidTo;
+                loginResponseDTO.AccessToken = tokenHandler.WriteToken(accessToken);
+                loginResponseDTO.ExpiryDate = accessToken.ValidTo;
+                loginResponseDTO.RefreshToken = refreshToken;
             }
             else
             {
@@ -62,6 +72,38 @@ namespace DB_AngoraLib.Services.SigninService
 
             return loginResponseDTO;
         }
+
+
+
+        //public async Task<Login_ResponseDTO> LoginAsync(Login_RequestDTO loginRequestDTO)
+        //{
+        //    var result = await _signInManager.PasswordSignInAsync(
+        //        loginRequestDTO.UserName,
+        //        loginRequestDTO.Password,
+        //        loginRequestDTO.RememberMe,
+        //        lockoutOnFailure: false);
+
+        //    var loginResponseDTO = new Login_ResponseDTO();
+
+        //    if (result.Succeeded)
+        //    {
+        //        var user = await _userManager.FindByNameAsync(loginRequestDTO.UserName);
+
+        //        // Generate the token with the user's claims
+        //        var token = await GenerateToken(user);
+        //        var tokenHandler = new JwtSecurityTokenHandler();
+
+        //        loginResponseDTO.UserName = user.UserName;
+        //        loginResponseDTO.Token = tokenHandler.WriteToken(token);
+        //        loginResponseDTO.ExpiryDate = token.ValidTo;
+        //    }
+        //    else
+        //    {
+        //        loginResponseDTO.Errors.Add("Invalid login attempt.");
+        //    }
+
+        //    return loginResponseDTO;
+        //}
 
         public async Task LogoutAsync()
         {
@@ -72,70 +114,19 @@ namespace DB_AngoraLib.Services.SigninService
         //---------------------------------------: TOKEN SETUP :---------------------------------------
 
 
-        private async Task<JwtSecurityToken> GenerateToken(User user)
-        {
-            var keyString = _configuration["Jwt:Key"];
-            var issuer = _configuration["Jwt:Issuer"];
-            var audience = _configuration["Jwt:Audience"];
-
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(keyString));
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-            var claimsList = new List<Claim>();
-
-            // Tilføjer UserClaims til token claims
-            var userClaims = await _userManager.GetClaimsAsync(user);
-            claimsList.AddRange(userClaims);
-
-            //Tilføjer RoleClaims til token claims
-            var userRoles = await _userManager.GetRolesAsync(user);
-            foreach (var roleName in userRoles)
-            {
-                var role = await _roleManager.FindByNameAsync(roleName);
-                var roleClaims = await _roleManager.GetClaimsAsync(role);
-                claimsList.AddRange(roleClaims);
-            }
-
-            // Tilføjer brugerens roller som claims
-            foreach (var role in userRoles)
-            {
-                claimsList.Add(new Claim(ClaimTypes.Role, role));
-            }
-
-            // Tilføj standard claims
-            var iat = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
-
-            claimsList.Add(new Claim(ClaimTypes.NameIdentifier, user.Id));
-            claimsList.Add(new Claim(ClaimTypes.Name, $"{user.FirstName} {user.LastName}"));
-            claimsList.Add(new Claim(ClaimTypes.Email, user.Email));
-            claimsList.Add(new Claim(JwtRegisteredClaimNames.Iat, iat.ToString(), ClaimValueTypes.Integer64));
-
-            var expires = DateTime.UtcNow.AddHours(1);
-
-            var token = new JwtSecurityToken(
-                issuer: issuer,
-                audience: audience,
-                claims: claimsList,
-                notBefore: DateTime.UtcNow,
-                expires: expires,
-                signingCredentials: creds);
-
-            return token;
-        }
-
         public async Task<Token_ResponseDTO> RefreshTokenAsync(string refreshToken)
         {
-            var user = await GetUserByRefreshToken(refreshToken);
-            if (user == null || !IsRefreshTokenValid(user, refreshToken))
+            var user = await _tokenService.GetUserByRefreshToken(refreshToken);
+            if (user == null || !_tokenService.IsRefreshTokenValid(user, refreshToken))
             {
                 return null; // Eller en fejlmeddelelse
             }
 
-            var newAccessToken = await GenerateToken(user);
-            var newRefreshToken = GenerateRefreshToken();
+            var newAccessToken = await _tokenService.GenerateAccessToken(user);
+            var newRefreshToken = _tokenService.GenerateRefreshToken();
 
             // Opdater brugerens refresh token i databasen
-            await UpdateRefreshTokenForUser(user, newRefreshToken);
+            await _tokenService.UpdateRefreshTokenForUser(user, newRefreshToken, "IP-adresse"); // Husk at erstatte "IP-adresse" med den faktiske IP-adresse, hvis relevant
 
             return new Token_ResponseDTO
             {
@@ -144,49 +135,122 @@ namespace DB_AngoraLib.Services.SigninService
             };
         }
 
-        private string GenerateRefreshToken()
-        {
-            // Generer en tilfældig streng som refresh token
-            var randomNumber = new byte[32];
-            using (var rng = RandomNumberGenerator.Create())
-            {
-                rng.GetBytes(randomNumber);
-                return Convert.ToBase64String(randomNumber);
-            }
-        }
 
-        // Antag at denne metode opdaterer brugerens refresh token i databasen
-        private async Task UpdateRefreshTokenForUser(User user, string newRefreshToken)
-        {
-            var refreshToken = new RefreshToken
-            {
-                Token = newRefreshToken,
-                Expires = DateTime.UtcNow.AddDays(7), // Sæt en udløbsdato, f.eks. 7 dage fra nu
-                Created = DateTime.UtcNow,
-                CreatedByIp = "" // Hvis du har brugerens IP, kan du sætte den her
-            };
+        //private async Task<JwtSecurityToken> GenerateToken(User user)
+        //{
+        //    var keyString = _configuration["Jwt:Key"];
+        //    var issuer = _configuration["Jwt:Issuer"];
+        //    var audience = _configuration["Jwt:Audience"];
 
-            user.RefreshTokens.Add(refreshToken);
-            await _userManager.UpdateAsync(user);
-        }
+        //    var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(keyString));
+        //    var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+        //    var claimsList = new List<Claim>();
+
+        //    // Tilføjer UserClaims til token claims
+        //    var userClaims = await _userManager.GetClaimsAsync(user);
+        //    claimsList.AddRange(userClaims);
+
+        //    //Tilføjer RoleClaims til token claims
+        //    var userRoles = await _userManager.GetRolesAsync(user);
+        //    foreach (var roleName in userRoles)
+        //    {
+        //        var role = await _roleManager.FindByNameAsync(roleName);
+        //        var roleClaims = await _roleManager.GetClaimsAsync(role);
+        //        claimsList.AddRange(roleClaims);
+        //    }
+
+        //    // Tilføjer brugerens roller som claims
+        //    foreach (var role in userRoles)
+        //    {
+        //        claimsList.Add(new Claim(ClaimTypes.Role, role));
+        //    }
+
+        //    // Tilføj standard claims
+        //    var iat = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+
+        //    claimsList.Add(new Claim(ClaimTypes.NameIdentifier, user.Id));
+        //    claimsList.Add(new Claim(ClaimTypes.Name, $"{user.FirstName} {user.LastName}"));
+        //    claimsList.Add(new Claim(ClaimTypes.Email, user.Email));
+        //    claimsList.Add(new Claim(JwtRegisteredClaimNames.Iat, iat.ToString(), ClaimValueTypes.Integer64));
+
+        //    var expires = DateTime.UtcNow.AddHours(1);
+
+        //    var token = new JwtSecurityToken(
+        //        issuer: issuer,
+        //        audience: audience,
+        //        claims: claimsList,
+        //        notBefore: DateTime.UtcNow,
+        //        expires: expires,
+        //        signingCredentials: creds);
+
+        //    return token;
+        //}
+
+        //public async Task<Token_ResponseDTO> RefreshTokenAsync(string refreshToken)
+        //{
+        //    var user = await GetUserByRefreshToken(refreshToken);
+        //    if (user == null || !IsRefreshTokenValid(user, refreshToken))
+        //    {
+        //        return null; // Eller en fejlmeddelelse
+        //    }
+
+        //    var newAccessToken = await GenerateToken(user);
+        //    var newRefreshToken = GenerateRefreshToken();
+
+        //    // Opdater brugerens refresh token i databasen
+        //    await UpdateRefreshTokenForUser(user, newRefreshToken);
+
+        //    return new Token_ResponseDTO
+        //    {
+        //        AccessToken = new JwtSecurityTokenHandler().WriteToken(newAccessToken),
+        //        RefreshToken = newRefreshToken
+        //    };
+        //}
+
+        //private string GenerateRefreshToken()
+        //{
+        //    // Generer en tilfældig streng som refresh token
+        //    var randomNumber = new byte[32];
+        //    using (var rng = RandomNumberGenerator.Create())
+        //    {
+        //        rng.GetBytes(randomNumber);
+        //        return Convert.ToBase64String(randomNumber);
+        //    }
+        //}
+
+        //// Antag at denne metode opdaterer brugerens refresh token i databasen
+        //private async Task UpdateRefreshTokenForUser(User user, string newRefreshToken)
+        //{
+        //    var refreshToken = new RefreshToken
+        //    {
+        //        Token = newRefreshToken,
+        //        Expires = DateTime.UtcNow.AddDays(7), // Sæt en udløbsdato, f.eks. 7 dage fra nu
+        //        Created = DateTime.UtcNow,
+        //        CreatedByIp = "" // Hvis du har brugerens IP, kan du sætte den her
+        //    };
+
+        //    user.RefreshTokens.Add(refreshToken);
+        //    await _userManager.UpdateAsync(user);
+        //}
 
 
-        // Antag at denne metode finder en bruger baseret på et refresh token
-        private async Task<User> GetUserByRefreshToken(string refreshToken)
-        {
-            var user = await _userManager.Users
-                .Include(u => u.RefreshTokens) // Sørg for at inkludere RefreshTokens i din query
-                .FirstOrDefaultAsync(u => u.RefreshTokens.Any(t => t.Token == refreshToken && t.IsActive));
+        //// Antag at denne metode finder en bruger baseret på et refresh token
+        //private async Task<User> GetUserByRefreshToken(string refreshToken)
+        //{
+        //    var user = await _userManager.Users
+        //        .Include(u => u.RefreshTokens) // Sørg for at inkludere RefreshTokens i din query
+        //        .FirstOrDefaultAsync(u => u.RefreshTokens.Any(t => t.Token == refreshToken && t.IsActive));
 
-            return user;
-        }
+        //    return user;
+        //}
 
 
-        // Validerer om et refresh token er gyldigt (ikke udløbet og tilhører brugeren)
-        private bool IsRefreshTokenValid(User user, string refreshToken)
-        {
-            return user.RefreshTokens.Any(t => t.Token == refreshToken && t.IsActive);
-        }
+        //// Validerer om et refresh token er gyldigt (ikke udløbet og tilhører brugeren)
+        //private bool IsRefreshTokenValid(User user, string refreshToken)
+        //{
+        //    return user.RefreshTokens.Any(t => t.Token == refreshToken && t.IsActive);
+        //}
 
 
 
