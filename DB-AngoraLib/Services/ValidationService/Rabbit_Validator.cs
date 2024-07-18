@@ -115,7 +115,7 @@ namespace DB_AngoraLib.Services.ValidationService
         public void ValidateRabbit(Rabbit rabbit)
         {
             //Key validations
-            ValidateRightEarId(rabbit.RightEarId);
+            //ValidateRightEarId(rabbit.RightEarId);
             ValidateLeftEarId(rabbit.LeftEarId);
 
             ValidateRace(rabbit.Race);

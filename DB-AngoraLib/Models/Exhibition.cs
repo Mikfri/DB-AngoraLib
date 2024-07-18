@@ -11,5 +11,7 @@ namespace DB_AngoraLib.Models
         public int Id { get; set; }
         public DateOnly ExhibitionDate { get; set; }
         public string Name { get; set; }
+        public List<Rabbit> RabbitsInContest { get; set; }
+        public List<User> Breeders { get; set; }
     }
 }

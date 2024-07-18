@@ -313,7 +313,7 @@ namespace DB_AngoraMST.Services_InMemTest
                 .Select(uc => new Claim(uc.ClaimType, uc.ClaimValue))
                 .ToList();
 
-            Console.WriteLine($"User: {mockUser.UserName}\nMY-Rabbit: {mockRabbitOwned.NickName}\nOTHER-Rabbit: {mockRabbitNotOwned.NickName}");
+            Console.WriteLine($"User: {mockUser.UserName}\nMY-Rabbit: {mockRabbitOwned.EarCombId}: {mockRabbitOwned.NickName}\nOTHER-Rabbit: {mockRabbitNotOwned.EarCombId}: {mockRabbitNotOwned.NickName}");
             foreach (var claim in mockUserClaims)
             {
                 Console.WriteLine($"ClaimType: '{claim.Type}' | ClaimValue: '{claim.Value}'");
@@ -344,7 +344,7 @@ namespace DB_AngoraMST.Services_InMemTest
                 .Select(uc => new Claim(uc.ClaimType, uc.ClaimValue))
                 .ToList();
 
-            Console.WriteLine($"User: {mockUser.UserName}\nMY-Rabbit: {mockRabbitOwned.NickName}\nOTHER-Rabbit: {mockRabbitNotOwned.NickName}");
+            Console.WriteLine($"User: {mockUser.UserName}\nMY-Rabbit: {mockRabbitOwned.EarCombId}: {mockRabbitOwned.NickName}\nOTHER-Rabbit: {mockRabbitNotOwned.EarCombId}: {mockRabbitNotOwned.NickName}");
             foreach (var claim in mockUserClaims)
             {
                 Console.WriteLine($"ClaimType: '{claim.Type}' | ClaimValue: '{claim.Value}'");

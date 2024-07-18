@@ -30,6 +30,22 @@ namespace DB_AngoraLib.Services.TokenService
             _roleManager = roleManager;
         }
 
+        public async Task SaveUserTokenAsync(string userId, string loginProvider, string tokenName, string tokenValue)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                throw new InvalidOperationException("Brugeren blev ikke fundet.");
+            }
+
+            var result = await _userManager.SetAuthenticationTokenAsync(user, loginProvider, tokenName, tokenValue);
+            if (!result.Succeeded)
+            {
+                throw new InvalidOperationException("Kunne ikke gemme tokenet.");
+            }
+        }
+
+
         public async Task<JwtSecurityToken> GenerateAccessToken(User user)
         {
             var keyString = _configuration["Jwt:Key"];
@@ -96,9 +112,9 @@ namespace DB_AngoraLib.Services.TokenService
             var refreshToken = new RefreshToken
             {
                 Token = newRefreshToken,
-                Expires = DateTime.UtcNow.AddDays(7),
+                // Expires sættes automatisk i RefreshToken-konstruktøren eller metoden, der bruger TokenDuration
                 Created = DateTime.UtcNow,
-                CreatedByIp = createdByIp // Sæt brugerens IP-adresse her
+                CreatedByIp = createdByIp,
             };
 
             user.RefreshTokens.Add(refreshToken);

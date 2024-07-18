@@ -50,7 +50,6 @@ namespace DB_AngoraLib.Services.SigninService
             if (result.Succeeded)
             {
                 var user = await _userManager.FindByNameAsync(loginRequestDTO.UserName);
-
                 // Brug TokenServices til at generere tokens
                 var accessToken = await _tokenService.GenerateAccessToken(user);
                 var refreshToken = _tokenService.GenerateRefreshToken();
@@ -59,11 +58,17 @@ namespace DB_AngoraLib.Services.SigninService
                 await _tokenService.UpdateRefreshTokenForUser(user, refreshToken, userIP);
 
                 var tokenHandler = new JwtSecurityTokenHandler();
+                var writtenAccessToken = tokenHandler.WriteToken(accessToken);
 
                 loginResponseDTO.UserName = user.UserName;
-                loginResponseDTO.AccessToken = tokenHandler.WriteToken(accessToken);
+                loginResponseDTO.AccessToken = writtenAccessToken;
                 loginResponseDTO.ExpiryDate = accessToken.ValidTo;
                 loginResponseDTO.RefreshToken = refreshToken;
+
+                // Gem access token og refresh token ved hjælp af SaveUserTokenAsync
+                await _tokenService.SaveUserTokenAsync(user.Id, "CustomProvider", "access_token", writtenAccessToken);
+                await _tokenService.SaveUserTokenAsync(user.Id, "CustomProvider", "refresh_token", refreshToken);
+
             }
             else
             {
@@ -74,8 +79,7 @@ namespace DB_AngoraLib.Services.SigninService
         }
 
 
-
-        //public async Task<Login_ResponseDTO> LoginAsync(Login_RequestDTO loginRequestDTO)
+        //public async Task<Login_ResponseDTO> LoginAsync(Login_RequestDTO loginRequestDTO) // Uden refresh token og IP-adresse
         //{
         //    var result = await _signInManager.PasswordSignInAsync(
         //        loginRequestDTO.UserName,
@@ -113,182 +117,125 @@ namespace DB_AngoraLib.Services.SigninService
 
         //---------------------------------------: TOKEN SETUP :---------------------------------------
 
-
-        public async Task<Token_ResponseDTO> RefreshTokenAsync(string refreshToken)
+        /// <summary>
+        /// Udsteder et nyt access token og refresh token baseret på et eksisterende refresh token
+        /// </summary>
+        /// <param name="refreshToken"></param>
+        /// <returns></returns>
+        public async Task<Token_ResponseDTO> Get_NewAccessRefreshToken_FromRefreshTokenAsync(string userId, string refreshToken)
         {
-            var user = await _tokenService.GetUserByRefreshToken(refreshToken);
-            if (user == null || !_tokenService.IsRefreshTokenValid(user, refreshToken))
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
             {
-                return null; // Eller en fejlmeddelelse
+                return null; // Brugeren blev ikke fundet
             }
 
+            // Hent det gemte refresh token for brugeren
+            var storedRefreshToken = await _userManager.GetAuthenticationTokenAsync(user, "CustomProvider", "refresh_token");
+
+            if (storedRefreshToken != refreshToken || string.IsNullOrEmpty(storedRefreshToken))
+            {
+                return null; // Refresh token matcher ikke eller er ikke fundet
+            }
+
+            // Valider det gemte refresh token her (f.eks. tjek udløb, tilbagekaldelse osv.)
+
+            // Generer et nyt access token og et nyt refresh token
             var newAccessToken = await _tokenService.GenerateAccessToken(user);
             var newRefreshToken = _tokenService.GenerateRefreshToken();
 
-            // Opdater brugerens refresh token i databasen
-            await _tokenService.UpdateRefreshTokenForUser(user, newRefreshToken, "IP-adresse"); // Husk at erstatte "IP-adresse" med den faktiske IP-adresse, hvis relevant
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var writtenAccessToken = tokenHandler.WriteToken(newAccessToken);
 
+            // Opdater det gemte refresh token med det nye refresh token
+            await _tokenService.SaveUserTokenAsync(user.Id, "CustomProvider", "refresh_token", newRefreshToken);
+
+            // Returner det nye access token og refresh token
             return new Token_ResponseDTO
             {
-                AccessToken = new JwtSecurityTokenHandler().WriteToken(newAccessToken),
+                AccessToken = writtenAccessToken,
                 RefreshToken = newRefreshToken
             };
         }
-
-
-        //private async Task<JwtSecurityToken> GenerateToken(User user)
-        //{
-        //    var keyString = _configuration["Jwt:Key"];
-        //    var issuer = _configuration["Jwt:Issuer"];
-        //    var audience = _configuration["Jwt:Audience"];
-
-        //    var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(keyString));
-        //    var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-        //    var claimsList = new List<Claim>();
-
-        //    // Tilføjer UserClaims til token claims
-        //    var userClaims = await _userManager.GetClaimsAsync(user);
-        //    claimsList.AddRange(userClaims);
-
-        //    //Tilføjer RoleClaims til token claims
-        //    var userRoles = await _userManager.GetRolesAsync(user);
-        //    foreach (var roleName in userRoles)
-        //    {
-        //        var role = await _roleManager.FindByNameAsync(roleName);
-        //        var roleClaims = await _roleManager.GetClaimsAsync(role);
-        //        claimsList.AddRange(roleClaims);
-        //    }
-
-        //    // Tilføjer brugerens roller som claims
-        //    foreach (var role in userRoles)
-        //    {
-        //        claimsList.Add(new Claim(ClaimTypes.Role, role));
-        //    }
-
-        //    // Tilføj standard claims
-        //    var iat = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
-
-        //    claimsList.Add(new Claim(ClaimTypes.NameIdentifier, user.Id));
-        //    claimsList.Add(new Claim(ClaimTypes.Name, $"{user.FirstName} {user.LastName}"));
-        //    claimsList.Add(new Claim(ClaimTypes.Email, user.Email));
-        //    claimsList.Add(new Claim(JwtRegisteredClaimNames.Iat, iat.ToString(), ClaimValueTypes.Integer64));
-
-        //    var expires = DateTime.UtcNow.AddHours(1);
-
-        //    var token = new JwtSecurityToken(
-        //        issuer: issuer,
-        //        audience: audience,
-        //        claims: claimsList,
-        //        notBefore: DateTime.UtcNow,
-        //        expires: expires,
-        //        signingCredentials: creds);
-
-        //    return token;
-        //}
-
-        //public async Task<Token_ResponseDTO> RefreshTokenAsync(string refreshToken)
-        //{
-        //    var user = await GetUserByRefreshToken(refreshToken);
-        //    if (user == null || !IsRefreshTokenValid(user, refreshToken))
-        //    {
-        //        return null; // Eller en fejlmeddelelse
-        //    }
-
-        //    var newAccessToken = await GenerateToken(user);
-        //    var newRefreshToken = GenerateRefreshToken();
-
-        //    // Opdater brugerens refresh token i databasen
-        //    await UpdateRefreshTokenForUser(user, newRefreshToken);
-
-        //    return new Token_ResponseDTO
-        //    {
-        //        AccessToken = new JwtSecurityTokenHandler().WriteToken(newAccessToken),
-        //        RefreshToken = newRefreshToken
-        //    };
-        //}
-
-        //private string GenerateRefreshToken()
-        //{
-        //    // Generer en tilfældig streng som refresh token
-        //    var randomNumber = new byte[32];
-        //    using (var rng = RandomNumberGenerator.Create())
-        //    {
-        //        rng.GetBytes(randomNumber);
-        //        return Convert.ToBase64String(randomNumber);
-        //    }
-        //}
-
-        //// Antag at denne metode opdaterer brugerens refresh token i databasen
-        //private async Task UpdateRefreshTokenForUser(User user, string newRefreshToken)
-        //{
-        //    var refreshToken = new RefreshToken
-        //    {
-        //        Token = newRefreshToken,
-        //        Expires = DateTime.UtcNow.AddDays(7), // Sæt en udløbsdato, f.eks. 7 dage fra nu
-        //        Created = DateTime.UtcNow,
-        //        CreatedByIp = "" // Hvis du har brugerens IP, kan du sætte den her
-        //    };
-
-        //    user.RefreshTokens.Add(refreshToken);
-        //    await _userManager.UpdateAsync(user);
-        //}
-
-
-        //// Antag at denne metode finder en bruger baseret på et refresh token
-        //private async Task<User> GetUserByRefreshToken(string refreshToken)
-        //{
-        //    var user = await _userManager.Users
-        //        .Include(u => u.RefreshTokens) // Sørg for at inkludere RefreshTokens i din query
-        //        .FirstOrDefaultAsync(u => u.RefreshTokens.Any(t => t.Token == refreshToken && t.IsActive));
-
-        //    return user;
-        //}
-
-
-        //// Validerer om et refresh token er gyldigt (ikke udløbet og tilhører brugeren)
-        //private bool IsRefreshTokenValid(User user, string refreshToken)
-        //{
-        //    return user.RefreshTokens.Any(t => t.Token == refreshToken && t.IsActive);
-        //}
 
 
 
 
         //---------------------------------------: EXTERNAL LOGIN :---------------------------------------
 
-        public async Task<SignInResult> ExternalLoginSignInAsync(string loginProvider, string providerKey, bool isPersistent)
-        {
-            return await _signInManager.ExternalLoginSignInAsync(loginProvider, providerKey, isPersistent, bypassTwoFactor: true);
-        }
-
         public async Task<string> ExternalLoginCallback(string returnUrl = null, string remoteError = null)
         {
+            if (remoteError != null)
+            {
+                // Håndter fejl fra den eksterne udbyder
+                throw new Exception($"Error from external provider: {remoteError}");
+            }
+
             var info = await _signInManager.GetExternalLoginInfoAsync();
             if (info == null)
             {
-                throw new Exception("Error loading external login information during confirmation.");
+                throw new Exception("Error loading external login information.");
             }
 
+            // Forsøg at logge ind med den eksterne udbyder
             var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor: true);
             if (result.Succeeded)
             {
-                return RedirectToLocal(returnUrl);
-            }
+                // Brugeren er allerede registreret med denne eksterne udbyder
+                var user = await _userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
+                var accessToken = info.AuthenticationTokens.FirstOrDefault(t => t.Name == "access_token")?.Value;
 
-            var email = info.Principal.FindFirstValue(ClaimTypes.Email);
-            var user = await _userManager.FindByEmailAsync(email);
-            if (user == null)
+                if (!string.IsNullOrEmpty(accessToken))
+                {
+                    // Gem access token i databasen
+                    await _tokenService.SaveUserTokenAsync(user.Id, info.LoginProvider, "access_token", accessToken);
+                }
+
+                return await GenerateAndReturnToken(user, returnUrl);
+            }
+            else
             {
-                user = new User { UserName = email, Email = email };
-                await _userManager.CreateAsync(user);
+                // Brugeren er ikke registreret, så vi skal oprette en ny bruger
+                var email = info.Principal.FindFirstValue(ClaimTypes.Email);
+                if (email == null)
+                {
+                    // Håndter scenarier, hvor e-mail ikke er tilgængelig
+                    throw new Exception("Email not found.");
+                }
+
+                var user = new User { UserName = email, Email = email };
+                var createUserResult = await _userManager.CreateAsync(user);
+                if (!createUserResult.Succeeded)
+                {
+                    throw new Exception("Failed to create user.");
+                }
+
+                var addLoginResult = await _userManager.AddLoginAsync(user, info);
+                if (!addLoginResult.Succeeded)
+                {
+                    throw new Exception("Failed to add external login.");
+                }
+
+                await _signInManager.SignInAsync(user, isPersistent: false);
+                return await GenerateAndReturnToken(user, returnUrl);
             }
-
-            await _userManager.AddLoginAsync(user, info);
-            await _signInManager.SignInAsync(user, isPersistent: false);
-
-            return RedirectToLocal(returnUrl);
         }
+
+        private async Task<string> GenerateAndReturnToken(User user, string returnUrl)
+        {
+            var accessToken = await _tokenService.GenerateAccessToken(user);
+            var refreshToken = _tokenService.GenerateRefreshToken();
+            await _tokenService.UpdateRefreshTokenForUser(user, refreshToken, "Brugerens IP"); // Erstat "Brugerens IP" med den faktiske IP
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var accessToken_ToString = tokenHandler.WriteToken(accessToken);
+
+            // Her kan du vælge at returnere token direkte, omdirigere brugeren med token som en parameter, eller en anden metode
+            // For eksempel, for en SPA, kan du returnere en URL med tokenet som en query parameter
+            // For denne demonstration returnerer vi bare tokenet som en string
+            return accessToken_ToString;
+        }
+
 
         private bool IsLocalUrl(string url)
         {

@@ -10,6 +10,7 @@ namespace DB_AngoraLib.Services.TokenService
 {
     public interface ITokenService
     {
+        Task SaveUserTokenAsync(string userId, string loginProvider, string tokenName, string tokenValue);
         Task<JwtSecurityToken> GenerateAccessToken(User user);
         string GenerateRefreshToken();
         Task UpdateRefreshTokenForUser(User user, string newRefreshToken, string createdByIp);

@@ -211,13 +211,6 @@ namespace DB_AngoraLib.Models
             Father_EarCombId = fatherId_Placeholder;
             Mother_EarCombId = motherId_Placeholder;
 
-            //FatherRightEarId = fatherRightEarId;
-            //FatherLeftEarId = fatherLeftEarId;
-            //MotherRightEarId = motherRightEarId;
-            //MotherLeftEarId = motherLeftEarId;
-            //FatherId = fatherId;
-            //MotherId = motherId;
-
         }
 
         private void UpdateEarCombId()
