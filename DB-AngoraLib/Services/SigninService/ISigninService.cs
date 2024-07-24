@@ -13,6 +13,7 @@ namespace DB_AngoraLib.Services.SigninService
         Task<Login_ResponseDTO> LoginAsync(string userIP, Login_RequestDTO loginRequest);
         Task LogoutAsync();
         //Task<ExternalLoginInfo> GetExternalLoginInfoAsync();
-        Task<string> ExternalLoginCallback(string returnUrl = null, string remoteError = null);
+        Task<Login_ResponseDTO> ExternalLoginCallback(string returnUrl = null, string remoteError = null);
+        //Task<string> ExternalLoginCallback2(string returnUrl = null, string remoteError = null);
     }
 }

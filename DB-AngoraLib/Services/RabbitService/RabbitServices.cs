@@ -246,8 +246,8 @@ namespace DB_AngoraLib.Services.RabbitService
             var mother = await Get_Rabbit_ByEarCombId_IncludingUserRelations(rabbit.Mother_EarCombId);
 
             // Opbyg relation for far og mor baseret på den nuværende relationPrefix
-            string fatherRelation = BuildRelation(relationPrefix, "Far");
-            string motherRelation = BuildRelation(relationPrefix, "Mor");
+            string fatherRelation = FamRelation(relationPrefix, "Far");
+            string motherRelation = FamRelation(relationPrefix, "Mor");
 
             return new Rabbit_PedigreeDTO
             {
@@ -266,7 +266,7 @@ namespace DB_AngoraLib.Services.RabbitService
             };
         }
 
-        private string BuildRelation(string currentRelation, string newRelation)
+        private string FamRelation(string currentRelation, string newRelation)
         {
             if (currentRelation == "Selv") return newRelation;
             return currentRelation + newRelation;

@@ -162,8 +162,7 @@ namespace DB_AngoraLib.Services.SigninService
 
 
         //---------------------------------------: EXTERNAL LOGIN :---------------------------------------
-
-        public async Task<string> ExternalLoginCallback(string returnUrl = null, string remoteError = null)
+        public async Task<Login_ResponseDTO> ExternalLoginCallback(string returnUrl = null, string remoteError = null)
         {
             if (remoteError != null)
             {
@@ -183,15 +182,23 @@ namespace DB_AngoraLib.Services.SigninService
             {
                 // Brugeren er allerede registreret med denne eksterne udbyder
                 var user = await _userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
-                var accessToken = info.AuthenticationTokens.FirstOrDefault(t => t.Name == "access_token")?.Value;
+                // Udsted dit eget Bearer Token for brugeren
+                var accessToken = await _tokenService.GenerateAccessToken(user);
 
-                if (!string.IsNullOrEmpty(accessToken))
+                var tokenHandler = new JwtSecurityTokenHandler();
+                var writtenAccessToken = tokenHandler.WriteToken(accessToken);
+
+                var refreshToken = _tokenService.GenerateRefreshToken();
+                await _tokenService.UpdateRefreshTokenForUser(user, refreshToken, "Brugerens IP");
+
+                // Returner dit eget token til brugeren
+                return new Login_ResponseDTO
                 {
-                    // Gem access token i databasen
-                    await _tokenService.SaveUserTokenAsync(user.Id, info.LoginProvider, "access_token", accessToken);
-                }
-
-                return await GenerateAndReturnToken(user, returnUrl);
+                    UserName = user.UserName,
+                    AccessToken = writtenAccessToken,
+                    RefreshToken = refreshToken,
+                    // Sæt andre nødvendige felter
+                };
             }
             else
             {
@@ -216,47 +223,101 @@ namespace DB_AngoraLib.Services.SigninService
                     throw new Exception("Failed to add external login.");
                 }
 
-                await _signInManager.SignInAsync(user, isPersistent: false);
-                return await GenerateAndReturnToken(user, returnUrl);
+                // Udsted dit eget Bearer Token for brugeren
+                var accessToken = await _tokenService.GenerateAccessToken(user);
+
+                var tokenHandler = new JwtSecurityTokenHandler();
+                var writtenAccessToken = tokenHandler.WriteToken(accessToken);
+
+                var refreshToken = _tokenService.GenerateRefreshToken();
+                await _tokenService.UpdateRefreshTokenForUser(user, refreshToken, "Brugerens IP");
+
+                // Returner dit eget token til brugeren
+                return new Login_ResponseDTO
+                {
+                    UserName = user.UserName,
+                    AccessToken = writtenAccessToken,
+                    RefreshToken = refreshToken,
+                    // Sæt andre nødvendige felter
+                };
             }
         }
 
-        private async Task<string> GenerateAndReturnToken(User user, string returnUrl)
-        {
-            var accessToken = await _tokenService.GenerateAccessToken(user);
-            var refreshToken = _tokenService.GenerateRefreshToken();
-            await _tokenService.UpdateRefreshTokenForUser(user, refreshToken, "Brugerens IP"); // Erstat "Brugerens IP" med den faktiske IP
+        //public async Task<string> ExternalLoginCallback2(string returnUrl = null, string remoteError = null)
+        //{
+        //    if (remoteError != null)
+        //    {
+        //        // Håndter fejl fra den eksterne udbyder
+        //        throw new Exception($"Error from external provider: {remoteError}");
+        //    }
 
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var accessToken_ToString = tokenHandler.WriteToken(accessToken);
+        //    var info = await _signInManager.GetExternalLoginInfoAsync();
+        //    if (info == null)
+        //    {
+        //        throw new Exception("Error loading external login information.");
+        //    }
 
-            // Her kan du vælge at returnere token direkte, omdirigere brugeren med token som en parameter, eller en anden metode
-            // For eksempel, for en SPA, kan du returnere en URL med tokenet som en query parameter
-            // For denne demonstration returnerer vi bare tokenet som en string
-            return accessToken_ToString;
-        }
+        //    // Forsøg at logge ind med den eksterne udbyder
+        //    var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor: true);
+        //    if (result.Succeeded)
+        //    {
+        //        // Brugeren er allerede registreret med denne eksterne udbyder
+        //        var user = await _userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
+        //        var accessToken = info.AuthenticationTokens.FirstOrDefault(t => t.Name == "access_token")?.Value;
+
+        //        if (!string.IsNullOrEmpty(accessToken))
+        //        {
+        //            // Gem access token i databasen
+        //            await _tokenService.SaveUserTokenAsync(user.Id, info.LoginProvider, "access_token", accessToken);
+        //        }
+
+        //        return await GenerateAndReturnToken(user, returnUrl);
+        //    }
+        //    else
+        //    {
+        //        // Brugeren er ikke registreret, så vi skal oprette en ny bruger
+        //        var email = info.Principal.FindFirstValue(ClaimTypes.Email);
+        //        if (email == null)
+        //        {
+        //            // Håndter scenarier, hvor e-mail ikke er tilgængelig
+        //            throw new Exception("Email not found.");
+        //        }
+
+        //        var user = new User { UserName = email, Email = email };
+        //        var createUserResult = await _userManager.CreateAsync(user);
+        //        if (!createUserResult.Succeeded)
+        //        {
+        //            throw new Exception("Failed to create user.");
+        //        }
+
+        //        var addLoginResult = await _userManager.AddLoginAsync(user, info);
+        //        if (!addLoginResult.Succeeded)
+        //        {
+        //            throw new Exception("Failed to add external login.");
+        //        }
+
+        //        await _signInManager.SignInAsync(user, isPersistent: false);
+        //        return await GenerateAndReturnToken(user, returnUrl);
+        //    }
+        //}
+
+        //private async Task<string> GenerateAndReturnToken(User user, string returnUrl)
+        //{
+        //    var accessToken = await _tokenService.GenerateAccessToken(user);
+        //    var refreshToken = _tokenService.GenerateRefreshToken();
+        //    await _tokenService.UpdateRefreshTokenForUser(user, refreshToken, "Brugerens IP"); // Erstat "Brugerens IP" med den faktiske IP
+
+        //    var tokenHandler = new JwtSecurityTokenHandler();
+        //    var accessToken_ToString = tokenHandler.WriteToken(accessToken);
+
+        //    // Her kan du vælge at returnere token direkte, omdirigere brugeren med token som en parameter, eller en anden metode
+        //    // For eksempel, for en SPA, kan du returnere en URL med tokenet som en query parameter
+        //    // For denne demonstration returnerer vi bare tokenet som en string
+        //    return accessToken_ToString;
+        //}
 
 
-        private bool IsLocalUrl(string url)
-        {
-            if (string.IsNullOrEmpty(url))
-            {
-                return false;
-            }
 
-            return Uri.TryCreate(url, UriKind.Relative, out Uri result);
-        }
 
-        private string RedirectToLocal(string returnUrl)
-        {
-            if (IsLocalUrl(returnUrl))
-            {
-                return returnUrl;
-            }
-            else
-            {
-                return "/";
-            }
-        }
     }
 }
