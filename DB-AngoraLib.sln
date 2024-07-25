@@ -7,8 +7,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DB-AngoraLib", "DB-AngoraLi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DB-AngoraMST", "DB-AngoraMST\DB-AngoraMST.csproj", "{2257EE06-621C-4F86-B4F7-62020D8200B7}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DB-AngoraREST", "..\DB-AngoraREST\DB-AngoraREST\DB-AngoraREST.csproj", "{20D7107D-7302-445C-88AE-53BD7114D38B}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,10 +21,6 @@ Global
 		{2257EE06-621C-4F86-B4F7-62020D8200B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2257EE06-621C-4F86-B4F7-62020D8200B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2257EE06-621C-4F86-B4F7-62020D8200B7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{20D7107D-7302-445C-88AE-53BD7114D38B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{20D7107D-7302-445C-88AE-53BD7114D38B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{20D7107D-7302-445C-88AE-53BD7114D38B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{20D7107D-7302-445C-88AE-53BD7114D38B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
