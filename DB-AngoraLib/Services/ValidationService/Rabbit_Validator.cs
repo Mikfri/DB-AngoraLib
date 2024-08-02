@@ -11,22 +11,22 @@ namespace DB_AngoraLib.Services.ValidationService
 
     public class Rabbit_Validator
     {
-        public static readonly Dictionary<Race, List<Color>> NotApprovedColorsByRace = new Dictionary<Race, List<Color>>();
+        //public static readonly Dictionary<Race, List<Color>> NotApprovedColorsByRace = new Dictionary<Race, List<Color>>();
 
         public Rabbit_Validator()
         {
             // Tilføj farver, der ikke er godkendt for hver race
-            NotApprovedColorsByRace[Race.Angora] = new List<Color> { Color.LysGråblå_Gouwenaar, Color.LyseBlå_BlåBeveren, Color.Ræverød_NewZealandRed, Color.Sallander, };
-            NotApprovedColorsByRace[Race.Satin_Angora] = new List<Color> { Color.LysGråblå_Gouwenaar, Color.LyseBlå_BlåBeveren, Color.Ræverød_NewZealandRed, Color.Sallander, };
-            NotApprovedColorsByRace[Race.Satin] = new List<Color> { Color.Hvid_Albino, };
-            NotApprovedColorsByRace[Race.Rex] = new List<Color> { Color.Vildtrød_Harefarvet, Color.Gulrød_Bourgogne, Color.Ræverød_NewZealandRed, Color.LyseBlå_BlåBeveren, Color.Gråblå_LilleEgern, Color.Gråblå_MarburgerEgern, Color.LysGråblå_Gouwenaar, Color.Jerngrå, };
-            NotApprovedColorsByRace[Race.Lille_Rex] = new List<Color> { Color.Vildtrød_Harefarvet, Color.Gulrød_Bourgogne, Color.Ræverød_NewZealandRed, Color.LyseBlå_BlåBeveren, Color.Gråblå_LilleEgern, Color.Gråblå_MarburgerEgern, Color.LysGråblå_Gouwenaar, Color.Jerngrå, };
+            //NotApprovedColorsByRace[Race.Angora] = new List<Color> { Color.LysGråblå_Gouwenaar, Color.LyseBlå_BlåBeveren, Color.Ræverød_NewZealandRed, Color.Sallander, };
+            //NotApprovedColorsByRace[Race.Satin_Angora] = new List<Color> { Color.LysGråblå_Gouwenaar, Color.LyseBlå_BlåBeveren, Color.Ræverød_NewZealandRed, Color.Sallander, };
+            //NotApprovedColorsByRace[Race.Satin] = new List<Color> { Color.Hvid_Albino, };
+            //NotApprovedColorsByRace[Race.Rex] = new List<Color> { Color.Vildtrød_Harefarvet, Color.Gulrød_Bourgogne, Color.Ræverød_NewZealandRed, Color.LyseBlå_BlåBeveren, Color.Gråblå_LilleEgern, Color.Gråblå_MarburgerEgern, Color.LysGråblå_Gouwenaar, Color.Jerngrå, };
+            //NotApprovedColorsByRace[Race.Lille_Rex] = new List<Color> { Color.Vildtrød_Harefarvet, Color.Gulrød_Bourgogne, Color.Ræverød_NewZealandRed, Color.LyseBlå_BlåBeveren, Color.Gråblå_LilleEgern, Color.Gråblå_MarburgerEgern, Color.LysGråblå_Gouwenaar, Color.Jerngrå, };
         }
 
 
         public bool ValidateRaceAndColorCombo(Race race, Color color)
         {
-            if (NotApprovedColorsByRace.TryGetValue(race, out var notApprovedColors))
+            if (Rabbit.NotApprovedColorsByRace.TryGetValue(race, out var notApprovedColors))
             {
                 return !notApprovedColors.Contains(color);
             }
@@ -110,7 +110,6 @@ namespace DB_AngoraLib.Services.ValidationService
                 throw new ArgumentException("Kanin.ForældreId: Skal være i formatet RightEarId-LeftEarId (f.eks. 5095-021)");
             }
         }
-
 
         public void ValidateRabbit(Rabbit rabbit)
         {

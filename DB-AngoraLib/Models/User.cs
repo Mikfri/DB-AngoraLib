@@ -33,6 +33,8 @@ namespace DB_AngoraLib.Models
         //public virtual ICollection<IdentityUserLogin<string>> Logins { get; set; }
         //public virtual ICollection<IdentityUserToken<string>> Tokens { get; set; }
         //public virtual ICollection<IdentityUserRole<string>> UserRoles { get; set; }
+
+        public virtual ICollection<Favorite> Favorites { get; set; }
         public virtual ICollection<ApplicationBreeder> BreederApplications { get; set; }
 
         public virtual ICollection<Rabbit> RabbitsOwned { get; set; }

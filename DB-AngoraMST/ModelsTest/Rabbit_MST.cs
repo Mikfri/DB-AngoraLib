@@ -157,9 +157,9 @@ namespace DB_AngoraMST.ModelsTest
 
         //////////////// Gender
         [TestMethod]
-        [DataRow("Han")]   // Gender GYLDIG
-        [DataRow("01")]    // Gender GYLDIG (svarer til "Han")
-        [DataRow("Hun")]
+        [DataRow("Buck")]   // Gender GYLDIG
+        [DataRow("01")]    // Gender GYLDIG (svarer til "Buck")
+        [DataRow("Doe")]
         [DataRow("00")]
         public void Gender_ValidTest(string gender)
         {

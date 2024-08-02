@@ -37,7 +37,8 @@ namespace DB_AngoraLib.DTOs
         public bool? IsJuvenile { get; init; }
 
         public Gender? Gender { get; init; }
-        public ForSale? ForSale { get; init; }
+        public IsPublic? ForSale { get; init; }
+        public IsPublic? ForBreeding { get; init; }
 
         public string? FatherId_Placeholder { get; init; }
         public string? Father_EarCombId { get; init; }

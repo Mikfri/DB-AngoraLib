@@ -1,10 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using DB_AngoraLib.Services.ValidationService;
+using System.Text.RegularExpressions;
 
 namespace DB_AngoraLib.Models
 {
-    public enum ForSale
+    public enum IsPublic
     {
         Nej,
         Ja
@@ -12,8 +13,8 @@ namespace DB_AngoraLib.Models
 
     public enum Gender
     {
-        Hun,    // NiceToHave: ♂    0.1     Doe
-        Han,    // NiceToHave: ♀    1.0     Buck
+        Doe,    // 0,  NiceToHave: ♂    0.1
+        Buck,   // 1,  NiceToHave: ♀    1.0
     }
 
     public enum Race
@@ -83,7 +84,6 @@ namespace DB_AngoraLib.Models
         Gulbrun_Isabella,
         Sallander,
 
-
         // Ensfarvede m. stikkelhår
         Sølv,
         Stikkelhår_Trønder,
@@ -109,6 +109,8 @@ namespace DB_AngoraLib.Models
 
     public class Rabbit
     {
+        public static readonly Dictionary<Race, List<Color>> NotApprovedColorsByRace = new Dictionary<Race, List<Color>>();
+
         private string rightEarId;
         private string leftEarId;
 
@@ -150,7 +152,7 @@ namespace DB_AngoraLib.Models
         {
             get
             {
-                if (Rabbit_Validator.NotApprovedColorsByRace.TryGetValue(Race, out var notApprovedColors))
+                if (NotApprovedColorsByRace.TryGetValue(Race, out var notApprovedColors))
                 {
                     return !notApprovedColors.Contains(Color);
                 }
@@ -173,8 +175,9 @@ namespace DB_AngoraLib.Models
         public DateOnly? DateOfDeath { get; set; }
         
         public Gender Gender { get; set; }
-        public ForSale? ForSale { get; set; }       // TODO: Kunne være DateOnly, så man kan se hvornår den blev sat til salg + ny property for pris og DateOnly for solgt dato
-       
+        public IsPublic ForSale { get; set; }       // TODO: Kunne være DateOnly, så man kan se hvornår den blev sat til salg + ny property for pris og DateOnly for solgt dato
+        public IsPublic ForBreeding { get; set; }
+
         public string? FatherId_Placeholder { get; set; }
         public string? Father_EarCombId { get; set; }
         public Rabbit? Father { get; set; }
@@ -183,14 +186,15 @@ namespace DB_AngoraLib.Models
         public string? Mother_EarCombId { get; set; }
         public Rabbit? Mother { get; set; }
 
-
         public virtual ICollection<Rabbit> MotheredChildren { get; set; } // Er altid null hvis, Rabbit er far/Han
         public virtual ICollection<Rabbit> FatheredChildren { get; set; } // Er altid null hvis, Rabbit er mor/Hun
         public virtual ICollection<Photo> Photos { get; set; }
         //public virtual ICollection<RabbitTransfer> PreviousOwners { get; set; }
+        public virtual ICollection<Trimming> Trimmings { get; set; }
 
 
-        public Rabbit(string rightEarId, string leftEarId, string? originId, string? ownerId, string? nickName, Race race, Color color, DateOnly dateOfBirth, DateOnly? dateOfDeath, Gender gender, ForSale? forSale, string? fatherId_Placeholder, string? motherId_Placeholder)
+
+        public Rabbit(string rightEarId, string leftEarId, string? originId, string? ownerId, string? nickName, Race race, Color color, DateOnly dateOfBirth, DateOnly? dateOfDeath, Gender gender, IsPublic forSale, string? fatherId_Placeholder, string? motherId_Placeholder)
         {
             //Id = id;
             EarCombId = $"{rightEarId}-{leftEarId}";
@@ -212,14 +216,128 @@ namespace DB_AngoraLib.Models
             Mother_EarCombId = motherId_Placeholder;
 
         }
+          
+
+        public Rabbit() 
+        {
+            NotApprovedColorsByRace[Race.Angora] = new List<Color> { Color.LysGråblå_Gouwenaar, Color.LyseBlå_BlåBeveren, Color.Ræverød_NewZealandRed, Color.Sallander, };
+            NotApprovedColorsByRace[Race.Satin_Angora] = new List<Color> { Color.LysGråblå_Gouwenaar, Color.LyseBlå_BlåBeveren, Color.Ræverød_NewZealandRed, Color.Sallander, };
+            NotApprovedColorsByRace[Race.Satin] = new List<Color> { Color.Hvid_Albino, };
+            NotApprovedColorsByRace[Race.Rex] = new List<Color> { Color.Vildtrød_Harefarvet, Color.Gulrød_Bourgogne, Color.Ræverød_NewZealandRed, Color.LyseBlå_BlåBeveren, Color.Gråblå_LilleEgern, Color.Gråblå_MarburgerEgern, Color.LysGråblå_Gouwenaar, Color.Jerngrå, };
+            NotApprovedColorsByRace[Race.Lille_Rex] = new List<Color> { Color.Vildtrød_Harefarvet, Color.Gulrød_Bourgogne, Color.Ræverød_NewZealandRed, Color.LyseBlå_BlåBeveren, Color.Gråblå_LilleEgern, Color.Gråblå_MarburgerEgern, Color.LysGråblå_Gouwenaar, Color.Jerngrå, };
+
+        }
 
         private void UpdateEarCombId()
         {
             EarCombId = $"{RightEarId}-{LeftEarId}";
         }
 
-        public Rabbit() { }
+        public bool ValidateRaceAndColorCombo(Race race, Color color)
+        {
+            if (NotApprovedColorsByRace.TryGetValue(race, out var notApprovedColors))
+            {
+                return !notApprovedColors.Contains(color);
+            }
+            return false;
+        }
 
-        
+
+        public void ValidateRace()
+        {
+            if (!Enum.IsDefined(typeof(Race), Race))
+            {
+                throw new ArgumentException("Kanin.Race: Vælg en gyldig race fra listen");
+            }
+        }
+
+
+        public void ValidateColor()
+        {
+            if (!Enum.IsDefined(typeof(Color), Color))
+            {
+                throw new ArgumentException("Ugyldig farve! Vælg fra listen");
+            }
+        }
+
+
+        public void ValidateRightEarId()
+        {
+            //string rightEarId = rabbit.RightEarId;
+
+            Regex fourNumbersDigit = new Regex(@"^\d{4}$");
+
+            if (string.IsNullOrEmpty(rightEarId))
+            {
+                throw new ArgumentNullException("Kanin.AvlerNo: Feldtet skal udfyldes");
+            }
+
+            if (!fourNumbersDigit.IsMatch(rightEarId))
+            {
+                throw new ArgumentException("Kanin.AvlerNo: Skal være 4 numeriske tal");
+            }
+        }
+
+        public void ValidateLeftEarId()
+        {
+
+            Regex threeToFiveNumbersDigit = new Regex(@"^\d{3,5}$"); // 3-5 numeriske tal
+
+            if (string.IsNullOrEmpty(leftEarId))
+            {
+                throw new ArgumentNullException("Kanin.Id: Feldtet skal udfyldes");
+            }
+
+            if (!threeToFiveNumbersDigit.IsMatch(leftEarId))
+            {
+                throw new ArgumentException("Kanin.Id, skal være imellem 3 og 5 numeriske tal");
+            }
+        }
+
+
+        public void ValidateGender()
+        {
+            if (!Enum.IsDefined(typeof(Gender), Gender))
+            {
+                throw new ArgumentException("Kanin.Køn: Vælg et gyldigt køn (Han/Hun)");
+            }
+        }
+
+
+        public void ValidateParentId()
+        {
+            // Hvis parentId er null eller tom, returner uden fejl
+            if (string.IsNullOrEmpty(FatherId_Placeholder) && string.IsNullOrEmpty(MotherId_Placeholder))
+            {
+                return;
+            }
+
+            Regex parentIdPattern = new Regex(@"^\d{4}-\d{3,5}$");
+
+            if (!string.IsNullOrEmpty(FatherId_Placeholder) && !parentIdPattern.IsMatch(FatherId_Placeholder))
+            {
+                throw new ArgumentException("Kanin.ForældreId: Skal være i formatet RightEarId-LeftEarId (f.eks. 5095-021)");
+            }
+
+            if (!string.IsNullOrEmpty(MotherId_Placeholder) && !parentIdPattern.IsMatch(MotherId_Placeholder))
+            {
+                throw new ArgumentException("Kanin.ForældreId: Skal være i formatet RightEarId-LeftEarId (f.eks. 5095-021)");
+            }
+        }
+
+        public void ValidateRabbit()
+        {
+            //Key validations
+            ValidateRightEarId();
+            ValidateLeftEarId();
+
+            ValidateRace();
+            ValidateColor();
+            ValidateGender();
+
+            //ValidateRaceAndColorCombo();
+
+        }
+
     }
 }

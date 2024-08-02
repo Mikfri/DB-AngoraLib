@@ -111,10 +111,43 @@ namespace DB_AngoraLib.Services.AccountService
                 .FirstOrDefaultAsync(u => u.BreederRegNo == breederRegNo);
         }
 
+        //------------: GET USER PROFILE
+        public async Task<User_ProfileDTO> Get_User_Profile(string currentUserId, string userProfileId, IList<Claim> userClaims)
+        {
+            var user = await Get_UserById(currentUserId);
+            if (user == null)
+            {
+                return null;
+            }
+
+            var hasPermissionToGetAnyUser = userClaims.Any(
+                c => c.Type == "User:Read" && c.Value == "Any");
+
+            if (user.Id != userProfileId && !hasPermissionToGetAnyUser)
+            {
+                throw new UnauthorizedAccessException("You do not have permission to access this profile.");
+            }
+
+            // Map User entity to User_ProfileDTO
+            var userProfile = new User_ProfileDTO
+            {
+                BreederRegNo = user.BreederRegNo,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                RoadNameAndNo = user.RoadNameAndNo,
+                ZipCode = user.ZipCode,
+                City = user.City,
+                Email = user.Email,
+                Phone = user.PhoneNumber
+            };
+
+            return userProfile;
+        }
+
 
         //---------------------------------: GET USERs ICOLLECTION METHODS :--------------------
         //-----------: Rabbits
-       
+
         public async Task<List<Rabbit_PreviewDTO>> GetAll_RabbitsOwned_Filtered(
            string userId, Rabbit_FilteredRequestDTO filter)
         {
@@ -375,6 +408,61 @@ namespace DB_AngoraLib.Services.AccountService
                 })
                 .ToList();
         }
+
+        //public async Task<List<object>> GetAll_FavoriteItems(string userId)
+        //{
+        //    var userWithFavorites = await _dbRepository.GetDbSet()
+        //        .AsNoTracking()
+        //        .Include(u => u.Favorites)
+        //        .FirstOrDefaultAsync(u => u.Id == userId);
+
+        //    if (userWithFavorites == null)
+        //    {
+        //        Console.WriteLine("User not found");
+        //        return new List<object>();
+        //    }
+
+        //    var favoriteItems = new List<object>();
+
+        //    foreach (var favorite in userWithFavorites.Favorites)
+        //    {
+        //        if (favorite.ItemType == FavoriteType.Rabbit)
+        //        {
+        //            var rabbit = await _rabbitRepository.GetObject_ByStringKEYAsync(favorite.ItemId);
+        //            if (rabbit != null)
+        //            {
+        //                favoriteItems.Add(new Rabbit_PreviewDTO
+        //                {
+        //                    EarCombId = rabbit.EarCombId,
+        //                    NickName = rabbit.NickName,
+        //                    Race = rabbit.Race,
+        //                    Color = rabbit.Color,
+        //                    Gender = rabbit.Gender,
+        //                    UserOwner = rabbit.UserOwner?.UserName,
+        //                    UserOrigin = rabbit.UserOrigin?.UserName
+        //                });
+        //            }
+        //        }
+        //        else if (favorite.ItemType == FavoriteType.Wool)
+        //        {
+        //            var wool = await _woolRepository.GetObject_ByStringKEYAsync(favorite.ItemId);
+        //            if (wool != null)
+        //            {
+        //                favoriteItems.Add(new WoolDTO
+        //                {
+        //                    WoolType = wool.WoolType,
+        //                    WoolColor = wool.WoolColor,
+        //                    WoolQuality = wool.WoolQuality,
+        //                    WoolLength = wool.WoolLength,
+        //                    WoolWeight = wool.WoolWeight,
+        //                    WoolDescription = wool.WoolDescription
+        //                });
+        //            }
+        //        }
+        //    }
+
+        //    return favoriteItems;
+        //}
 
 
         //---------------------------------: EMAIL METHODs :-------------------------------

@@ -12,7 +12,7 @@ namespace DB_AngoraLib.Models
     {
         public int Id { get; set; }
 
-        public int RabbitId { get; set; }
+        public string RabbitId { get; set; }
         public Rabbit Rabbit { get; set; }
 
         public DateOnly DateTrimmed { get; set; }
@@ -28,16 +28,12 @@ namespace DB_AngoraLib.Models
         }
 
         public int FirstSortmentWeightGram { get; set; }
-
         public int SecondSortmentWeightGram { get; set; }
-
         public int DisposableWoolWeightGram { get; set; }
 
         public int? TimeUsedMinutes { get; set; }
 
         public float? HairLengthCm { get; set; }
-
         public float? WoolDensity { get; set; }
-
     }
 }

@@ -24,7 +24,8 @@ namespace DB_AngoraLib.DTOs
         public DateOnly? DateOfDeath { get; init; }
 
         public Gender? Gender { get; init; }
-        public ForSale? ForSale { get; init; }
+        public IsPublic? ForSale { get; init; }
+        public IsPublic? ForBreeding { get; init; }
 
         public string? FatherId_Placeholder { get; init; }
         public string? MotherId_Placeholder { get; init; }

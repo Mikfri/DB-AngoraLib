@@ -82,6 +82,12 @@ namespace DB_AngoraLib.EF_DbContext
                 .IsRequired(false)
                 .OnDelete(DeleteBehavior.Restrict); // Prevent cascade delete
 
+            modelBuilder.Entity<Trimming>()
+                .HasOne(t => t.Rabbit)
+                .WithMany(r => r.Trimmings)
+                .HasForeignKey(t => t.RabbitId)
+                .OnDelete(DeleteBehavior.Cascade); // Cascade delete for at slette trimmings, når en rabbit slettes
+
 
             modelBuilder.Entity<ApplicationBreeder>()
                 .HasOne(ba => ba.UserApplicant)           // ApplicationBreeder har én UserApplicant
@@ -124,6 +130,7 @@ namespace DB_AngoraLib.EF_DbContext
 
         public DbSet<ApplicationBreeder> BreederApplications { get; set; }
         public DbSet<Rabbit> Rabbits { get; set; }
+        public DbSet<Trimming> Trimmings { get; set; }
         public DbSet<RefreshToken> RefreshTokens { get; set; }
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<TransferRequst> TransferRequests { get; set; }

@@ -87,8 +87,8 @@ namespace DB_AngoraMST.Services_InMemTest
                 Color = Color.Jerngrå,
                 DateOfBirth = new DateOnly(2020, 06, 12),
                 DateOfDeath = null,
-                Gender = Gender.Hun,
-                ForSale = ForSale.Nej,
+                Gender = Gender.Doe,
+                ForSale = IsPublic.Nej,
                 Father_EarCombId = "5050-188",
             };
             var existingRabbit = await _context.Rabbits.FirstAsync();
@@ -212,7 +212,7 @@ namespace DB_AngoraMST.Services_InMemTest
                 r.Race == expectedRace &&
                 // r.Color == expectedColor &&
                 //r.Gender == expectedGender &&
-                r.ForSale == ForSale.Ja);
+                r.ForSale == IsPublic.Ja);
 
             // Print each rabbit's nickname
             foreach (var rabbit in expectedRabbits)

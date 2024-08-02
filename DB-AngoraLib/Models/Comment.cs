@@ -9,6 +9,7 @@ namespace DB_AngoraLib.Models
     public class Comment
     {
         public int Id { get; set; }
+
         public DateOnly DateCommented { get; set; }
         public string Description { get; set; }
 
@@ -19,8 +20,6 @@ namespace DB_AngoraLib.Models
         }
 
         public Comment() { }
-
-
 
     }
 }

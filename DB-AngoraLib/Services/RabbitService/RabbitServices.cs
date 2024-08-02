@@ -46,6 +46,7 @@ namespace DB_AngoraLib.Services.RabbitService
                 throw new ArgumentException("Invalid arguments");
             }
             // Create a new Rabbit from the DTO
+
             var newRabbit = new Rabbit
             {
                 RightEarId = newRabbitDTO.RightEarId,
@@ -60,7 +61,7 @@ namespace DB_AngoraLib.Services.RabbitService
                 //IsJuvenile = newRabbitDto.IsJuvenile, // Ikke nødvendig, automatisk udregnet - evt frontend udregning?
                 Gender = newRabbitDTO.Gender,
                 ForSale = newRabbitDTO.ForSale,
-                // ... evt flere..
+                ForBreeding = newRabbitDTO.ForBreeding,
 
                 FatherId_Placeholder = newRabbitDTO.Father_EarCombId,
                 MotherId_Placeholder = newRabbitDTO.Mother_EarCombId,
@@ -69,6 +70,8 @@ namespace DB_AngoraLib.Services.RabbitService
                 //Father_EarCombId = newRabbitDto.Father_EarCombId,
                 //Mother_EarCombId = newRabbitDto.Mother_EarCombId,
             };
+            newRabbit.ValidateRabbit();
+            //_validatorService.ValidateRabbit(newRabbit);
 
             var existingRabbit = await Get_Rabbit_ByEarCombId($"{newRabbit.RightEarId}-{newRabbit.LeftEarId}");
             if (existingRabbit != null)
@@ -76,7 +79,6 @@ namespace DB_AngoraLib.Services.RabbitService
                 throw new InvalidOperationException("En kanin med den angivne ørermærke-kombi eksistere allerede");
             }
 
-            _validatorService.ValidateRabbit(newRabbit);
 
             await _dbRepository.AddObjectAsync(newRabbit); // Add the new rabbit to the database
 
@@ -103,7 +105,7 @@ namespace DB_AngoraLib.Services.RabbitService
             var rabbits = await _dbRepository.GetDbSet()
                 .AsNoTracking()
                 .Where(rabbit =>
-                rabbit.ForSale == ForSale.Ja &&
+                rabbit.ForSale == IsPublic.Ja &&
                 rabbit.DateOfDeath == null)
                 .ToListAsync();
 
@@ -174,7 +176,7 @@ namespace DB_AngoraLib.Services.RabbitService
             await ParentsFK_SetupAsync(rabbit);
             await UserOriginFK_SetupAsync(rabbit);
 
-            if (rabbit.ForSale == ForSale.Ja || rabbit.OwnerId == userId || hasPermissionToGetAnyRabbit)
+            if (rabbit.ForSale == IsPublic.Ja || rabbit.OwnerId == userId || hasPermissionToGetAnyRabbit)
             {
                 var rabbitProfile = new Rabbit_ProfileDTO
                 {
@@ -272,6 +274,36 @@ namespace DB_AngoraLib.Services.RabbitService
             return currentRelation + newRelation;
         }
 
+        public async Task<Rabbit_PedigreeDTO> Get_RabbitTestParingPedigree(string fatherEarCombId, string motherEarCombId)
+        {
+            var father = await Get_Rabbit_ByEarCombId_IncludingUserRelations(fatherEarCombId);
+            var mother = await Get_Rabbit_ByEarCombId_IncludingUserRelations(motherEarCombId);
+
+            if (father == null || mother == null)
+            {
+                throw new ArgumentException("One or both of the provided ear comb IDs do not correspond to existing rabbits.");
+            }
+
+            if (father.Gender != Gender.Buck)
+            {
+                throw new ArgumentException("The rabbit specified as the father is not male.");
+            }
+
+            if (mother.Gender != Gender.Doe)
+            {
+                throw new ArgumentException("The rabbit specified as the mother is not female.");
+            }
+
+            var testRabbit = new Rabbit
+            {
+                Father = father,
+                Mother = mother,
+                Father_EarCombId = fatherEarCombId,
+                Mother_EarCombId = motherEarCombId
+            };
+
+            return await Get_Rabbit_PedigreeRecursive(testRabbit, 0, 3, "Selv"); // Assuming maxGeneration is 3 for the test pedigree
+        }
 
         //---------------------: UPDATE
         public async Task<Rabbit_ProfileDTO> UpdateRabbit_RBAC(string userId, string earCombId, Rabbit_UpdateDTO rabbit_updateDTO, IList<Claim> userClaims)
@@ -374,7 +406,7 @@ namespace DB_AngoraLib.Services.RabbitService
             }
 
             // Opdater Father_EarCombId kun hvis en gyldig far kanin findes
-            if (existingFather != null && existingFather.Gender == Gender.Han)
+            if (existingFather != null && existingFather.Gender == Gender.Buck)
             {
                 rabbit.Father_EarCombId = fatherIdPlaceholder;
             }
@@ -390,7 +422,7 @@ namespace DB_AngoraLib.Services.RabbitService
                 existingMother = await Get_Rabbit_ByEarCombId(motherIdPlaceholder);
             }
 
-            if (existingMother != null && existingMother.Gender == Gender.Hun)
+            if (existingMother != null && existingMother.Gender == Gender.Doe)
             {
                 rabbit.Mother_EarCombId = motherIdPlaceholder;
             }
@@ -415,7 +447,7 @@ namespace DB_AngoraLib.Services.RabbitService
         {
             List<Rabbit> rabbitsToUpdateList = new List<Rabbit>();
 
-            if (gender == Gender.Han)
+            if (gender == Gender.Buck)
             {
                 var maleChildrenList = await _dbRepository.GetDbSet()
                     .Where(r => r.FatherId_Placeholder == earCombId)
@@ -427,7 +459,7 @@ namespace DB_AngoraLib.Services.RabbitService
                     rabbitsToUpdateList.Add(child);
                 }
             }
-            else if (gender == Gender.Hun)
+            else if (gender == Gender.Doe)
             {
                 var femaleChildrenList = await _dbRepository.GetDbSet()
                     .Where(r => r.MotherId_Placeholder == earCombId)
