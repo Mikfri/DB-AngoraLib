@@ -10,7 +10,7 @@ namespace DB_AngoraLib.DTOs
     public record TransferRequest_ContractDTO
     {
         public int Id { get; init; }
-        public RequestStatus Status { get; init; }
+        public TransferStatus Status { get; init; }
         public DateOnly? DateAccepted { get; init; }
         //-------------: Issuer
         public string Issuer_BreederRegNo { get; init; }

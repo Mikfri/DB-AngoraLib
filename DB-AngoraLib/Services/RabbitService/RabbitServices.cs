@@ -178,13 +178,13 @@ namespace DB_AngoraLib.Services.RabbitService
 
             if (rabbit.ForSale == IsPublic.Ja || rabbit.OwnerId == userId || hasPermissionToGetAnyRabbit)
             {
-                var rabbitProfile = new Rabbit_ProfileDTO
+                var rabbitProfileDTO = new Rabbit_ProfileDTO
                 {
                     Children = await Get_Rabbit_ChildCollection(earCombId),
                 };
 
-                HelperServices.CopyPropertiesTo(rabbit, rabbitProfile);
-                return rabbitProfile;
+                HelperServices.CopyPropertiesTo(rabbit, rabbitProfileDTO);
+                return rabbitProfileDTO;
             }
             return null;
         }

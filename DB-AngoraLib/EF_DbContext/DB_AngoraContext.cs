@@ -49,6 +49,12 @@ namespace DB_AngoraLib.EF_DbContext
 
             //------------------- FK SETUP -------------------
 
+            modelBuilder.Entity<BreederBrand>()
+                .HasOne(bb => bb.User)
+                .WithOne(u => u.BreederBrand)
+                .HasForeignKey<BreederBrand>(bb => bb.UserId)
+                //.HasPrincipalKey<User>(u => u.BreederRegNo) // Angiv at User's BreederRegNo er hovednøglen
+                .OnDelete(DeleteBehavior.Cascade); // Cascade delete for at slette BreederBrand, når en User slettes
 
 
             // Configure Foreign Key for Rabbit -> UserOwer (ejerforhold)
@@ -129,6 +135,7 @@ namespace DB_AngoraLib.EF_DbContext
         }
 
         public DbSet<ApplicationBreeder> BreederApplications { get; set; }
+        public DbSet<BreederBrand> BreederBrands { get; set; }
         public DbSet<Rabbit> Rabbits { get; set; }
         public DbSet<Trimming> Trimmings { get; set; }
         public DbSet<RefreshToken> RefreshTokens { get; set; }

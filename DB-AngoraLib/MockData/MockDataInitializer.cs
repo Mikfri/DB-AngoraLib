@@ -31,6 +31,7 @@ namespace DB_AngoraLib.MockData
 
             var mockRabbits = MockRabbits.GetMockRabbits();
             _context.Rabbits.AddRange(mockRabbits);
+
             _context.SaveChanges();
         }
 
@@ -43,6 +44,8 @@ namespace DB_AngoraLib.MockData
             AddRoleClaims(mockUserWithRole);
         }
 
+
+        //-----------------------: Helper methods :-----------------------
         private void AddStandardClaims(User user)
         {
             var standardClaims = new List<Claim>

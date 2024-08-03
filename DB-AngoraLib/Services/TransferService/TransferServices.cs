@@ -55,7 +55,7 @@ namespace DB_AngoraLib.Services.TransferService
 
             // Tjek for eksisterende aktive RabbitTransfer anmodninger for den samme kanin
             var existingTransfer = await _dbRepository.GetDbSet()
-                .FirstOrDefaultAsync(rt => rt.RabbitId == rabbit.EarCombId && rt.Status == RequestStatus.Pending);
+                .FirstOrDefaultAsync(rt => rt.RabbitId == rabbit.EarCombId && rt.Status == TransferStatus.Pending);
 
             if (existingTransfer is not null)
             {
@@ -72,7 +72,7 @@ namespace DB_AngoraLib.Services.TransferService
                 Price = createTransferDTO.Price,
 
                 SaleConditions = createTransferDTO.SaleConditions,
-                Status = RequestStatus.Pending,
+                Status = TransferStatus.Pending,
                 DateAccepted = null,
             };
 
@@ -127,16 +127,16 @@ namespace DB_AngoraLib.Services.TransferService
                 throw new InvalidOperationException("Du har ikke tilladelse til at svare på denne anmodning.");
             }
 
-            if (transferReq.Status != RequestStatus.Pending)
+            if (transferReq.Status != TransferStatus.Pending)
             {
                 throw new InvalidOperationException("Denne anmodning er ikke længere aktiv.");
             }
 
-            transferReq.Status = responseDTO.Accept ? RequestStatus.Approved : RequestStatus.Rejected;
+            transferReq.Status = responseDTO.Accept ? TransferStatus.Accepted : TransferStatus.Rejected;
 
             if (responseDTO.Accept)
             {
-                transferReq.Status = RequestStatus.Approved;
+                transferReq.Status = TransferStatus.Accepted;
                 transferReq.Rabbit.OwnerId = transferReq.RecipentId;
                 transferReq.DateAccepted = DateOnly.FromDateTime(DateTime.Now); // Sætter den aktuelle dato
 
@@ -188,7 +188,7 @@ namespace DB_AngoraLib.Services.TransferService
                 throw new UnauthorizedAccessException("Du har ikke tilladelse til at se denne anmodning");
             }            
 
-            if (transfer.Status == RequestStatus.Pending)
+            if (transfer.Status == TransferStatus.Pending)
             {
                 return new TransferRequest_ContractDTO
                 {
@@ -252,7 +252,7 @@ namespace DB_AngoraLib.Services.TransferService
                 throw new UnauthorizedAccessException("Du har ikke tilladelse til at slette denne anmodning.");
             }
 
-            if (transferRequest.Status != RequestStatus.Pending)
+            if (transferRequest.Status != TransferStatus.Pending)
             {
                 throw new InvalidOperationException("Kun anmodninger i 'Pending' status kan slettes.");
             }

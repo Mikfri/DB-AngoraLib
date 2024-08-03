@@ -20,8 +20,6 @@ namespace DB_AngoraMST.Services_InMemTest
     [TestClass]
     public class AccountServices_MST
     {
-        public TestContext TestContext { get; set; }
-
         private IAccountService _accountService;
         private DB_AngoraContext _context;
         private Mock<UserManager<User>> _userManagerMock;

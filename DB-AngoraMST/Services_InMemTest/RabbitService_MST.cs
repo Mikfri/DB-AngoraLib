@@ -24,7 +24,7 @@ namespace DB_AngoraMST.Services_InMemTest
     public class RabbitService_MST
     {
         private IRabbitService _rabbitService;
-        private IAccountService _accountService; // Changed from IUserService
+        private IAccountService _accountService;
         private DB_AngoraContext _context;
         private Mock<UserManager<User>> _userManagerMock;
         private Mock<IEmailService> _emailServiceMock;
@@ -46,7 +46,6 @@ namespace DB_AngoraMST.Services_InMemTest
 
             // Create EmailService mock
             _emailServiceMock = new Mock<IEmailService>();
-
 
             var userRepository = new GRepository<User>(_context);
             _accountService = new AccountServices(userRepository, _emailServiceMock.Object, _userManagerMock.Object);

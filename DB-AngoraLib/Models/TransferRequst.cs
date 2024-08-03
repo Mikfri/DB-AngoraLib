@@ -8,9 +8,15 @@ using System.Threading.Tasks;
 
 namespace DB_AngoraLib.Models
 {
+    public enum TransferStatus
+    {
+        Pending,
+        Accepted,
+        Rejected,
+    }
+
     public class TransferRequst
     {
-
         public int Id { get; set; }
 
         public string? RabbitId { get; set; }
@@ -25,7 +31,7 @@ namespace DB_AngoraLib.Models
         public int? Price { get; set; }
         public string? SaleConditions { get; set; }
 
-        public RequestStatus Status { get; set; } = RequestStatus.Pending;
+        public TransferStatus Status { get; set; } = TransferStatus.Pending;
         public DateOnly? DateAccepted { get; set; }
 
         //public bool IsDeleted { get; set; } = false;

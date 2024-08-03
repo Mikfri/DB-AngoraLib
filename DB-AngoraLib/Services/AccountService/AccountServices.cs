@@ -60,7 +60,7 @@ namespace DB_AngoraLib.Services.AccountService
                 var token = await _userManager.GenerateEmailConfirmationTokenAsync(newUser);
 
                 // Send bekræftelses e-mail
-                await Send_EmailConfirm(newUser.Id, token);
+                await Send_EmailConfirm_ToUser(newUser.Id, token);
 
 
                 //// Trigger UserRegisteredEvent
@@ -98,9 +98,9 @@ namespace DB_AngoraLib.Services.AccountService
                 //.Include(u => u.RabbitsOwned)
                 //.Include(u => u.RabbitsLinked)
                 .Include(u => u.RabbitTransfers_Issued)
-                    .ThenInclude(rt => rt.Status == RequestStatus.Pending)
+                    .ThenInclude(rt => rt.Status == TransferStatus.Pending)
                 .Include(u => u.RabbitTransfers_Received)
-                    .ThenInclude(rt => rt.Status == RequestStatus.Pending)
+                    .ThenInclude(rt => rt.Status == TransferStatus.Pending)
                 .FirstOrDefaultAsync(u => u.Id == userId);
         }
 
@@ -112,9 +112,9 @@ namespace DB_AngoraLib.Services.AccountService
         }
 
         //------------: GET USER PROFILE
-        public async Task<User_ProfileDTO> Get_User_Profile(string currentUserId, string userProfileId, IList<Claim> userClaims)
+        public async Task<User_ProfileDTO> Get_User_Profile(string userId, string userProfileId, IList<Claim> userClaims)
         {
-            var user = await Get_UserById(currentUserId);
+            var user = await Get_UserById(userId);
             if (user == null)
             {
                 return null;
@@ -143,6 +143,7 @@ namespace DB_AngoraLib.Services.AccountService
 
             return userProfile;
         }
+
 
 
         //---------------------------------: GET USERs ICOLLECTION METHODS :--------------------
@@ -213,6 +214,14 @@ namespace DB_AngoraLib.Services.AccountService
                     query = query.Where(r => r.DateOfBirth < juvenileStart || r.DateOfBirth > juvenileEnd);
                 }
             }
+
+            if (filter.ApprovedRaceColorCombination.HasValue)
+                query = query.Where(r => r.ApprovedRaceColorCombination == filter.ApprovedRaceColorCombination.Value);
+            
+            if (filter.ForSale.HasValue)
+                query = query.Where(r => r.ForSale == filter.ForSale.Value);
+            if (filter.ForBreeding.HasValue)
+                query = query.Where(r => r.ForBreeding == filter.ForBreeding.Value);
 
             // Filtrering baseret på FatherId_Placeholder og MotherId_Placeholder
             if (filter.FatherId_Placeholder != null)
@@ -467,12 +476,19 @@ namespace DB_AngoraLib.Services.AccountService
 
         //---------------------------------: EMAIL METHODs :-------------------------------
 
-        public async Task Send_EmailConfirm(string userId, string token)
+        /// <summary>
+        /// Modtager User.Id og et givent token, via Register metoden.
+        /// Metoden her sender da en e-mail til brugeren, med et link til som brugeren kan bekræfte
+        /// via et link i e-mailen, som benytter tokenet.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public async Task Send_EmailConfirm_ToUser(string userId, string token)
         {
             var user = await _userManager.FindByIdAsync(userId) 
-                ?? throw new Exception("User not found");
-            
-
+                ?? throw new Exception("User not found");   
 
             // Antag at du har en frontend-rute setup til at håndtere e-mail bekræftelse
             var confirmationLink = $"https://DB-Angora.dk/email-confirmation?userId={HttpUtility.UrlEncode(userId)}&token={HttpUtility.UrlEncode(token)}";

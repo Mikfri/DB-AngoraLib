@@ -18,8 +18,12 @@ namespace DB_AngoraLib.Models
         public string? BreederRegNo { get; set; } // unik property for Breeder role, med unik string
         //public string? MemberNo { get; set; }     // unik property for Member role, med unik string
         //2 første numre = forneing = 3 nummer = forennings type = sidste to single eller familie medlem
+        public BreederBrand? BreederBrand { get; set; } // navigation property til BreederBrand
+        
         public string FirstName { get; set; }
         public string LastName { get; set; }
+
+        public bool PublicProfile { get; set; } = false; // default false, så brugerne selv skal vælge at gøre deres profil offentlig
 
         public string RoadNameAndNo { get; set; }
         public int ZipCode { get; set; }

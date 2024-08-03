@@ -10,7 +10,7 @@ namespace DB_AngoraLib.DTOs
     public record ApplicationBreeder_PreviewDTO
     {
         public int  Id { get; init; }
-        public RequestStatus Status { get; init; }
+        public ApplicationStatus Status { get; init; }
         public DateOnly DateSubmitted { get; init; }
         public string UserApplicant_FullName { get; init; }
         public string UserApplicant_RequestedBreederRegNo { get; init; }

@@ -16,17 +16,19 @@ namespace DB_AngoraLib.DTOs
 
         public string FirstName { get; init; }
         public string LastName { get; init; }
+
+        public bool PublicProfile { get; init; }
+
         public string RoadNameAndNo { get; init; }
-
-        //[DataType(DataType.PostalCode)]
-        public int ZipCode { get; init; }
-
         public string City { get; init; }
 
-        //[DataType(DataType.EmailAddress)]
+        [DataType(DataType.PostalCode)]
+        public int ZipCode { get; init; }
+
+        [DataType(DataType.EmailAddress)]
         public string Email { get; init; }
 
-        //[DataType(DataType.PhoneNumber)]
+        [DataType(DataType.PhoneNumber)]
         public string Phone { get; init; }
     }
 }

@@ -29,5 +29,7 @@ namespace DB_AngoraLib.DTOs
         public string? MotherId_Placeholder { get; init; }
         public bool? IsJuvenile { get; init; }
         public bool? ApprovedRaceColorCombination { get; init; }
+        public IsPublic? ForSale { get; init; }
+        public IsPublic? ForBreeding { get; init; }
     }
 }

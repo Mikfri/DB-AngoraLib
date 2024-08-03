@@ -11,7 +11,7 @@ namespace DB_AngoraLib.DTOs
     public record TransferRequest_PreviewDTO
     {
         public int Id { get; init; }
-        public RequestStatus Status { get; init; }
+        public TransferStatus Status { get; init; }
 
         [DataType(DataType.Date)]
         public DateOnly? DateAccepted { get; init; }

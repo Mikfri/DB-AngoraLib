@@ -9,7 +9,7 @@ namespace DB_AngoraLib.DTOs
 {
     public record TransferRequest_SentFilterDTO
     {
-        public RequestStatus? Status { get; init; }
+        public TransferStatus? Status { get; init; }
 
         public string? Rabbit_EarCombId { get; init; }
         public string? Rabbit_NickName { get; init; }
