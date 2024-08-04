@@ -30,13 +30,18 @@ namespace DB_AngoraLib.EF_DbContext
             //modelBuilder.Entity<IdentityRoleClaim<string>>().HasKey(p => p.Id);
             #endregion
 
+            modelBuilder.Entity<User>()
+                .HasDiscriminator<string>("UserType")
+                .HasValue<User>("User")
+                .HasValue<Breeder>("Breeder");
+
             // Configure primary key for User
             modelBuilder.Entity<User>()
                 .HasKey(u => u.Id);
 
-            // Add unique constraint for User's BreederRegNo
-            modelBuilder.Entity<User>()
-                .HasIndex(u => u.BreederRegNo)
+            // Add unique constraint for Breeder's BreederRegNo
+            modelBuilder.Entity<Breeder>()
+                .HasIndex(b => b.BreederRegNo)
                 .IsUnique();
 
             // Konfigurer primær nøgle for Rabbit
@@ -50,7 +55,7 @@ namespace DB_AngoraLib.EF_DbContext
             //------------------- FK SETUP -------------------
 
             modelBuilder.Entity<BreederBrand>()
-                .HasOne(bb => bb.User)
+                .HasOne(bb => bb.BreederBrandOwner)
                 .WithOne(u => u.BreederBrand)
                 .HasForeignKey<BreederBrand>(bb => bb.UserId)
                 //.HasPrincipalKey<User>(u => u.BreederRegNo) // Angiv at User's BreederRegNo er hovednøglen
@@ -61,7 +66,7 @@ namespace DB_AngoraLib.EF_DbContext
             modelBuilder.Entity<Rabbit>()
                 .HasOne(r => r.UserOwner)        // En Rabbit har en User (UserOwner)
                 .WithMany(u => u.RabbitsOwned)   // En User har mange Rabbits
-                .HasForeignKey(r => r.OwnerId) // En Rabbit har en OwnerId
+                .HasForeignKey(r => r.OwnerId)  // En Rabbit har en OwnerId
                 .IsRequired(false);
 
             // Configure Foreign Key for Rabbit -> UserOrigin (Opdrætterforhold)

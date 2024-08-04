@@ -32,7 +32,7 @@ namespace DB_AngoraLib.Services.BreederBrandService
             var breederBrand = new BreederBrand
             {
                 UserId = user.Id,
-                User = user,
+                BreederBrandOwner = user,
                 BreederBrandName = $"{user.LastName}'s kaninavl",
                 BreederBrandDescription = null,
                 BreederBrandLogo = null

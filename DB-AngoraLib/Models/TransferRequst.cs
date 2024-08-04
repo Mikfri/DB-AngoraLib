@@ -23,10 +23,10 @@ namespace DB_AngoraLib.Models
         public Rabbit? Rabbit { get; set; }
 
         public string? IssuerId { get; set; }
-        public virtual User? UserIssuer { get; set; }
+        public virtual Breeder? UserIssuer { get; set; }
 
         public string? RecipentId { get; set; }
-        public virtual User? UserRecipent { get; set; }
+        public virtual Breeder? UserRecipent { get; set; }
 
         public int? Price { get; set; }
         public string? SaleConditions { get; set; }
