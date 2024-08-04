@@ -21,16 +21,18 @@ namespace DB_AngoraLib.Models
            : base(firstName, lastName, roadName, zipCode, city, email, phone, password)
         {
             BreederRegNo = breederRegNo;
-
-            RabbitsOwned = new List<Rabbit>();
-            RabbitsLinked = new List<Rabbit>();
+            InitializeCollections();
         }
 
         public Breeder()
         {
+            InitializeCollections();
+        }
+
+        private void InitializeCollections()
+        {
             RabbitsOwned = new List<Rabbit>();
             RabbitsLinked = new List<Rabbit>();
-
             RabbitTransfers_Issued = new List<TransferRequst>();
             RabbitTransfers_Received = new List<TransferRequst>();
         }

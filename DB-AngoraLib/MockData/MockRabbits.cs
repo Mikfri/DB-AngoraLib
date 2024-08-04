@@ -28,7 +28,7 @@ namespace DB_AngoraLib.MockData
                 ForSale = IsPublic.Nej,
                 ForBreeding = IsPublic.Nej
             },
-             new Rabbit
+            new Rabbit
             {
                 RightEarId = "5095",
                 LeftEarId = "001",
@@ -85,7 +85,7 @@ namespace DB_AngoraLib.MockData
                 DateOfBirth = new DateOnly(2021, 04, 05),
                 DateOfDeath = null,
                 Gender = Gender.Buck,
-                ForSale = IsPublic.Ja,
+                ForSale = IsPublic.Nej,
                 ForBreeding = IsPublic.Ja
             },
             new Rabbit
@@ -164,7 +164,6 @@ namespace DB_AngoraLib.MockData
                 ForSale = IsPublic.Nej,
                 ForBreeding = IsPublic.Ja
             },
-
             new Rabbit
             {
                 RightEarId = "5053",
@@ -180,7 +179,6 @@ namespace DB_AngoraLib.MockData
                 ForSale = IsPublic.Nej,
                 ForBreeding = IsPublic.Ja
             },
-
             new Rabbit
             {
                 RightEarId = "5053",
@@ -376,7 +374,6 @@ namespace DB_AngoraLib.MockData
                 ForSale = IsPublic.Nej,
                 ForBreeding = IsPublic.Nej
             },
-
             new Rabbit
             {
                 RightEarId = "3658",
@@ -392,7 +389,6 @@ namespace DB_AngoraLib.MockData
                 ForSale = IsPublic.Nej,
                 ForBreeding = IsPublic.Nej
             },
-
             new Rabbit
             {
                 RightEarId = "5053",
@@ -528,7 +524,6 @@ namespace DB_AngoraLib.MockData
                 ForSale = IsPublic.Nej,
                 ForBreeding = IsPublic.Nej
             },
-
         };
 
         public static List<Rabbit> GetMockRabbits()

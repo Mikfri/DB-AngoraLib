@@ -50,7 +50,7 @@ namespace DB_AngoraLib.Services.TransferService
             if (rabbit.OwnerId != issuerId)
                 throw new InvalidOperationException("Du er ikke den nuværende ejer af denne kanin");
 
-            var userRecipent = await _accountService.Get_UserByBreederRegNo(createTransferDTO.Recipent_BreederRegNo)
+            var userRecipent = await _accountService.Get_BreederByBreederRegNo(createTransferDTO.Recipent_BreederRegNo)
                 ?? throw new ArgumentException("Foreslået ejer blev ikke fundet");
 
             // Tjek for eksisterende aktive RabbitTransfer anmodninger for den samme kanin

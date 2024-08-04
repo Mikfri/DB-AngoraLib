@@ -29,11 +29,15 @@ namespace DB_AngoraLib.Services.BreederBrandService
             var user = await _accountServices.Get_UserById(userId);
             if (user == null) throw new Exception("User not found");
 
+            // Forsøg at caste User til Breeder
+            var breeder = user as Breeder;
+            if (breeder == null) throw new Exception("User is not a Breeder");
+
             var breederBrand = new BreederBrand
             {
-                UserId = user.Id,
-                BreederBrandOwner = user,
-                BreederBrandName = $"{user.LastName}'s kaninavl",
+                UserId = breeder.Id,
+                BreederBrandOwner = breeder,
+                BreederBrandName = $"{breeder.LastName}'s kaninavl",
                 BreederBrandDescription = null,
                 BreederBrandLogo = null
             };
@@ -41,6 +45,7 @@ namespace DB_AngoraLib.Services.BreederBrandService
             await _dbRepository.AddObjectAsync(breederBrand);
             return breederBrand;
         }
+
 
         public async Task<BreederBrand> Get_BreederBrandById(int id)
         {

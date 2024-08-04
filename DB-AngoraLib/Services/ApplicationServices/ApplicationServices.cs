@@ -36,19 +36,29 @@ namespace DB_AngoraLib.Services.ApplicationServices
         //----------------: Create application
 
         //TODO: Skal returnere en DTO for at opnå 201 Created
+        /// <summary>
+        /// Lader en User med 'Guest' rolle ansøge om at få en 'Breeder' rolle. 
+        /// Ansøgningnen valideres af en Moderator eller af Admin
+        /// </summary>
+        /// <param name="userId">Brugeren som er logget på</param>
+        /// <param name="applicationDTO"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         public async Task Apply_ApplicationBreeder(string userId, ApplicationBreeder_CreateDTO applicationDTO)
         {
             // Brug GetUserByIdAsync fra IAccountService til at hente den aktuelt loggede ind brugers oplysninger
             var user = await _accountServices.Get_UserById(userId);
             if (user == null) throw new Exception("User not found");
 
-            if (user.BreederRegNo is not null)
+            // Tjek om brugeren allerede er en Breeder
+            var isBreeder = await _userManager.IsInRoleAsync(user, "Breeder");
+            if (isBreeder)
             {
                 throw new Exception("Du er allerede registreret som avler");
             }
 
             var existingApplication = await _dbRepository.GetObject_ByFilterAsync(ba => ba.UserApplicantId == userId && ba.Status == ApplicationStatus.Pending);
-            if (existingApplication != null)
+            if (existingApplication is not null) 
             {
                 throw new Exception("Du har allerede en afventende ansøgning om optagelse som avler! Vent venligst");
             }
@@ -65,29 +75,54 @@ namespace DB_AngoraLib.Services.ApplicationServices
         }
 
 
+
         // TODO: Se om den pågældende bruger skal modtage en notifikation/email om afvisning/success
         public async Task Respond_ApplicationBreeder(int applicationId, ApplicationBreeder_ResponseDTO responseDTO)
         {
             var application = await _dbRepository.GetObject_ByIntKEYAsync(applicationId);
-            if (application == null) throw new Exception("Ansøgning ikke fundet");
+            if (application is null) throw new Exception("Ansøgning ikke fundet");
 
             if (responseDTO.IsApproved)
             {
                 application.Status = ApplicationStatus.Approved;
 
                 var user = await _accountServices.Get_UserById(application.UserApplicantId);
-                if (user == null) throw new Exception("Bruger ikke fundet");
+                if (user is null) throw new Exception("Bruger ikke fundet");
 
-                var addToRoleResult = await _userManager.AddToRoleAsync(user, "Breeder");
+                // Opret en ny Breeder instans
+                var breeder = new Breeder
+                {
+                    Id = user.Id,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    RoadNameAndNo = user.RoadNameAndNo,
+                    ZipCode = user.ZipCode,
+                    City = user.City,
+                    Email = user.Email,
+                    PhoneNumber = user.PhoneNumber,
+                    PasswordHash = user.PasswordHash,
+                    BreederRegNo = application.RequestedBreederRegNo
+                };
+
+                // Fjern den gamle User instans
+                await _userManager.DeleteAsync(user);
+
+                // Opret den nye Breeder instans
+                var createBreederResult = await _userManager.CreateAsync(breeder);
+                if (!createBreederResult.Succeeded)
+                {
+                    throw new Exception("Kunne ikke oprette brugeren som typen 'Breeder'");
+                }
+
+                // Tildel Breeder rollen
+                var addToRoleResult = await _userManager.AddToRoleAsync(breeder, "Breeder");
                 if (!addToRoleResult.Succeeded)
                 {
                     throw new Exception("Brugerollen 'Breeder' kunne ikke tildeles");
                 }
 
-                user.BreederRegNo = application.RequestedBreederRegNo;
-                await _rabbitServices.LinkRabbits_ToNewBreederAsync(user.Id, user.BreederRegNo);
-                await _breederBrandServices.Create_BreederBrand(user.Id);
-
+                await _rabbitServices.LinkRabbits_ToNewBreederAsync(breeder.Id, breeder.BreederRegNo);
+                await _breederBrandServices.Create_BreederBrand(breeder.Id);
             }
             else
             {
@@ -97,6 +132,7 @@ namespace DB_AngoraLib.Services.ApplicationServices
 
             await _dbRepository.UpdateObjectAsync(application);
         }
+
 
         //---------------------------------: READ/GET :---------------------------------
         //----------------: Get pending applications
