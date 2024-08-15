@@ -2,6 +2,7 @@
 using DB_AngoraLib.Models;
 using DB_AngoraLib.Repository;
 using DB_AngoraLib.Services.AccountService;
+using DB_AngoraLib.Services.BreederService;
 using DB_AngoraLib.Services.HelperService;
 using DB_AngoraLib.Services.ValidationService;
 using Microsoft.EntityFrameworkCore;
@@ -15,13 +16,13 @@ namespace DB_AngoraLib.Services.RabbitService
     public class RabbitServices : IRabbitService
     {
         private readonly IGRepository<Rabbit> _dbRepository;
-        private readonly IAccountService _accountService;
+        private readonly IBreederService _breederService;
         private readonly Rabbit_Validator _validatorService;
 
-        public RabbitServices(IGRepository<Rabbit> dbRepository, IAccountService userService, Rabbit_Validator validatorService)
+        public RabbitServices(IGRepository<Rabbit> dbRepository, IBreederService breederService, Rabbit_Validator validatorService)
         {
             _dbRepository = dbRepository;
-            _accountService = userService;
+            _breederService = breederService;
             _validatorService = validatorService;
         }
 
@@ -134,7 +135,7 @@ namespace DB_AngoraLib.Services.RabbitService
 
         public async Task<List<Rabbit>> Get_AllRabbits_ByBreederRegNo(string breederRegNo)
         {
-            var user = await _accountService.Get_BreederByBreederRegNo(breederRegNo);
+            var user = await _breederService.Get_BreederByBreederRegNo(breederRegNo);
             if (user == null)
             {
                 return null;
@@ -487,7 +488,7 @@ namespace DB_AngoraLib.Services.RabbitService
         {
             //string? rightEarId = rabbit.RightEarId;
             // Find the user with the BreederRegNo that matches the rabbit's RightEarId
-            var user = await _accountService.Get_BreederByBreederRegNo(rabbit.RightEarId);
+            var user = await _breederService.Get_BreederByBreederRegNo(rabbit.RightEarId);
 
             if (user != null)
             {

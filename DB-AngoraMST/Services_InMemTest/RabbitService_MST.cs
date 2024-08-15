@@ -23,415 +23,415 @@ namespace DB_AngoraMST.Services_InMemTest
     [TestClass]
     public class RabbitService_MST
     {
-        private IRabbitService _rabbitService;
-        private IAccountService _accountService;
-        private DB_AngoraContext _context;
-        private Mock<UserManager<User>> _userManagerMock;
-        private Mock<IEmailService> _emailServiceMock;
+        //private IRabbitService _rabbitService;
+        //private IAccountService _accountService;
+        //private DB_AngoraContext _context;
+        //private Mock<UserManager<User>> _userManagerMock;
+        //private Mock<IEmailService> _emailServiceMock;
 
 
-        public RabbitService_MST()
-        {
-            // Setup in-memory database
-            var options = new DbContextOptionsBuilder<DB_AngoraContext>()
-                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-                .Options;
-
-            _context = new DB_AngoraContext(options);
-            _context.Database.EnsureCreated();
-
-            // Create UserManager
-            var userStoreMock = new Mock<IUserStore<User>>();
-            _userManagerMock = new Mock<UserManager<User>>(userStoreMock.Object, null, null, null, null, null, null, null, null);
-
-            // Create EmailService mock
-            _emailServiceMock = new Mock<IEmailService>();
-
-            var userRepository = new GRepository<User>(_context);
-            _accountService = new AccountServices(userRepository, _emailServiceMock.Object, _userManagerMock.Object);
-
-            var rabbitRepository = new GRepository<Rabbit>(_context);
-            var validatorService = new Rabbit_Validator();
-            _rabbitService = new RabbitServices(rabbitRepository, _accountService, validatorService); // Changed from _userService
-        }
-
-        [TestInitialize]
-        public void Setup()
-        {
-            // Add mock data to in-memory database
-            var mockDataInitializer = new MockDataInitializer(_context, _userManagerMock.Object);
-            mockDataInitializer.Initialize();
-        }
-
-
-        [TestCleanup]
-        public void Cleanup()
-        {
-            _context.Database.EnsureDeleted();
-            _context.Dispose();
-        }
-
-
-        //-------------------------: ADD TESTS
-        [TestMethod]
-        public async Task AddRabbit_ToMyCollectionAsync_TEST()
-        {
-            // Arrange
-            var newUniqRabbit = new Rabbit_CreateDTO
-            {
-                RightEarId = "5095",
-                LeftEarId = "004",
-                NickName = "Yvonne",
-                Race = Race.Angora,
-                Color = Color.Jerngrå,
-                DateOfBirth = new DateOnly(2020, 06, 12),
-                DateOfDeath = null,
-                Gender = Gender.Doe,
-                ForSale = IsPublic.Nej,
-                Father_EarCombId = "5050-188",
-            };
-            var existingRabbit = await _context.Rabbits.FirstAsync();
-            Assert.IsNotNull(existingRabbit);
-
-            var currentUser = await _context.Users.FirstAsync();
-            Assert.IsNotNull(currentUser);
-
-
-            // Act
-            await _rabbitService.AddRabbit_ToMyCollection(currentUser.Id, newUniqRabbit);
-
-            // Assert
-            var addedRabbit = await _context.Rabbits.FirstOrDefaultAsync(r => r.RightEarId == newUniqRabbit.RightEarId && r.LeftEarId == newUniqRabbit.LeftEarId);
-            Assert.IsNotNull(addedRabbit);
-            Assert.AreEqual("5050-188", newUniqRabbit.Father_EarCombId);
-
-            // Act & Assert
-            var existingRabbitDto = new Rabbit_CreateDTO { RightEarId = existingRabbit.RightEarId, LeftEarId = existingRabbit.LeftEarId };
-            await Assert.ThrowsExceptionAsync<InvalidOperationException>(
-                () => _rabbitService.AddRabbit_ToMyCollection(currentUser.Id, existingRabbitDto));
-           
-        }
-
-
-        //-------------------------: GET TESTS
-        /// <summary>
-        /// Påvirkes af RabbitService_MST.AddRabbit_ToMyCollectionAsync_TEST
-        /// </summary>
-        /// <returns></returns>
-        [TestMethod]
-        public async Task Get_AllRabbits_ByBreederReg_TEST()
-        {
-            // Arrange
-            var breederRegNo = "5053";
-            var expectedRabbitsCount = 19;
-
-            // Act
-            var rabbits = await _rabbitService.Get_AllRabbits_ByBreederReg(breederRegNo);
-
-            Console.WriteLine($"User.BreederRegNo: {breederRegNo}");
-            int i = 0;
-            foreach (var rabbit in rabbits)
-            {
-                Console.WriteLine($"{++i}: {rabbit.NickName}");
-                //Console.WriteLine(rabbit.NickName);
-            }
-
-            // Assert
-            Assert.AreEqual(expectedRabbitsCount, rabbits.Count);
-        }
-
-        [TestMethod]
-        public async Task Get_Rabbit_Profile_MODERATOR_TEST()
-        {
-            // Arrange
-            var mockUser = _context.Users.First();
-            var mockRabbitOwned = _context.Rabbits.First(r => r.OwnerId == mockUser.Id);
-            var mockRabbitNotOwned = _context.Rabbits.First(r => r.OwnerId != mockUser.Id);
-            // Get the user's claims from the database
-            var mockUserClaims = _context.UserClaims
-                .Where(uc => uc.UserId == mockUser.Id)
-                .Select(uc => new Claim(uc.ClaimType, uc.ClaimValue))
-                .ToList();
-
-            Console.WriteLine($"User: {mockUser.UserName}\nMY-Rabbit: {mockRabbitOwned.NickName}\nOTHER-Rabbit: {mockRabbitNotOwned.NickName}");
-            foreach (var claim in mockUserClaims)
-            {
-                Console.WriteLine($"ClaimType: '{claim.Type}' | ClaimValue: '{claim.Value}'");
-            }
-
-            // Act
-            var resultOwned = await _rabbitService.Get_Rabbit_Profile(mockUser.Id, mockRabbitOwned.EarCombId, mockUserClaims);
-            var resultNotOwned = await _rabbitService.Get_Rabbit_Profile(mockUser.Id, mockRabbitNotOwned.EarCombId, mockUserClaims);
-
-            // Assert
-            Assert.IsNotNull(resultOwned, "Expected to retrieve profile of owned rabbit");
-            Assert.IsNotNull(resultNotOwned, "Expected to retrieve profile of not owned rabbit due to admin role");
-        }
-
-        [TestMethod]
-        public async Task Get_Rabbit_Profile_BREEDER_TEST()
-        {
-            // Arrange
-            var mockUser = _context.Users.Skip(1).First();
-            var mockRabbitOwned = _context.Rabbits.First(r => r.OwnerId == mockUser.Id);
-            var mockRabbitNotOwned = _context.Rabbits.First(r => r.OwnerId != mockUser.Id);
-            // Get the user's claims from the database
-            var mockUserClaims = _context.UserClaims
-                .Where(uc => uc.UserId == mockUser.Id)
-                .Select(uc => new Claim(uc.ClaimType, uc.ClaimValue))
-                .ToList();
-
-            Console.WriteLine($"User: {mockUser.UserName}\nMY-Rabbit: {mockRabbitOwned.NickName}\nOTHER-Rabbit: {mockRabbitNotOwned.NickName}");
-            foreach (var claim in mockUserClaims)
-            {
-                Console.WriteLine($"ClaimType: '{claim.Type}' | ClaimValue: '{claim.Value}'");
-            }
-
-            // Act
-            var resultOwned = await _rabbitService.Get_Rabbit_Profile(mockUser.Id, mockRabbitOwned.EarCombId, mockUserClaims);
-            var resultNotOwned = await _rabbitService.Get_Rabbit_Profile(mockUser.Id, mockRabbitNotOwned.EarCombId, mockUserClaims);
-
-            // Assert
-            Assert.IsNotNull(resultOwned, "Expected to retrieve profile of owned rabbit");
-            Assert.IsNull(resultNotOwned, "Expected not to retrieve profile of not owned rabbit due to breeder role");
-        }
-
-
-        [TestMethod]
-        public async Task Get_AllRabbits_ForSale_Filtered_TEST()
-        {
-            // Arrange
-            var expectedRace = Race.Angora;
-            //var expectedColor = Color.Jerngrå;
-            //var expectedGender = Gender.Hun;
-
-            // Create a list of expected rabbits
-            var expectedRabbits = _context.Rabbits
-                .Where(r =>
-                r.Race == expectedRace &&
-                // r.Color == expectedColor &&
-                //r.Gender == expectedGender &&
-                r.ForSale == IsPublic.Ja);
-
-            // Print each rabbit's nickname
-            foreach (var rabbit in expectedRabbits)
-            {
-                Console.WriteLine($"EXP-Rabbit: {rabbit.NickName}, EXP-AppovedColComb: {rabbit.ApprovedRaceColorCombination}");
-            }
-            Console.WriteLine($"EXP-Rabbit.Count: {expectedRabbits.Count()}\n");
-
-
-            // Act
-            var filter = new Rabbit_ForsaleFilterDTO { Race = expectedRace };
-            var rabbits = await _rabbitService.Get_AllRabbits_Forsale_Filtered(filter);
-
-
-            foreach (var rabbit in rabbits)
-            {
-                Console.WriteLine($"FOUND-Rabbit: {rabbit.NickName}");
-            }
-            Console.WriteLine($"FOUND-Rabbit.Count: {rabbits.Count}");
-
-
-            // Assert
-            Assert.IsNotNull(rabbits);
-           
-        }
-
-        //[TestMethod]
-        //public async Task Get_Rabbit_Pedigree_TEST()
+        //public RabbitService_MST()
         //{
-        //    // Arrange
-        //    var earCombId = "5053-0124";
-        //    // Antag at _rabbitService allerede er initialiseret og klar til brug.
-        //    // Sørg for, at _context indeholder den nødvendige data for "Jester" og dens aner.
+        //    // Setup in-memory database
+        //    var options = new DbContextOptionsBuilder<DB_AngoraContext>()
+        //        .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+        //        .Options;
 
-        //    // Act
-        //    var pedigree = await _rabbitService.Get_RabbitPedigree(earCombId, 3); // Antager vi ønsker 3 generationer.
+        //    _context = new DB_AngoraContext(options);
+        //    _context.Database.EnsureCreated();
 
-        //    // Assert
-        //    Assert.IsNotNull(pedigree);
-        //    Assert.AreEqual(earCombId, pedigree.EarCombId);
-        //    // Bekræft basale informationer for "Jester"
-        //    Assert.AreEqual("Jester", pedigree.NickName);
-        //    // Bekræft at der er data for forældre
-        //    Assert.IsNotNull(pedigree.Father);
-        //    Assert.IsNotNull(pedigree.Mother);
-        //    // Bekræft at der er data for bedsteforældre (farfar, farmor, morfar, mormor)
-        //    Assert.IsNotNull(pedigree.Father.Father);
-        //    Assert.IsNotNull(pedigree.Father.Mother);
-        //    Assert.IsNotNull(pedigree.Mother.Father);
-        //    Assert.IsNotNull(pedigree.Mother.Mother);
-        //    // Du kan tilføje flere asserts for at validere specifikke detaljer om forældre og bedsteforældre
+        //    // Create UserManager
+        //    var userStoreMock = new Mock<IUserStore<User>>();
+        //    _userManagerMock = new Mock<UserManager<User>>(userStoreMock.Object, null, null, null, null, null, null, null, null);
+
+        //    // Create EmailService mock
+        //    _emailServiceMock = new Mock<IEmailService>();
+
+        //    var userRepository = new GRepository<User>(_context);
+        //    _accountService = new AccountServices(userRepository, _emailServiceMock.Object, _userManagerMock.Object);
+
+        //    var rabbitRepository = new GRepository<Rabbit>(_context);
+        //    var validatorService = new Rabbit_Validator();
+        //    _rabbitService = new RabbitServices(rabbitRepository, _accountService, validatorService); // Changed from _userService
+        //}
+
+        //[TestInitialize]
+        //public void Setup()
+        //{
+        //    // Add mock data to in-memory database
+        //    var mockDataInitializer = new MockDataInitializer(_context, _userManagerMock.Object);
+        //    mockDataInitializer.Initialize();
         //}
 
 
-        [TestMethod]
-        public async Task Get_Rabbit_ChildCollection_TEST()
-        {
-            // Arrange
-            var earCombId = "4977-206";
-            var parentRabbit = _context.Rabbits.First(r => r.EarCombId == earCombId);
-
-            // Create a list of expected rabbits
-            var expectedChildren = _context.Rabbits
-                .Where(r =>
-                r.Father_EarCombId == earCombId ||
-                r.Mother_EarCombId == earCombId);
-
-            Console.WriteLine($"ID: {parentRabbit.EarCombId}, NickName: {parentRabbit.NickName}\n");
-            foreach (var rabbit in expectedChildren)
-            {
-                Console.WriteLine(rabbit.NickName);
-            }
-
-            // Act
-            var rabbitCollection = await _rabbitService.Get_Rabbit_ChildCollection(earCombId);
-
-            // Assert
-            Assert.IsNotNull(rabbitCollection);
-            // Add more assertions based on your test expectations
-        }
+        //[TestCleanup]
+        //public void Cleanup()
+        //{
+        //    _context.Database.EnsureDeleted();
+        //    _context.Dispose();
+        //}
 
 
+        ////-------------------------: ADD TESTS
+        //[TestMethod]
+        //public async Task AddRabbit_ToMyCollectionAsync_TEST()
+        //{
+        //    // Arrange
+        //    var newUniqRabbit = new Rabbit_CreateDTO
+        //    {
+        //        RightEarId = "5095",
+        //        LeftEarId = "004",
+        //        NickName = "Yvonne",
+        //        Race = Race.Angora,
+        //        Color = Color.Jerngrå,
+        //        DateOfBirth = new DateOnly(2020, 06, 12),
+        //        DateOfDeath = null,
+        //        Gender = Gender.Doe,
+        //        ForSale = IsPublic.Nej,
+        //        Father_EarCombId = "5050-188",
+        //    };
+        //    var existingRabbit = await _context.Rabbits.FirstAsync();
+        //    Assert.IsNotNull(existingRabbit);
 
-        //-------------------------: UPDATE TESTS
-
-        [TestMethod]
-        public async Task UpdateRabbit_MODERATOR_TEST()
-        {
-            // Arrange
-            var mockUser = _context.Users.First();
-            var mockRabbitOwned = _context.Rabbits.First(r => r.OwnerId == mockUser.Id);
-            var mockRabbitNotOwned = _context.Rabbits.First(r => r.OwnerId != mockUser.Id);
-            var updatedOwnedRabbitDTO = new Rabbit_UpdateDTO { NickName = "UpdatedOwnedName" };
-            var updatedNotOwnedRabbitDTO = new Rabbit_UpdateDTO { NickName = "UpdatedNotOwnedName" };
-            // Get the user's claims from the database
-            var mockUserClaims = _context.UserClaims
-                .Where(uc => uc.UserId == mockUser.Id)
-                .Select(uc => new Claim(uc.ClaimType, uc.ClaimValue))
-                .ToList();
-
-            Console.WriteLine($"User: {mockUser.UserName}\nMY-Rabbit: {mockRabbitOwned.EarCombId}: {mockRabbitOwned.NickName}\nOTHER-Rabbit: {mockRabbitNotOwned.EarCombId}: {mockRabbitNotOwned.NickName}");
-            foreach (var claim in mockUserClaims)
-            {
-                Console.WriteLine($"ClaimType: '{claim.Type}' | ClaimValue: '{claim.Value}'");
-            }
-
-            // Act
-            var updatedOwnedRabbit = await _rabbitService.UpdateRabbit_RBAC(mockUser.Id, mockRabbitOwned.EarCombId, updatedOwnedRabbitDTO, mockUserClaims);
-            var updatedNotOwnedRabbit = await _rabbitService.UpdateRabbit_RBAC(mockUser.Id, mockRabbitNotOwned.EarCombId, updatedNotOwnedRabbitDTO, mockUserClaims);
-
-            // Assert
-            Assert.AreEqual("UpdatedOwnedName", updatedOwnedRabbit.NickName);
-            Assert.AreEqual("UpdatedNotOwnedName", updatedNotOwnedRabbit.NickName);
-        }
+        //    var currentUser = await _context.Users.FirstAsync();
+        //    Assert.IsNotNull(currentUser);
 
 
-        [TestMethod]
-        public async Task UpdateRabbit_BREEDER_TEST()
-        {
-            // Arrange
-            var mockUser = _context.Users.Skip(1).First();
-            var mockRabbitOwned = _context.Rabbits.First(r => r.OwnerId == mockUser.Id);
-            var mockRabbitNotOwned = _context.Rabbits.First(r => r.OwnerId != mockUser.Id);
-            var updatedOwnedRabbitDTO = new Rabbit_UpdateDTO { NickName = "UpdatedOwnedName" };
-            var updatedNotOwnedRabbitDTO = new Rabbit_UpdateDTO { NickName = "UpdatedNotOwnedName" };
-            // Get the user's claims from the database
-            var mockUserClaims = _context.UserClaims
-                .Where(uc => uc.UserId == mockUser.Id)
-                .Select(uc => new Claim(uc.ClaimType, uc.ClaimValue))
-                .ToList();
+        //    // Act
+        //    await _rabbitService.AddRabbit_ToMyCollection(currentUser.Id, newUniqRabbit);
 
-            Console.WriteLine($"User: {mockUser.UserName}\nMY-Rabbit: {mockRabbitOwned.EarCombId}: {mockRabbitOwned.NickName}\nOTHER-Rabbit: {mockRabbitNotOwned.EarCombId}: {mockRabbitNotOwned.NickName}");
-            foreach (var claim in mockUserClaims)
-            {
-                Console.WriteLine($"ClaimType: '{claim.Type}' | ClaimValue: '{claim.Value}'");
-            }
+        //    // Assert
+        //    var addedRabbit = await _context.Rabbits.FirstOrDefaultAsync(r => r.RightEarId == newUniqRabbit.RightEarId && r.LeftEarId == newUniqRabbit.LeftEarId);
+        //    Assert.IsNotNull(addedRabbit);
+        //    Assert.AreEqual("5050-188", newUniqRabbit.Father_EarCombId);
 
-            // Act
-            var updatedOwnedRabbit = await _rabbitService.UpdateRabbit_RBAC(mockUser.Id, mockRabbitOwned.EarCombId, updatedOwnedRabbitDTO, mockUserClaims);
-            var updatedNotOwnedRabbit = await _rabbitService.UpdateRabbit_RBAC(mockUser.Id, mockRabbitNotOwned.EarCombId, updatedNotOwnedRabbitDTO, mockUserClaims);
-
-            // Assert
-            Assert.AreEqual("UpdatedOwnedName", updatedOwnedRabbit.NickName);
-            Assert.AreNotEqual("UpdatedNotOwnedName", updatedNotOwnedRabbit.NickName); 
-        }
+        //    // Act & Assert
+        //    var existingRabbitDto = new Rabbit_CreateDTO { RightEarId = existingRabbit.RightEarId, LeftEarId = existingRabbit.LeftEarId };
+        //    await Assert.ThrowsExceptionAsync<InvalidOperationException>(
+        //        () => _rabbitService.AddRabbit_ToMyCollection(currentUser.Id, existingRabbitDto));
+           
+        //}
 
 
-        //-------------------------: DELETE TESTS
-        [TestMethod]
-        public async Task DeleteRabbit_MODERATOR_TEST()
-        {
-            // Arrange
-            var mockUser = _context.Users.First(); // Get the first user from the database
+        ////-------------------------: GET TESTS
+        ///// <summary>
+        ///// Påvirkes af RabbitService_MST.AddRabbit_ToMyCollectionAsync_TEST
+        ///// </summary>
+        ///// <returns></returns>
+        //[TestMethod]
+        //public async Task Get_AllRabbits_ByBreederReg_TEST()
+        //{
+        //    // Arrange
+        //    var breederRegNo = "5053";
+        //    var expectedRabbitsCount = 19;
 
-            // Get the user's claims from the database
-            var mockUserClaims = _context.UserClaims
-                .Where(uc => uc.UserId == mockUser.Id)
-                .Select(uc => new Claim(uc.ClaimType, uc.ClaimValue))
-                .ToList();
+        //    // Act
+        //    var rabbits = await _rabbitService.Get_AllRabbits_ByBreederReg(breederRegNo);
 
-            // Get an owned and a not owned rabbit from the database
-            var mockRabbitOwned = _context.Rabbits.First(r => r.OwnerId == mockUser.Id);
-            var mockRabbitNotOwned = _context.Rabbits.First(r => r.OwnerId != mockUser.Id);
-            Console.WriteLine($"User: {mockUser.UserName}\nMY-Rabbit: {mockRabbitOwned.NickName}\nOTHER-Rabbit: {mockRabbitNotOwned.NickName}");
-            foreach (var claim in mockUserClaims)
-            {
-                Console.WriteLine($"ClaimType: '{claim.Type}' | ClaimValue: '{claim.Value}'");
-            }
+        //    Console.WriteLine($"User.BreederRegNo: {breederRegNo}");
+        //    int i = 0;
+        //    foreach (var rabbit in rabbits)
+        //    {
+        //        Console.WriteLine($"{++i}: {rabbit.NickName}");
+        //        //Console.WriteLine(rabbit.NickName);
+        //    }
 
-            // Act
-            await _rabbitService.DeleteRabbit_RBAC(mockUser.Id, mockRabbitOwned.EarCombId, mockUserClaims);
-            await _rabbitService.DeleteRabbit_RBAC(mockUser.Id, mockRabbitNotOwned.EarCombId, mockUserClaims);
+        //    // Assert
+        //    Assert.AreEqual(expectedRabbitsCount, rabbits.Count);
+        //}
 
-            // Assert
-            // Verify that both rabbits was deleted from the database
-            var deletedRabbitOwned = await _context.Rabbits
-                .FirstOrDefaultAsync(r => r.RightEarId == mockRabbitOwned.RightEarId && r.LeftEarId == mockRabbitOwned.LeftEarId);
-            Assert.IsNull(deletedRabbitOwned);
+        //[TestMethod]
+        //public async Task Get_Rabbit_Profile_MODERATOR_TEST()
+        //{
+        //    // Arrange
+        //    var mockUser = _context.Users.First();
+        //    var mockRabbitOwned = _context.Rabbits.First(r => r.OwnerId == mockUser.Id);
+        //    var mockRabbitNotOwned = _context.Rabbits.First(r => r.OwnerId != mockUser.Id);
+        //    // Get the user's claims from the database
+        //    var mockUserClaims = _context.UserClaims
+        //        .Where(uc => uc.UserId == mockUser.Id)
+        //        .Select(uc => new Claim(uc.ClaimType, uc.ClaimValue))
+        //        .ToList();
 
-            var deletedRabbitNotOwned = await _context.Rabbits
-                .FirstOrDefaultAsync(r => r.RightEarId == mockRabbitNotOwned.RightEarId && r.LeftEarId == mockRabbitNotOwned.LeftEarId);
-            Assert.IsNull(deletedRabbitNotOwned);
-        }
+        //    Console.WriteLine($"User: {mockUser.UserName}\nMY-Rabbit: {mockRabbitOwned.NickName}\nOTHER-Rabbit: {mockRabbitNotOwned.NickName}");
+        //    foreach (var claim in mockUserClaims)
+        //    {
+        //        Console.WriteLine($"ClaimType: '{claim.Type}' | ClaimValue: '{claim.Value}'");
+        //    }
+
+        //    // Act
+        //    var resultOwned = await _rabbitService.Get_Rabbit_Profile(mockUser.Id, mockRabbitOwned.EarCombId, mockUserClaims);
+        //    var resultNotOwned = await _rabbitService.Get_Rabbit_Profile(mockUser.Id, mockRabbitNotOwned.EarCombId, mockUserClaims);
+
+        //    // Assert
+        //    Assert.IsNotNull(resultOwned, "Expected to retrieve profile of owned rabbit");
+        //    Assert.IsNotNull(resultNotOwned, "Expected to retrieve profile of not owned rabbit due to admin role");
+        //}
+
+        //[TestMethod]
+        //public async Task Get_Rabbit_Profile_BREEDER_TEST()
+        //{
+        //    // Arrange
+        //    var mockUser = _context.Users.Skip(1).First();
+        //    var mockRabbitOwned = _context.Rabbits.First(r => r.OwnerId == mockUser.Id);
+        //    var mockRabbitNotOwned = _context.Rabbits.First(r => r.OwnerId != mockUser.Id);
+        //    // Get the user's claims from the database
+        //    var mockUserClaims = _context.UserClaims
+        //        .Where(uc => uc.UserId == mockUser.Id)
+        //        .Select(uc => new Claim(uc.ClaimType, uc.ClaimValue))
+        //        .ToList();
+
+        //    Console.WriteLine($"User: {mockUser.UserName}\nMY-Rabbit: {mockRabbitOwned.NickName}\nOTHER-Rabbit: {mockRabbitNotOwned.NickName}");
+        //    foreach (var claim in mockUserClaims)
+        //    {
+        //        Console.WriteLine($"ClaimType: '{claim.Type}' | ClaimValue: '{claim.Value}'");
+        //    }
+
+        //    // Act
+        //    var resultOwned = await _rabbitService.Get_Rabbit_Profile(mockUser.Id, mockRabbitOwned.EarCombId, mockUserClaims);
+        //    var resultNotOwned = await _rabbitService.Get_Rabbit_Profile(mockUser.Id, mockRabbitNotOwned.EarCombId, mockUserClaims);
+
+        //    // Assert
+        //    Assert.IsNotNull(resultOwned, "Expected to retrieve profile of owned rabbit");
+        //    Assert.IsNull(resultNotOwned, "Expected not to retrieve profile of not owned rabbit due to breeder role");
+        //}
 
 
-        [TestMethod]
-        public async Task DeleteRabbit_BREEDER_TEST()
-        {
-            // Arrange
-            var mockUser = _context.Users.Skip(1).First(); // Get the second user from the database
-            var mockRabbitOwned = _context.Rabbits.First(r => r.OwnerId == mockUser.Id);
+        //[TestMethod]
+        //public async Task Get_AllRabbits_ForSale_Filtered_TEST()
+        //{
+        //    // Arrange
+        //    var expectedRace = Race.Angora;
+        //    //var expectedColor = Color.Jerngrå;
+        //    //var expectedGender = Gender.Hun;
 
-            // Get the user's claims from the database
-            var mockUserClaims = _context.UserClaims
-                .Where(uc => uc.UserId == mockUser.Id)
-                .Select(uc => new Claim(uc.ClaimType, uc.ClaimValue))
-                .ToList();
+        //    // Create a list of expected rabbits
+        //    var expectedRabbits = _context.Rabbits
+        //        .Where(r =>
+        //        r.Race == expectedRace &&
+        //        // r.Color == expectedColor &&
+        //        //r.Gender == expectedGender &&
+        //        r.ForSale == IsPublic.Ja);
 
-            // Get a rabbit not owned by the user
-            var mockRabbitNotOwned = _context.Rabbits.First(r => r.OwnerId != mockUser.Id);
-            Console.WriteLine($"User: {mockUser.UserName}\nMY-Rabbit: {mockRabbitOwned.NickName}\nOTHER-Rabbit: {mockRabbitNotOwned.NickName}");
-            foreach (var claim in mockUserClaims)
-            {
-                Console.WriteLine($"ClaimType: '{claim.Type}' | ClaimValue: '{claim.Value}'");
-            }
+        //    // Print each rabbit's nickname
+        //    foreach (var rabbit in expectedRabbits)
+        //    {
+        //        Console.WriteLine($"EXP-Rabbit: {rabbit.NickName}, EXP-AppovedColComb: {rabbit.ApprovedRaceColorCombination}");
+        //    }
+        //    Console.WriteLine($"EXP-Rabbit.Count: {expectedRabbits.Count()}\n");
 
-            // Act & Assert
-            // Expect an exception to be thrown because the user does not own the rabbit
-            await Assert.ThrowsExceptionAsync<InvalidOperationException>(
-                () => _rabbitService.DeleteRabbit_RBAC(mockUser.Id, mockRabbitNotOwned.EarCombId, mockUserClaims));
+
+        //    // Act
+        //    var filter = new Rabbit_ForsaleFilterDTO { Race = expectedRace };
+        //    var rabbits = await _rabbitService.Get_AllRabbits_Forsale_Filtered(filter);
+
+
+        //    foreach (var rabbit in rabbits)
+        //    {
+        //        Console.WriteLine($"FOUND-Rabbit: {rabbit.NickName}");
+        //    }
+        //    Console.WriteLine($"FOUND-Rabbit.Count: {rabbits.Count}");
+
+
+        //    // Assert
+        //    Assert.IsNotNull(rabbits);
+           
+        //}
+
+        ////[TestMethod]
+        ////public async Task Get_Rabbit_Pedigree_TEST()
+        ////{
+        ////    // Arrange
+        ////    var earCombId = "5053-0124";
+        ////    // Antag at _rabbitService allerede er initialiseret og klar til brug.
+        ////    // Sørg for, at _context indeholder den nødvendige data for "Jester" og dens aner.
+
+        ////    // Act
+        ////    var pedigree = await _rabbitService.Get_RabbitPedigree(earCombId, 3); // Antager vi ønsker 3 generationer.
+
+        ////    // Assert
+        ////    Assert.IsNotNull(pedigree);
+        ////    Assert.AreEqual(earCombId, pedigree.EarCombId);
+        ////    // Bekræft basale informationer for "Jester"
+        ////    Assert.AreEqual("Jester", pedigree.NickName);
+        ////    // Bekræft at der er data for forældre
+        ////    Assert.IsNotNull(pedigree.Father);
+        ////    Assert.IsNotNull(pedigree.Mother);
+        ////    // Bekræft at der er data for bedsteforældre (farfar, farmor, morfar, mormor)
+        ////    Assert.IsNotNull(pedigree.Father.Father);
+        ////    Assert.IsNotNull(pedigree.Father.Mother);
+        ////    Assert.IsNotNull(pedigree.Mother.Father);
+        ////    Assert.IsNotNull(pedigree.Mother.Mother);
+        ////    // Du kan tilføje flere asserts for at validere specifikke detaljer om forældre og bedsteforældre
+        ////}
+
+
+        //[TestMethod]
+        //public async Task Get_Rabbit_ChildCollection_TEST()
+        //{
+        //    // Arrange
+        //    var earCombId = "4977-206";
+        //    var parentRabbit = _context.Rabbits.First(r => r.EarCombId == earCombId);
+
+        //    // Create a list of expected rabbits
+        //    var expectedChildren = _context.Rabbits
+        //        .Where(r =>
+        //        r.Father_EarCombId == earCombId ||
+        //        r.Mother_EarCombId == earCombId);
+
+        //    Console.WriteLine($"ID: {parentRabbit.EarCombId}, NickName: {parentRabbit.NickName}\n");
+        //    foreach (var rabbit in expectedChildren)
+        //    {
+        //        Console.WriteLine(rabbit.NickName);
+        //    }
+
+        //    // Act
+        //    var rabbitCollection = await _rabbitService.Get_Rabbit_ChildCollection(earCombId);
+
+        //    // Assert
+        //    Assert.IsNotNull(rabbitCollection);
+        //    // Add more assertions based on your test expectations
+        //}
+
+
+
+        ////-------------------------: UPDATE TESTS
+
+        //[TestMethod]
+        //public async Task UpdateRabbit_MODERATOR_TEST()
+        //{
+        //    // Arrange
+        //    var mockUser = _context.Users.First();
+        //    var mockRabbitOwned = _context.Rabbits.First(r => r.OwnerId == mockUser.Id);
+        //    var mockRabbitNotOwned = _context.Rabbits.First(r => r.OwnerId != mockUser.Id);
+        //    var updatedOwnedRabbitDTO = new Rabbit_UpdateDTO { NickName = "UpdatedOwnedName" };
+        //    var updatedNotOwnedRabbitDTO = new Rabbit_UpdateDTO { NickName = "UpdatedNotOwnedName" };
+        //    // Get the user's claims from the database
+        //    var mockUserClaims = _context.UserClaims
+        //        .Where(uc => uc.UserId == mockUser.Id)
+        //        .Select(uc => new Claim(uc.ClaimType, uc.ClaimValue))
+        //        .ToList();
+
+        //    Console.WriteLine($"User: {mockUser.UserName}\nMY-Rabbit: {mockRabbitOwned.EarCombId}: {mockRabbitOwned.NickName}\nOTHER-Rabbit: {mockRabbitNotOwned.EarCombId}: {mockRabbitNotOwned.NickName}");
+        //    foreach (var claim in mockUserClaims)
+        //    {
+        //        Console.WriteLine($"ClaimType: '{claim.Type}' | ClaimValue: '{claim.Value}'");
+        //    }
+
+        //    // Act
+        //    var updatedOwnedRabbit = await _rabbitService.UpdateRabbit_RBAC(mockUser.Id, mockRabbitOwned.EarCombId, updatedOwnedRabbitDTO, mockUserClaims);
+        //    var updatedNotOwnedRabbit = await _rabbitService.UpdateRabbit_RBAC(mockUser.Id, mockRabbitNotOwned.EarCombId, updatedNotOwnedRabbitDTO, mockUserClaims);
+
+        //    // Assert
+        //    Assert.AreEqual("UpdatedOwnedName", updatedOwnedRabbit.NickName);
+        //    Assert.AreEqual("UpdatedNotOwnedName", updatedNotOwnedRabbit.NickName);
+        //}
+
+
+        //[TestMethod]
+        //public async Task UpdateRabbit_BREEDER_TEST()
+        //{
+        //    // Arrange
+        //    var mockUser = _context.Users.Skip(1).First();
+        //    var mockRabbitOwned = _context.Rabbits.First(r => r.OwnerId == mockUser.Id);
+        //    var mockRabbitNotOwned = _context.Rabbits.First(r => r.OwnerId != mockUser.Id);
+        //    var updatedOwnedRabbitDTO = new Rabbit_UpdateDTO { NickName = "UpdatedOwnedName" };
+        //    var updatedNotOwnedRabbitDTO = new Rabbit_UpdateDTO { NickName = "UpdatedNotOwnedName" };
+        //    // Get the user's claims from the database
+        //    var mockUserClaims = _context.UserClaims
+        //        .Where(uc => uc.UserId == mockUser.Id)
+        //        .Select(uc => new Claim(uc.ClaimType, uc.ClaimValue))
+        //        .ToList();
+
+        //    Console.WriteLine($"User: {mockUser.UserName}\nMY-Rabbit: {mockRabbitOwned.EarCombId}: {mockRabbitOwned.NickName}\nOTHER-Rabbit: {mockRabbitNotOwned.EarCombId}: {mockRabbitNotOwned.NickName}");
+        //    foreach (var claim in mockUserClaims)
+        //    {
+        //        Console.WriteLine($"ClaimType: '{claim.Type}' | ClaimValue: '{claim.Value}'");
+        //    }
+
+        //    // Act
+        //    var updatedOwnedRabbit = await _rabbitService.UpdateRabbit_RBAC(mockUser.Id, mockRabbitOwned.EarCombId, updatedOwnedRabbitDTO, mockUserClaims);
+        //    var updatedNotOwnedRabbit = await _rabbitService.UpdateRabbit_RBAC(mockUser.Id, mockRabbitNotOwned.EarCombId, updatedNotOwnedRabbitDTO, mockUserClaims);
+
+        //    // Assert
+        //    Assert.AreEqual("UpdatedOwnedName", updatedOwnedRabbit.NickName);
+        //    Assert.AreNotEqual("UpdatedNotOwnedName", updatedNotOwnedRabbit.NickName); 
+        //}
+
+
+        ////-------------------------: DELETE TESTS
+        //[TestMethod]
+        //public async Task DeleteRabbit_MODERATOR_TEST()
+        //{
+        //    // Arrange
+        //    var mockUser = _context.Users.First(); // Get the first user from the database
+
+        //    // Get the user's claims from the database
+        //    var mockUserClaims = _context.UserClaims
+        //        .Where(uc => uc.UserId == mockUser.Id)
+        //        .Select(uc => new Claim(uc.ClaimType, uc.ClaimValue))
+        //        .ToList();
+
+        //    // Get an owned and a not owned rabbit from the database
+        //    var mockRabbitOwned = _context.Rabbits.First(r => r.OwnerId == mockUser.Id);
+        //    var mockRabbitNotOwned = _context.Rabbits.First(r => r.OwnerId != mockUser.Id);
+        //    Console.WriteLine($"User: {mockUser.UserName}\nMY-Rabbit: {mockRabbitOwned.NickName}\nOTHER-Rabbit: {mockRabbitNotOwned.NickName}");
+        //    foreach (var claim in mockUserClaims)
+        //    {
+        //        Console.WriteLine($"ClaimType: '{claim.Type}' | ClaimValue: '{claim.Value}'");
+        //    }
+
+        //    // Act
+        //    await _rabbitService.DeleteRabbit_RBAC(mockUser.Id, mockRabbitOwned.EarCombId, mockUserClaims);
+        //    await _rabbitService.DeleteRabbit_RBAC(mockUser.Id, mockRabbitNotOwned.EarCombId, mockUserClaims);
+
+        //    // Assert
+        //    // Verify that both rabbits was deleted from the database
+        //    var deletedRabbitOwned = await _context.Rabbits
+        //        .FirstOrDefaultAsync(r => r.RightEarId == mockRabbitOwned.RightEarId && r.LeftEarId == mockRabbitOwned.LeftEarId);
+        //    Assert.IsNull(deletedRabbitOwned);
+
+        //    var deletedRabbitNotOwned = await _context.Rabbits
+        //        .FirstOrDefaultAsync(r => r.RightEarId == mockRabbitNotOwned.RightEarId && r.LeftEarId == mockRabbitNotOwned.LeftEarId);
+        //    Assert.IsNull(deletedRabbitNotOwned);
+        //}
+
+
+        //[TestMethod]
+        //public async Task DeleteRabbit_BREEDER_TEST()
+        //{
+        //    // Arrange
+        //    var mockUser = _context.Users.Skip(1).First(); // Get the second user from the database
+        //    var mockRabbitOwned = _context.Rabbits.First(r => r.OwnerId == mockUser.Id);
+
+        //    // Get the user's claims from the database
+        //    var mockUserClaims = _context.UserClaims
+        //        .Where(uc => uc.UserId == mockUser.Id)
+        //        .Select(uc => new Claim(uc.ClaimType, uc.ClaimValue))
+        //        .ToList();
+
+        //    // Get a rabbit not owned by the user
+        //    var mockRabbitNotOwned = _context.Rabbits.First(r => r.OwnerId != mockUser.Id);
+        //    Console.WriteLine($"User: {mockUser.UserName}\nMY-Rabbit: {mockRabbitOwned.NickName}\nOTHER-Rabbit: {mockRabbitNotOwned.NickName}");
+        //    foreach (var claim in mockUserClaims)
+        //    {
+        //        Console.WriteLine($"ClaimType: '{claim.Type}' | ClaimValue: '{claim.Value}'");
+        //    }
+
+        //    // Act & Assert
+        //    // Expect an exception to be thrown because the user does not own the rabbit
+        //    await Assert.ThrowsExceptionAsync<InvalidOperationException>(
+        //        () => _rabbitService.DeleteRabbit_RBAC(mockUser.Id, mockRabbitNotOwned.EarCombId, mockUserClaims));
             
-            // Act
-            await _rabbitService.DeleteRabbit_RBAC(mockUser.Id, mockRabbitOwned.EarCombId, mockUserClaims);
+        //    // Act
+        //    await _rabbitService.DeleteRabbit_RBAC(mockUser.Id, mockRabbitOwned.EarCombId, mockUserClaims);
 
-            // Assert
-            // Verify that the rabbit was deleted from the database
-            var deletedRabbitOwned = await _context.Rabbits
-                .FirstOrDefaultAsync(r => r.RightEarId == mockRabbitOwned.RightEarId && r.LeftEarId == mockRabbitOwned.LeftEarId);
-            Assert.IsNull(deletedRabbitOwned);
-        }
+        //    // Assert
+        //    // Verify that the rabbit was deleted from the database
+        //    var deletedRabbitOwned = await _context.Rabbits
+        //        .FirstOrDefaultAsync(r => r.RightEarId == mockRabbitOwned.RightEarId && r.LeftEarId == mockRabbitOwned.LeftEarId);
+        //    Assert.IsNull(deletedRabbitOwned);
+        //}
 
 
 

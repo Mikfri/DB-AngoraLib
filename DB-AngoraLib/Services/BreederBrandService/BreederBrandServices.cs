@@ -24,6 +24,7 @@ namespace DB_AngoraLib.Services.BreederBrandService
             //_rabbitServices = rabbitServices;
         }
 
+        //---------------------------------: CREATE :---------------------------------
         public async Task<BreederBrand> Create_BreederBrand(string userId)
         {
             var user = await _accountServices.Get_UserById(userId);
@@ -46,7 +47,7 @@ namespace DB_AngoraLib.Services.BreederBrandService
             return breederBrand;
         }
 
-
+        //---------------------------------: READ :---------------------------------
         public async Task<BreederBrand> Get_BreederBrandById(int id)
         {
             return await _dbRepository.GetObject_ByIntKEYAsync(id);
@@ -57,11 +58,13 @@ namespace DB_AngoraLib.Services.BreederBrandService
             return await _dbRepository.GetObject_ByFilterAsync(bb => bb.UserId == userId);
         }
 
+        //---------------------------------: UPDATE :---------------------------------
         public async Task Update_BreederBrand(BreederBrand breederBrand)
         {
             await _dbRepository.UpdateObjectAsync(breederBrand);
         }
 
+        //---------------------------------: DELETE :---------------------------------
         public async Task Delete_BreederBrand(int id)
         {
             var breederBrand = await _dbRepository.GetObject_ByIntKEYAsync(id);

@@ -2,6 +2,7 @@
 using DB_AngoraLib.Models;
 using DB_AngoraLib.Repository;
 using DB_AngoraLib.Services.AccountService;
+using DB_AngoraLib.Services.BreederService;
 using DB_AngoraLib.Services.RabbitService;
 using DB_AngoraLib.Services.ValidationService;
 using Microsoft.AspNetCore.Builder;
@@ -20,14 +21,14 @@ namespace DB_AngoraLib.Services.TransferService
 
         private readonly IGRepository<TransferRequst> _dbRepository;
         private readonly IRabbitService _rabbitServices;
-        private readonly IAccountService _accountService;
+        private readonly IBreederService _breederService;
         private readonly NotificationService _notificationService;
 
-        public TransferServices(IGRepository<TransferRequst> dbRepository, IRabbitService rabbitService, IAccountService userService, NotificationService notificationService)
+        public TransferServices(IGRepository<TransferRequst> dbRepository, IRabbitService rabbitService, IBreederService breederService, NotificationService notificationService)
         {
             _dbRepository = dbRepository;
             _rabbitServices = rabbitService;
-            _accountService = userService;
+            _breederService = breederService;
             _notificationService = notificationService;
         }
 
@@ -44,13 +45,13 @@ namespace DB_AngoraLib.Services.TransferService
                 ?? throw new ArgumentException("Kaninen blev ikke fundet");
 
             // Tjek for eksisterende nuværende ejer
-            var userIssuer = await _accountService.Get_UserById(issuerId)
+            var userIssuer = await _breederService.Get_BreederById(issuerId)
                 ?? throw new ArgumentException("Nuværende ejer blev ikke fundet");
 
             if (rabbit.OwnerId != issuerId)
                 throw new InvalidOperationException("Du er ikke den nuværende ejer af denne kanin");
 
-            var userRecipent = await _accountService.Get_BreederByBreederRegNo(createTransferDTO.Recipent_BreederRegNo)
+            var userRecipent = await _breederService.Get_BreederByBreederRegNo(createTransferDTO.Recipent_BreederRegNo)
                 ?? throw new ArgumentException("Foreslået ejer blev ikke fundet");
 
             // Tjek for eksisterende aktive RabbitTransfer anmodninger for den samme kanin

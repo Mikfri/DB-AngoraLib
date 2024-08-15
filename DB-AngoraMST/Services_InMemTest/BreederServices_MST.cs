@@ -3,30 +3,23 @@ using DB_AngoraLib.EF_DbContext;
 using DB_AngoraLib.MockData;
 using DB_AngoraLib.Models;
 using DB_AngoraLib.Repository;
-using DB_AngoraLib.Services.AccountService;
-using DB_AngoraLib.Services.EmailService;
-using Microsoft.AspNetCore.Identity;
+using DB_AngoraLib.Services.BreederService;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace DB_AngoraMST.Services_InMemTest
 {
     [TestClass]
-    public class AccountServices_MST
+    public class BreederServices_MST
     {
-        private IAccountService _accountService;
+        private IBreederService _breederService;
         private DB_AngoraContext _context;
-        private Mock<UserManager<User>> _userManagerMock;
-        private Mock<IEmailService> _emailServiceMock;
 
-        public AccountServices_MST()
+        public BreederServices_MST()
         {
             // Setup in-memory database
             var options = new DbContextOptionsBuilder<DB_AngoraContext>()
@@ -36,19 +29,11 @@ namespace DB_AngoraMST.Services_InMemTest
             _context = new DB_AngoraContext(options);
             _context.Database.EnsureCreated();
 
-            // Create UserManager
-            var userStoreMock = new Mock<IUserStore<User>>();
-            _userManagerMock = new Mock<UserManager<User>>(userStoreMock.Object, null, null, null, null, null, null, null, null);
-
-            // Create EmailService mock
-            _emailServiceMock = new Mock<IEmailService>();
-
-            // Create UserRepository and BreederRepository
-            var userRepository = new GRepository<User>(_context);
+            // Create BreederRepository
             var breederRepository = new GRepository<Breeder>(_context);
 
-            // Initialize AccountService with all required parameters
-            _accountService = new AccountServices(userRepository, breederRepository, _emailServiceMock.Object, _userManagerMock.Object);
+            // Initialize BreederService with all required parameters
+            _breederService = new BreederServices(breederRepository);
         }
 
         [TestInitialize]
@@ -60,12 +45,6 @@ namespace DB_AngoraMST.Services_InMemTest
             {
                 _context.Users.Add(mockUserWithRole.User);
                 _context.SaveChanges();
-
-                // Setup UserManager mock to return the user
-                _userManagerMock.Setup(um => um.FindByEmailAsync(mockUserWithRole.User.Email))
-                    .ReturnsAsync(mockUserWithRole.User);
-                _userManagerMock.Setup(um => um.FindByNameAsync(mockUserWithRole.User.UserName))
-                    .ReturnsAsync(mockUserWithRole.User);
             }
         }
 
@@ -78,27 +57,27 @@ namespace DB_AngoraMST.Services_InMemTest
 
         //---------------------------------: GET TESTS :---------------------------------
         [TestMethod]
-        public async Task GetAllUsersAsync_TEST()
+        public async Task GetAllBreedersAsync_TEST()
         {
             // Arrange
-            var expectedUsersCount = MockUsers.GetMockUsersWithRoles().Count;
+            var expectedBreedersCount = _context.Users.OfType<Breeder>().Count();
 
             // Act
-            var users = await _accountService.GetAll_Users();
+            var breeders = await _breederService.GetAll_Breeders();
 
             // Assert
-            Assert.AreEqual(expectedUsersCount, users.Count);
+            Assert.AreEqual(expectedBreedersCount, breeders.Count);
         }
 
         [TestMethod]
-        public async Task GetUserByBreederRegNoAsync_TEST()
+        public async Task GetBreederByBreederRegNoAsync_TEST()
         {
             // Arrange
             var expectedUser = _context.Users.OfType<Breeder>().First();
             var breederRegNo = expectedUser.BreederRegNo;
 
             // Act
-            var actualUser = await _accountService.Get_BreederByBreederRegNo(breederRegNo);
+            var actualUser = await _breederService.Get_BreederByBreederRegNo(breederRegNo);
 
             // Assert
             Assert.IsNotNull(actualUser);
@@ -106,24 +85,7 @@ namespace DB_AngoraMST.Services_InMemTest
         }
 
         [TestMethod]
-        public async Task GetUserByUserNameOrEmailAsync_TEST()
-        {
-            // Arrange
-            var expectedUser = _context.Users.First();
-
-            // Act
-            var actualUserByUsername = await _accountService.Get_UserByUserNameOrEmail(expectedUser.UserName);
-            var actualUserByEmail = await _accountService.Get_UserByUserNameOrEmail(expectedUser.Email);
-
-            // Assert
-            Assert.IsNotNull(actualUserByUsername);
-            Assert.AreEqual(expectedUser.UserName, actualUserByUsername.UserName);
-            Assert.IsNotNull(actualUserByEmail);
-            Assert.AreEqual(expectedUser.Email, actualUserByEmail.Email);
-        }
-
-        [TestMethod]
-        public async Task Get_Rabbits_OwnedAlive_Filtered_TEST()
+        public async Task GetRabbitsOwnedFiltered_TEST()
         {
             // Arrange
             var userId = "MajasId";
@@ -162,7 +124,7 @@ namespace DB_AngoraMST.Services_InMemTest
             }
 
             // Act
-            var filteredRabbitCollection = await _accountService.GetAll_RabbitsOwned_Filtered(userId, filter);
+            var filteredRabbitCollection = await _breederService.GetAll_RabbitsOwned_Filtered(userId, filter);
 
             // Assert
             Assert.IsNotNull(filteredRabbitCollection); // Check that the result is not null
@@ -173,7 +135,7 @@ namespace DB_AngoraMST.Services_InMemTest
             var expectedRabbitCount = allRabbits.Count(rabbit => rabbit.OwnerId == userId && rabbit.Race == race && rabbit.DateOfBirth >= filter.FromDateOfBirth);
 
             Assert.AreEqual(expectedRabbitCount, filteredRabbitCollection.Count);
-            Debug.WriteLine($"Expected: {expectedRabbitCount}, Actual: {filteredRabbitCollection.Count}");
+            Console.WriteLine($"Expected: {expectedRabbitCount}, Actual: {filteredRabbitCollection.Count}");
         }
     }
 }
