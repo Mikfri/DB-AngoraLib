@@ -118,12 +118,25 @@ namespace DB_AngoraMST.Services_InMemTest
             var existingRabbit = await _context.Rabbits.FirstAsync();
             Assert.IsNotNull(existingRabbit);
 
-            var currentUser = await _context.Users.FirstAsync();
+            var currentUser = await _context.Users.OfType<Breeder>().FirstAsync();
             Assert.IsNotNull(currentUser);
 
+            Console.WriteLine("BEFORE:\n");
+            int i = 1;
+            foreach (var rabbit in currentUser.RabbitsOwned)
+            {                
+                Console.WriteLine($" {i++}. {rabbit.NickName}");
+            }
 
             // Act
             await _rabbitService.AddRabbit_ToMyCollection(currentUser.Id, newUniqRabbit);
+
+            Console.WriteLine("\nAFTER:\n");
+            int ii = 1;
+            foreach (var rabbit in currentUser.RabbitsOwned)
+            {
+                Console.WriteLine($" {ii++}. {rabbit.NickName}");
+            }
 
             // Assert
             var addedRabbit = await _context.Rabbits.FirstOrDefaultAsync(r => r.RightEarId == newUniqRabbit.RightEarId && r.LeftEarId == newUniqRabbit.LeftEarId);
@@ -392,7 +405,7 @@ namespace DB_AngoraMST.Services_InMemTest
             // Get an owned and a not owned rabbit from the database
             var mockRabbitOwned = _context.Rabbits.First(r => r.OwnerId == mockUser.Id);
             var mockRabbitNotOwned = _context.Rabbits.First(r => r.OwnerId != mockUser.Id);
-            Console.WriteLine($"User: {mockUser.UserName} {mockUser.FirstName}\nMY-Rabbit: {mockRabbitOwned.NickName}\nOTHER-Rabbit: {mockRabbitNotOwned.NickName}");
+            Console.WriteLine($"User: {mockUser.UserName}\nMY-Rabbit: {mockRabbitOwned.NickName}\nOTHER-Rabbit: {mockRabbitNotOwned.NickName}");
             foreach (var claim in mockUserClaims)
             {
                 Console.WriteLine($"ClaimType: '{claim.Type}' | ClaimValue: '{claim.Value}'");
@@ -429,7 +442,7 @@ namespace DB_AngoraMST.Services_InMemTest
 
             // Get a rabbit not owned by the user
             var mockRabbitNotOwned = _context.Rabbits.First(r => r.OwnerId != mockUser.Id);
-            Console.WriteLine($"User: {mockUser.UserName} {mockUser.FirstName} {mockUser.Email} {mockUser.NormalizedEmail}\nMY-Rabbit: {mockRabbitOwned.NickName}\nOTHER-Rabbit: {mockRabbitNotOwned.NickName}");
+            Console.WriteLine($"User: {mockUser.UserName}\nMY-Rabbit: {mockRabbitOwned.NickName}\nOTHER-Rabbit: {mockRabbitNotOwned.NickName}");
             foreach (var claim in mockUserClaims)
             {
                 Console.WriteLine($"ClaimType: '{claim.Type}' | ClaimValue: '{claim.Value}'");
