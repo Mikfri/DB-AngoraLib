@@ -26,6 +26,9 @@ namespace DB_AngoraLib.MockData
                 PhoneNumber = "27586455",
                 PasswordHash = "Ida123!",
                 BreederRegNo = "5095",
+                UserName = "IdaFriborg87@gmail.com", // Set UserName explicitly
+                NormalizedUserName = "IDAFRIBORG87@GMAIL.COM", // Set NormalizedUserName explicitly
+                NormalizedEmail = "IDAFRIBORG87@GMAIL.COM", // Set NormalizedEmail explicitly
                 BreederBrand = new BreederBrand
                 {
                     Id = 1,
@@ -35,7 +38,8 @@ namespace DB_AngoraLib.MockData
                     BreederBrandLogo = null,
                     IsFindable = true,
                     RabbitsForSale = MockRabbits.GetMockRabbits().Where(r => r.OwnerId == "IdasId" && r.ForSale == IsPublic.Ja).ToList(),
-                    RabbitsForBreeding = MockRabbits.GetMockRabbits().Where(r => r.OwnerId == "IdasId" && r.ForBreeding == IsPublic.Ja).ToList(),                    PublicWools = new List<Wool>() // Initialize with empty list or mock data
+                    RabbitsForBreeding = MockRabbits.GetMockRabbits().Where(r => r.OwnerId == "IdasId" && r.ForBreeding == IsPublic.Ja).ToList(),
+                    PublicWools = new List<Wool>() // Initialize with empty list or mock data
                 },
                 RabbitsOwned = MockRabbits.GetMockRabbits().Where(r => r.OwnerId == "IdasId").ToList(),
                 RabbitsLinked = MockRabbits.GetMockRabbits().Where(r => r.OriginId == "IdasId").ToList()
@@ -55,6 +59,9 @@ namespace DB_AngoraLib.MockData
                 PhoneNumber = "28733085",
                 PasswordHash = "Maja123!",
                 BreederRegNo = "5053",
+                UserName = "MajaJoensen89@gmail.com", // Set UserName explicitly
+                NormalizedUserName = "MAJAJOENSEN89@GMAIL.COM", // Set NormalizedUserName explicitly
+                NormalizedEmail = "MAJAJOENSEN89@GMAIL.COM", // Set NormalizedEmail explicitly
                 BreederBrand = new BreederBrand
                 {
                     Id = 2,

@@ -65,6 +65,11 @@ namespace DB_AngoraMST.Services_InMemTest
             // Act
             var breeders = await _breederService.GetAll_Breeders();
 
+            foreach (var breeder in breeders)
+            {
+                Console.WriteLine($"Breeder: {breeder.FirstName} {breeder.LastName}");
+            }
+
             // Assert
             Assert.AreEqual(expectedBreedersCount, breeders.Count);
         }
@@ -104,20 +109,17 @@ namespace DB_AngoraMST.Services_InMemTest
                 .Include(u => ((Breeder)u).RabbitsOwned) // Load the related rabbits
                 .Single(u => u.Id == userId) as Breeder; // Get the user and cast to Breeder
 
-            if (mockUser == null)
-            {
-                Assert.Fail("User is not a Breeder");
-            }
-
             var mockUserRabbitCollection = mockUser.RabbitsOwned;
 
-            // Filtrer mockUserRabbitCollection baseret på DateOfBirth
+             // Filtrer mockUserRabbitCollection baseret på DateOfBirth
             var filteredMockUserRabbitCollection = mockUserRabbitCollection
                 .Where(rabbit => rabbit.DateOfBirth >= filter.FromDateOfBirth)
                 .ToList();
 
+
+            Console.WriteLine($"Breeder: {mockUser.FirstName}\nICollection: RabbitsOwned\n");
             // Print hver filtreret kanins kaldenavn og fødselsdato for debugging formål
-            int i = 0;
+            int i = 1;
             foreach (var rabbit in filteredMockUserRabbitCollection)
             {
                 Console.WriteLine($"{i++}:{rabbit.EarCombId}: {rabbit.NickName}, DateOfBirth: {rabbit.DateOfBirth}");
@@ -135,7 +137,7 @@ namespace DB_AngoraMST.Services_InMemTest
             var expectedRabbitCount = allRabbits.Count(rabbit => rabbit.OwnerId == userId && rabbit.Race == race && rabbit.DateOfBirth >= filter.FromDateOfBirth);
 
             Assert.AreEqual(expectedRabbitCount, filteredRabbitCollection.Count);
-            Console.WriteLine($"Expected: {expectedRabbitCount}, Actual: {filteredRabbitCollection.Count}");
+            Console.WriteLine($"\nExpected: {expectedRabbitCount}, Actual: {filteredRabbitCollection.Count}");
         }
     }
 }

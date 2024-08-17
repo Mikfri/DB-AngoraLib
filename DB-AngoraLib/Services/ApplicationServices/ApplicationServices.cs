@@ -89,29 +89,47 @@ namespace DB_AngoraLib.Services.ApplicationServices
                 var user = await _accountServices.Get_UserById(application.UserApplicantId);
                 if (user is null) throw new Exception("Bruger ikke fundet");
 
-                // Opret en ny Breeder instans
-                var breeder = new Breeder
-                {
-                    Id = user.Id,
-                    FirstName = user.FirstName,
-                    LastName = user.LastName,
-                    RoadNameAndNo = user.RoadNameAndNo,
-                    ZipCode = user.ZipCode,
-                    City = user.City,
-                    Email = user.Email,
-                    PhoneNumber = user.PhoneNumber,
-                    PasswordHash = user.PasswordHash,
-                    BreederRegNo = application.RequestedBreederRegNo
-                };
+                // Opdater discriminator kolonnen til "Breeder"
+                user.GetType().GetProperty("UserType").SetValue(user, "Breeder");
 
-                // Fjern den gamle User instans
-                await _userManager.DeleteAsync(user);
-
-                // Opret den nye Breeder instans
-                var createBreederResult = await _userManager.CreateAsync(breeder);
-                if (!createBreederResult.Succeeded)
+                // Tilføj Breeder-specifikke data
+                var breeder = user as Breeder;
+                if (breeder == null)
                 {
-                    throw new Exception("Kunne ikke oprette brugeren som typen 'Breeder'");
+                    breeder = new Breeder
+                    {
+                        Id = user.Id,
+                        FirstName = user.FirstName,
+                        LastName = user.LastName,
+                        RoadNameAndNo = user.RoadNameAndNo,
+                        ZipCode = user.ZipCode,
+                        City = user.City,
+                        Email = user.Email,
+                        PhoneNumber = user.PhoneNumber,
+                        PasswordHash = user.PasswordHash,
+                        BreederRegNo = application.RequestedBreederRegNo
+                    };
+                }
+                else
+                {
+                    breeder.BreederRegNo = application.RequestedBreederRegNo;
+                }
+
+                // ELLER dette istedet for: Tilføj Breeder-specifikke data
+                //var breeder = user as Breeder;
+                //if (breeder == null)
+                //{
+                //    throw new Exception("Kunne ikke caste brugeren til typen 'Breeder'");
+                //}
+
+                //breeder.BreederRegNo = application.RequestedBreederRegNo;
+
+
+                // Gem ændringerne
+                var updateResult = await _userManager.UpdateAsync(breeder);
+                if (!updateResult.Succeeded)
+                {
+                    throw new Exception("Kunne ikke opdatere brugeren til typen 'Breeder'");
                 }
 
                 // Tildel Breeder rollen
@@ -132,6 +150,7 @@ namespace DB_AngoraLib.Services.ApplicationServices
 
             await _dbRepository.UpdateObjectAsync(application);
         }
+
 
 
         //---------------------------------: READ/GET :---------------------------------

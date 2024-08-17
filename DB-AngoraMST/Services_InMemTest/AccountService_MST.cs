@@ -88,22 +88,7 @@ namespace DB_AngoraMST.Services_InMemTest
 
             // Assert
             Assert.AreEqual(expectedUsersCount, users.Count);
-        }
-
-        [TestMethod]
-        public async Task GetUserByBreederRegNoAsync_TEST()
-        {
-            // Arrange
-            var expectedUser = _context.Users.OfType<Breeder>().First();
-            var breederRegNo = expectedUser.BreederRegNo;
-
-            // Act
-            var actualUser = await _accountService.Get_BreederByBreederRegNo(breederRegNo);
-
-            // Assert
-            Assert.IsNotNull(actualUser);
-            Assert.AreEqual(expectedUser.BreederRegNo, actualUser.BreederRegNo);
-        }
+        }        
 
         [TestMethod]
         public async Task GetUserByUserNameOrEmailAsync_TEST()
@@ -120,60 +105,6 @@ namespace DB_AngoraMST.Services_InMemTest
             Assert.AreEqual(expectedUser.UserName, actualUserByUsername.UserName);
             Assert.IsNotNull(actualUserByEmail);
             Assert.AreEqual(expectedUser.Email, actualUserByEmail.Email);
-        }
-
-        [TestMethod]
-        public async Task Get_Rabbits_OwnedAlive_Filtered_TEST()
-        {
-            // Arrange
-            var userId = "MajasId";
-            var race = Race.Satin_Angora;
-            var dateOfBirth = new DateOnly(2024, 3, 1);
-
-            var filter = new Rabbit_FilteredRequestDTO
-            {
-                Race = race,
-                FromDateOfBirth = dateOfBirth,
-                OnlyDeceased = false
-            };
-
-            // Get the user's rabbit collection for comparison
-            var mockUser = _context.Users
-                .Include(u => ((Breeder)u).RabbitsOwned) // Load the related rabbits
-                .Single(u => u.Id == userId) as Breeder; // Get the user and cast to Breeder
-
-            if (mockUser == null)
-            {
-                Assert.Fail("User is not a Breeder");
-            }
-
-            var mockUserRabbitCollection = mockUser.RabbitsOwned;
-
-            // Filtrer mockUserRabbitCollection baseret på DateOfBirth
-            var filteredMockUserRabbitCollection = mockUserRabbitCollection
-                .Where(rabbit => rabbit.DateOfBirth >= filter.FromDateOfBirth)
-                .ToList();
-
-            // Print hver filtreret kanins kaldenavn og fødselsdato for debugging formål
-            int i = 0;
-            foreach (var rabbit in filteredMockUserRabbitCollection)
-            {
-                Console.WriteLine($"{i++}:{rabbit.EarCombId}: {rabbit.NickName}, DateOfBirth: {rabbit.DateOfBirth}");
-            }
-
-            // Act
-            var filteredRabbitCollection = await _accountService.GetAll_RabbitsOwned_Filtered(userId, filter);
-
-            // Assert
-            Assert.IsNotNull(filteredRabbitCollection); // Check that the result is not null
-            Assert.IsTrue(filteredRabbitCollection.All(rabbit => rabbit.Race == race)); // Check that all rabbits in the result have the expected race
-
-            // Check that the number of rabbits in the result matches the expected number
-            var allRabbits = await _context.Rabbits.ToListAsync();
-            var expectedRabbitCount = allRabbits.Count(rabbit => rabbit.OwnerId == userId && rabbit.Race == race && rabbit.DateOfBirth >= filter.FromDateOfBirth);
-
-            Assert.AreEqual(expectedRabbitCount, filteredRabbitCollection.Count);
-            Debug.WriteLine($"Expected: {expectedRabbitCount}, Actual: {filteredRabbitCollection.Count}");
-        }
+        }       
     }
 }
