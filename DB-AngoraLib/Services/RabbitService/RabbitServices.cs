@@ -40,19 +40,19 @@ namespace DB_AngoraLib.Services.RabbitService
         /// <exception cref="InvalidOperationException"></exception>
         public async Task<Rabbit_ProfileDTO> AddRabbit_ToMyCollection(string userId, Rabbit_CreateDTO newRabbitDTO)
         {
-            //Console.WriteLine($"Trying to add rabbit with RightEarId: {newRabbitDto.RightEarId}, LeftEarId: {newRabbitDto.LeftEarId}");
-            // Validate input
-            if (string.IsNullOrEmpty(userId) || newRabbitDTO == null)
-            {
-                throw new ArgumentException("Invalid arguments");
-            }
+
             // Create a new Rabbit from the DTO
+            var user = await _breederService.Get_BreederById(userId);
+            if (user == null)
+            {
+                throw new InvalidOperationException("Brugeren blev ikke fundet");
+            }
 
             var newRabbit = new Rabbit
             {
                 RightEarId = newRabbitDTO.RightEarId,
                 LeftEarId = newRabbitDTO.LeftEarId,
-                OwnerId = userId,
+                OwnerBreederRegNo = user.BreederRegNo,
                 NickName = newRabbitDTO.NickName,
                 Race = newRabbitDTO.Race,
                 Color = newRabbitDTO.Color,
@@ -141,7 +141,7 @@ namespace DB_AngoraLib.Services.RabbitService
                 return null;
             }
             var rabbits = await _dbRepository.GetAllObjectsAsync();
-            return rabbits.Where(rabbit => rabbit.OwnerId == user.Id).ToList();
+            return rabbits.Where(rabbit => rabbit.OwnerBreederRegNo == user.BreederRegNo).ToList();
         }
 
 
@@ -172,10 +172,14 @@ namespace DB_AngoraLib.Services.RabbitService
                 return null;
             }
 
+            var user = await _breederService.Get_BreederById(userId);
+            if (user == null)
+            return null;
+
             await ParentsFK_SetupAsync(rabbit);
             await UserOriginFK_SetupAsync(rabbit);
 
-            if (rabbit.ForSale == IsPublic.Ja || rabbit.OwnerId == userId || hasPermissionToGetAnyRabbit)
+            if (rabbit.ForSale == IsPublic.Ja || rabbit.OwnerBreederRegNo == user.BreederRegNo || hasPermissionToGetAnyRabbit)
             {
                 var rabbitProfileDTO = new Rabbit_ProfileDTO
                 {
@@ -310,14 +314,16 @@ namespace DB_AngoraLib.Services.RabbitService
             var hasPermissionToUpdateOwn = userClaims.Any(c => c.Type == "Rabbit:Update" && c.Value == "Own");
             var hasPermissionToUpdateAll = userClaims.Any(c => c.Type == "Rabbit:Update" && c.Value == "Any");
 
+            var user = await _breederService.Get_BreederById(userId);
+            if (user == null)
+                return null;
+
             var rabbit_InDB = await Get_Rabbit_ByEarCombId(earCombId);
             if (rabbit_InDB == null)
-            {
                 return null;
-            }
 
 
-            if (hasPermissionToUpdateAll || (hasPermissionToUpdateOwn && userId == rabbit_InDB.OwnerId))
+            if (hasPermissionToUpdateAll || (hasPermissionToUpdateOwn && user.BreederRegNo == rabbit_InDB.OwnerBreederRegNo))
             {
                 // Copy all non-null properties from updatedRabbit to rabbitToUpdate
                 HelperServices.CopyPropertiesTo(rabbit_updateDTO, rabbit_InDB);
@@ -345,13 +351,15 @@ namespace DB_AngoraLib.Services.RabbitService
             var hasPermissionToDeleteOwn = userClaims.Any(c => c.Type == "Rabbit:Delete" && c.Value == "Own");
             var hasPermissionToDeleteAll = userClaims.Any(c => c.Type == "Rabbit:Delete" && c.Value == "Any");
             
+            var user = await _breederService.Get_BreederById(userId);
+
             var rabbitToDelete = await Get_Rabbit_ByEarCombId(earCombId);
             if (rabbitToDelete == null)
             {
                 throw new InvalidOperationException("Ingen kanin med den angivne ørermærke-kombi eksistere");
             }
 
-            if (!hasPermissionToDeleteAll && (!hasPermissionToDeleteOwn || userId != rabbitToDelete.OwnerId))
+            if (!hasPermissionToDeleteAll && (!hasPermissionToDeleteOwn || user.BreederRegNo != rabbitToDelete.OwnerBreederRegNo))
             {
                 throw new InvalidOperationException("Du har ikke tilladelse til denne handling");
             }
@@ -493,12 +501,12 @@ namespace DB_AngoraLib.Services.RabbitService
             if (user != null)
             {
                 // If the user exists, establish the relationship between the rabbit and the user
-                rabbit.OriginId = user.Id;
+                rabbit.OriginBreederRegNo = user.BreederRegNo;
             }
             else
             {
                 // If the user does not exist, set the OriginId to null
-                rabbit.OriginId = null;
+                rabbit.OriginBreederRegNo = null;
             }
 
             // Update the rabbit in the database
@@ -519,10 +527,12 @@ namespace DB_AngoraLib.Services.RabbitService
                 .Where(rabbit => rabbit.RightEarId == breederRegNo)
                 .ToListAsync();
 
+            var user = await _breederService.Get_BreederByBreederRegNo(breederRegNo);
+
             // Opdater OriginId for hver relevant kanin til at pege på brugeren
             foreach (var rabbit in rabbitsToUpdateList)
             {
-                rabbit.OriginId = userId; // Brug userId direkte
+                rabbit.OriginBreederRegNo = user.BreederRegNo; 
                 //await _dbRepository.UpdateObjectAsync(rabbit);
             }
             await _dbRepository.UpdateObjectsListAsync(rabbitsToUpdateList);

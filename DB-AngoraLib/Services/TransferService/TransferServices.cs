@@ -36,6 +36,7 @@ namespace DB_AngoraLib.Services.TransferService
         public async Task<TransferRequest_ContractDTO> CreateTransferRequest(string issuerId, TransferRequest_CreateDTO createTransferDTO)
         //public async Task<TransferRequest_PreviewDTO> CreateTransferRequest(string issuerId, TransferRequest_CreateDTO createTransferDTO)
         {
+
             // Valider input (Dette trin kan udvides med mere detaljerede valideringer)
             if (createTransferDTO == null)
                 throw new ArgumentNullException(nameof(createTransferDTO));
@@ -48,7 +49,7 @@ namespace DB_AngoraLib.Services.TransferService
             var userIssuer = await _breederService.Get_BreederById(issuerId)
                 ?? throw new ArgumentException("Nuværende ejer blev ikke fundet");
 
-            if (rabbit.OwnerId != issuerId)
+            if (rabbit.OwnerBreederRegNo != userIssuer.BreederRegNo)
                 throw new InvalidOperationException("Du er ikke den nuværende ejer af denne kanin");
 
             var userRecipent = await _breederService.Get_BreederByBreederRegNo(createTransferDTO.Recipent_BreederRegNo)
@@ -123,7 +124,10 @@ namespace DB_AngoraLib.Services.TransferService
         {
             var transferReq = await Get_TransferRequest(transferId);
 
-            if (transferReq.RecipentId != recipentId)
+            var userRecipent = await _breederService.Get_BreederById(recipentId)
+                ?? throw new ArgumentException("Foreslået ejer blev ikke fundet");
+
+            if (transferReq.RecipentId != userRecipent.Id)
             {
                 throw new InvalidOperationException("Du har ikke tilladelse til at svare på denne anmodning.");
             }
@@ -138,7 +142,7 @@ namespace DB_AngoraLib.Services.TransferService
             if (responseDTO.Accept)
             {
                 transferReq.Status = TransferStatus.Accepted;
-                transferReq.Rabbit.OwnerId = transferReq.RecipentId;
+                transferReq.Rabbit.OwnerBreederRegNo = userRecipent.BreederRegNo;
                 transferReq.DateAccepted = DateOnly.FromDateTime(DateTime.Now); // Sætter den aktuelle dato
 
                 await _rabbitServices.UpdateRabbitOwnershipAsync(transferReq.Rabbit);

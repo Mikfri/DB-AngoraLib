@@ -17,8 +17,8 @@ namespace DB_AngoraLib.MockData
             {
                 RightEarId = "5095",
                 LeftEarId = "002",
-                OriginId = "IdasId",
-                OwnerId = "IdasId",
+                OriginBreederRegNo = "5095",
+                OwnerBreederRegNo = "5095",
                 NickName = "Sov",
                 Race = Race.Angora,
                 Color = Color.Blå,
@@ -26,14 +26,16 @@ namespace DB_AngoraLib.MockData
                 DateOfDeath = new DateOnly(2022, 07, 22),
                 Gender = Gender.Doe,
                 ForSale = IsPublic.Nej,
-                ForBreeding = IsPublic.Nej
+                ForBreeding = IsPublic.Nej,
+                FatherId_Placeholder = null,
+                MotherId_Placeholder = "5095-001",
             },
             new Rabbit
             {
                 RightEarId = "5095",
                 LeftEarId = "001",
-                OriginId = "IdasId",
-                OwnerId = "IdasId",
+                OriginBreederRegNo = "5095",
+                OwnerBreederRegNo = "5095",
                 NickName = "Kaliba",
                 Race = Race.Angora,
                 Color = Color.Gråblå_LilleEgern,
@@ -41,14 +43,16 @@ namespace DB_AngoraLib.MockData
                 DateOfDeath = new DateOnly(2024, 04, 13),
                 Gender = Gender.Doe,
                 ForSale = IsPublic.Nej,
-                ForBreeding = IsPublic.Nej
+                ForBreeding = IsPublic.Nej,
+                FatherId_Placeholder = null,
+                MotherId_Placeholder = null,
             },
             new Rabbit
             {
                 RightEarId = "5095",
                 LeftEarId = "003",
-                OriginId = "IdasId",
-                OwnerId = "IdasId",
+                OriginBreederRegNo = "5095",
+                OwnerBreederRegNo = "5095",
                 NickName = "Smørklat Smør",
                 Race = Race.Angora,
                 Color = Color.Gulbrun_Isabella,
@@ -56,14 +60,16 @@ namespace DB_AngoraLib.MockData
                 DateOfDeath = new DateOnly(2023, 11, 3),
                 Gender = Gender.Doe,
                 ForSale = IsPublic.Nej,
-                ForBreeding = IsPublic.Nej
+                ForBreeding = IsPublic.Nej,
+                FatherId_Placeholder = null,
+                MotherId_Placeholder = "5095-001",
             },
             new Rabbit
             {
                 RightEarId = "4640",
                 LeftEarId = "120",
-                OriginId = null,
-                OwnerId = "IdasId",
+                OriginBreederRegNo = null,
+                OwnerBreederRegNo = "5095",
                 NickName = "Mulan",
                 Race = Race.Angora,
                 Color = Color.Blå,
@@ -71,14 +77,16 @@ namespace DB_AngoraLib.MockData
                 DateOfDeath = new DateOnly(2023, 11, 3),
                 Gender = Gender.Doe,
                 ForSale = IsPublic.Nej,
-                ForBreeding = IsPublic.Nej
+                ForBreeding = IsPublic.Nej,
+                FatherId_Placeholder = null,
+                MotherId_Placeholder = null,
             },
             new Rabbit
             {
                 RightEarId = "4640",
                 LeftEarId = "105",
-                OriginId = null,
-                OwnerId = "IdasId",
+                OriginBreederRegNo = null,
+                OwnerBreederRegNo = "5095",
                 NickName = "Ingolf",
                 Race = Race.Angora,
                 Color = Color.Chinchilla,
@@ -86,14 +94,16 @@ namespace DB_AngoraLib.MockData
                 DateOfDeath = null,
                 Gender = Gender.Buck,
                 ForSale = IsPublic.Nej,
-                ForBreeding = IsPublic.Ja
+                ForBreeding = IsPublic.Ja,
+                FatherId_Placeholder = null,
+                MotherId_Placeholder = null,
             },
             new Rabbit
             {
                 RightEarId = "5095",
                 LeftEarId = "0124",
-                OriginId = "IdasId",
-                OwnerId = "IdasId",
+                OriginBreederRegNo = "5095",
+                OwnerBreederRegNo = "5095",
                 NickName = "Aron",
                 Race = Race.Satin_Angora,
                 Color = Color.Kanel,
@@ -101,14 +111,16 @@ namespace DB_AngoraLib.MockData
                 DateOfDeath = null,
                 Gender = Gender.Buck,
                 ForSale = IsPublic.Nej,
-                ForBreeding = IsPublic.Ja
+                ForBreeding = IsPublic.Ja,
+                FatherId_Placeholder = "V23-023",
+                MotherId_Placeholder = "5053-0223",
             },
             new Rabbit
             {
                 RightEarId = "5095",
                 LeftEarId = "0624",
-                OriginId = "IdasId",
-                OwnerId = "IdasId",
+                OriginBreederRegNo = "5095",
+                OwnerBreederRegNo = "5095",
                 NickName = "Articuno",
                 Race = Race.Satin_Angora,
                 Color = Color.Vildtblå_PerleEgern,
@@ -116,14 +128,16 @@ namespace DB_AngoraLib.MockData
                 DateOfDeath = null,
                 Gender = Gender.Doe,
                 ForSale = IsPublic.Nej,
-                ForBreeding = IsPublic.Nej
+                ForBreeding = IsPublic.Nej,
+                FatherId_Placeholder = "V23-023",
+                MotherId_Placeholder = "5053-0223",
             },
             new Rabbit
             {
                 RightEarId = "5095",
                 LeftEarId = "0224",
-                OriginId = "IdasId",
-                OwnerId = "IdasId",
+                OriginBreederRegNo = "5095",
+                OwnerBreederRegNo = "5095",
                 NickName = "Azelf",
                 Race = Race.Satin_Angora,
                 Color = Color.Vildtrød_Harefarvet,
@@ -131,14 +145,16 @@ namespace DB_AngoraLib.MockData
                 DateOfDeath = null,
                 Gender = Gender.Doe,
                 ForSale = IsPublic.Ja,
-                ForBreeding = IsPublic.Ja
+                ForBreeding = IsPublic.Ja,
+                FatherId_Placeholder = "V23-023",
+                MotherId_Placeholder = "5053-0223",
             },
             new Rabbit
             {
                 RightEarId = "5095",
                 LeftEarId = "0324",
-                OriginId = "IdasId",
-                OwnerId = "IdasId",
+                OriginBreederRegNo = "5095",
+                OwnerBreederRegNo = "5095",
                 NickName = "Arcanine",
                 Race = Race.Satin_Angora,
                 Color = Color.Vildtrød_Harefarvet,
@@ -146,15 +162,17 @@ namespace DB_AngoraLib.MockData
                 DateOfDeath = null,
                 Gender = Gender.Buck,
                 ForSale = IsPublic.Nej,
-                ForBreeding = IsPublic.Nej
+                ForBreeding = IsPublic.Nej,
+                FatherId_Placeholder = "V23-023",
+                MotherId_Placeholder = "5053-0223",
             },
             //---------------------: MAJAs RABBIT COLLECTION
             new Rabbit
             {
                 RightEarId = "4398",
                 LeftEarId = "3020",
-                OriginId = null,
-                OwnerId = "MajasId",
+                OriginBreederRegNo = null,
+                OwnerBreederRegNo = "5053",
                 NickName = "Douglas",
                 Race = Race.Lille_Rex,
                 Color = Color.Gulbrun_Isabella,
@@ -162,14 +180,16 @@ namespace DB_AngoraLib.MockData
                 DateOfDeath = null,
                 Gender = Gender.Buck,
                 ForSale = IsPublic.Nej,
-                ForBreeding = IsPublic.Ja
+                ForBreeding = IsPublic.Ja,
+                FatherId_Placeholder = null,
+                MotherId_Placeholder = null
             },
             new Rabbit
             {
                 RightEarId = "5053",
                 LeftEarId = "0223",
-                OriginId = "MajasId",
-                OwnerId = "MajasId",
+                OriginBreederRegNo = "5053",
+                OwnerBreederRegNo = "5053",
                 NickName = "Chinchou",
                 Race = Race.Satin_Angora,
                 Color = Color.Blå,
@@ -177,14 +197,16 @@ namespace DB_AngoraLib.MockData
                 DateOfDeath = null,
                 Gender = Gender.Doe,
                 ForSale = IsPublic.Nej,
-                ForBreeding = IsPublic.Ja
+                ForBreeding = IsPublic.Ja,
+                FatherId_Placeholder = "4977-206",
+                MotherId_Placeholder = "4977-213"
             },
             new Rabbit
             {
                 RightEarId = "5053",
                 LeftEarId = "0723",
-                OriginId = "MajasId",
-                OwnerId = "MajasId",
+                OriginBreederRegNo = "5053",
+                OwnerBreederRegNo = "5053",
                 NickName = "Sandshrew",
                 Race = Race.Satin_Angora,
                 Color = Color.Brun_Havana,
@@ -192,14 +214,16 @@ namespace DB_AngoraLib.MockData
                 DateOfDeath = null,
                 Gender = Gender.Buck,
                 ForSale = IsPublic.Ja,
-                ForBreeding = IsPublic.Ja
+                ForBreeding = IsPublic.Ja,
+                FatherId_Placeholder = "4977-206",
+                MotherId_Placeholder = "4977-315",
             },
             new Rabbit
             {
                 RightEarId = "5053",
                 LeftEarId = "1023",
-                OriginId = "MajasId",
-                OwnerId = "MajasId",
+                OriginBreederRegNo = "5053",
+                OwnerBreederRegNo = "5053",
                 NickName = "Marabou",
                 Race = Race.Satin_Angora,
                 Color = Color.Brun_Havana,
@@ -207,14 +231,16 @@ namespace DB_AngoraLib.MockData
                 DateOfDeath = null,
                 Gender = Gender.Doe,
                 ForSale = IsPublic.Ja,
-                ForBreeding = IsPublic.Nej
+                ForBreeding = IsPublic.Nej,
+                FatherId_Placeholder = "4977-206",
+                MotherId_Placeholder = "4977-315",
             },
             new Rabbit
             {
                 RightEarId = "M63",
                 LeftEarId = "2104",
-                OriginId = null,
-                OwnerId = "MajasId",
+                OriginBreederRegNo = null,
+                OwnerBreederRegNo = "5053",
                 NickName = "Ortovi",
                 Race = Race.Satin_Angora,
                 Color = Color.Elfenben,
@@ -222,14 +248,16 @@ namespace DB_AngoraLib.MockData
                 DateOfDeath = null,
                 Gender = Gender.Doe,
                 ForSale = IsPublic.Nej,
-                ForBreeding = IsPublic.Ja
+                ForBreeding = IsPublic.Ja,
+                FatherId_Placeholder = "M63-085",
+                MotherId_Placeholder = "M63-164",
             },
             new Rabbit
             {
                 RightEarId = "5053",
                 LeftEarId = "0823",
-                OriginId = "MajasId",
-                OwnerId = "MajasId",
+                OriginBreederRegNo = "5053",
+                OwnerBreederRegNo = "5053",
                 NickName = "Pepsi",
                 Race = Race.Satin_Angora,
                 Color = Color.Kanel,
@@ -237,14 +265,16 @@ namespace DB_AngoraLib.MockData
                 DateOfDeath = null,
                 Gender = Gender.Doe,
                 ForSale = IsPublic.Nej,
-                ForBreeding = IsPublic.Ja
+                ForBreeding = IsPublic.Ja,
+                FatherId_Placeholder = "4977-206",
+                MotherId_Placeholder = "4977-315",
             },
             new Rabbit
             {
                 RightEarId = "5053",
                 LeftEarId = "0923",
-                OriginId = "MajasId",
-                OwnerId = "MajasId",
+                OriginBreederRegNo = "5053",
+                OwnerBreederRegNo = "5053",
                 NickName = "Cola",
                 Race = Race.Satin_Angora,
                 Color = Color.Rødbrun_Madagascar,
@@ -252,14 +282,16 @@ namespace DB_AngoraLib.MockData
                 DateOfDeath = null,
                 Gender = Gender.Buck,
                 ForSale = IsPublic.Nej,
-                ForBreeding = IsPublic.Ja
+                ForBreeding = IsPublic.Ja,
+                FatherId_Placeholder = "4977-206",
+                MotherId_Placeholder = "4977-315",
             },
             new Rabbit
             {
                 RightEarId = "5053",
                 LeftEarId = "0623",
-                OriginId = "MajasId",
-                OwnerId = "MajasId",
+                OriginBreederRegNo = "5053",
+                OwnerBreederRegNo = "5053",
                 NickName = "Karla",
                 Race = Race.Satin_Angora,
                 Color = Color.Gråblå_MarburgerEgern,
@@ -267,14 +299,16 @@ namespace DB_AngoraLib.MockData
                 DateOfDeath = null,
                 Gender = Gender.Doe,
                 ForSale = IsPublic.Nej,
-                ForBreeding = IsPublic.Nej
+                ForBreeding = IsPublic.Nej,
+                FatherId_Placeholder = "4977-206",
+                MotherId_Placeholder = "4977-213",
             },
             new Rabbit
             {
                 RightEarId = "M63",
                 LeftEarId = "3102",
-                OriginId = null,
-                OwnerId = "MajasId",
+                OriginBreederRegNo = null,
+                OwnerBreederRegNo = "5053",
                 NickName = "Xådda",
                 Race = Race.Satin_Angora,
                 Color = Color.Gråblå_MarburgerEgern,
@@ -282,14 +316,16 @@ namespace DB_AngoraLib.MockData
                 DateOfDeath = null,
                 Gender = Gender.Doe,
                 ForSale = IsPublic.Nej,
-                ForBreeding = IsPublic.Ja
+                ForBreeding = IsPublic.Ja,
+                FatherId_Placeholder = "M63-0204",
+                MotherId_Placeholder = "M63-0000",
             },
             new Rabbit
             {
                 RightEarId = "4977",
                 LeftEarId = "206",
-                OriginId = null,
-                OwnerId = "MajasId",
+                OriginBreederRegNo = null,
+                OwnerBreederRegNo = "5053",
                 NickName = "Dario",
                 Race = Race.Satin_Angora,
                 Color = Color.Sort_Alaska,
@@ -297,14 +333,16 @@ namespace DB_AngoraLib.MockData
                 DateOfDeath = new DateOnly(2024, 04, 05),
                 Gender = Gender.Buck,
                 ForSale = IsPublic.Nej,
-                ForBreeding = IsPublic.Nej
+                ForBreeding = IsPublic.Nej,
+                FatherId_Placeholder = "M63-044",
+                MotherId_Placeholder = "M63-989",
             },
             new Rabbit
             {
                 RightEarId = "4977",
                 LeftEarId = "315",
-                OriginId = null,
-                OwnerId = "MajasId",
+                OriginBreederRegNo = null,
+                OwnerBreederRegNo = "5053",
                 NickName = "Miranda",
                 Race = Race.Satin_Angora,
                 Color = Color.Sort_Alaska,
@@ -312,14 +350,16 @@ namespace DB_AngoraLib.MockData
                 DateOfDeath = new DateOnly(2024, 04, 15),
                 Gender = Gender.Doe,
                 ForSale = IsPublic.Nej,
-                ForBreeding = IsPublic.Nej
+                ForBreeding = IsPublic.Nej,
+                FatherId_Placeholder = "4977-205",
+                MotherId_Placeholder = "13-232",
             },
             new Rabbit
             {
                 RightEarId = "5053",
                 LeftEarId = "0423",
-                OriginId = "MajasId",
-                OwnerId = "MajasId",
+                OriginBreederRegNo = "5053",
+                OwnerBreederRegNo = "5053",
                 NickName = "Gastly",
                 Race = Race.Satin_Angora,
                 Color = Color.Sort_Alaska,
@@ -327,14 +367,16 @@ namespace DB_AngoraLib.MockData
                 DateOfDeath = null,
                 Gender = Gender.Doe,
                 ForSale = IsPublic.Nej,
-                ForBreeding = IsPublic.Nej
+                ForBreeding = IsPublic.Nej,
+                FatherId_Placeholder = "4977-206",
+                MotherId_Placeholder = "4977-213",
             },
             new Rabbit
             {
                 RightEarId = "V23",
                 LeftEarId = "023",
-                OriginId = null,
-                OwnerId = "MajasId",
+                OriginBreederRegNo = null,
+                OwnerBreederRegNo = "5053",
                 NickName = "Aslan",
                 Race = Race.Satin_Angora,
                 Color = Color.Vildtbrun,
@@ -342,14 +384,16 @@ namespace DB_AngoraLib.MockData
                 DateOfDeath = new DateOnly(2024, 04, 23),
                 Gender = Gender.Buck,
                 ForSale = IsPublic.Nej,
-                ForBreeding = IsPublic.Nej
+                ForBreeding = IsPublic.Nej,
+                FatherId_Placeholder = null,
+                MotherId_Placeholder = null,
             },
             new Rabbit
             {
                 RightEarId = "4977",
                 LeftEarId = "213",
-                OriginId = null,
-                OwnerId = "MajasId",
+                OriginBreederRegNo = null,
+                OwnerBreederRegNo = "5053",
                 NickName = "Frida",
                 Race = Race.Satin_Angora,
                 Color = Color.Vildtrød_Harefarvet,
@@ -357,14 +401,16 @@ namespace DB_AngoraLib.MockData
                 DateOfDeath = null,
                 Gender = Gender.Doe,
                 ForSale = IsPublic.Nej,
-                ForBreeding = IsPublic.Ja
+                ForBreeding = IsPublic.Ja,
+                FatherId_Placeholder = "M63-125",
+                MotherId_Placeholder = "M63-155",
             },
             new Rabbit
             {
                 RightEarId = "5053",
                 LeftEarId = "0120",
-                OriginId = "MajasId",
-                OwnerId = "MajasId",
+                OriginBreederRegNo = "5053",
+                OwnerBreederRegNo = "5053",
                 NickName = "Ulla",
                 Race = Race.Angora,
                 Color = Color.Gulbrun_Isabella,
@@ -372,14 +418,16 @@ namespace DB_AngoraLib.MockData
                 DateOfDeath = new DateOnly(2021, 05, 31),
                 Gender = Gender.Doe,
                 ForSale = IsPublic.Nej,
-                ForBreeding = IsPublic.Nej
+                ForBreeding = IsPublic.Nej,
+                FatherId_Placeholder = null,
+                MotherId_Placeholder = null,
             },
             new Rabbit
             {
                 RightEarId = "3658",
                 LeftEarId = "0819",
-                OriginId = null,
-                OwnerId = "MajasId",
+                OriginBreederRegNo = null,
+                OwnerBreederRegNo = "5053",
                 NickName = "Karina",
                 Race = Race.Angora,
                 Color = Color.Hvid_Albino,
@@ -387,14 +435,16 @@ namespace DB_AngoraLib.MockData
                 DateOfDeath = new DateOnly(2023, 01, 31),
                 Gender = Gender.Doe,
                 ForSale = IsPublic.Nej,
-                ForBreeding = IsPublic.Nej
+                ForBreeding = IsPublic.Nej,
+                FatherId_Placeholder = null,
+                MotherId_Placeholder = null,
             },
             new Rabbit
             {
                 RightEarId = "5053",
                 LeftEarId = "0523",
-                OriginId = "MajasId",
-                OwnerId = "MajasId",
+                OriginBreederRegNo = "5053",
+                OwnerBreederRegNo = "5053",
                 NickName = "Charizard",
                 Race = Race.Satin_Angora,
                 Color = Color.Vildtrød_Harefarvet,
@@ -402,14 +452,16 @@ namespace DB_AngoraLib.MockData
                 DateOfDeath = null,
                 Gender = Gender.Buck,
                 ForSale = IsPublic.Nej,
-                ForBreeding = IsPublic.Nej
+                ForBreeding = IsPublic.Nej,
+                FatherId_Placeholder = "4977-206",
+                MotherId_Placeholder = "4977-213",
             },
             new Rabbit
             {
                 RightEarId = "5053",
                 LeftEarId = "0123",
-                OriginId = "MajasId",
-                OwnerId = "MajasId",
+                OriginBreederRegNo = "5053",
+                OwnerBreederRegNo = "5053",
                 NickName = "Pichu",
                 Race = Race.Satin_Angora,
                 Color = Color.Vildtrød_Harefarvet,
@@ -417,14 +469,16 @@ namespace DB_AngoraLib.MockData
                 DateOfDeath = null,
                 Gender = Gender.Doe,
                 ForSale = IsPublic.Nej,
-                ForBreeding = IsPublic.Nej
+                ForBreeding = IsPublic.Nej,
+                FatherId_Placeholder = "4977-206",
+                MotherId_Placeholder = "4977-213",
             },
             new Rabbit
             {
                 RightEarId = "5053",
                 LeftEarId = "0323",
-                OriginId = "MajasId",
-                OwnerId = "MajasId",
+                OriginBreederRegNo = "5053",
+                OwnerBreederRegNo = "5053",
                 NickName = "Hunter",
                 Race = Race.Satin_Angora,
                 Color = Color.Sort_Alaska,
@@ -432,14 +486,16 @@ namespace DB_AngoraLib.MockData
                 DateOfDeath = new DateOnly(2023, 12, 18),
                 Gender = Gender.Buck,
                 ForSale = IsPublic.Nej,
-                ForBreeding = IsPublic.Nej
+                ForBreeding = IsPublic.Nej,
+                FatherId_Placeholder = "4977-206",
+                MotherId_Placeholder = "4977-213",
             },
             new Rabbit
             {
                 RightEarId = "5053",
                 LeftEarId = "0124",
-                OriginId = "MajasId",
-                OwnerId = "MajasId",
+                OriginBreederRegNo = "5053",
+                OwnerBreederRegNo = "5053",
                 NickName = "Rollo Darminatan",
                 Race = Race.Satin_Angora,
                 Color = Color.Vildtrød_Harefarvet,
@@ -447,14 +503,16 @@ namespace DB_AngoraLib.MockData
                 DateOfDeath = null,
                 Gender = Gender.Buck,
                 ForSale = IsPublic.Nej,
-                ForBreeding = IsPublic.Nej
+                ForBreeding = IsPublic.Nej,
+                FatherId_Placeholder = "V23-023",
+                MotherId_Placeholder = "5053-0423",
             },
             new Rabbit
             {
                 RightEarId = "5053",
                 LeftEarId = "0224",
-                OriginId = "MajasId",
-                OwnerId = "MajasId",
+                OriginBreederRegNo = "5053",
+                OwnerBreederRegNo = "5053",
                 NickName = "Chokolade",
                 Race = Race.Satin_Angora,
                 Color = Color.Gråblå_LilleEgern,
@@ -462,14 +520,16 @@ namespace DB_AngoraLib.MockData
                 DateOfDeath = null,
                 Gender = Gender.Doe,
                 ForSale = IsPublic.Nej,
-                ForBreeding = IsPublic.Nej
+                ForBreeding = IsPublic.Nej,
+                FatherId_Placeholder = "5053-0723",
+                MotherId_Placeholder = "M63-3102",
             },
             new Rabbit
             {
                 RightEarId = "5053",
                 LeftEarId = "0324",
-                OriginId = "MajasId",
-                OwnerId = "MajasId",
+                OriginBreederRegNo = "5053",
+                OwnerBreederRegNo = "5053",
                 NickName = "Beartic",
                 Race = Race.Satin_Angora,
                 Color = Color.Gråblå_LilleEgern,
@@ -477,14 +537,16 @@ namespace DB_AngoraLib.MockData
                 DateOfDeath = null,
                 Gender = Gender.Buck,
                 ForSale = IsPublic.Nej,
-                ForBreeding = IsPublic.Nej
+                ForBreeding = IsPublic.Nej,
+                FatherId_Placeholder = "5053-0723",
+                MotherId_Placeholder = "M63-3102",
             },
             new Rabbit
             {
                 RightEarId = "5053",
                 LeftEarId = "0524",
-                OriginId = "MajasId",
-                OwnerId = "MajasId",
+                OriginBreederRegNo = "5053",
+                OwnerBreederRegNo = "5053",
                 NickName = "Metchi",
                 Race = Race.Satin_Angora,
                 Color = Color.Brun_Havana,
@@ -492,14 +554,16 @@ namespace DB_AngoraLib.MockData
                 DateOfDeath = null,
                 Gender = Gender.Buck,
                 ForSale = IsPublic.Nej,
-                ForBreeding = IsPublic.Nej
+                ForBreeding = IsPublic.Nej,
+                FatherId_Placeholder = "5053-0723",
+                MotherId_Placeholder = "M63-3102",
             },
             new Rabbit
             {
                 RightEarId = "5053",
                 LeftEarId = "0724",
-                OriginId = "MajasId",
-                OwnerId = "MajasId",
+                OriginBreederRegNo = "5053",
+                OwnerBreederRegNo = "5053",
                 NickName = "Dewgong",
                 Race = Race.Satin_Angora,
                 Color = Color.Gråblå_MarburgerEgern,
@@ -507,14 +571,16 @@ namespace DB_AngoraLib.MockData
                 DateOfDeath = null,
                 Gender = Gender.Buck,
                 ForSale = IsPublic.Nej,
-                ForBreeding = IsPublic.Nej
+                ForBreeding = IsPublic.Nej,
+                FatherId_Placeholder = "5053-0723",
+                MotherId_Placeholder = "M63-3102",
             },
             new Rabbit
             {
                 RightEarId = "5053",
                 LeftEarId = "10724",
-                OriginId = "MajasId",
-                OwnerId = "MajasId",
+                OriginBreederRegNo = "5053",
+                OwnerBreederRegNo = "5053",
                 NickName = "Ice Beam",
                 Race = Race.Satin_Angora,
                 Color = Color.Gråblå_LilleEgern,
@@ -522,7 +588,9 @@ namespace DB_AngoraLib.MockData
                 DateOfDeath = null,
                 Gender = Gender.Doe,
                 ForSale = IsPublic.Nej,
-                ForBreeding = IsPublic.Nej
+                ForBreeding = IsPublic.Nej,
+                FatherId_Placeholder = "5053-0723",
+                MotherId_Placeholder = "M63-3102",
             },
         };
 

@@ -66,14 +66,16 @@ namespace DB_AngoraLib.EF_DbContext
             modelBuilder.Entity<Rabbit>()
                 .HasOne(r => r.UserOwner)        // En Rabbit har en User (UserOwner)
                 .WithMany(u => u.RabbitsOwned)   // En User har mange Rabbits
-                .HasForeignKey(r => r.OwnerId)  // En Rabbit har en OwnerId
+                .HasForeignKey(r => r.OwnerBreederRegNo)
+                .HasPrincipalKey(b => b.BreederRegNo)
                 .IsRequired(false);
 
             // Configure Foreign Key for Rabbit -> UserOrigin (Opdrætterforhold)
             modelBuilder.Entity<Rabbit>()
                 .HasOne(r => r.UserOrigin)
                 .WithMany(u => u.RabbitsLinked)
-                .HasForeignKey(r => r.OriginId)
+                .HasForeignKey(r => r.OriginBreederRegNo)
+                .HasPrincipalKey(b => b.BreederRegNo)
                 .IsRequired(false);
 
 

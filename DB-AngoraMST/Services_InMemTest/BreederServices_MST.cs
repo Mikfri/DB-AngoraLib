@@ -106,9 +106,9 @@ namespace DB_AngoraMST.Services_InMemTest
 
             // Get the user's rabbit collection for comparison
             var mockUser = _context.Users
-                .Include(u => ((Breeder)u).RabbitsOwned) // Load the related rabbits
-                .Single(u => u.Id == userId) as Breeder; // Get the user and cast to Breeder
-
+                .OfType<Breeder>() // Filter to only include Breeder objects
+                .Include(b => b.RabbitsOwned) // Load the related rabbits
+                .Single(b => b.Id == userId); // Get the user and cast to Breeder
             var mockUserRabbitCollection = mockUser.RabbitsOwned;
 
              // Filtrer mockUserRabbitCollection baseret på DateOfBirth
@@ -134,7 +134,7 @@ namespace DB_AngoraMST.Services_InMemTest
 
             // Check that the number of rabbits in the result matches the expected number
             var allRabbits = await _context.Rabbits.ToListAsync();
-            var expectedRabbitCount = allRabbits.Count(rabbit => rabbit.OwnerId == userId && rabbit.Race == race && rabbit.DateOfBirth >= filter.FromDateOfBirth);
+            var expectedRabbitCount = allRabbits.Count(rabbit => rabbit.OwnerBreederRegNo == mockUser.BreederRegNo && rabbit.Race == race && rabbit.DateOfBirth >= filter.FromDateOfBirth);
 
             Assert.AreEqual(expectedRabbitCount, filteredRabbitCollection.Count);
             Console.WriteLine($"\nExpected: {expectedRabbitCount}, Actual: {filteredRabbitCollection.Count}");

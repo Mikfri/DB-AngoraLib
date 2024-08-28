@@ -137,11 +137,11 @@ namespace DB_AngoraLib.Models
             }
         }
 
-        public string? OriginId { get; set; }
+        public string? OriginBreederRegNo { get; set; }
         public Breeder? UserOrigin { get; set; }
 
 
-        public string? OwnerId { get; set; }
+        public string? OwnerBreederRegNo { get; set; }
         public Breeder? UserOwner { get; set; } // public virtual -> lazy loading (færre DB requests)
 
         public string? NickName { get; set; }
@@ -194,14 +194,14 @@ namespace DB_AngoraLib.Models
 
 
 
-        public Rabbit(string rightEarId, string leftEarId, string? originId, string? ownerId, string? nickName, Race race, Color color, DateOnly dateOfBirth, DateOnly? dateOfDeath, Gender gender, IsPublic forSale, IsPublic forBreeding, string? fatherId_Placeholder, string? motherId_Placeholder)
+        public Rabbit(string rightEarId, string leftEarId, string? originBreederRegNo, string? ownerBreederRegNo, string? nickName, Race race, Color color, DateOnly dateOfBirth, DateOnly? dateOfDeath, Gender gender, IsPublic forSale, IsPublic forBreeding, string? fatherId_Placeholder, string? motherId_Placeholder)
         {
             EarCombId = $"{rightEarId}-{leftEarId}";
 
             RightEarId = rightEarId;
             LeftEarId = leftEarId;
-            OriginId = originId;
-            OwnerId = ownerId;
+            OriginBreederRegNo = originBreederRegNo;
+            OwnerBreederRegNo = ownerBreederRegNo;
             NickName = nickName;
             Race = race;
             Color = color;

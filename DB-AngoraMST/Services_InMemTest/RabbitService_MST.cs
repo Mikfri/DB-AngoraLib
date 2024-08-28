@@ -186,8 +186,8 @@ namespace DB_AngoraMST.Services_InMemTest
             var mockUser = _context.Users.OfType<Breeder>().First();
 
 
-            var mockRabbitOwned = _context.Rabbits.First(r => r.OwnerId == mockUser.Id);
-            var mockRabbitNotOwned = _context.Rabbits.First(r => r.OwnerId != mockUser.Id);
+            var mockRabbitOwned = _context.Rabbits.First(r => r.OwnerBreederRegNo == mockUser.BreederRegNo);
+            var mockRabbitNotOwned = _context.Rabbits.First(r => r.OwnerBreederRegNo != mockUser.BreederRegNo);
             // Get the user's claims from the database
             var mockUserClaims = _context.UserClaims
                 .Where(uc => uc.UserId == mockUser.Id)
@@ -216,8 +216,8 @@ namespace DB_AngoraMST.Services_InMemTest
             //var mockUser = _context.Users.Skip(1).First();
             var mockUser = _context.Users.OfType<Breeder>().Skip(1).First();
 
-            var mockRabbitOwned = _context.Rabbits.First(r => r.OwnerId == mockUser.Id);
-            var mockRabbitNotOwned = _context.Rabbits.First(r => r.OwnerId != mockUser.Id);
+            var mockRabbitOwned = _context.Rabbits.First(r => r.OwnerBreederRegNo == mockUser.BreederRegNo);
+            var mockRabbitNotOwned = _context.Rabbits.First(r => r.OwnerBreederRegNo != mockUser.BreederRegNo);
             // Get the user's claims from the database
             var mockUserClaims = _context.UserClaims
                 .Where(uc => uc.UserId == mockUser.Id)
@@ -332,8 +332,8 @@ namespace DB_AngoraMST.Services_InMemTest
         {
             // Arrange
             var mockUser = _context.Users.OfType<Breeder>().First();
-            var mockRabbitOwned = _context.Rabbits.First(r => r.OwnerId == mockUser.Id);
-            var mockRabbitNotOwned = _context.Rabbits.First(r => r.OwnerId != mockUser.Id);
+            var mockRabbitOwned = _context.Rabbits.First(r => r.OwnerBreederRegNo == mockUser.BreederRegNo);
+            var mockRabbitNotOwned = _context.Rabbits.First(r => r.OwnerBreederRegNo != mockUser.BreederRegNo);
             var updatedOwnedRabbitDTO = new Rabbit_UpdateDTO { NickName = "UpdatedOwnedName" };
             var updatedNotOwnedRabbitDTO = new Rabbit_UpdateDTO { NickName = "UpdatedNotOwnedName" };
             // Get the user's claims from the database
@@ -363,8 +363,8 @@ namespace DB_AngoraMST.Services_InMemTest
         {
             // Arrange
             var mockUser = _context.Users.OfType<Breeder>().Skip(1).First();
-            var mockRabbitOwned = _context.Rabbits.First(r => r.OwnerId == mockUser.Id);
-            var mockRabbitNotOwned = _context.Rabbits.First(r => r.OwnerId != mockUser.Id);
+            var mockRabbitOwned = _context.Rabbits.First(r => r.OwnerBreederRegNo == mockUser.BreederRegNo);
+            var mockRabbitNotOwned = _context.Rabbits.First(r => r.OwnerBreederRegNo != mockUser.BreederRegNo);
             var updatedOwnedRabbitDTO = new Rabbit_UpdateDTO { NickName = "UpdatedOwnedName" };
             var updatedNotOwnedRabbitDTO = new Rabbit_UpdateDTO { NickName = "UpdatedNotOwnedName" };
             // Get the user's claims from the database
@@ -403,8 +403,8 @@ namespace DB_AngoraMST.Services_InMemTest
                 .ToList();
 
             // Get an owned and a not owned rabbit from the database
-            var mockRabbitOwned = _context.Rabbits.First(r => r.OwnerId == mockUser.Id);
-            var mockRabbitNotOwned = _context.Rabbits.First(r => r.OwnerId != mockUser.Id);
+            var mockRabbitOwned = _context.Rabbits.First(r => r.OwnerBreederRegNo == mockUser.BreederRegNo);
+            var mockRabbitNotOwned = _context.Rabbits.First(r => r.OwnerBreederRegNo != mockUser.BreederRegNo);
             Console.WriteLine($"User: {mockUser.UserName}\nMY-Rabbit: {mockRabbitOwned.NickName}\nOTHER-Rabbit: {mockRabbitNotOwned.NickName}");
             foreach (var claim in mockUserClaims)
             {
@@ -432,7 +432,7 @@ namespace DB_AngoraMST.Services_InMemTest
         {
             // Arrange
             var mockUser = _context.Users.OfType<Breeder>().Skip(1).First(); // Get the second user from the database
-            var mockRabbitOwned = _context.Rabbits.First(r => r.OwnerId == mockUser.Id);
+            var mockRabbitOwned = _context.Rabbits.First(r => r.OwnerBreederRegNo == mockUser.BreederRegNo);
 
             // Get the user's claims from the database
             var mockUserClaims = _context.UserClaims
@@ -441,7 +441,7 @@ namespace DB_AngoraMST.Services_InMemTest
                 .ToList();
 
             // Get a rabbit not owned by the user
-            var mockRabbitNotOwned = _context.Rabbits.First(r => r.OwnerId != mockUser.Id);
+            var mockRabbitNotOwned = _context.Rabbits.First(r => r.OwnerBreederRegNo != mockUser.BreederRegNo);
             Console.WriteLine($"User: {mockUser.UserName}\nMY-Rabbit: {mockRabbitOwned.NickName}\nOTHER-Rabbit: {mockRabbitNotOwned.NickName}");
             foreach (var claim in mockUserClaims)
             {
