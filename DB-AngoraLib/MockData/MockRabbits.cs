@@ -13,7 +13,7 @@ namespace DB_AngoraLib.MockData
         {
 
             //---------------------: IDAS RABBIT COLLECTION
-            new Rabbit
+             new Rabbit
             {
                 RightEarId = "5095",
                 LeftEarId = "002",
@@ -26,7 +26,9 @@ namespace DB_AngoraLib.MockData
                 DateOfDeath = new DateOnly(2022, 07, 22),
                 Gender = Gender.Doe,
                 ForSale = IsPublic.Nej,
-                ForBreeding = IsPublic.Nej
+                ForBreeding = IsPublic.Nej,
+                FatherId_Placeholder = null,
+                MotherId_Placeholder = "5095-001",
             },
             new Rabbit
             {
@@ -41,7 +43,9 @@ namespace DB_AngoraLib.MockData
                 DateOfDeath = new DateOnly(2024, 04, 13),
                 Gender = Gender.Doe,
                 ForSale = IsPublic.Nej,
-                ForBreeding = IsPublic.Nej
+                ForBreeding = IsPublic.Nej,
+                FatherId_Placeholder = null,
+                MotherId_Placeholder = null,
             },
             new Rabbit
             {
@@ -56,7 +60,9 @@ namespace DB_AngoraLib.MockData
                 DateOfDeath = new DateOnly(2023, 11, 3),
                 Gender = Gender.Doe,
                 ForSale = IsPublic.Nej,
-                ForBreeding = IsPublic.Nej
+                ForBreeding = IsPublic.Nej,
+                FatherId_Placeholder = null,
+                MotherId_Placeholder = "5095-001",
             },
             new Rabbit
             {
@@ -71,7 +77,9 @@ namespace DB_AngoraLib.MockData
                 DateOfDeath = new DateOnly(2023, 11, 3),
                 Gender = Gender.Doe,
                 ForSale = IsPublic.Nej,
-                ForBreeding = IsPublic.Nej
+                ForBreeding = IsPublic.Nej,
+                FatherId_Placeholder = null,
+                MotherId_Placeholder = null,
             },
             new Rabbit
             {
@@ -86,7 +94,9 @@ namespace DB_AngoraLib.MockData
                 DateOfDeath = null,
                 Gender = Gender.Buck,
                 ForSale = IsPublic.Nej,
-                ForBreeding = IsPublic.Ja
+                ForBreeding = IsPublic.Ja,
+                FatherId_Placeholder = null,
+                MotherId_Placeholder = null,
             },
             new Rabbit
             {
@@ -101,7 +111,9 @@ namespace DB_AngoraLib.MockData
                 DateOfDeath = null,
                 Gender = Gender.Buck,
                 ForSale = IsPublic.Nej,
-                ForBreeding = IsPublic.Ja
+                ForBreeding = IsPublic.Ja,
+                FatherId_Placeholder = "V23-023",
+                MotherId_Placeholder = "5053-0223",
             },
             new Rabbit
             {
@@ -116,7 +128,9 @@ namespace DB_AngoraLib.MockData
                 DateOfDeath = null,
                 Gender = Gender.Doe,
                 ForSale = IsPublic.Nej,
-                ForBreeding = IsPublic.Nej
+                ForBreeding = IsPublic.Nej,
+                FatherId_Placeholder = "V23-023",
+                MotherId_Placeholder = "5053-0223",
             },
             new Rabbit
             {
@@ -131,7 +145,9 @@ namespace DB_AngoraLib.MockData
                 DateOfDeath = null,
                 Gender = Gender.Doe,
                 ForSale = IsPublic.Ja,
-                ForBreeding = IsPublic.Ja
+                ForBreeding = IsPublic.Ja,
+                FatherId_Placeholder = "V23-023",
+                MotherId_Placeholder = "5053-0223",
             },
             new Rabbit
             {
@@ -146,7 +162,9 @@ namespace DB_AngoraLib.MockData
                 DateOfDeath = null,
                 Gender = Gender.Buck,
                 ForSale = IsPublic.Nej,
-                ForBreeding = IsPublic.Nej
+                ForBreeding = IsPublic.Nej,
+                FatherId_Placeholder = "V23-023",
+                MotherId_Placeholder = "5053-0223",
             },
             //---------------------: MAJAs RABBIT COLLECTION
             new Rabbit
@@ -162,7 +180,9 @@ namespace DB_AngoraLib.MockData
                 DateOfDeath = null,
                 Gender = Gender.Buck,
                 ForSale = IsPublic.Nej,
-                ForBreeding = IsPublic.Ja
+                ForBreeding = IsPublic.Ja,
+                FatherId_Placeholder = null,
+                MotherId_Placeholder = null
             },
             new Rabbit
             {
@@ -177,7 +197,9 @@ namespace DB_AngoraLib.MockData
                 DateOfDeath = null,
                 Gender = Gender.Doe,
                 ForSale = IsPublic.Nej,
-                ForBreeding = IsPublic.Ja
+                ForBreeding = IsPublic.Ja,
+                FatherId_Placeholder = "4977-206",
+                MotherId_Placeholder = "4977-213"
             },
             new Rabbit
             {
@@ -192,7 +214,9 @@ namespace DB_AngoraLib.MockData
                 DateOfDeath = null,
                 Gender = Gender.Buck,
                 ForSale = IsPublic.Ja,
-                ForBreeding = IsPublic.Ja
+                ForBreeding = IsPublic.Ja,
+                FatherId_Placeholder = "4977-206",
+                MotherId_Placeholder = "4977-315",
             },
             new Rabbit
             {
@@ -207,7 +231,9 @@ namespace DB_AngoraLib.MockData
                 DateOfDeath = null,
                 Gender = Gender.Doe,
                 ForSale = IsPublic.Ja,
-                ForBreeding = IsPublic.Nej
+                ForBreeding = IsPublic.Nej,
+                FatherId_Placeholder = "4977-206",
+                MotherId_Placeholder = "4977-315",
             },
             new Rabbit
             {
@@ -222,7 +248,9 @@ namespace DB_AngoraLib.MockData
                 DateOfDeath = null,
                 Gender = Gender.Doe,
                 ForSale = IsPublic.Nej,
-                ForBreeding = IsPublic.Ja
+                ForBreeding = IsPublic.Ja,
+                FatherId_Placeholder = "M63-085",
+                MotherId_Placeholder = "M63-164",
             },
             new Rabbit
             {
@@ -237,7 +265,9 @@ namespace DB_AngoraLib.MockData
                 DateOfDeath = null,
                 Gender = Gender.Doe,
                 ForSale = IsPublic.Nej,
-                ForBreeding = IsPublic.Ja
+                ForBreeding = IsPublic.Ja,
+                FatherId_Placeholder = "4977-206",
+                MotherId_Placeholder = "4977-315",
             },
             new Rabbit
             {
@@ -252,7 +282,9 @@ namespace DB_AngoraLib.MockData
                 DateOfDeath = null,
                 Gender = Gender.Buck,
                 ForSale = IsPublic.Nej,
-                ForBreeding = IsPublic.Ja
+                ForBreeding = IsPublic.Ja,
+                FatherId_Placeholder = "4977-206",
+                MotherId_Placeholder = "4977-315",
             },
             new Rabbit
             {
@@ -267,7 +299,9 @@ namespace DB_AngoraLib.MockData
                 DateOfDeath = null,
                 Gender = Gender.Doe,
                 ForSale = IsPublic.Nej,
-                ForBreeding = IsPublic.Nej
+                ForBreeding = IsPublic.Nej,
+                FatherId_Placeholder = "4977-206",
+                MotherId_Placeholder = "4977-213",
             },
             new Rabbit
             {
@@ -282,7 +316,9 @@ namespace DB_AngoraLib.MockData
                 DateOfDeath = null,
                 Gender = Gender.Doe,
                 ForSale = IsPublic.Nej,
-                ForBreeding = IsPublic.Ja
+                ForBreeding = IsPublic.Ja,
+                FatherId_Placeholder = "M63-0204",
+                MotherId_Placeholder = "M63-0000",
             },
             new Rabbit
             {
@@ -297,7 +333,9 @@ namespace DB_AngoraLib.MockData
                 DateOfDeath = new DateOnly(2024, 04, 05),
                 Gender = Gender.Buck,
                 ForSale = IsPublic.Nej,
-                ForBreeding = IsPublic.Nej
+                ForBreeding = IsPublic.Nej,
+                FatherId_Placeholder = "M63-044",
+                MotherId_Placeholder = "M63-989",
             },
             new Rabbit
             {
@@ -312,7 +350,9 @@ namespace DB_AngoraLib.MockData
                 DateOfDeath = new DateOnly(2024, 04, 15),
                 Gender = Gender.Doe,
                 ForSale = IsPublic.Nej,
-                ForBreeding = IsPublic.Nej
+                ForBreeding = IsPublic.Nej,
+                FatherId_Placeholder = "4977-205",
+                MotherId_Placeholder = "13-232",
             },
             new Rabbit
             {
@@ -327,7 +367,9 @@ namespace DB_AngoraLib.MockData
                 DateOfDeath = null,
                 Gender = Gender.Doe,
                 ForSale = IsPublic.Nej,
-                ForBreeding = IsPublic.Nej
+                ForBreeding = IsPublic.Nej,
+                FatherId_Placeholder = "4977-206",
+                MotherId_Placeholder = "4977-213",
             },
             new Rabbit
             {
@@ -342,7 +384,9 @@ namespace DB_AngoraLib.MockData
                 DateOfDeath = new DateOnly(2024, 04, 23),
                 Gender = Gender.Buck,
                 ForSale = IsPublic.Nej,
-                ForBreeding = IsPublic.Nej
+                ForBreeding = IsPublic.Nej,
+                FatherId_Placeholder = null,
+                MotherId_Placeholder = null,
             },
             new Rabbit
             {
@@ -357,7 +401,9 @@ namespace DB_AngoraLib.MockData
                 DateOfDeath = null,
                 Gender = Gender.Doe,
                 ForSale = IsPublic.Nej,
-                ForBreeding = IsPublic.Ja
+                ForBreeding = IsPublic.Ja,
+                FatherId_Placeholder = "M63-125",
+                MotherId_Placeholder = "M63-155",
             },
             new Rabbit
             {
@@ -372,7 +418,9 @@ namespace DB_AngoraLib.MockData
                 DateOfDeath = new DateOnly(2021, 05, 31),
                 Gender = Gender.Doe,
                 ForSale = IsPublic.Nej,
-                ForBreeding = IsPublic.Nej
+                ForBreeding = IsPublic.Nej,
+                FatherId_Placeholder = null,
+                MotherId_Placeholder = null,
             },
             new Rabbit
             {
@@ -387,7 +435,9 @@ namespace DB_AngoraLib.MockData
                 DateOfDeath = new DateOnly(2023, 01, 31),
                 Gender = Gender.Doe,
                 ForSale = IsPublic.Nej,
-                ForBreeding = IsPublic.Nej
+                ForBreeding = IsPublic.Nej,
+                FatherId_Placeholder = null,
+                MotherId_Placeholder = null,
             },
             new Rabbit
             {
@@ -402,7 +452,9 @@ namespace DB_AngoraLib.MockData
                 DateOfDeath = null,
                 Gender = Gender.Buck,
                 ForSale = IsPublic.Nej,
-                ForBreeding = IsPublic.Nej
+                ForBreeding = IsPublic.Nej,
+                FatherId_Placeholder = "4977-206",
+                MotherId_Placeholder = "4977-213",
             },
             new Rabbit
             {
@@ -417,7 +469,9 @@ namespace DB_AngoraLib.MockData
                 DateOfDeath = null,
                 Gender = Gender.Doe,
                 ForSale = IsPublic.Nej,
-                ForBreeding = IsPublic.Nej
+                ForBreeding = IsPublic.Nej,
+                FatherId_Placeholder = "4977-206",
+                MotherId_Placeholder = "4977-213",
             },
             new Rabbit
             {
@@ -432,7 +486,9 @@ namespace DB_AngoraLib.MockData
                 DateOfDeath = new DateOnly(2023, 12, 18),
                 Gender = Gender.Buck,
                 ForSale = IsPublic.Nej,
-                ForBreeding = IsPublic.Nej
+                ForBreeding = IsPublic.Nej,
+                FatherId_Placeholder = "4977-206",
+                MotherId_Placeholder = "4977-213",
             },
             new Rabbit
             {
@@ -447,7 +503,9 @@ namespace DB_AngoraLib.MockData
                 DateOfDeath = null,
                 Gender = Gender.Buck,
                 ForSale = IsPublic.Nej,
-                ForBreeding = IsPublic.Nej
+                ForBreeding = IsPublic.Nej,
+                FatherId_Placeholder = "V23-023",
+                MotherId_Placeholder = "5053-0423",
             },
             new Rabbit
             {
@@ -462,7 +520,9 @@ namespace DB_AngoraLib.MockData
                 DateOfDeath = null,
                 Gender = Gender.Doe,
                 ForSale = IsPublic.Nej,
-                ForBreeding = IsPublic.Nej
+                ForBreeding = IsPublic.Nej,
+                FatherId_Placeholder = "5053-0723",
+                MotherId_Placeholder = "M63-3102",
             },
             new Rabbit
             {
@@ -477,7 +537,9 @@ namespace DB_AngoraLib.MockData
                 DateOfDeath = null,
                 Gender = Gender.Buck,
                 ForSale = IsPublic.Nej,
-                ForBreeding = IsPublic.Nej
+                ForBreeding = IsPublic.Nej,
+                FatherId_Placeholder = "5053-0723",
+                MotherId_Placeholder = "M63-3102",
             },
             new Rabbit
             {
@@ -492,7 +554,9 @@ namespace DB_AngoraLib.MockData
                 DateOfDeath = null,
                 Gender = Gender.Buck,
                 ForSale = IsPublic.Nej,
-                ForBreeding = IsPublic.Nej
+                ForBreeding = IsPublic.Nej,
+                FatherId_Placeholder = "5053-0723",
+                MotherId_Placeholder = "M63-3102",
             },
             new Rabbit
             {
@@ -507,7 +571,9 @@ namespace DB_AngoraLib.MockData
                 DateOfDeath = null,
                 Gender = Gender.Buck,
                 ForSale = IsPublic.Nej,
-                ForBreeding = IsPublic.Nej
+                ForBreeding = IsPublic.Nej,
+                FatherId_Placeholder = "5053-0723",
+                MotherId_Placeholder = "M63-3102",
             },
             new Rabbit
             {
@@ -522,7 +588,9 @@ namespace DB_AngoraLib.MockData
                 DateOfDeath = null,
                 Gender = Gender.Doe,
                 ForSale = IsPublic.Nej,
-                ForBreeding = IsPublic.Nej
+                ForBreeding = IsPublic.Nej,
+                FatherId_Placeholder = "5053-0723",
+                MotherId_Placeholder = "M63-3102",
             },
         };
 
