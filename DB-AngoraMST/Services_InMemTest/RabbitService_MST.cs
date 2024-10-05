@@ -272,15 +272,36 @@ namespace DB_AngoraMST.Services_InMemTest
         public async Task Get_Rabbit_Pedigree_TEST()
         {
             // Arrange
-            var earCombId = "4640-105"; // Ingolf
-            // Antag at _rabbitService allerede er initialiseret og klar til brug.
-            // Sørg for, at _context indeholder den nødvendige data for "Jester" og dens aner.
+            var earCombId = "5095-0124"; // Aron
+                                        // Antag at _rabbitService allerede er initialiseret og klar til brug.
 
             // Act
             var pedigree = await _rabbitService.Get_RabbitPedigree(earCombId);
 
+            // Assert
+            Assert.IsNotNull(pedigree);
+            PrintPedigree(pedigree);
         }
 
+        private void PrintPedigree(Rabbit_PedigreeDTO rabbit, int generation = 0)
+        {
+            if (rabbit == null) return;
+
+            var indent = new string(' ', generation * 2);
+            Console.WriteLine($"{indent}Rabbit: {rabbit.NickName} (EarCombId: {rabbit.EarCombId})");
+
+            if (rabbit.Father != null)
+            {
+                Console.WriteLine($"{indent}Father:");
+                PrintPedigree(rabbit.Father, generation + 1);
+            }
+
+            if (rabbit.Mother != null)
+            {
+                Console.WriteLine($"{indent}Mother:");
+                PrintPedigree(rabbit.Mother, generation + 1);
+            }
+        }
 
         [TestMethod]
         public async Task Get_Rabbit_ChildCollection_TEST()
