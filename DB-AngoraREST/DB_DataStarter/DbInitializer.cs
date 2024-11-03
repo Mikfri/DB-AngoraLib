@@ -89,7 +89,8 @@ namespace DB_AngoraREST.DB_DataStarter
             foreach (var rabbit in mockRabbits)
             {
                 // Set the User property of the Rabbit object to the corresponding User
-                rabbit.UserOwner = context.Users.FirstOrDefault(u => u.Id == rabbit.OwnerId);
+                //rabbit.UserOwner = context.Users.FirstOrDefault(u => u.Id == rabbit.OwnerId);
+                rabbit.UserOwner = (Breeder?)context.Users.FirstOrDefault(u => u.Id == rabbit.OwnerId);
 
                 // Flyt Father_EarCombId og Mother_EarCombId til placeholder properties og sæt dem til null
                 rabbit.FatherId_Placeholder = rabbit.Father_EarCombId;
@@ -115,20 +116,20 @@ namespace DB_AngoraREST.DB_DataStarter
 
             context.SaveChanges();
 
-            // Tilføj mock BreederBrands uden Id
-            var mockBreederBrands = MockBreederBrand.GetMockBreederBrands();
-            foreach (var breederBrand in mockBreederBrands)
-            {
-                // Ensure the referenced user exists
-                var user = context.Users.FirstOrDefault(u => u.Id == breederBrand.UserId);
-                if (user != null)
-                {
-                    breederBrand.Id = 0; // Ensure Id is set to 0 so it will be auto-generated
-                    context.BreederBrands.Add(breederBrand);
-                }
-            }
+            //// Tilføj mock BreederBrands uden Id
+            //var mockBreederBrands = MockBreederBrand.GetMockBreederBrands();
+            //foreach (var breederBrand in mockBreederBrands)
+            //{
+            //    // Ensure the referenced user exists
+            //    var user = context.Users.FirstOrDefault(u => u.Id == breederBrand.UserId);
+            //    if (user != null)
+            //    {
+            //        breederBrand.Id = 0; // Ensure Id is set to 0 so it will be auto-generated
+            //        context.BreederBrands.Add(breederBrand);
+            //    }
+            //}
 
-            context.SaveChanges();
+            //context.SaveChanges();
 
         }
     }

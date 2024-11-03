@@ -19,6 +19,7 @@ using Microsoft.OpenApi.Models;
 using System.Text;
 using System.Text.Json.Serialization;
 using DB_AngoraLib.Services.BreederBrandService;
+using DB_AngoraLib.Services.BreederService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,6 +37,8 @@ builder.Services.AddScoped<ITransferService, TransferServices>();
 
 builder.Services.AddScoped<IGRepository<BreederBrand>, GRepository<BreederBrand>>();
 builder.Services.AddScoped<IBreederBrandService, BreederBrandServices>();
+builder.Services.AddScoped<IGRepository<BreederServices>, GRepository<BreederServices>>();
+builder.Services.AddScoped<IBreederService, BreederServices>();
 
 builder.Services.AddScoped<IGRepository<RefreshToken>, GRepository<RefreshToken>>();
 builder.Services.AddScoped<ITokenService, TokenServices>();
