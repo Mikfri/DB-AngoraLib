@@ -37,7 +37,7 @@ builder.Services.AddScoped<ITransferService, TransferServices>();
 
 builder.Services.AddScoped<IGRepository<BreederBrand>, GRepository<BreederBrand>>();
 builder.Services.AddScoped<IBreederBrandService, BreederBrandServices>();
-builder.Services.AddScoped<IGRepository<BreederServices>, GRepository<BreederServices>>();
+builder.Services.AddScoped<IGRepository<Breeder>, GRepository<Breeder>>();
 builder.Services.AddScoped<IBreederService, BreederServices>();
 
 builder.Services.AddScoped<IGRepository<RefreshToken>, GRepository<RefreshToken>>();

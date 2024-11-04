@@ -17,15 +17,15 @@ namespace DB_AngoraLib.Models
         public string? BreederBrandLogo { get; set; }
         public bool IsFindable { get; set; } // Angiver om Breeder er findbar på kortet
 
-        public virtual ICollection<Rabbit> RabbitsForSale { get; set; } // Er brugeren ICollection af rabbit Where...
-        public virtual ICollection<Rabbit> RabbitsForBreeding { get; set; } // Er brugeren ICollection af rabbit Where...
-        public virtual ICollection<Wool> PublicWools { get; set; } // Er brugeren ICollection af wool Where...
+        //public virtual ICollection<Rabbit> RabbitsForSale { get; set; } // Er brugeren ICollection af rabbit Where...
+        //public virtual ICollection<Rabbit> RabbitsForBreeding { get; set; } // Er brugeren ICollection af rabbit Where...
+        //public virtual ICollection<Wool> PublicWools { get; set; } // Er brugeren ICollection af wool Where...
 
         public BreederBrand()
         {
-            RabbitsForSale = new List<Rabbit>();
-            RabbitsForBreeding = new List<Rabbit>();
-            PublicWools = new List<Wool>();
+            //RabbitsForSale = new List<Rabbit>();
+            //RabbitsForBreeding = new List<Rabbit>();
+            //PublicWools = new List<Wool>();
         }
     }
 }

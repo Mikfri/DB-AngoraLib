@@ -37,9 +37,9 @@ namespace DB_AngoraLib.MockData
                     BreederBrandDescription = "Satin angora opdrætter, og producent af uld i forskellige plantefarver",
                     BreederBrandLogo = null,
                     IsFindable = true,
-                    RabbitsForSale = MockRabbits.GetMockRabbits().Where(r => r.OwnerId == "IdasId" && r.ForSale == IsPublic.Ja).ToList(),
-                    RabbitsForBreeding = MockRabbits.GetMockRabbits().Where(r => r.OwnerId == "IdasId" && r.ForBreeding == IsPublic.Ja).ToList(),
-                    PublicWools = new List<Wool>() // Initialize with empty list or mock data
+                    //RabbitsForSale = MockRabbits.GetMockRabbits().Where(r => r.OwnerId == "IdasId" && r.ForSale == IsPublic.Ja).ToList(),
+                    //RabbitsForBreeding = MockRabbits.GetMockRabbits().Where(r => r.OwnerId == "IdasId" && r.ForBreeding == IsPublic.Ja).ToList(),
+                    //PublicWools = new List<Wool>() // Initialize with empty list or mock data
                 },
                 RabbitsOwned = MockRabbits.GetMockRabbits().Where(r => r.OwnerId == "IdasId").ToList(),
                 RabbitsLinked = MockRabbits.GetMockRabbits().Where(r => r.OriginId == "IdasId").ToList()
@@ -70,9 +70,9 @@ namespace DB_AngoraLib.MockData
                     BreederBrandDescription = "Oprdræt af Satin angoraer, samt salg af skind og uld",
                     BreederBrandLogo = "logo.png",
                     IsFindable = true,
-                    RabbitsForSale = MockRabbits.GetMockRabbits().Where(r => r.OwnerId == "MajasId" && r.ForSale == IsPublic.Ja).ToList(),
-                    RabbitsForBreeding = MockRabbits.GetMockRabbits().Where(r => r.OwnerId == "MajasId" && r.ForBreeding == IsPublic.Ja).ToList(),
-                    PublicWools = new List<Wool>() // Initialize with empty list or mock data
+                    //RabbitsForSale = MockRabbits.GetMockRabbits().Where(r => r.OwnerId == "MajasId" && r.ForSale == IsPublic.Ja).ToList(),
+                    //RabbitsForBreeding = MockRabbits.GetMockRabbits().Where(r => r.OwnerId == "MajasId" && r.ForBreeding == IsPublic.Ja).ToList(),
+                    //PublicWools = new List<Wool>() // Initialize with empty list or mock data
                 },
                 RabbitsOwned = MockRabbits.GetMockRabbits().Where(r => r.OwnerId == "MajasId").ToList(),
                 RabbitsLinked = MockRabbits.GetMockRabbits().Where(r => r.OriginId == "MajasId").ToList()

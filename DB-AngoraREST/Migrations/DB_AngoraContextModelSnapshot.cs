@@ -17,7 +17,7 @@ namespace DB_AngoraREST.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.7")
+                .HasAnnotation("ProductVersion", "8.0.10")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -74,6 +74,9 @@ namespace DB_AngoraREST.Migrations
 
                     b.Property<string>("BreederBrandName")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsFindable")
+                        .HasColumnType("bit");
 
                     b.Property<string>("UserId")
                         .IsRequired()
@@ -423,9 +426,6 @@ namespace DB_AngoraREST.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
 
-                    b.Property<string>("BreederRegNo")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<string>("City")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -472,9 +472,6 @@ namespace DB_AngoraREST.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("PublicProfile")
-                        .HasColumnType("bit");
-
                     b.Property<string>("RoadNameAndNo")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -489,14 +486,15 @@ namespace DB_AngoraREST.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
+                    b.Property<string>("UserType")
+                        .IsRequired()
+                        .HasMaxLength(8)
+                        .HasColumnType("nvarchar(8)");
+
                     b.Property<int>("ZipCode")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("BreederRegNo")
-                        .IsUnique()
-                        .HasFilter("[BreederRegNo] IS NOT NULL");
 
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
@@ -507,6 +505,10 @@ namespace DB_AngoraREST.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
+
+                    b.HasDiscriminator<string>("UserType").HasValue("User");
+
+                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -642,6 +644,21 @@ namespace DB_AngoraREST.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("DB_AngoraLib.Models.Breeder", b =>
+                {
+                    b.HasBaseType("DB_AngoraLib.Models.User");
+
+                    b.Property<string>("BreederRegNo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasIndex("BreederRegNo")
+                        .IsUnique()
+                        .HasFilter("[BreederRegNo] IS NOT NULL");
+
+                    b.HasDiscriminator().HasValue("Breeder");
+                });
+
             modelBuilder.Entity("DB_AngoraLib.Models.ApplicationBreeder", b =>
                 {
                     b.HasOne("DB_AngoraLib.Models.User", "UserApplicant")
@@ -655,13 +672,13 @@ namespace DB_AngoraREST.Migrations
 
             modelBuilder.Entity("DB_AngoraLib.Models.BreederBrand", b =>
                 {
-                    b.HasOne("DB_AngoraLib.Models.User", "User")
+                    b.HasOne("DB_AngoraLib.Models.Breeder", "BreederBrandOwner")
                         .WithOne("BreederBrand")
                         .HasForeignKey("DB_AngoraLib.Models.BreederBrand", "UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("User");
+                    b.Navigation("BreederBrandOwner");
                 });
 
             modelBuilder.Entity("DB_AngoraLib.Models.Favorite", b =>
@@ -694,11 +711,11 @@ namespace DB_AngoraREST.Migrations
                         .HasForeignKey("Mother_EarCombId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("DB_AngoraLib.Models.User", "UserOrigin")
+                    b.HasOne("DB_AngoraLib.Models.Breeder", "UserOrigin")
                         .WithMany("RabbitsLinked")
                         .HasForeignKey("OriginId");
 
-                    b.HasOne("DB_AngoraLib.Models.User", "UserOwner")
+                    b.HasOne("DB_AngoraLib.Models.Breeder", "UserOwner")
                         .WithMany("RabbitsOwned")
                         .HasForeignKey("OwnerId");
 
@@ -735,7 +752,7 @@ namespace DB_AngoraREST.Migrations
 
             modelBuilder.Entity("DB_AngoraLib.Models.TransferRequst", b =>
                 {
-                    b.HasOne("DB_AngoraLib.Models.User", "UserIssuer")
+                    b.HasOne("DB_AngoraLib.Models.Breeder", "UserIssuer")
                         .WithMany("RabbitTransfers_Issued")
                         .HasForeignKey("IssuerId")
                         .OnDelete(DeleteBehavior.Restrict);
@@ -745,7 +762,7 @@ namespace DB_AngoraREST.Migrations
                         .HasForeignKey("RabbitId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("DB_AngoraLib.Models.User", "UserRecipent")
+                    b.HasOne("DB_AngoraLib.Models.Breeder", "UserRecipent")
                         .WithMany("RabbitTransfers_Received")
                         .HasForeignKey("RecipentId")
                         .OnDelete(DeleteBehavior.Restrict);
@@ -834,9 +851,15 @@ namespace DB_AngoraREST.Migrations
                 {
                     b.Navigation("BreederApplications");
 
-                    b.Navigation("BreederBrand");
-
                     b.Navigation("Favorites");
+
+                    b.Navigation("RefreshTokens");
+                });
+
+            modelBuilder.Entity("DB_AngoraLib.Models.Breeder", b =>
+                {
+                    b.Navigation("BreederBrand")
+                        .IsRequired();
 
                     b.Navigation("RabbitTransfers_Issued");
 
@@ -845,8 +868,6 @@ namespace DB_AngoraREST.Migrations
                     b.Navigation("RabbitsLinked");
 
                     b.Navigation("RabbitsOwned");
-
-                    b.Navigation("RefreshTokens");
                 });
 #pragma warning restore 612, 618
         }

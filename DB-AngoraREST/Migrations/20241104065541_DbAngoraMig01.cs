@@ -30,13 +30,13 @@ namespace DB_AngoraREST.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    BreederRegNo = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PublicProfile = table.Column<bool>(type: "bit", nullable: false),
                     RoadNameAndNo = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ZipCode = table.Column<int>(type: "int", nullable: false),
                     City = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    UserType = table.Column<string>(type: "nvarchar(8)", maxLength: 8, nullable: false),
+                    BreederRegNo = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -212,7 +212,8 @@ namespace DB_AngoraREST.Migrations
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     BreederBrandName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     BreederBrandDescription = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    BreederBrandLogo = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    BreederBrandLogo = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsFindable = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {

@@ -61,7 +61,6 @@ namespace DB_AngoraLib.EF_DbContext
                 //.HasPrincipalKey<User>(u => u.BreederRegNo) // Angiv at User's BreederRegNo er hovednøglen
                 .OnDelete(DeleteBehavior.Cascade); // Cascade delete for at slette BreederBrand, når en User slettes
 
-
             // Configure Foreign Key for Rabbit -> UserOwer (ejerforhold)
             modelBuilder.Entity<Rabbit>()
                 .HasOne(r => r.UserOwner)        // En Rabbit har en User (UserOwner)
