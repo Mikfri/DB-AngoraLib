@@ -90,7 +90,7 @@ namespace DB_AngoraREST.DB_DataStarter
             {
                 // Set the User property of the Rabbit object to the corresponding User
                 //rabbit.UserOwner = context.Users.FirstOrDefault(u => u.Id == rabbit.OwnerId);
-                rabbit.UserOwner = context.Users.FirstOrDefault(u => u.Id == rabbit.OwnerId);
+                rabbit.UserOwner = (Breeder?)context.Users.FirstOrDefault(u => u.Id == rabbit.OwnerId);
 
                 // Flyt Father_EarCombId og Mother_EarCombId til placeholder properties og sæt dem til null
                 //rabbit.FatherId_Placeholder = rabbit.Father_EarCombId;

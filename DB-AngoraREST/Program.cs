@@ -19,6 +19,7 @@ using Microsoft.OpenApi.Models;
 using System.Text;
 using System.Text.Json.Serialization;
 using DB_AngoraLib.Services.BreederBrandService;
+using DB_AngoraLib.Services.BreederService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,8 +37,8 @@ builder.Services.AddScoped<ITransferService, TransferServices>();
 
 builder.Services.AddScoped<IGRepository<BreederBrand>, GRepository<BreederBrand>>();
 builder.Services.AddScoped<IBreederBrandService, BreederBrandServices>();
-//builder.Services.AddScoped<IGRepository<Breeder>, GRepository<Breeder>>();
-//builder.Services.AddScoped<IBreederService, BreederServices>();
+builder.Services.AddScoped<IGRepository<Breeder>, GRepository<Breeder>>();
+builder.Services.AddScoped<IBreederService, BreederServices>();
 
 builder.Services.AddScoped<IGRepository<RefreshToken>, GRepository<RefreshToken>>();
 builder.Services.AddScoped<ITokenService, TokenServices>();
@@ -248,15 +249,15 @@ var app = builder.Build();
 //-----------------: DB-INITIALIZER setup // UDKOMENTER n�r der skal laves DGML
 // Get the service scope factory
 
-var serviceScopeFactory = app.Services.GetRequiredService<IServiceScopeFactory>();
-using (var scope = serviceScopeFactory.CreateScope())
-{
-    var context = scope.ServiceProvider.GetRequiredService<DB_AngoraContext>();
-    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
-    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+//var serviceScopeFactory = app.Services.GetRequiredService<IServiceScopeFactory>();
+//using (var scope = serviceScopeFactory.CreateScope())
+//{
+//    var context = scope.ServiceProvider.GetRequiredService<DB_AngoraContext>();
+//    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
+//    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
-    DbInitializer.Initialize(context, userManager, roleManager);
-}
+//    DbInitializer.Initialize(context, userManager, roleManager);
+//}
 
 app.UseCors("MyAllowSpecificOrigins");
 // Configure the HTTP request pipeline.
