@@ -3,7 +3,6 @@ using DB_AngoraLib.DTOs;
 using DB_AngoraLib.Models;
 using DB_AngoraLib.Services.AccountService;
 using DB_AngoraLib.Services.BreederBrandService;
-using DB_AngoraLib.Services.BreederService;
 using DB_AngoraLib.Services.SigninService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -25,14 +24,14 @@ namespace DB_AngoraREST.Controllers
         private readonly ISigninService _signinService;
         private readonly IAccountService _accountService;
         private readonly IBreederBrandService _breederBrandService;
-        private readonly IBreederService _breederService;
+        //private readonly IBreederService _breederService;
 
-        public AccountController(ISigninService signinService, IAccountService accountService, IBreederBrandService breederBrandService, IBreederService breederService)
+        public AccountController(ISigninService signinService, IAccountService accountService, IBreederBrandService breederBrandService)
         {
             _signinService = signinService;
             _accountService = accountService;
             _breederBrandService = breederBrandService;
-            _breederService = breederService;
+            //_breederService = breederService;
         }
 
 
@@ -105,7 +104,7 @@ namespace DB_AngoraREST.Controllers
         public async Task<IActionResult> GetMyFilteredRabbits([FromQuery] Rabbit_FilteredRequestDTO filter)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var rabbits = await _breederService.GetAll_RabbitsOwned_Filtered(userId, filter);
+            var rabbits = await _accountService.GetAll_RabbitsOwned_Filtered(userId, filter);
             return Ok(rabbits);
         }
 
@@ -119,7 +118,7 @@ namespace DB_AngoraREST.Controllers
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             Console.WriteLine($"Getting rabbits for user with ID: {userId}");
 
-            var rabbits = await _breederService.GetAll_Rabbits_FromMyFold(userId);
+            var rabbits = await _accountService.GetAll_Rabbits_FromMyFold(userId);
 
             Console.WriteLine($"Got {rabbits.Count} rabbits for user with ID: {userId}");
 
@@ -139,7 +138,7 @@ namespace DB_AngoraREST.Controllers
                 return Unauthorized("Bruger ID mangler eller er ugyldigt.");
             }
 
-            var transferRequests = await _breederService.GetAll_TransferRequests_Received(userId, filter);
+            var transferRequests = await _accountService.GetAll_TransferRequests_Received(userId, filter);
             return Ok(transferRequests);
         }
 
@@ -156,7 +155,7 @@ namespace DB_AngoraREST.Controllers
                 return Unauthorized("Bruger ID mangler eller er ugyldigt.");
             }
 
-            var transferRequests = await _breederService.GetAll_TransferRequests_Sent(userId, filter);
+            var transferRequests = await _accountService.GetAll_TransferRequests_Sent(userId, filter);
             return Ok(transferRequests);
         }
 
@@ -180,7 +179,7 @@ namespace DB_AngoraREST.Controllers
         [HttpGet("ByBreederRegNo/{breederRegNo}")]
         public async Task<IActionResult> GetUserByBreederRegNo(string breederRegNo)
         {
-            var user = await _breederService.Get_BreederByBreederRegNo(breederRegNo);
+            var user = await _accountService.Get_UserByBreederRegNo(breederRegNo);
             if (user != null)
             {
                 return Ok(user);
