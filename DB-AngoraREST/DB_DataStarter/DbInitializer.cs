@@ -93,10 +93,10 @@ namespace DB_AngoraREST.DB_DataStarter
                 rabbit.UserOwner = (Breeder?)context.Users.FirstOrDefault(u => u.Id == rabbit.OwnerId);
 
                 // Flyt Father_EarCombId og Mother_EarCombId til placeholder properties og sæt dem til null
-                rabbit.FatherId_Placeholder = rabbit.Father_EarCombId;
-                rabbit.MotherId_Placeholder = rabbit.Mother_EarCombId;
-                rabbit.Father_EarCombId = null;
-                rabbit.Mother_EarCombId = null;
+                //rabbit.FatherId_Placeholder = rabbit.Father_EarCombId;
+                //rabbit.MotherId_Placeholder = rabbit.Mother_EarCombId;
+                //rabbit.Father_EarCombId = null;
+                //rabbit.Mother_EarCombId = null;
 
                 context.Rabbits.Add(rabbit);
             }
@@ -109,8 +109,26 @@ namespace DB_AngoraREST.DB_DataStarter
                 var dbRabbit = context.Rabbits.FirstOrDefault(r => r.EarCombId == rabbit.EarCombId);
                 if (dbRabbit != null)
                 {
-                    dbRabbit.Father_EarCombId = context.Rabbits.FirstOrDefault(r => r.EarCombId == rabbit.FatherId_Placeholder)?.EarCombId;
-                    dbRabbit.Mother_EarCombId = context.Rabbits.FirstOrDefault(r => r.EarCombId == rabbit.MotherId_Placeholder)?.EarCombId;
+                    var father = context.Rabbits.FirstOrDefault(r => r.EarCombId == rabbit.FatherId_Placeholder);
+                    var mother = context.Rabbits.FirstOrDefault(r => r.EarCombId == rabbit.MotherId_Placeholder);
+
+                    if (father != null)
+                    {
+                        dbRabbit.Father_EarCombId = father.EarCombId;
+                    }
+                    else if (rabbit.FatherId_Placeholder != null)
+                    {
+                        throw new Exception($"Father with EarCombId {rabbit.FatherId_Placeholder} not found for rabbit {rabbit.EarCombId}");
+                    }
+
+                    if (mother != null)
+                    {
+                        dbRabbit.Mother_EarCombId = mother.EarCombId;
+                    }
+                    else if (rabbit.MotherId_Placeholder != null)
+                    {
+                        throw new Exception($"Mother with EarCombId {rabbit.MotherId_Placeholder} not found for rabbit {rabbit.EarCombId}");
+                    }
                 }
             }
 

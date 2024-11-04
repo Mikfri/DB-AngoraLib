@@ -24,14 +24,13 @@ namespace DB_AngoraLib.MockData
                 City = "Kirke Såby",
                 Email = "IdaFriborg87@gmail.com",
                 PhoneNumber = "27586455",
-                PasswordHash = "Ida123!",
+                Password = "Ida123!",
                 BreederRegNo = "5095",
                 UserName = "IdaFriborg87@gmail.com", // Set UserName explicitly
                 NormalizedUserName = "IDAFRIBORG87@GMAIL.COM", // Set NormalizedUserName explicitly
                 NormalizedEmail = "IDAFRIBORG87@GMAIL.COM", // Set NormalizedEmail explicitly
                 BreederBrand = new BreederBrand
                 {
-                    Id = 1,
                     UserId = "IdasId",
                     BreederBrandName = "Den brogede Angora",
                     BreederBrandDescription = "Satin angora opdrætter, og producent af uld i forskellige plantefarver",
@@ -57,14 +56,13 @@ namespace DB_AngoraLib.MockData
                 City = "Benløse",
                 Email = "MajaJoensen89@gmail.com",
                 PhoneNumber = "28733085",
-                PasswordHash = "Maja123!",
+                Password = "Maja123!",
                 BreederRegNo = "5053",
                 UserName = "MajaJoensen89@gmail.com", // Set UserName explicitly
                 NormalizedUserName = "MAJAJOENSEN89@GMAIL.COM", // Set NormalizedUserName explicitly
                 NormalizedEmail = "MAJAJOENSEN89@GMAIL.COM", // Set NormalizedEmail explicitly
                 BreederBrand = new BreederBrand
                 {
-                    Id = 2,
                     UserId = "MajasId",
                     BreederBrandName = "Slettens Angora",
                     BreederBrandDescription = "Oprdræt af Satin angoraer, samt salg af skind og uld",
@@ -91,7 +89,7 @@ namespace DB_AngoraLib.MockData
                 City = "Kirke Såby",
                 Email = "Mikk.fri@gmail.com",
                 PhoneNumber = "81183394",
-                PasswordHash = "Mikkel123!"
+                Password = "Mikkel123!"
             },
             new List<string> { "Admin" }
             ),

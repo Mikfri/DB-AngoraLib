@@ -27,7 +27,7 @@ namespace DB_AngoraLib.MockData
                 Gender = Gender.Doe,
                 ForSale = IsPublic.Nej,
                 ForBreeding = IsPublic.Nej,
-                Father_EarCombId = null,
+                //Father_EarCombId = null,
                 Mother_EarCombId = "5095-001",
             },
             new Rabbit
@@ -44,8 +44,8 @@ namespace DB_AngoraLib.MockData
                 Gender = Gender.Doe,
                 ForSale = IsPublic.Nej,
                 ForBreeding = IsPublic.Nej,
-                Father_EarCombId = null,
-                Mother_EarCombId = null,
+                //Father_EarCombId = null,
+                //Mother_EarCombId = null,
             },
             new Rabbit
             {
@@ -61,7 +61,7 @@ namespace DB_AngoraLib.MockData
                 Gender = Gender.Doe,
                 ForSale = IsPublic.Nej,
                 ForBreeding = IsPublic.Nej,
-                Father_EarCombId = null,
+                //Father_EarCombId = null,
                 Mother_EarCombId = "5095-001",
             },
             new Rabbit
@@ -78,8 +78,8 @@ namespace DB_AngoraLib.MockData
                 Gender = Gender.Doe,
                 ForSale = IsPublic.Nej,
                 ForBreeding = IsPublic.Nej,
-                Father_EarCombId = null,
-                Mother_EarCombId = null,
+                //Father_EarCombId = null,
+                //Mother_EarCombId = null,
             },
             new Rabbit
             {
@@ -95,8 +95,8 @@ namespace DB_AngoraLib.MockData
                 Gender = Gender.Buck,
                 ForSale = IsPublic.Nej,
                 ForBreeding = IsPublic.Ja,
-                Father_EarCombId = null,
-                Mother_EarCombId = null,
+                //Father_EarCombId = null,
+                //Mother_EarCombId = null,
             },
             new Rabbit
             {
@@ -112,7 +112,7 @@ namespace DB_AngoraLib.MockData
                 Gender = Gender.Buck,
                 ForSale = IsPublic.Nej,
                 ForBreeding = IsPublic.Ja,
-                Father_EarCombId = "V23-023",
+                FatherId_Placeholder = "V23-023",
                 Mother_EarCombId = "5053-0223",
             },
             new Rabbit
@@ -129,7 +129,7 @@ namespace DB_AngoraLib.MockData
                 Gender = Gender.Doe,
                 ForSale = IsPublic.Nej,
                 ForBreeding = IsPublic.Nej,
-                Father_EarCombId = "V23-023",
+                FatherId_Placeholder = "V23-023",
                 Mother_EarCombId = "5053-0223",
             },
             new Rabbit
@@ -146,7 +146,7 @@ namespace DB_AngoraLib.MockData
                 Gender = Gender.Doe,
                 ForSale = IsPublic.Ja,
                 ForBreeding = IsPublic.Ja,
-                Father_EarCombId = "V23-023",
+                FatherId_Placeholder = "V23-023",
                 Mother_EarCombId = "5053-0223",
             },
             new Rabbit
@@ -163,7 +163,7 @@ namespace DB_AngoraLib.MockData
                 Gender = Gender.Buck,
                 ForSale = IsPublic.Nej,
                 ForBreeding = IsPublic.Nej,
-                Father_EarCombId = "V23-023",
+                FatherId_Placeholder = "V23-023",
                 Mother_EarCombId = "5053-0223",
             },
             //---------------------: MAJAs RABBIT COLLECTION
@@ -181,8 +181,8 @@ namespace DB_AngoraLib.MockData
                 Gender = Gender.Buck,
                 ForSale = IsPublic.Nej,
                 ForBreeding = IsPublic.Ja,
-                Father_EarCombId = null,
-                Mother_EarCombId = null
+                //Father_EarCombId = null,
+                //Mother_EarCombId = null
             },
             new Rabbit
             {
@@ -249,8 +249,8 @@ namespace DB_AngoraLib.MockData
                 Gender = Gender.Doe,
                 ForSale = IsPublic.Nej,
                 ForBreeding = IsPublic.Ja,
-                Father_EarCombId = "M63-085",
-                Mother_EarCombId = "M63-164",
+                FatherId_Placeholder = "M63-085",
+                MotherId_Placeholder = "M63-164",
             },
             new Rabbit
             {
@@ -317,8 +317,8 @@ namespace DB_AngoraLib.MockData
                 Gender = Gender.Doe,
                 ForSale = IsPublic.Nej,
                 ForBreeding = IsPublic.Ja,
-                Father_EarCombId = "M63-0204",
-                Mother_EarCombId = "M63-0000",
+                FatherId_Placeholder = "M63-0204",
+                MotherId_Placeholder = "M63-0000",
             },
             new Rabbit
             {
@@ -334,8 +334,8 @@ namespace DB_AngoraLib.MockData
                 Gender = Gender.Buck,
                 ForSale = IsPublic.Nej,
                 ForBreeding = IsPublic.Nej,
-                Father_EarCombId = "M63-044",
-                Mother_EarCombId = "M63-989",
+                FatherId_Placeholder = "M63-044",
+                MotherId_Placeholder = "M63-989",
             },
             new Rabbit
             {
@@ -351,8 +351,8 @@ namespace DB_AngoraLib.MockData
                 Gender = Gender.Doe,
                 ForSale = IsPublic.Nej,
                 ForBreeding = IsPublic.Nej,
-                Father_EarCombId = "4977-205",
-                Mother_EarCombId = "13-232",
+                FatherId_Placeholder = "4977-205",
+                MotherId_Placeholder = "13-232",
             },
             new Rabbit
             {
@@ -385,8 +385,8 @@ namespace DB_AngoraLib.MockData
                 Gender = Gender.Buck,
                 ForSale = IsPublic.Nej,
                 ForBreeding = IsPublic.Nej,
-                Father_EarCombId = null,
-                Mother_EarCombId = null,
+                //Father_EarCombId = null,
+                //Mother_EarCombId = null,
             },
             new Rabbit
             {
@@ -402,8 +402,8 @@ namespace DB_AngoraLib.MockData
                 Gender = Gender.Doe,
                 ForSale = IsPublic.Nej,
                 ForBreeding = IsPublic.Ja,
-                Father_EarCombId = "M63-125",
-                Mother_EarCombId = "M63-155",
+                FatherId_Placeholder = "M63-125",
+                MotherId_Placeholder = "M63-155",
             },
             new Rabbit
             {
@@ -419,8 +419,8 @@ namespace DB_AngoraLib.MockData
                 Gender = Gender.Doe,
                 ForSale = IsPublic.Nej,
                 ForBreeding = IsPublic.Nej,
-                Father_EarCombId = null,
-                Mother_EarCombId = null,
+                //Father_EarCombId = null,
+                //Mother_EarCombId = null,
             },
             new Rabbit
             {
@@ -436,8 +436,8 @@ namespace DB_AngoraLib.MockData
                 Gender = Gender.Doe,
                 ForSale = IsPublic.Nej,
                 ForBreeding = IsPublic.Nej,
-                Father_EarCombId = null,
-                Mother_EarCombId = null,
+                //Father_EarCombId = null,
+                //Mother_EarCombId = null,
             },
             new Rabbit
             {
@@ -504,7 +504,7 @@ namespace DB_AngoraLib.MockData
                 Gender = Gender.Buck,
                 ForSale = IsPublic.Nej,
                 ForBreeding = IsPublic.Nej,
-                Father_EarCombId = "V23-023",
+                FatherId_Placeholder = "V23-023",
                 Mother_EarCombId = "5053-0423",
             },
             new Rabbit

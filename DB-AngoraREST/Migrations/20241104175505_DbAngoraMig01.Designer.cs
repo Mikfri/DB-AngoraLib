@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DB_AngoraREST.Migrations
 {
     [DbContext(typeof(DB_AngoraContext))]
-    [Migration("20241104065541_DbAngoraMig01")]
+    [Migration("20241104175505_DbAngoraMig01")]
     partial class DbAngoraMig01
     {
         /// <inheritdoc />
