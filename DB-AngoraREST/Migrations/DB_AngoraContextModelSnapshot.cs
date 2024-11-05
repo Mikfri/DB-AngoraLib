@@ -516,7 +516,7 @@ namespace DB_AngoraREST.Migrations
                             Id = "MikkelsId",
                             AccessFailedCount = 0,
                             City = "Kirke Såby",
-                            ConcurrencyStamp = "8d6be0f7-a506-445d-88e8-1bf26d66fd73",
+                            ConcurrencyStamp = "1d7ebc48-abed-4428-aae2-692dce748d2a",
                             Email = "Mikk.fri@gmail.com",
                             EmailConfirmed = false,
                             FirstName = "Mikkel",
@@ -524,11 +524,11 @@ namespace DB_AngoraREST.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "MIKK.FRI@GMAIL.COM",
                             NormalizedUserName = "MIKK.FRI@GMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEETSDNZMT+baR+vemzBrjkJ/heA14qQuOScocJj3zvSURTgEMHoor0ito6rx0lYjYQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAED7FiXLCuq3wpoZ36NfuLZeSvozHjG14GAdUYQsJpgWyPbdSUIG7FRD2/Q8ZETeV1g==",
                             PhoneNumber = "81183394",
                             PhoneNumberConfirmed = false,
                             RoadNameAndNo = "Fynsvej 14",
-                            SecurityStamp = "e7f359b2-1569-4266-9d2e-b6e877a9178b",
+                            SecurityStamp = "dac6ffb1-4ce6-4687-b0d9-c4e9bcdfc70b",
                             TwoFactorEnabled = false,
                             UserName = "Mikk.fri@gmail.com",
                             ZipCode = 4060
@@ -605,6 +605,120 @@ namespace DB_AngoraREST.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("AspNetRoleClaims", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            ClaimType = "User:Read",
+                            ClaimValue = "Any",
+                            RoleId = "3"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            ClaimType = "User:Create",
+                            ClaimValue = "Any",
+                            RoleId = "3"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            ClaimType = "User:Update",
+                            ClaimValue = "Any",
+                            RoleId = "3"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            ClaimType = "User:Delete",
+                            ClaimValue = "Any",
+                            RoleId = "3"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            ClaimType = "Rabbit:Create",
+                            ClaimValue = "Any",
+                            RoleId = "3"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            ClaimType = "Rabbit:Read",
+                            ClaimValue = "Any",
+                            RoleId = "3"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            ClaimType = "Rabbit:Update",
+                            ClaimValue = "Any",
+                            RoleId = "3"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            ClaimType = "Rabbit:Delete",
+                            ClaimValue = "Any",
+                            RoleId = "3"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            ClaimType = "Rabbit:Create",
+                            ClaimValue = "Any",
+                            RoleId = "1"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            ClaimType = "Rabbit:Read",
+                            ClaimValue = "Any",
+                            RoleId = "1"
+                        },
+                        new
+                        {
+                            Id = 11,
+                            ClaimType = "Rabbit:Update",
+                            ClaimValue = "Any",
+                            RoleId = "1"
+                        },
+                        new
+                        {
+                            Id = 12,
+                            ClaimType = "Rabbit:Delete",
+                            ClaimValue = "Any",
+                            RoleId = "1"
+                        },
+                        new
+                        {
+                            Id = 13,
+                            ClaimType = "Rabbit:Create",
+                            ClaimValue = "Own",
+                            RoleId = "2"
+                        },
+                        new
+                        {
+                            Id = 14,
+                            ClaimType = "Rabbit:Read",
+                            ClaimValue = "Own",
+                            RoleId = "2"
+                        },
+                        new
+                        {
+                            Id = 15,
+                            ClaimType = "Rabbit:Update",
+                            ClaimValue = "Own",
+                            RoleId = "2"
+                        },
+                        new
+                        {
+                            Id = 16,
+                            ClaimType = "Rabbit:Delete",
+                            ClaimValue = "Own",
+                            RoleId = "2"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
@@ -725,7 +839,7 @@ namespace DB_AngoraREST.Migrations
                             Id = "IdasId",
                             AccessFailedCount = 0,
                             City = "Kirke Såby",
-                            ConcurrencyStamp = "534bde27-17bc-4179-8dea-4f84693958fc",
+                            ConcurrencyStamp = "32aa9e7e-d2ed-4277-8887-d6edcd2b5340",
                             Email = "IdaFriborg87@gmail.com",
                             EmailConfirmed = false,
                             FirstName = "Ida",
@@ -733,11 +847,11 @@ namespace DB_AngoraREST.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "IDAFRIBORG87@GMAIL.COM",
                             NormalizedUserName = "IDAFRIBORG87@GMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEBi2VU3erPF9UBBF/CWn6QWibBSYntwQ4czcZzuvNRpXpazmR71IsqL4SbE8y97GPg==",
+                            PasswordHash = "AQAAAAIAAYagAAAAENupYdrWXiTDVCFqANQRSyWa+Z5K16pu5U70Iru3XuYxCJREbib8u3ivoILlnW2oPA==",
                             PhoneNumber = "27586455",
                             PhoneNumberConfirmed = false,
                             RoadNameAndNo = "Fynsvej 14",
-                            SecurityStamp = "7178d4ff-28dd-4f6b-af57-4e73030f3f26",
+                            SecurityStamp = "71a331d3-aa06-4e84-b9be-b81b8ffaf72e",
                             TwoFactorEnabled = false,
                             UserName = "IdaFriborg87@gmail.com",
                             ZipCode = 4060,
@@ -748,7 +862,7 @@ namespace DB_AngoraREST.Migrations
                             Id = "MajasId",
                             AccessFailedCount = 0,
                             City = "Benløse",
-                            ConcurrencyStamp = "a05d2d73-83cb-4a31-81c0-e43f31a55904",
+                            ConcurrencyStamp = "5462c838-5149-4044-a593-b39f73694589",
                             Email = "MajaJoensen89@gmail.com",
                             EmailConfirmed = false,
                             FirstName = "Maja",
@@ -756,11 +870,11 @@ namespace DB_AngoraREST.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "MAJAJOENSEN89@GMAIL.COM",
                             NormalizedUserName = "MAJAJOENSEN89@GMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEAVnu0Z182DNHo0eO+NeiKupuycL7GxSDitdNGIDKz/jfD/u+ysNGwf4p+74p+HGhA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEOGgnb7bcJabvSqUvnmQNIpffH+I6nA4f0AnbPJv7k5GYBlUbBb8Gpaihvsu3oCUdA==",
                             PhoneNumber = "28733085",
                             PhoneNumberConfirmed = false,
                             RoadNameAndNo = "Sletten 4",
-                            SecurityStamp = "6bed2044-6fa3-49a1-8fb0-b9eb3145662e",
+                            SecurityStamp = "9c3472dc-7e40-405b-b8dd-ab6feb472316",
                             TwoFactorEnabled = false,
                             UserName = "MajaJoensen89@gmail.com",
                             ZipCode = 4100,

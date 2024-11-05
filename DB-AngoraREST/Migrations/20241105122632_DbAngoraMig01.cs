@@ -453,14 +453,37 @@ namespace DB_AngoraREST.Migrations
                 columns: new[] { "Id", "AccessFailedCount", "BreederRegNo", "City", "ConcurrencyStamp", "Email", "EmailConfirmed", "FirstName", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "RoadNameAndNo", "SecurityStamp", "TwoFactorEnabled", "UserName", "UserType", "ZipCode" },
                 values: new object[,]
                 {
-                    { "IdasId", 0, "5095", "Kirke Såby", "534bde27-17bc-4179-8dea-4f84693958fc", "IdaFriborg87@gmail.com", false, "Ida", "Friborg", false, null, "IDAFRIBORG87@GMAIL.COM", "IDAFRIBORG87@GMAIL.COM", "AQAAAAIAAYagAAAAEBi2VU3erPF9UBBF/CWn6QWibBSYntwQ4czcZzuvNRpXpazmR71IsqL4SbE8y97GPg==", "27586455", false, "Fynsvej 14", "7178d4ff-28dd-4f6b-af57-4e73030f3f26", false, "IdaFriborg87@gmail.com", "Breeder", 4060 },
-                    { "MajasId", 0, "5053", "Benløse", "a05d2d73-83cb-4a31-81c0-e43f31a55904", "MajaJoensen89@gmail.com", false, "Maja", "Hulstrøm", false, null, "MAJAJOENSEN89@GMAIL.COM", "MAJAJOENSEN89@GMAIL.COM", "AQAAAAIAAYagAAAAEAVnu0Z182DNHo0eO+NeiKupuycL7GxSDitdNGIDKz/jfD/u+ysNGwf4p+74p+HGhA==", "28733085", false, "Sletten 4", "6bed2044-6fa3-49a1-8fb0-b9eb3145662e", false, "MajaJoensen89@gmail.com", "Breeder", 4100 }
+                    { "IdasId", 0, "5095", "Kirke Såby", "32aa9e7e-d2ed-4277-8887-d6edcd2b5340", "IdaFriborg87@gmail.com", false, "Ida", "Friborg", false, null, "IDAFRIBORG87@GMAIL.COM", "IDAFRIBORG87@GMAIL.COM", "AQAAAAIAAYagAAAAENupYdrWXiTDVCFqANQRSyWa+Z5K16pu5U70Iru3XuYxCJREbib8u3ivoILlnW2oPA==", "27586455", false, "Fynsvej 14", "71a331d3-aa06-4e84-b9be-b81b8ffaf72e", false, "IdaFriborg87@gmail.com", "Breeder", 4060 },
+                    { "MajasId", 0, "5053", "Benløse", "5462c838-5149-4044-a593-b39f73694589", "MajaJoensen89@gmail.com", false, "Maja", "Hulstrøm", false, null, "MAJAJOENSEN89@GMAIL.COM", "MAJAJOENSEN89@GMAIL.COM", "AQAAAAIAAYagAAAAEOGgnb7bcJabvSqUvnmQNIpffH+I6nA4f0AnbPJv7k5GYBlUbBb8Gpaihvsu3oCUdA==", "28733085", false, "Sletten 4", "9c3472dc-7e40-405b-b8dd-ab6feb472316", false, "MajaJoensen89@gmail.com", "Breeder", 4100 }
                 });
 
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "City", "ConcurrencyStamp", "Email", "EmailConfirmed", "FirstName", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "RoadNameAndNo", "SecurityStamp", "TwoFactorEnabled", "UserName", "UserType", "ZipCode" },
-                values: new object[] { "MikkelsId", 0, "Kirke Såby", "8d6be0f7-a506-445d-88e8-1bf26d66fd73", "Mikk.fri@gmail.com", false, "Mikkel", "Friborg", false, null, "MIKK.FRI@GMAIL.COM", "MIKK.FRI@GMAIL.COM", "AQAAAAIAAYagAAAAEETSDNZMT+baR+vemzBrjkJ/heA14qQuOScocJj3zvSURTgEMHoor0ito6rx0lYjYQ==", "81183394", false, "Fynsvej 14", "e7f359b2-1569-4266-9d2e-b6e877a9178b", false, "Mikk.fri@gmail.com", "User", 4060 });
+                values: new object[] { "MikkelsId", 0, "Kirke Såby", "1d7ebc48-abed-4428-aae2-692dce748d2a", "Mikk.fri@gmail.com", false, "Mikkel", "Friborg", false, null, "MIKK.FRI@GMAIL.COM", "MIKK.FRI@GMAIL.COM", "AQAAAAIAAYagAAAAED7FiXLCuq3wpoZ36NfuLZeSvozHjG14GAdUYQsJpgWyPbdSUIG7FRD2/Q8ZETeV1g==", "81183394", false, "Fynsvej 14", "dac6ffb1-4ce6-4687-b0d9-c4e9bcdfc70b", false, "Mikk.fri@gmail.com", "User", 4060 });
+
+            migrationBuilder.InsertData(
+                table: "AspNetRoleClaims",
+                columns: new[] { "Id", "ClaimType", "ClaimValue", "RoleId" },
+                values: new object[,]
+                {
+                    { 1, "User:Read", "Any", "3" },
+                    { 2, "User:Create", "Any", "3" },
+                    { 3, "User:Update", "Any", "3" },
+                    { 4, "User:Delete", "Any", "3" },
+                    { 5, "Rabbit:Create", "Any", "3" },
+                    { 6, "Rabbit:Read", "Any", "3" },
+                    { 7, "Rabbit:Update", "Any", "3" },
+                    { 8, "Rabbit:Delete", "Any", "3" },
+                    { 9, "Rabbit:Create", "Any", "1" },
+                    { 10, "Rabbit:Read", "Any", "1" },
+                    { 11, "Rabbit:Update", "Any", "1" },
+                    { 12, "Rabbit:Delete", "Any", "1" },
+                    { 13, "Rabbit:Create", "Own", "2" },
+                    { 14, "Rabbit:Read", "Own", "2" },
+                    { 15, "Rabbit:Update", "Own", "2" },
+                    { 16, "Rabbit:Delete", "Own", "2" }
+                });
 
             migrationBuilder.InsertData(
                 table: "AspNetUserRoles",
