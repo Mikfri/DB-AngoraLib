@@ -3,6 +3,7 @@ using DB_AngoraLib.EF_DbContext;
 using DB_AngoraLib.MockData;
 using DB_AngoraLib.Models;
 using DB_AngoraLib.Repository;
+using DB_AngoraLib.SeededData;
 using DB_AngoraLib.Services.AccountService;
 using DB_AngoraLib.Services.BreederService;
 using DB_AngoraLib.Services.EmailService;
@@ -24,69 +25,32 @@ namespace DB_AngoraMST.Services_InMemTest
     [TestClass]
     public class RabbitServices_MST
     {
+
         private IRabbitService _rabbitService;
-        private IBreederService _breederService;
+        private Mock<IBreederService> _breederServiceMock;
+        private Mock<Rabbit_Validator> _validatorServiceMock;
         private DB_AngoraContext _context;
-
-        public RabbitServices_MST()
-        {
-            // Setup in-memory database
-            var options = new DbContextOptionsBuilder<DB_AngoraContext>()
-                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-                .Options;
-
-            _context = new DB_AngoraContext(options);
-            _context.Database.EnsureCreated();
-
-            // Create repositories
-            var rabbitRepository = new GRepository<Rabbit>(_context);
-            var breederRepository = new GRepository<Breeder>(_context);
-
-            // Initialize services with all required parameters
-            _breederService = new BreederServices(breederRepository);
-            var validatorService = new Rabbit_Validator();
-            _rabbitService = new RabbitServices(rabbitRepository, _breederService, validatorService);
-        }
 
         [TestInitialize]
         public void Setup()
         {
-            // Add mock data to in-memory database
-            var mockUsersWithRoles = MockUsers.GetMockUsersWithRoles();
-            foreach (var mockUserWithRole in mockUsersWithRoles)
-            {
-                _context.Users.Add(mockUserWithRole.User);
-                _context.SaveChanges();
+            // Configure in-memory database
+            var options = new DbContextOptionsBuilder<DB_AngoraContext>()
+                .UseInMemoryDatabase(databaseName: "TestDatabase")
+                .Options;
 
-                foreach (var role in mockUserWithRole.Roles)
-                {
-                    var roleId = MockRoles.GetMockRoles().First(r => r.Name == role).Id;
+            _context = new DB_AngoraContext(options);
 
-                    // Assign role to user
-                    var userRole = new IdentityUserRole<string>
-                    {
-                        UserId = mockUserWithRole.User.Id,
-                        RoleId = roleId
-                    };
-                    _context.UserRoles.Add(userRole);
+            // Seed the database with initial data
+            SeedDatabase(_context);
 
-                    // Assign claims to user
-                    var roleClaims = RoleClaims.Get_AspNetRoleClaims();
-                    var claimsForRole = roleClaims.Where(rc => rc.RoleId == roleId).ToList();
-                    foreach (var claim in claimsForRole)
-                    {
-                        var userClaim = new IdentityUserClaim<string>
-                        {
-                            UserId = mockUserWithRole.User.Id,
-                            ClaimType = claim.ClaimType,
-                            ClaimValue = claim.ClaimValue
-                        };
-                        _context.UserClaims.Add(userClaim);
-                    }
-                }
-            }
+            // Mock dependencies
+            _breederServiceMock = new Mock<IBreederService>();
+            _validatorServiceMock = new Mock<Rabbit_Validator>();
 
-            _context.SaveChanges();
+            // Initialize RabbitServices with mocked dependencies
+            var repository = new GRepository<Rabbit>(_context);
+            _rabbitService = new RabbitServices(repository, _breederServiceMock.Object, _validatorServiceMock.Object);
         }
 
         [TestCleanup]
@@ -96,6 +60,12 @@ namespace DB_AngoraMST.Services_InMemTest
             _context.Dispose();
         }
 
+        private void SeedDatabase(DB_AngoraContext context)
+        {
+            var modelBuilder = new ModelBuilder(new Microsoft.EntityFrameworkCore.Metadata.Conventions.ConventionSet());
+            SeedData.Seed(modelBuilder);
+            context.Database.EnsureCreated();
+        }
 
         //-------------------------: ADD TESTS
         [TestMethod]
@@ -469,9 +439,6 @@ namespace DB_AngoraMST.Services_InMemTest
             var deletedRabbitOwned = await _context.Rabbits
                 .FirstOrDefaultAsync(r => r.RightEarId == mockRabbitOwned.RightEarId && r.LeftEarId == mockRabbitOwned.LeftEarId);
             Assert.IsNull(deletedRabbitOwned);
-        }
-
-
-
+        }        
     }
 }

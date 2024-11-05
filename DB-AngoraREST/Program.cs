@@ -10,7 +10,6 @@ using DB_AngoraLib.Services.SigninService;
 using DB_AngoraLib.Services.TokenService;
 using DB_AngoraLib.Services.TransferService;
 using DB_AngoraLib.Services.ValidationService;
-using DB_AngoraREST.DB_DataStarter;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -20,8 +19,15 @@ using System.Text;
 using System.Text.Json.Serialization;
 using DB_AngoraLib.Services.BreederBrandService;
 using DB_AngoraLib.Services.BreederService;
+using DB_AngoraREST.Settings;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Load secrets from environment variables
+builder.Configuration.AddEnvironmentVariables();
+builder.Services.Configure<ConnectionStrings>(builder.Configuration.GetSection("ConnectionStrings"));
+builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("Jwt"));
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 
 
 // Add services to the container.
@@ -68,7 +74,8 @@ builder.Services.AddDistributedMemoryCache(); // Adds a default in-memory implem
 
 // -----------------: DB CONNECTION-STRING & MIGRATION SETUP
 builder.Services.AddDbContext<DB_AngoraContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"),
+    //options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"),
+    options.UseSqlServer(builder.Configuration.GetConnectionString("SecretConnection"),
     b => b.MigrationsAssembly("DB-AngoraREST")));
 
 
