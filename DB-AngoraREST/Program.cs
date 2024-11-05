@@ -247,22 +247,22 @@ builder.Services.AddCors(options =>
 var app = builder.Build();
 
 // Kør seeding-processen
-using (var scope = app.Services.CreateScope())
-{
-    var services = scope.ServiceProvider;
-    try
-    {
-        var context = services.GetRequiredService<DB_AngoraContext>();
-        context.Database.Migrate(); // Anvend migrationer
-        SeedDatabase(context); // Kald seeding-metoden
-    }
-    catch (Exception ex)
-    {
-        // Håndter fejl
-        var logger = services.GetRequiredService<ILogger<Program>>();
-        logger.LogError(ex, "An error occurred while seeding the database.");
-    }
-}
+//using (var scope = app.Services.CreateScope())
+//{
+//    var services = scope.ServiceProvider;
+//    try
+//    {
+//        var context = services.GetRequiredService<DB_AngoraContext>();
+//        context.Database.Migrate(); // Anvend migrationer
+//        SeedDatabase(context); // Kald seeding-metoden
+//    }
+//    catch (Exception ex)
+//    {
+//        // Håndter fejl
+//        var logger = services.GetRequiredService<ILogger<Program>>();
+//        logger.LogError(ex, "An error occurred while seeding the database.");
+//    }
+//}
 
 //-----------------: DB-INITIALIZER setup // UDKOMENTER n�r der skal laves DGML
 // Get the service scope factory

@@ -453,14 +453,14 @@ namespace DB_AngoraREST.Migrations
                 columns: new[] { "Id", "AccessFailedCount", "BreederRegNo", "City", "ConcurrencyStamp", "Email", "EmailConfirmed", "FirstName", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "RoadNameAndNo", "SecurityStamp", "TwoFactorEnabled", "UserName", "UserType", "ZipCode" },
                 values: new object[,]
                 {
-                    { "IdasId", 0, "5095", "Kirke Såby", "b055e9c4-4619-4c90-88fc-05bd738b95a1", "IdaFriborg87@gmail.com", false, "Ida", "Friborg", false, null, "IDAFRIBORG87@GMAIL.COM", "IDAFRIBORG87@GMAIL.COM", null, "27586455", false, "Fynsvej 14", "a9837cf5-12fd-4455-8f1d-559b40f3dc85", false, "IdaFriborg87@gmail.com", "Breeder", 4060 },
-                    { "MajasId", 0, "5053", "Benløse", "5409b326-5fd0-427d-af1d-d58f76e3c3c9", "MajaJoensen89@gmail.com", false, "Maja", "Hulstrøm", false, null, "MAJAJOENSEN89@GMAIL.COM", "MAJAJOENSEN89@GMAIL.COM", null, "28733085", false, "Sletten 4", "45aebbea-d81e-493a-924a-555a955288a1", false, "MajaJoensen89@gmail.com", "Breeder", 4100 }
+                    { "IdasId", 0, "5095", "Kirke Såby", "534bde27-17bc-4179-8dea-4f84693958fc", "IdaFriborg87@gmail.com", false, "Ida", "Friborg", false, null, "IDAFRIBORG87@GMAIL.COM", "IDAFRIBORG87@GMAIL.COM", "AQAAAAIAAYagAAAAEBi2VU3erPF9UBBF/CWn6QWibBSYntwQ4czcZzuvNRpXpazmR71IsqL4SbE8y97GPg==", "27586455", false, "Fynsvej 14", "7178d4ff-28dd-4f6b-af57-4e73030f3f26", false, "IdaFriborg87@gmail.com", "Breeder", 4060 },
+                    { "MajasId", 0, "5053", "Benløse", "a05d2d73-83cb-4a31-81c0-e43f31a55904", "MajaJoensen89@gmail.com", false, "Maja", "Hulstrøm", false, null, "MAJAJOENSEN89@GMAIL.COM", "MAJAJOENSEN89@GMAIL.COM", "AQAAAAIAAYagAAAAEAVnu0Z182DNHo0eO+NeiKupuycL7GxSDitdNGIDKz/jfD/u+ysNGwf4p+74p+HGhA==", "28733085", false, "Sletten 4", "6bed2044-6fa3-49a1-8fb0-b9eb3145662e", false, "MajaJoensen89@gmail.com", "Breeder", 4100 }
                 });
 
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "City", "ConcurrencyStamp", "Email", "EmailConfirmed", "FirstName", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "RoadNameAndNo", "SecurityStamp", "TwoFactorEnabled", "UserName", "UserType", "ZipCode" },
-                values: new object[] { "MikkelsId", 0, "Kirke Såby", "43098a1b-5d1d-44d3-ad22-567f87c35140", "Mikk.fri@gmail.com", false, "Mikkel", "Friborg", false, null, null, null, null, "81183394", false, "Fynsvej 14", "3cba2285-2aab-4fe8-b0f7-d7518f0c1075", false, null, "User", 4060 });
+                values: new object[] { "MikkelsId", 0, "Kirke Såby", "8d6be0f7-a506-445d-88e8-1bf26d66fd73", "Mikk.fri@gmail.com", false, "Mikkel", "Friborg", false, null, "MIKK.FRI@GMAIL.COM", "MIKK.FRI@GMAIL.COM", "AQAAAAIAAYagAAAAEETSDNZMT+baR+vemzBrjkJ/heA14qQuOScocJj3zvSURTgEMHoor0ito6rx0lYjYQ==", "81183394", false, "Fynsvej 14", "e7f359b2-1569-4266-9d2e-b6e877a9178b", false, "Mikk.fri@gmail.com", "User", 4060 });
 
             migrationBuilder.InsertData(
                 table: "AspNetUserRoles",
