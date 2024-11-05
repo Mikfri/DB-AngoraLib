@@ -1,4 +1,5 @@
-﻿using DB_AngoraLib.Models;
+﻿using DB_AngoraLib.MockData;
+using DB_AngoraLib.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
@@ -108,6 +109,9 @@ namespace DB_AngoraLib.SeededData
 
             modelBuilder.Entity<IdentityRoleClaim<string>>().HasData(roleClaims);
 
+            // Seed Rabbits
+            var rabbits = MockRabbits.GetMockRabbits();
+            modelBuilder.Entity<Rabbit>().HasData(rabbits);
         }
     }
 }
