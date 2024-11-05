@@ -1,5 +1,6 @@
 ﻿using DB_AngoraLib.MockData;
 using DB_AngoraLib.Models;
+using DB_AngoraLib.SeededData;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -136,6 +137,7 @@ namespace DB_AngoraLib.EF_DbContext
                 .WithMany(u => u.RefreshTokens) // Bruger 'RefreshTokens' som den inverse navigationsegenskab
                 .HasForeignKey(rt => rt.UserId); // Antager at RefreshToken har en 'UserId' foreign key
 
+            modelBuilder.Seed();
         }
 
         public DbSet<ApplicationBreeder> BreederApplications { get; set; }

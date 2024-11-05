@@ -509,6 +509,26 @@ namespace DB_AngoraREST.Migrations
                     b.HasDiscriminator<string>("UserType").HasValue("User");
 
                     b.UseTphMappingStrategy();
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "MikkelsId",
+                            AccessFailedCount = 0,
+                            City = "Kirke Såby",
+                            ConcurrencyStamp = "43098a1b-5d1d-44d3-ad22-567f87c35140",
+                            Email = "Mikk.fri@gmail.com",
+                            EmailConfirmed = false,
+                            FirstName = "Mikkel",
+                            LastName = "Friborg",
+                            LockoutEnabled = false,
+                            PhoneNumber = "81183394",
+                            PhoneNumberConfirmed = false,
+                            RoadNameAndNo = "Fynsvej 14",
+                            SecurityStamp = "3cba2285-2aab-4fe8-b0f7-d7518f0c1075",
+                            TwoFactorEnabled = false,
+                            ZipCode = 4060
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -536,6 +556,26 @@ namespace DB_AngoraREST.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "1",
+                            Name = "Moderator",
+                            NormalizedName = "MODERATOR"
+                        },
+                        new
+                        {
+                            Id = "2",
+                            Name = "Breeder",
+                            NormalizedName = "BREEDER"
+                        },
+                        new
+                        {
+                            Id = "3",
+                            Name = "Admin",
+                            NormalizedName = "ADMIN"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -623,6 +663,23 @@ namespace DB_AngoraREST.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("AspNetUserRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            UserId = "IdasId",
+                            RoleId = "1"
+                        },
+                        new
+                        {
+                            UserId = "MajasId",
+                            RoleId = "2"
+                        },
+                        new
+                        {
+                            UserId = "MikkelsId",
+                            RoleId = "3"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
@@ -657,6 +714,52 @@ namespace DB_AngoraREST.Migrations
                         .HasFilter("[BreederRegNo] IS NOT NULL");
 
                     b.HasDiscriminator().HasValue("Breeder");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "IdasId",
+                            AccessFailedCount = 0,
+                            City = "Kirke Såby",
+                            ConcurrencyStamp = "b055e9c4-4619-4c90-88fc-05bd738b95a1",
+                            Email = "IdaFriborg87@gmail.com",
+                            EmailConfirmed = false,
+                            FirstName = "Ida",
+                            LastName = "Friborg",
+                            LockoutEnabled = false,
+                            NormalizedEmail = "IDAFRIBORG87@GMAIL.COM",
+                            NormalizedUserName = "IDAFRIBORG87@GMAIL.COM",
+                            PhoneNumber = "27586455",
+                            PhoneNumberConfirmed = false,
+                            RoadNameAndNo = "Fynsvej 14",
+                            SecurityStamp = "a9837cf5-12fd-4455-8f1d-559b40f3dc85",
+                            TwoFactorEnabled = false,
+                            UserName = "IdaFriborg87@gmail.com",
+                            ZipCode = 4060,
+                            BreederRegNo = "5095"
+                        },
+                        new
+                        {
+                            Id = "MajasId",
+                            AccessFailedCount = 0,
+                            City = "Benløse",
+                            ConcurrencyStamp = "5409b326-5fd0-427d-af1d-d58f76e3c3c9",
+                            Email = "MajaJoensen89@gmail.com",
+                            EmailConfirmed = false,
+                            FirstName = "Maja",
+                            LastName = "Hulstrøm",
+                            LockoutEnabled = false,
+                            NormalizedEmail = "MAJAJOENSEN89@GMAIL.COM",
+                            NormalizedUserName = "MAJAJOENSEN89@GMAIL.COM",
+                            PhoneNumber = "28733085",
+                            PhoneNumberConfirmed = false,
+                            RoadNameAndNo = "Sletten 4",
+                            SecurityStamp = "45aebbea-d81e-493a-924a-555a955288a1",
+                            TwoFactorEnabled = false,
+                            UserName = "MajaJoensen89@gmail.com",
+                            ZipCode = 4100,
+                            BreederRegNo = "5053"
+                        });
                 });
 
             modelBuilder.Entity("DB_AngoraLib.Models.ApplicationBreeder", b =>

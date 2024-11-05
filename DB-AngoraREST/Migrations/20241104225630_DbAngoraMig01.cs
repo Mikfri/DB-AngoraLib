@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace DB_AngoraREST.Migrations
 {
     /// <inheritdoc />
@@ -434,6 +436,40 @@ namespace DB_AngoraREST.Migrations
                         principalTable: "Rabbits",
                         principalColumn: "EarCombId",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.InsertData(
+                table: "AspNetRoles",
+                columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
+                values: new object[,]
+                {
+                    { "1", null, "Moderator", "MODERATOR" },
+                    { "2", null, "Breeder", "BREEDER" },
+                    { "3", null, "Admin", "ADMIN" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "AspNetUsers",
+                columns: new[] { "Id", "AccessFailedCount", "BreederRegNo", "City", "ConcurrencyStamp", "Email", "EmailConfirmed", "FirstName", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "RoadNameAndNo", "SecurityStamp", "TwoFactorEnabled", "UserName", "UserType", "ZipCode" },
+                values: new object[,]
+                {
+                    { "IdasId", 0, "5095", "Kirke Såby", "b055e9c4-4619-4c90-88fc-05bd738b95a1", "IdaFriborg87@gmail.com", false, "Ida", "Friborg", false, null, "IDAFRIBORG87@GMAIL.COM", "IDAFRIBORG87@GMAIL.COM", null, "27586455", false, "Fynsvej 14", "a9837cf5-12fd-4455-8f1d-559b40f3dc85", false, "IdaFriborg87@gmail.com", "Breeder", 4060 },
+                    { "MajasId", 0, "5053", "Benløse", "5409b326-5fd0-427d-af1d-d58f76e3c3c9", "MajaJoensen89@gmail.com", false, "Maja", "Hulstrøm", false, null, "MAJAJOENSEN89@GMAIL.COM", "MAJAJOENSEN89@GMAIL.COM", null, "28733085", false, "Sletten 4", "45aebbea-d81e-493a-924a-555a955288a1", false, "MajaJoensen89@gmail.com", "Breeder", 4100 }
+                });
+
+            migrationBuilder.InsertData(
+                table: "AspNetUsers",
+                columns: new[] { "Id", "AccessFailedCount", "City", "ConcurrencyStamp", "Email", "EmailConfirmed", "FirstName", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "RoadNameAndNo", "SecurityStamp", "TwoFactorEnabled", "UserName", "UserType", "ZipCode" },
+                values: new object[] { "MikkelsId", 0, "Kirke Såby", "43098a1b-5d1d-44d3-ad22-567f87c35140", "Mikk.fri@gmail.com", false, "Mikkel", "Friborg", false, null, null, null, null, "81183394", false, "Fynsvej 14", "3cba2285-2aab-4fe8-b0f7-d7518f0c1075", false, null, "User", 4060 });
+
+            migrationBuilder.InsertData(
+                table: "AspNetUserRoles",
+                columns: new[] { "RoleId", "UserId" },
+                values: new object[,]
+                {
+                    { "1", "IdasId" },
+                    { "2", "MajasId" },
+                    { "3", "MikkelsId" }
                 });
 
             migrationBuilder.CreateIndex(
