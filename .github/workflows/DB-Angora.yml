@@ -79,6 +79,13 @@ jobs:
     #   with:
     #     creds: ${{ secrets.DB_AngoraManagerAPI_SPN }}
 
+    # Nyt login forsøg
+    - name: Azure CLI Login using publish profile
+      run: |
+        echo "${{ secrets.DB_Angora_2FD5 }}" > publishProfile.publishsettings
+        az login --service-principal --username ${{ secrets.AZURE_CLIENT_ID }} --password ${{ secrets.AZURE_CLIENT_SECRET }} --tenant ${{ secrets.AZURE_TENANT_ID }}
+
+
     - name: Import API into Azure API Management
       run: az apim api import --path "${{ env.AZURE_APIM_RESOURCE_PATH }}" --resource-group "${{ env.AZURE_APIM_RESOURCEGROUP }}" --service-name "${{ env.AZURE_APIM_SERVICENAME }}" --api-id "${{ env.AZURE_APIM_API_ID }}" --service-url "${{ env.AZURE_APIM_APPSERVICEURL }}" --specification-path "${{ env.API_IMPORT_SPECIFICATION_PATH }}" --specification-format OpenApi --subscription-required false
 
