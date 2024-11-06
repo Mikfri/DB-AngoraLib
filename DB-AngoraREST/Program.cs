@@ -97,7 +97,7 @@ builder.Services.AddIdentity<User, IdentityRole>(
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    ///N�r en uautoriseret anmodning modtages, vil brugeren blive omdirigeret til Google's login side.
+    ///Naar en uautoriseret anmodning modtages, vil brugeren blive omdirigeret til Google's login side.
     //options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 
@@ -161,7 +161,7 @@ builder.Services.AddAuthorization(options =>
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
     options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve; // S�rger for at refence-loop kan h�ndteres, som er tilf�ldet for Rabbit_PedigreeDTO
+    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve; // Soerger for at refence-loop kan haandteres, som er tilf�ldet for Rabbit_PedigreeDTO
 
 });
 
@@ -252,37 +252,6 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
-
-// Kør seeding-processen
-//using (var scope = app.Services.CreateScope())
-//{
-//    var services = scope.ServiceProvider;
-//    try
-//    {
-//        var context = services.GetRequiredService<DB_AngoraContext>();
-//        context.Database.Migrate(); // Anvend migrationer
-//        SeedDatabase(context); // Kald seeding-metoden
-//    }
-//    catch (Exception ex)
-//    {
-//        // Håndter fejl
-//        var logger = services.GetRequiredService<ILogger<Program>>();
-//        logger.LogError(ex, "An error occurred while seeding the database.");
-//    }
-//}
-
-//-----------------: DB-INITIALIZER setup // UDKOMENTER n�r der skal laves DGML
-// Get the service scope factory
-
-//var serviceScopeFactory = app.Services.GetRequiredService<IServiceScopeFactory>();
-//using (var scope = serviceScopeFactory.CreateScope())
-//{
-//    var context = scope.ServiceProvider.GetRequiredService<DB_AngoraContext>();
-//    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
-//    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-
-//    DbInitializer.Initialize(context, userManager, roleManager);
-//}
 
 app.UseCors("MyAllowSpecificOrigins");
 // Configure the HTTP request pipeline.
