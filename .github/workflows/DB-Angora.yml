@@ -77,9 +77,7 @@ jobs:
     - name: Azure Login
       uses: azure/login@v1
       with:
-        client-id: ${{ secrets.AZURE_CLIENT_ID }} # tilføjet
-        client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}  # tilføjet
-        #creds: ${{ secrets.DB_AngoraManagerAPI_SPN }}  # skal den være der?    
+        creds: ${{ secrets.DB_AngoraManagerAPI_SPN }}
 
     - name: Import API into Azure API Management
       run: az apim api import --path "${{ env.AZURE_APIM_RESOURCE_PATH }}" --resource-group "${{ env.AZURE_APIM_RESOURCEGROUP }}" --service-name "${{ env.AZURE_APIM_SERVICENAME }}" --api-id "${{ env.AZURE_APIM_API_ID }}" --service-url "${{ env.AZURE_APIM_APPSERVICEURL }}" --specification-path "${{ env.API_IMPORT_SPECIFICATION_PATH }}" --specification-format OpenApi --subscription-required false
