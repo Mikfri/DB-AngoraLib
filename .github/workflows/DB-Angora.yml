@@ -62,17 +62,10 @@ jobs:
           ASPNETCORE_ENVIRONMENT: Production
         run: |
           echo "Environment variables set."
+
       - name: Deploy to Azure WebApp
         uses: azure/webapps-deploy@v2
         with:
           app-name: ${{ env.AZURE_WEBAPP_NAME }}
           publish-profile: ${{ secrets.DB_Angora_CC97 }}
           package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
-          # Tilføj denne del
-          app-settings-json: |
-            {
-              "AZURE_SQL_CONNECTION_STRING": "${{ secrets.AZURE_SQL_CONNECTION_STRING }}",
-              "Jwt:Issuer": "${{ secrets.JWT_ISSUER }}",
-              "Jwt:Audience": "${{ secrets.JWT_AUDIENCE }}",
-              "Jwt:Key": "${{ secrets.JWT_KEY }}"
-            }
