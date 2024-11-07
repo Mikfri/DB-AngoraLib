@@ -53,17 +53,19 @@ jobs:
           name: webapp
           path: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
 
+      - name: Set environment variables
+        env:
+          AZURE_SQL_CONNECTION_STRING: ${{ secrets.AZURE_SQL_CONNECTION_STRING }}
+          JWT_ISSUER: ${{ secrets.JWT_ISSUER }}
+          JWT_AUDIENCE: ${{ secrets.JWT_AUDIENCE }}
+          JWT_KEY: ${{ secrets.JWT_KEY }}
+          ASPNETCORE_ENVIRONMENT: Production
+        run: |
+          echo "Environment variables set."
+
       - name: Deploy to Azure WebApp
         uses: azure/webapps-deploy@v2
         with:
           app-name: ${{ env.AZURE_WEBAPP_NAME }}
           publish-profile: ${{ secrets.DB_Angora_CC97 }}
           package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
-
-      - name: Set environment variables
-        run: |
-          echo "AZURE_SQL_CONNECTION_STRING=${{ secrets.AZURE_SQL_CONNECTION_STRING }}" >> $GITHUB_ENV
-          echo "JWT_ISSUER=${{ secrets.JWT_ISSUER }}" >> $GITHUB_ENV
-          echo "JWT_AUDIENCE=${{ secrets.JWT_AUDIENCE }}" >> $GITHUB_ENV
-          echo "JWT_KEY=${{ secrets.JWT_KEY }}" >> $GITHUB_ENV
-          echo "ASPNETCORE_ENVIRONMENT=Production" >> $GITHUB_ENV
