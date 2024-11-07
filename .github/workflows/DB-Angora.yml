@@ -60,28 +60,8 @@ jobs:
           JWT_AUDIENCE: ${{ secrets.JWT_AUDIENCE }}
           JWT_KEY: ${{ secrets.JWT_KEY }}
           ASPNETCORE_ENVIRONMENT: Production
-        shell: pwsh
         run: |
-          Get-ChildItem env: | Where-Object { $_.Name -in @('AZURE_SQL_CONNECTION_STRING','JWT_ISSUER','JWT_AUDIENCE','JWT_KEY','ASPNETCORE_ENVIRONMENT') } | ForEach-Object {
-            "$($_.Name)=$($_.Value)" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
-          }
-
-      - name: Debug Environment Variables
-        shell: pwsh
-        run: |
-          Write-Host "Checking environment variables:"
-          @(
-            "AZURE_SQL_CONNECTION_STRING",
-            "JWT_ISSUER",
-            "JWT_AUDIENCE",
-            "JWT_KEY"
-          ) | ForEach-Object {
-            if ([string]::IsNullOrEmpty($env:$_)) {
-              Write-Host "Warning: $_ is empty or not set"
-            } else {
-              Write-Host "$_ is configured"
-            }
-          }
+          echo "Environment variables set."
 
       - name: Deploy to Azure WebApp
         uses: azure/webapps-deploy@v2
