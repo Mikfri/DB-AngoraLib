@@ -46,6 +46,7 @@ jobs:
     runs-on: windows-latest
     needs: build
     steps:
+
       - name: Download artifact from build job
         uses: actions/download-artifact@v3
         with:
@@ -53,66 +54,25 @@ jobs:
           path: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
 
       - name: Set environment variables
-        shell: pwsh
+        env:
+          AZURE_SQL_CONNECTION_STRING: ${{ secrets.AZURE_SQL_CONNECTION_STRING }}
+          JWT_ISSUER: ${{ secrets.JWT_ISSUER }}
+          JWT_AUDIENCE: ${{ secrets.JWT_AUDIENCE }}
+          JWT_KEY: ${{ secrets.JWT_KEY }}
+          ASPNETCORE_ENVIRONMENT: Production
         run: |
-          Add-Content -Path $env:GITHUB_ENV -Value "AZURE_SQL_CONNECTION_STRING=${{ secrets.AZURE_SQL_CONNECTION_STRING }}"
-          Add-Content -Path $env:GITHUB_ENV -Value "JWT_ISSUER=${{ secrets.JWT_ISSUER }}"
-          Add-Content -Path $env:GITHUB_ENV -Value "JWT_AUDIENCE=${{ secrets.JWT_AUDIENCE }}"
-          Add-Content -Path $env:GITHUB_ENV -Value "JWT_KEY=${{ secrets.JWT_KEY }}"
-          Add-Content -Path $env:GITHUB_ENV -Value "ASPNETCORE_ENVIRONMENT=Production"
-
-      - name: Debug Environment Variables
-        shell: pwsh
-        run: |
-          Write-Host "Checking environment variables:"
-          @(
-            "AZURE_SQL_CONNECTION_STRING",
-            "JWT_ISSUER",
-            "JWT_AUDIENCE",
-            "JWT_KEY"
-          ) | ForEach-Object {
-            if ([string]::IsNullOrEmpty($env:$_)) {
-              Write-Host "Warning: $_ is empty or not set"
-            } else {
-              Write-Host "$_ is configured"
-            }
-          }
-
-      - name: Set Web App Configuration
-        uses: azure/appservice-settings@v1
-        with:
-          app-name: ${{ env.AZURE_WEBAPP_NAME }}
-          app-settings-json: '[
-            {
-              "name": "AZURE_SQL_CONNECTION_STRING",
-              "value": "${{ secrets.AZURE_SQL_CONNECTION_STRING }}",
-              "slotSetting": false
-            },
-            {
-              "name": "JWT_ISSUER",
-              "value": "${{ secrets.JWT_ISSUER }}",
-              "slotSetting": false
-            },
-            {
-              "name": "JWT_AUDIENCE",
-              "value": "${{ secrets.JWT_AUDIENCE }}",
-              "slotSetting": false
-            },
-            {
-              "name": "JWT_KEY",
-              "value": "${{ secrets.JWT_KEY }}",
-              "slotSetting": false
-            }]'
-
-      - name: Configure Web App Settings
-        uses: azure/appservice-settings@v1
-        with:
-          app-name: ${{ env.AZURE_WEBAPP_NAME }}
-          general-settings-json: '{"ASPNETCORE_ENVIRONMENT": "Production"}'
-
+          echo "Environment variables set."
       - name: Deploy to Azure WebApp
         uses: azure/webapps-deploy@v2
         with:
           app-name: ${{ env.AZURE_WEBAPP_NAME }}
           publish-profile: ${{ secrets.DB_Angora_CC97 }}
           package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
+          # Tilføj denne del
+          app-settings-json: |
+            {
+              "AZURE_SQL_CONNECTION_STRING": "${{ secrets.AZURE_SQL_CONNECTION_STRING }}",
+              "Jwt:Issuer": "${{ secrets.JWT_ISSUER }}",
+              "Jwt:Audience": "${{ secrets.JWT_AUDIENCE }}",
+              "Jwt:Key": "${{ secrets.JWT_KEY }}"
+            }
