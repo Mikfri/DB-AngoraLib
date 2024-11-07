@@ -55,11 +55,11 @@ jobs:
       - name: Set environment variables
         shell: pwsh
         run: |
-          "AZURE_SQL_CONNECTION_STRING=${{ secrets.AZURE_SQL_CONNECTION_STRING }}" | Out-File -FilePath $env:GITHUB_ENV -Append
-          "JWT_ISSUER=${{ secrets.JWT_ISSUER }}" | Out-File -FilePath $env:GITHUB_ENV -Append
-          "JWT_AUDIENCE=${{ secrets.JWT_AUDIENCE }}" | Out-File -FilePath $env:GITHUB_ENV -Append
-          "JWT_KEY=${{ secrets.JWT_KEY }}" | Out-File -FilePath $env:GITHUB_ENV -Append
-          "ASPNETCORE_ENVIRONMENT=Production" | Out-File -FilePath $env:GITHUB_ENV -Append
+          Add-Content -Path $env:GITHUB_ENV -Value "AZURE_SQL_CONNECTION_STRING=${{ secrets.AZURE_SQL_CONNECTION_STRING }}"
+          Add-Content -Path $env:GITHUB_ENV -Value "JWT_ISSUER=${{ secrets.JWT_ISSUER }}"
+          Add-Content -Path $env:GITHUB_ENV -Value "JWT_AUDIENCE=${{ secrets.JWT_AUDIENCE }}"
+          Add-Content -Path $env:GITHUB_ENV -Value "JWT_KEY=${{ secrets.JWT_KEY }}"
+          Add-Content -Path $env:GITHUB_ENV -Value "ASPNETCORE_ENVIRONMENT=Production"
 
       - name: Debug Environment Variables
         shell: pwsh
