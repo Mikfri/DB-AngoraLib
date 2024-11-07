@@ -36,18 +36,27 @@ namespace DB_AngoraREST.Controllers
         //-----------------------------------: LOGIN :-----------------------------------
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpPost("Login")]
         public async Task<IActionResult> Login(Login_RequestDTO loginDTO)
         {
-            // Hent brugerens IP-adresse
-            var userIP = HttpContext.Connection.RemoteIpAddress?.ToString();
-
-            var result = await _signinService.LoginAsync(userIP, loginDTO);
-            if (result.AccessToken != null)
+            try
             {
-                return Ok(result);
+                // Hent brugerens IP-adresse
+                var userIP = HttpContext.Connection.RemoteIpAddress?.ToString();
+
+                var result = await _signinService.LoginAsync(userIP, loginDTO);
+                if (result.AccessToken != null)
+                {
+                    return Ok(result);
+                }
+                return Unauthorized(new { error = "Invalid login attempt" });
             }
-            return Unauthorized(new { error = "Invalid login attempt" });
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while attempting to log in.");
+                return StatusCode(StatusCodes.Status500InternalServerError, new { error = ex.Message });
+            }
         }
 
 
