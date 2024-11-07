@@ -46,6 +46,7 @@ jobs:
     runs-on: windows-latest
     needs: build
     steps:
+
       - name: Download artifact from build job
         uses: actions/download-artifact@v3
         with:
@@ -69,54 +70,18 @@ jobs:
         shell: pwsh
         run: |
           Write-Host "Checking environment variables:"
-          $envVars = @(
+          @(
             "AZURE_SQL_CONNECTION_STRING",
             "JWT_ISSUER",
             "JWT_AUDIENCE",
             "JWT_KEY"
-          )
-          foreach ($varName in $envVars) {
-            $value = [Environment]::GetEnvironmentVariable($varName)
-            if ([string]::IsNullOrEmpty($value)) {
-              Write-Host "Warning: $varName is empty or not set"
+          ) | ForEach-Object {
+            if ([string]::IsNullOrEmpty($env:$_)) {
+              Write-Host "Warning: $_ is empty or not set"
             } else {
-              Write-Host "$varName is configured"
+              Write-Host "$_ is configured"
             }
           }
-
-      - name: Set Web App Configuration
-        uses: azure/appservice-settings@v1
-        with:
-          app-name: ${{ env.AZURE_WEBAPP_NAME }}
-          app-settings-json: >
-            [
-              {
-                "name": "AZURE_SQL_CONNECTION_STRING",
-                "value": "${{ secrets.AZURE_SQL_CONNECTION_STRING }}",
-                "slotSetting": false
-              },
-              {
-                "name": "JWT_ISSUER",
-                "value": "${{ secrets.JWT_ISSUER }}",
-                "slotSetting": false
-              },
-              {
-                "name": "JWT_AUDIENCE",
-                "value": "${{ secrets.JWT_AUDIENCE }}",
-                "slotSetting": false
-              },
-              {
-                "name": "JWT_KEY",
-                "value": "${{ secrets.JWT_KEY }}",
-                "slotSetting": false
-              }
-            ]
-
-      - name: Configure Web App Settings
-        uses: azure/appservice-settings@v1
-        with:
-          app-name: ${{ env.AZURE_WEBAPP_NAME }}
-          general-settings-json: '{"ASPNETCORE_ENVIRONMENT": "Production"}'
 
       - name: Deploy to Azure WebApp
         uses: azure/webapps-deploy@v2
