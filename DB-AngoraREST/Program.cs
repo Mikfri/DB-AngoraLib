@@ -19,16 +19,14 @@ using System.Text;
 using System.Text.Json.Serialization;
 using DB_AngoraLib.Services.BreederBrandService;
 using DB_AngoraLib.Services.BreederService;
-using DB_AngoraREST.Settings;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Load secrets from environment variables
-builder.Configuration.AddEnvironmentVariables();
-builder.Services.Configure<ConnectionStrings>(builder.Configuration.GetSection("ConnectionStrings"));
-builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("Jwt"));
-builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
-
+// Load secrets from secrets.json if in Production
+if (builder.Environment.IsProduction())
+{
+    builder.Configuration.AddUserSecrets<Program>();
+}
 
 // Add services to the container.
 //-----------------: DB-AngoraLib Services
@@ -63,57 +61,42 @@ builder.Services.Configure<Settings_Email>(builder.Configuration.GetSection("Ema
 
 builder.Services.AddDistributedMemoryCache(); // Adds a default in-memory implementation of IDistributedCache
 
+// Log configuration values to verify they are loaded correctly
+var jwtIssuer = builder.Configuration["Jwt:Issuer"];
+var jwtAudience = builder.Configuration["Jwt:Audience"];
+var jwtKey = builder.Configuration["Jwt:Key"];
 
-/// Du kan tilf�je en betingelse for at skifte mellem forbindelsesstrengene for eksempel,
-/// baseret p� en milj�variabel eller en konfigurationsv�rdi
-//var connectionStringName = "DefaultConnection";  // "DefaultConnection" "SecretConnection"
-//if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Production")
-//{
-//    connectionStringName = "SecretConnection";
-//}
+Console.WriteLine($"JWT Issuer: {jwtIssuer}");
+Console.WriteLine($"JWT Audience: {jwtAudience}");
+Console.WriteLine($"JWT Key: {jwtKey}");
 
-// -----------------: DB CONNECTION-STRING & MIGRATION SETUP
+// DB CONNECTION-STRING & MIGRATION SETUP
 builder.Services.AddDbContext<DB_AngoraContext>(options =>
-    //options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"),
-    options.UseSqlServer(builder.Configuration.GetConnectionString("SecretConnection"),
-    b => b.MigrationsAssembly("DB-AngoraREST")));
+{
+    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+    if (builder.Environment.IsProduction())
+    {
+        connectionString = builder.Configuration["AZURE_SQL_CONNECTION_STRING"];
+        if (string.IsNullOrEmpty(connectionString))
+        {
+            connectionString = builder.Configuration["ConnectionStrings:SecretConnection"];
+        }
+    }
+    Console.WriteLine($"Using connection string: {connectionString}");
+    options.UseSqlServer(connectionString, b => b.MigrationsAssembly("DB-AngoraREST"));
+});
 
 
-//------------------: IDENTITY
-builder.Services.AddIdentity<User, IdentityRole>(
-    //options =>
-    //{
-    //    options.ClaimsIdentity.UserNameClaimType = "UserID";
-    //}
-    )
+// IDENTITY
+builder.Services.AddIdentity<User, IdentityRole>()
     .AddEntityFrameworkStores<DB_AngoraContext>()
     .AddDefaultTokenProviders();
-//.AddTokenProvider(authSettings.TokenProviderName, typeof(DataProtectorTokenProvider<User>));
-//.AddSignInManager()
-//.AddRoles<IdentityRole>();
-
-
 
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    ///Naar en uautoriseret anmodning modtages, vil brugeren blive omdirigeret til Google's login side.
-    //options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-
 })
-// Dette er Googles OAuth2.0 config,
-//.AddGoogle(googleOptions =>   // validerer automatisk "ya29." tokenet fra Google
-//{
-//    googleOptions.ClientId = builder.Configuration["Authentication:Google:ClientId"];
-//    googleOptions.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
-//    //googleOptions.CallbackPath = new PathString("/api/auth/signin-google");
-//    googleOptions.CallbackPath = "/signin-google";
-//    //googleOptions.CallbackPath = builder.Configuration["Authentication:Google:CallbackPath"];
-//    Console.WriteLine($"Google CallbackPath: {googleOptions.CallbackPath}");
-
-//    //googleOptions.SaveTokens = true;    // Hvad g�r denne? - Gemmer tokens i cookie?
-//})
 .AddJwtBearer(options =>
 {
     options.TokenValidationParameters = new TokenValidationParameters
@@ -122,12 +105,11 @@ builder.Services.AddAuthentication(options =>
         ValidateAudience = true,
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
-        ValidIssuer = builder.Configuration["Jwt:Issuer"],
-        ValidAudience = builder.Configuration["Jwt:Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+        ValidIssuer = jwtIssuer,
+        ValidAudience = jwtAudience,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
     };
 });
-
 
 
 //--------: Authorization
@@ -254,12 +236,22 @@ builder.Services.AddCors(options =>
 var app = builder.Build();
 
 app.UseCors("MyAllowSpecificOrigins");
+
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+app.UseSwagger();
+app.UseSwaggerUI(c =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+    c.RoutePrefix = "swagger"; // Set Swagger UI at /swagger
+});
+//if (app.Environment.IsDevelopment())
+//{
+//    app.UseSwagger();
+//    app.UseSwaggerUI();
+//}
+
+app.UseDefaultFiles(); // Middleware to serve default files like index.html
+
 app.UseHttpsRedirection();
 
 app.UseAuthentication();    // IdentityUser setup
