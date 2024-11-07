@@ -82,11 +82,8 @@ builder.Services.AddDbContext<DB_AngoraContext>(options =>
         if (string.IsNullOrEmpty(connectionString))
         {
             connectionString = builder.Configuration["ConnectionStrings:SecretConnection"];
-            Console.WriteLine($"Debug: SecretConnection: {(string.IsNullOrEmpty(connectionString) ? "NOT FOUND" : "FOUND")}");
         }
     }
-
-    Console.WriteLine($"Debug: Using connection string: {connectionString}");
 
     options.UseSqlServer(connectionString, b => b.MigrationsAssembly("DB-AngoraREST"));
 });
