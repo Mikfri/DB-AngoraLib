@@ -76,8 +76,7 @@ builder.Services.AddDbContext<DB_AngoraContext>(options =>
     var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
     if (builder.Environment.IsProduction())
     {
-        connectionString = builder.Configuration["MYSQLCONNSTR_AZURE_SQL_CONNECTION_STRING"];
-        Console.WriteLine($"Debug: MYSQLCONNSTR_AZURE_SQL_CONNECTION_STRING: {(string.IsNullOrEmpty(connectionString) ? "NOT FOUND" : "FOUND")}");
+        connectionString = builder.Configuration["AZURE_SQL_CONNECTION_STRING"];
 
         if (string.IsNullOrEmpty(connectionString))
         {
