@@ -28,13 +28,13 @@ jobs:
           dotnet-version: ${{ env.DOTNET_CORE_VERSION }}
 
       - name: Restore dependencies # Gendanner afhængigheder til hele løsningen
-        run: dotnet restore [sti til din løsning]
+        run: dotnet restore DB-AngoraLib.sln
 
       - name: Build # Bygger hele løsningen
-        run: dotnet build [sti til din løsning] --configuration ${{ env.CONFIGURATION }} --no-restore
+        run: dotnet build DB-AngoraLib.sln --configuration ${{ env.CONFIGURATION }} --no-restore
 
       - name: Test # Kører testene for alle testprojekter i løsningen
-        run: dotnet test [sti til din løsning] --configuration ${{ env.CONFIGURATION }} --no-build
+        run: dotnet test DB-AngoraLib.sln --configuration ${{ env.CONFIGURATION }} --no-build
 
       - name: Publish # Publicerer applikationen
         run: dotnet publish DB-AngoraREST/DB-AngoraREST.csproj --configuration ${{ env.CONFIGURATION }} --no-build --output "${{ env.AZURE_WEBAPP_PACKAGE_PATH }}"
