@@ -101,7 +101,7 @@ namespace DB_AngoraREST.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [HttpGet("Rabbits_Owned")]
-        [Authorize(Roles = "Admin, Breeder, Moderator")]
+        [Authorize(Roles = "Admin, Moderator, BreederPremium, BreederBasic")]
         public async Task<IActionResult> GetMyFilteredRabbits([FromQuery] Rabbit_FilteredRequestDTO filter)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -113,7 +113,7 @@ namespace DB_AngoraREST.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)] // Unauthorized, hvis brugeren har en ugyldig token (ikke logget ind eller tokenfejl)
         [ProducesResponseType(StatusCodes.Status403Forbidden)]    // Forbidden, hvis brugeren ikke har adgang til ressourcen
         [HttpGet("Rabbits_FromMyFold")]
-        [Authorize(Roles = "Admin, Breeder, Moderator")]
+        [Authorize(Roles = "Admin, Moderator, BreederPremium, BreederBasic")]
         public async Task<IActionResult> GetRabbitsFromMyFold()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -130,7 +130,7 @@ namespace DB_AngoraREST.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)] // Unauthorized, hvis brugeren har en ugyldig token (ikke logget ind eller tokenfejl)
         [ProducesResponseType(StatusCodes.Status403Forbidden)]    // Forbidden, hvis brugeren ikke har adgang til ressourcen
         [HttpGet("TransferRequests_Received")]
-        [Authorize(Roles = "Admin, Breeder, Moderator")]
+        [Authorize(Roles = "Admin, Moderator, BreederPremium, BreederBasic")]
         public async Task<ActionResult<List<TransferRequest_ReceivedDTO>>> GetReceivedTransferRequests([FromQuery] TransferRequest_ReceivedFilterDTO filter)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -147,7 +147,7 @@ namespace DB_AngoraREST.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)] // Unauthorized, hvis brugeren har en ugyldig token (ikke logget ind eller tokenfejl)
         [ProducesResponseType(StatusCodes.Status403Forbidden)]    // Forbidden, hvis brugeren ikke har adgang til ressourcen
         [HttpGet("TransferRequests_Issued")]
-        [Authorize(Roles = "Admin, Breeder, Moderator")]
+        [Authorize(Roles = "Admin, Moderator, BreederPremium, BreederBasic")]
         public async Task<ActionResult<List<TransferRequest_SentDTO>>> GetSentTransferRequests([FromQuery] TransferRequest_SentFilterDTO filter)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);

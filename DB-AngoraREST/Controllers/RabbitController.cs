@@ -28,7 +28,7 @@ namespace DB_AngoraREST.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [HttpPost("Create")]    // FromBody er bedst til SPA applikationer
-        [Authorize(Roles = "Admin, Breeder, Moderator")]
+        [Authorize(Roles = "Admin, Moderator, BreederPremium, BreederBasic")]
         public async Task<ActionResult<Rabbit_ProfileDTO>> AddRabbit([FromBody] Rabbit_CreateDTO newRabbitDto)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -53,7 +53,7 @@ namespace DB_AngoraREST.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [HttpPost("Create_Form")]
-        [Authorize(Roles = "Admin, Breeder, Moderator")]
+        [Authorize(Roles = "Admin, Moderator, BreederPremium, BreederBasic")]
         public async Task<ActionResult<Rabbit_ProfileDTO>> AddRabbit_Form([FromForm] Rabbit_CreateDTO newRabbitDto)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -92,7 +92,7 @@ namespace DB_AngoraREST.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [HttpGet("Profile/{earCombId}")]
-        [Authorize(Roles = "Admin, Moderator, Breeder")]
+        [Authorize(Roles = "Admin, Moderator, BreederPremium, BreederBasic")]
         public async Task<ActionResult<Rabbit_ProfileDTO>> GetRabbit_ProfileByEarTags(string earCombId)
         {
             var currentUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -112,7 +112,7 @@ namespace DB_AngoraREST.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [HttpGet("Pedigree/{earCombId}")]
-        [Authorize(Roles = "Admin, Moderator, Breeder")] // Juster adgangskontrollen efter behov
+        [Authorize(Roles = "Admin, Moderator, BreederPremium, BreederBasic")] // Juster adgangskontrollen efter behov
         public async Task<ActionResult<Rabbit_PedigreeDTO>> GetRabbitPedigree(string earCombId)
         {
             try
@@ -139,7 +139,7 @@ namespace DB_AngoraREST.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [HttpGet("TestParingPedigree")]
-        [Authorize(Roles = "Admin, Moderator, Breeder")]
+        [Authorize(Roles = "Admin, Moderator, BreederPremium, BreederBasic")]
         public async Task<ActionResult<Rabbit_PedigreeDTO>> GetRabbitTestParingPedigree(
         [FromQuery] string fatherEarCombId,
         [FromQuery] string motherEarCombId)
