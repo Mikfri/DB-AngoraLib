@@ -24,14 +24,14 @@ jobs:
         with:
           dotnet-version: ${{ env.DOTNET_CORE_VERSION }}
 
-      - name: Restore dependencies # Gendanner afhængigheder(NuGets, .csproj og .slns)til projektet fra nuværende WORKING_DIRECTORY
-        run: dotnet restore "${{ env.WORKING_DIRECTORY }}" 
+      - name: Restore dependencies # Gendanner afhængigheder(NuGets, .csproj og .slns) til hele løsningen
+        run: dotnet restore
 
-      - name: Build # Bygger applikation(en/erne) ud fra satte specifikationer (Debug/Release)
-        run: dotnet build "${{ env.WORKING_DIRECTORY }}" --configuration ${{ env.CONFIGURATION }} --no-restore
+      - name: Build # Bygger hele løsningen ud fra satte specifikationer (Debug/Release)
+        run: dotnet build --configuration ${{ env.CONFIGURATION }} --no-restore
 
       - name: Test # Kører testene (goer pt ikke noget, da kun tests findes i DB-AngoraMST)
-        run: dotnet test "${{ env.WORKING_DIRECTORY }}" --no-build
+        run: dotnet test --configuration ${{ env.CONFIGURATION }} --no-build
 
       - name: Publish # Publicerer applikationen til en output-mappe (defineret i AZURE_WEBAPP_PACKAGE_PATH)
         run: dotnet publish "${{ env.WORKING_DIRECTORY }}" --configuration ${{ env.CONFIGURATION }} --no-build --output "${{ env.AZURE_WEBAPP_PACKAGE_PATH }}"
