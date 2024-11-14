@@ -8,7 +8,7 @@ on:
 env:
   AZURE_WEBAPP_NAME: DB-Angora                      # Navn på Azure Web App, som applikationen skal deployes til
   AZURE_WEBAPP_PACKAGE_PATH: DB-AngoraREST\publish  # Output-sti til den buildede pakke
-  CONFIGURATION: Debug                              # Debug/Release (Debug giver merer information)
+  CONFIGURATION: Debug                              # Debug/Release (Debug giver mere information)
   DOTNET_CORE_VERSION: 8.0.x                        # .NET Core SDK, version
   WORKING_DIRECTORY: .                              # Sti til roden af applikationsmappen
   ASPNETCORE_ENVIRONMENT: Development               # Development, Staging, Production (Development giver mest debug info)
@@ -19,24 +19,27 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: List files in working directory
+        run: dir
+
       - name: Setup .NET SDK # Sætter .NET SDK op til den definerede version
         uses: actions/setup-dotnet@v4                       
         with:
           dotnet-version: ${{ env.DOTNET_CORE_VERSION }}
 
-      - name: Restore dependencies # Gendanner afhængigheder(NuGets, .csproj og .slns) til hele løsningen
-        run: dotnet restore DB-AngoraLib/DB-AngoraLib.sln
+      - name: Restore dependencies # Gendanner afhængigheder til hele løsningen
+        run: dotnet restore [sti til din løsning]
 
-      - name: Build # Bygger hele løsningen ud fra satte specifikationer (Debug/Release)
-        run: dotnet build DB-AngoraLib/DB-AngoraLib.sln --configuration ${{ env.CONFIGURATION }} --no-restore
+      - name: Build # Bygger hele løsningen
+        run: dotnet build [sti til din løsning] --configuration ${{ env.CONFIGURATION }} --no-restore
 
       - name: Test # Kører testene for alle testprojekter i løsningen
-        run: dotnet test DB-AngoraLib/DB-AngoraLib.sln --configuration ${{ env.CONFIGURATION }} --no-build
+        run: dotnet test [sti til din løsning] --configuration ${{ env.CONFIGURATION }} --no-build
 
-      - name: Publish # Publicerer applikationen til en output-mappe (defineret i AZURE_WEBAPP_PACKAGE_PATH)
+      - name: Publish # Publicerer applikationen
         run: dotnet publish DB-AngoraREST/DB-AngoraREST.csproj --configuration ${{ env.CONFIGURATION }} --no-build --output "${{ env.AZURE_WEBAPP_PACKAGE_PATH }}"
 
-      - name: Publish Artifacts # Upload af bygget webapp som en artefakt, så den kan bruges i næste job
+      - name: Publish Artifacts # Upload af bygget webapp
         uses: actions/upload-artifact@v4
         with:
           name: webapp
@@ -55,7 +58,7 @@ jobs:
 
       - name: Set environment variables
         env:
-          AZURE_SQL_CONNECTION_STRING: ${{ secrets.AZURE_SQL_CONNECTION_STRING }} # Denne secret skal overskrives manuelt via > Settings > Environment variables
+          AZURE_SQL_CONNECTION_STRING: ${{ secrets.AZURE_SQL_CONNECTION_STRING }}
           JWT_ISSUER: ${{ secrets.JWT_ISSUER }}
           JWT_AUDIENCE: ${{ secrets.JWT_AUDIENCE }}
           JWT_KEY: ${{ secrets.JWT_KEY }}
