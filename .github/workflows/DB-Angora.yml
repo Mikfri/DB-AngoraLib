@@ -10,7 +10,7 @@ env:
   AZURE_WEBAPP_PACKAGE_PATH: DB-AngoraREST\publish  # Output-sti til den buildede pakke
   CONFIGURATION: Debug                              # Debug/Release (Debug giver merer information)
   DOTNET_CORE_VERSION: 8.0.x                        # .NET Core SDK, version
-  WORKING_DIRECTORY: DB-AngoraREST                  # Sti til applikationsmappen
+  WORKING_DIRECTORY: .                              # Sti til roden af applikationsmappen
   ASPNETCORE_ENVIRONMENT: Development               # Development, Staging, Production (Development giver mest debug info)
 
 jobs:
@@ -25,16 +25,16 @@ jobs:
           dotnet-version: ${{ env.DOTNET_CORE_VERSION }}
 
       - name: Restore dependencies # Gendanner afhængigheder(NuGets, .csproj og .slns) til hele løsningen
-        run: dotnet restore
+        run: dotnet restore "${{ env.WORKING_DIRECTORY }}" 
 
       - name: Build # Bygger hele løsningen ud fra satte specifikationer (Debug/Release)
-        run: dotnet build --configuration ${{ env.CONFIGURATION }} --no-restore
+        run: dotnet build "${{ env.WORKING_DIRECTORY }}" --configuration ${{ env.CONFIGURATION }} --no-restore
 
-      - name: Test # Kører testene (goer pt ikke noget, da kun tests findes i DB-AngoraMST)
-        run: dotnet test --configuration ${{ env.CONFIGURATION }} --no-build
+      - name: Test # Kører testene for alle testprojekter i løsningen
+        run: dotnet test "${{ env.WORKING_DIRECTORY }}" --configuration ${{ env.CONFIGURATION }} --no-build
 
       - name: Publish # Publicerer applikationen til en output-mappe (defineret i AZURE_WEBAPP_PACKAGE_PATH)
-        run: dotnet publish "${{ env.WORKING_DIRECTORY }}" --configuration ${{ env.CONFIGURATION }} --no-build --output "${{ env.AZURE_WEBAPP_PACKAGE_PATH }}"
+        run: dotnet publish "DB-AngoraREST/DB-AngoraREST.csproj" --configuration ${{ env.CONFIGURATION }} --no-build --output "${{ env.AZURE_WEBAPP_PACKAGE_PATH }}"
 
       - name: Publish Artifacts # Upload af bygget webapp som en artefakt, så den kan bruges i næste job
         uses: actions/upload-artifact@v4
