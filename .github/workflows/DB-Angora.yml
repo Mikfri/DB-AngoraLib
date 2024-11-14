@@ -16,6 +16,9 @@ env:
 jobs:
   build:
     runs-on: windows-latest
+    permissions:
+      contents: read    # Tilladelse til dorny/test-reporter@v1
+      checks: write     # Tilladelse til dorny/test-reporter@v1
     steps:
       - uses: actions/checkout@v4
 
@@ -37,12 +40,15 @@ jobs:
         #run: dotnet test DB-AngoraLib.sln --configuration ${{ env.CONFIGURATION }} --no-build
         run: dotnet test DB-AngoraLib.sln --configuration ${{ env.CONFIGURATION }} --no-build --logger "trx;LogFileName=test_results.trx"
 
+      - name: List Test Results # hjælper med at bekræfte, at test_results.trx laves og findes på den forventede sti...
+        run: dir /s /b *.trx
+
       - name: Publish Test Results
         uses: dorny/test-reporter@v1
         with:
           name: Test Results
           path: '**/test_results.trx'
-          reporter: vstest
+          reporter: dotnet-trx  
 
       - name: Publish # Publicerer applikationen
         run: dotnet publish DB-AngoraREST/DB-AngoraREST.csproj --configuration ${{ env.CONFIGURATION }} --output "${{ env.AZURE_WEBAPP_PACKAGE_PATH }}"
