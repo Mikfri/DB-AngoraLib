@@ -25,16 +25,16 @@ jobs:
           dotnet-version: ${{ env.DOTNET_CORE_VERSION }}
 
       - name: Restore dependencies # Gendanner afhængigheder(NuGets, .csproj og .slns) til hele løsningen
-        run: dotnet restore DB-AngoraLib/DB-AngoraLib.sln
+        run: dotnet restore "C:\Users\mikkf\source\repos\DB-Angora\DB-AngoraLib.sln"
 
       - name: Build # Bygger hele løsningen ud fra satte specifikationer (Debug/Release)
-        run: dotnet build DB-AngoraLib/DB-AngoraLib.sln --configuration ${{ env.CONFIGURATION }} --no-restore
+        run: dotnet build "C:\Users\mikkf\source\repos\DB-Angora\DB-AngoraLib.sln" --configuration ${{ env.CONFIGURATION }} --no-restore
 
       - name: Test # Kører testene for alle testprojekter i løsningen
-        run: dotnet test DB-AngoraLib/DB-AngoraLib.sln --configuration ${{ env.CONFIGURATION }} --no-build
+        run: dotnet test "C:\Users\mikkf\source\repos\DB-Angora\DB-AngoraLib.sln" --configuration ${{ env.CONFIGURATION }} --no-build
 
       - name: Publish # Publicerer applikationen til en output-mappe (defineret i AZURE_WEBAPP_PACKAGE_PATH)
-        run: dotnet publish DB-AngoraREST/DB-AngoraREST.csproj --configuration ${{ env.CONFIGURATION }} --no-build --output "${{ env.AZURE_WEBAPP_PACKAGE_PATH }}"
+        run: dotnet publish "C:\Users\mikkf\source\repos\DB-Angora\DB-AngoraREST\DB-AngoraREST.csproj" --configuration ${{ env.CONFIGURATION }} --no-build --output "${{ env.AZURE_WEBAPP_PACKAGE_PATH }}"
 
       - name: Publish Artifacts # Upload af bygget webapp som en artefakt, så den kan bruges i næste job
         uses: actions/upload-artifact@v4
