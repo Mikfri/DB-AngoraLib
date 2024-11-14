@@ -60,7 +60,7 @@ namespace DB_AngoraLib.SeededData
                 UserName = "Mikk.fri@gmail.com",
                 NormalizedUserName = "MIKK.FRI@GMAIL.COM",
                 NormalizedEmail = "MIKK.FRI@GMAIL.COM",
-                PasswordHash = hasher.HashPassword(null, "Mikkel123!")
+                PasswordHash = hasher.HashPassword(null, "Mikk123!")
             };
 
             modelBuilder.Entity<Breeder>().HasData(breeder1, breeder2);
@@ -69,9 +69,11 @@ namespace DB_AngoraLib.SeededData
             // Seed Roles
             var roles = new List<IdentityRole>
             {
-                new IdentityRole { Id = "1", Name = "Moderator", NormalizedName = "MODERATOR" },
-                new IdentityRole { Id = "2", Name = "Breeder", NormalizedName = "BREEDER" },
-                new IdentityRole { Id = "3", Name = "Admin", NormalizedName = "ADMIN" }
+                new IdentityRole { Id = "1", Name = "Admin", NormalizedName = "ADMIN" },
+                new IdentityRole { Id = "2", Name = "Moderator", NormalizedName = "MODERATOR" },
+                new IdentityRole { Id = "3", Name = "BreederPremium", NormalizedName = "BREEDERPREMIUM" },
+                new IdentityRole { Id = "4", Name = "BreederBasic", NormalizedName = "BREEDERBASIC" },
+                new IdentityRole { Id = "5", Name = "UserBasicFree", NormalizedName = "USERBASICFREE" }
             };
 
             modelBuilder.Entity<IdentityRole>().HasData(roles);
@@ -79,9 +81,11 @@ namespace DB_AngoraLib.SeededData
             // Seed UserRoles
             var userRoles = new List<IdentityUserRole<string>>
             {
-                new IdentityUserRole<string> { UserId = "IdasId", RoleId = "1" },
-                new IdentityUserRole<string> { UserId = "MajasId", RoleId = "2" },
-                new IdentityUserRole<string> { UserId = "MikkelsId", RoleId = "3" }
+                new IdentityUserRole<string> { UserId = "IdasId", RoleId = "2" }, // Moderator
+                new IdentityUserRole<string> { UserId = "MajasId", RoleId = "3" }, // BreederPremium
+                new IdentityUserRole<string> { UserId = "MikkelsId", RoleId = "1" }, // Admin
+                // Tilføjelse af flere roller:
+                //new IdentityUserRole<string> { UserId = "MajasId", RoleId = "2" }
             };
 
             modelBuilder.Entity<IdentityUserRole<string>>().HasData(userRoles);
@@ -89,22 +93,35 @@ namespace DB_AngoraLib.SeededData
             // Seed RoleClaims
             var roleClaims = new List<IdentityRoleClaim<string>>
             {
-                new IdentityRoleClaim<string> { Id = 1, RoleId = "3", ClaimType = "User:Read", ClaimValue = "Any" },
-                new IdentityRoleClaim<string> { Id = 2, RoleId = "3", ClaimType = "User:Create", ClaimValue = "Any" },
-                new IdentityRoleClaim<string> { Id = 3, RoleId = "3", ClaimType = "User:Update", ClaimValue = "Any" },
-                new IdentityRoleClaim<string> { Id = 4, RoleId = "3", ClaimType = "User:Delete", ClaimValue = "Any" },
-                new IdentityRoleClaim<string> { Id = 5, RoleId = "3", ClaimType = "Rabbit:Create", ClaimValue = "Any" },
-                new IdentityRoleClaim<string> { Id = 6, RoleId = "3", ClaimType = "Rabbit:Read", ClaimValue = "Any" },
-                new IdentityRoleClaim<string> { Id = 7, RoleId = "3", ClaimType = "Rabbit:Update", ClaimValue = "Any" },
-                new IdentityRoleClaim<string> { Id = 8, RoleId = "3", ClaimType = "Rabbit:Delete", ClaimValue = "Any" },
-                new IdentityRoleClaim<string> { Id = 9, RoleId = "1", ClaimType = "Rabbit:Create", ClaimValue = "Any" },
-                new IdentityRoleClaim<string> { Id = 10, RoleId = "1", ClaimType = "Rabbit:Read", ClaimValue = "Any" },
-                new IdentityRoleClaim<string> { Id = 11, RoleId = "1", ClaimType = "Rabbit:Update", ClaimValue = "Any" },
-                new IdentityRoleClaim<string> { Id = 12, RoleId = "1", ClaimType = "Rabbit:Delete", ClaimValue = "Any" },
-                new IdentityRoleClaim<string> { Id = 13, RoleId = "2", ClaimType = "Rabbit:Create", ClaimValue = "Own" },
-                new IdentityRoleClaim<string> { Id = 14, RoleId = "2", ClaimType = "Rabbit:Read", ClaimValue = "Own" },
-                new IdentityRoleClaim<string> { Id = 15, RoleId = "2", ClaimType = "Rabbit:Update", ClaimValue = "Own" },
-                new IdentityRoleClaim<string> { Id = 16, RoleId = "2", ClaimType = "Rabbit:Delete", ClaimValue = "Own" }
+                // Admin Claims
+                new IdentityRoleClaim<string> { Id = 1, RoleId = "1", ClaimType = "User:Read", ClaimValue = "Any" },
+                new IdentityRoleClaim<string> { Id = 2, RoleId = "1", ClaimType = "User:Create", ClaimValue = "Any" },
+                new IdentityRoleClaim<string> { Id = 3, RoleId = "1", ClaimType = "User:Update", ClaimValue = "Any" },
+                new IdentityRoleClaim<string> { Id = 4, RoleId = "1", ClaimType = "User:Delete", ClaimValue = "Any" },
+                new IdentityRoleClaim<string> { Id = 5, RoleId = "1", ClaimType = "Rabbit:Create", ClaimValue = "Any" },
+                new IdentityRoleClaim<string> { Id = 6, RoleId = "1", ClaimType = "Rabbit:Read", ClaimValue = "Any" },
+                new IdentityRoleClaim<string> { Id = 7, RoleId = "1", ClaimType = "Rabbit:Update", ClaimValue = "Any" },
+                new IdentityRoleClaim<string> { Id = 8, RoleId = "1", ClaimType = "Rabbit:Delete", ClaimValue = "Any" },
+
+                // Moderator Claims
+                new IdentityRoleClaim<string> { Id = 9, RoleId = "2", ClaimType = "Rabbit:Create", ClaimValue = "Any" },
+                new IdentityRoleClaim<string> { Id = 10, RoleId = "2", ClaimType = "Rabbit:Read", ClaimValue = "Any" },
+                new IdentityRoleClaim<string> { Id = 11, RoleId = "2", ClaimType = "Rabbit:Update", ClaimValue = "Any" },
+                new IdentityRoleClaim<string> { Id = 12, RoleId = "2", ClaimType = "Rabbit:Delete", ClaimValue = "Any" },
+
+                // BreederPremium Claims
+                new IdentityRoleClaim<string> { Id = 13, RoleId = "3", ClaimType = "Rabbit:Create", ClaimValue = "Own" },
+                new IdentityRoleClaim<string> { Id = 14, RoleId = "3", ClaimType = "Rabbit:Read", ClaimValue = "Own" },
+                new IdentityRoleClaim<string> { Id = 15, RoleId = "3", ClaimType = "Rabbit:Update", ClaimValue = "Own" },
+                new IdentityRoleClaim<string> { Id = 16, RoleId = "3", ClaimType = "Rabbit:Delete", ClaimValue = "Own" },
+                new IdentityRoleClaim<string> { Id = 17, RoleId = "3", ClaimType = "Rabbit:ImageCount", ClaimValue = "3" },
+
+                // BreederBasic Claims
+                new IdentityRoleClaim<string> { Id = 18, RoleId = "4", ClaimType = "Rabbit:Create", ClaimValue = "Own" },
+                new IdentityRoleClaim<string> { Id = 19, RoleId = "4", ClaimType = "Rabbit:Read", ClaimValue = "Own" },
+                new IdentityRoleClaim<string> { Id = 20, RoleId = "4", ClaimType = "Rabbit:Update", ClaimValue = "Own" },
+                new IdentityRoleClaim<string> { Id = 21, RoleId = "4", ClaimType = "Rabbit:Delete", ClaimValue = "Own" },
+                new IdentityRoleClaim<string> { Id = 22, RoleId = "4", ClaimType = "Rabbit:ImageCount", ClaimValue = "1" }
             };
 
             modelBuilder.Entity<IdentityRoleClaim<string>>().HasData(roleClaims);
@@ -112,6 +129,31 @@ namespace DB_AngoraLib.SeededData
             // Seed Rabbits
             var rabbits = MockRabbits.GetMockRabbits();
             modelBuilder.Entity<Rabbit>().HasData(rabbits);
+
+            // Seed BreederBrands
+            var breederBrands = new List<BreederBrand>
+            {
+                new BreederBrand
+                {
+                    Id = 1,
+                    UserId = "IdasId",
+                    BreederBrandName = "Friborg's kaninavl",
+                    BreederBrandDescription = "Lille opdræt af Satin-angoraer i forskellige farver. Jeg tilbyder god uld med og uden plantefarver",
+                    BreederBrandLogo = null,
+                    IsFindable = true
+                },
+                new BreederBrand
+                {
+                    Id = 2,
+                    UserId = "MajasId",
+                    BreederBrandName = "Sletten's kaninavl",
+                    BreederBrandDescription = "Jeg tilbyder Satin-angoraer, uld og skind i klassiske farver",
+                    BreederBrandLogo = null,
+                    IsFindable = true
+                }
+            };
+
+            modelBuilder.Entity<BreederBrand>().HasData(breederBrands);
         }
     }
 }

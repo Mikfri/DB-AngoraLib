@@ -13,7 +13,7 @@ namespace DB_AngoraLib.Services.RabbitService
     {
         Task<Rabbit_ProfileDTO> AddRabbit_ToMyCollection(string userId, Rabbit_CreateDTO newRabbit);
         Task<List<Rabbit>> Get_AllRabbits();
-        Task<List<Rabbit>> Get_AllRabbits_ByBreederRegNo(string breederRegNo);
+        Task<List<Rabbit_PreviewDTO>> Get_AllRabbits_ByBreederRegNo(string breederRegNo);
         Task<List<Rabbit_PreviewDTO>> Get_AllRabbits_Forsale_Filtered(Rabbit_ForsaleFilterDTO filter);
 
         Task<Rabbit> Get_Rabbit_ByEarCombId(string earCombId);

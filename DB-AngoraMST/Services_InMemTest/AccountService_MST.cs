@@ -51,24 +51,6 @@ namespace DB_AngoraMST.Services_InMemTest
             _accountService = new AccountServices(userRepository, breederRepository, _emailServiceMock.Object, _userManagerMock.Object);
         }
 
-        [TestInitialize]
-        public void Setup()
-        {
-            // Add mock data to in-memory database
-            var mockUsersWithRoles = MockUsers.GetMockUsersWithRoles();
-            foreach (var mockUserWithRole in mockUsersWithRoles)
-            {
-                _context.Users.Add(mockUserWithRole.User);
-                _context.SaveChanges();
-
-                // Setup UserManager mock to return the user
-                _userManagerMock.Setup(um => um.FindByEmailAsync(mockUserWithRole.User.Email))
-                    .ReturnsAsync(mockUserWithRole.User);
-                _userManagerMock.Setup(um => um.FindByNameAsync(mockUserWithRole.User.UserName))
-                    .ReturnsAsync(mockUserWithRole.User);
-            }
-        }
-
         [TestCleanup]
         public void Cleanup()
         {
@@ -81,14 +63,14 @@ namespace DB_AngoraMST.Services_InMemTest
         public async Task GetAllUsersAsync_TEST()
         {
             // Arrange
-            var expectedUsersCount = MockUsers.GetMockUsersWithRoles().Count;
+            var expectedUsersCount = _context.Users.Count();
 
             // Act
             var users = await _accountService.GetAll_Users();
 
             // Assert
             Assert.AreEqual(expectedUsersCount, users.Count);
-        }        
+        }
 
         [TestMethod]
         public async Task GetUserByUserNameOrEmailAsync_TEST()
@@ -105,6 +87,6 @@ namespace DB_AngoraMST.Services_InMemTest
             Assert.AreEqual(expectedUser.UserName, actualUserByUsername.UserName);
             Assert.IsNotNull(actualUserByEmail);
             Assert.AreEqual(expectedUser.Email, actualUserByEmail.Email);
-        }       
+        }
     }
 }

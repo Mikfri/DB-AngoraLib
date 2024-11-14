@@ -22,27 +22,31 @@ namespace DB_AngoraLib.Services.RoleService
             _userManager = userManager;
         }
 
-        
-        public async Task AddSpecialPermissionToUser(string userId, string claimValue)
+        public async Task AddUserClaimAsync(string userId, string claimType, string claimValue)
         {
-            // Check if the claimValue exists in RoleClaims
-            if (!RoleClaims.Get_AspNetRoleClaims().Any(rc => rc.ClaimValue == claimValue))
-            {
-                throw new ArgumentException("Invalid claim value.");
-            }
-
             var user = await _userManager.FindByIdAsync(userId);
-            if (user == null)
-            {
-                throw new ArgumentException("User not found.");
-            }
+            if (user == null) throw new Exception("User not found");
 
-            var claim = new Claim("SpecialPermission", claimValue);
+            var claim = new Claim(claimType, claimValue);
             var result = await _userManager.AddClaimAsync(user, claim);
 
             if (!result.Succeeded)
             {
-                throw new Exception("Failed to add special permission to user.");
+                throw new Exception("Failed to add claim to user.");
+            }
+        }
+
+        public async Task RemoveUserClaimAsync(string userId, string claimType, string claimValue)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null) throw new Exception("User not found");
+
+            var claim = new Claim(claimType, claimValue);
+            var result = await _userManager.RemoveClaimAsync(user, claim);
+
+            if (!result.Succeeded)
+            {
+                throw new Exception("Failed to remove claim from user.");
             }
         }
 
@@ -68,31 +72,47 @@ namespace DB_AngoraLib.Services.RoleService
             return userRolesAndClaims;
         }
 
-        public async Task RemoveSpecialPermissionFromUser(string userId, string claimValue)
+        public async Task UpgradeUserRoleAsync(string userId, string newRoleId)
         {
-            // Check if the claimValue exists in RoleClaims
-            if (!RoleClaims.Get_AspNetRoleClaims().Any(rc => rc.ClaimValue == claimValue))
-            {
-                throw new ArgumentException("Invalid claim value.");
-            }
-
             var user = await _userManager.FindByIdAsync(userId);
-            if (user == null)
-            {
-                throw new ArgumentException("User not found.");
-            }
+            if (user == null) throw new Exception("User not found");
 
-            var claim = new Claim("SpecialPermission", claimValue);
-            var result = await _userManager.RemoveClaimAsync(user, claim);
+            // Remove old roles
+            var oldRoles = await _userManager.GetRolesAsync(user);
+            await _userManager.RemoveFromRolesAsync(user, oldRoles);
 
-            if (!result.Succeeded)
-            {
-                throw new Exception("Failed to remove special permission from user.");
-            }
+            // Add new role
+            var newRole = await _roleManager.FindByIdAsync(newRoleId);
+            if (newRole == null) throw new Exception("Role not found");
+
+            await _userManager.AddToRoleAsync(user, newRole.Name);
         }
 
+        //public async Task RemoveSpecialPermissionFromUser(string userId, string claimValue)
+        //{
+        //    // Check if the claimValue exists in RoleClaims
+        //    if (!RoleClaims.Get_AspNetRoleClaims().Any(rc => rc.ClaimValue == claimValue))
+        //    {
+        //        throw new ArgumentException("Invalid claim value.");
+        //    }
+
+        //    var user = await _userManager.FindByIdAsync(userId);
+        //    if (user == null)
+        //    {
+        //        throw new ArgumentException("User not found.");
+        //    }
+
+        //    var claim = new Claim("SpecialPermission", claimValue);
+        //    var result = await _userManager.RemoveClaimAsync(user, claim);
+
+        //    if (!result.Succeeded)
+        //    {
+        //        throw new Exception("Failed to remove special permission from user.");
+        //    }
+        //}
 
 
-       
+
+
     }
 }

@@ -1,19 +1,14 @@
-﻿using DB_AngoraLib.EF_DbContext;
-using DB_AngoraLib.MockData;
+﻿using DB_AngoraLib.DTOs;
+using DB_AngoraLib.EF_DbContext;
 using DB_AngoraLib.Models;
 using DB_AngoraLib.Repository;
 using DB_AngoraLib.Services.AccountService;
 using DB_AngoraLib.Services.BreederBrandService;
-using DB_AngoraLib.Services.EmailService;
-using DB_AngoraLib.Services.RabbitService;
-using DB_AngoraLib.Services.ValidationService;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace DB_AngoraMST.Services_InMemTest
@@ -21,74 +16,126 @@ namespace DB_AngoraMST.Services_InMemTest
     [TestClass]
     public class BreederBrandServices_MST
     {
-        //private IBreederBrandService _bbService;
-        //private IAccountService _accountService;
-        //private DB_AngoraContext _context;
-        //private Mock<UserManager<User>> _userManagerMock;
-        //private Mock<IEmailService> _emailServiceMock;
+        private IBreederBrandService _breederBrandService;
+        private Mock<IAccountService> _accountServiceMock;
+        private DB_AngoraContext _context;
+
+        public BreederBrandServices_MST()
+        {
+            // Setup in-memory database
+            var options = new DbContextOptionsBuilder<DB_AngoraContext>()
+                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+                .Options;
+
+            _context = new DB_AngoraContext(options);
+            _context.Database.EnsureCreated();
+
+            // Create mock for IAccountService
+            _accountServiceMock = new Mock<IAccountService>();
+
+            // Setup Moq for IAccountService
+            _accountServiceMock.Setup(service => service.Get_UserById(It.IsAny<string>()))
+                .ReturnsAsync((string userId) => _context.Users.OfType<Breeder>().FirstOrDefault(b => b.Id == userId));
 
 
-        //public BreederBrandServices_MST()
-        //{
-        //    // Setup in-memory database
-        //    var options = new DbContextOptionsBuilder<DB_AngoraContext>()
-        //        .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-        //        .Options;
+            var breederBrandRepository = new GRepository<BreederBrand>(_context);
+            _breederBrandService = new BreederBrandServices(breederBrandRepository, _accountServiceMock.Object);
+        }
 
-        //    _context = new DB_AngoraContext(options);
-        //    _context.Database.EnsureCreated();
+        [TestCleanup]
+        public void Cleanup()
+        {
+            _context.Database.EnsureDeleted();
+            _context.Dispose();
+        }
 
-        //    // Create UserManager
-        //    var userStoreMock = new Mock<IUserStore<User>>();
-        //    _userManagerMock = new Mock<UserManager<User>>(userStoreMock.Object, null, null, null, null, null, null, null, null);
+        [TestMethod]
+        public async Task Create_BreederBrand_ShouldCreateNewBreederBrand()
+        {
+            // Arrange
+            var userId = "testUserId";
+            var user = new Breeder
+            {
+                Id = userId,
+                FirstName = "John",
+                LastName = "Johnsen",
+                BreederRegNo = "12345",
+                City = "TestCity",
+                RoadNameAndNo = "TestRoad 1"
+            };
 
-        //    // Create EmailService mock
-        //    _emailServiceMock = new Mock<IEmailService>();
+            _context.Users.Add(user);
+            await _context.SaveChangesAsync();
 
-        //    var userRepository = new GRepository<User>(_context);
-        //    _accountService = new AccountServices(userRepository, _emailServiceMock.Object, _userManagerMock.Object);
+            // Act
+            var result = await _breederBrandService.Create_BreederBrand(userId);
 
-        //    var bbRepository = new GRepository<BreederBrand>(_context);
-        //    _bbService = new BreederBrandServices(bbRepository, _accountService);
-        //}
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(userId, result.UserId);
+            Assert.AreEqual($"{user.LastName}'s kaninavl", result.BreederBrandName);
+        }
 
-        //[TestInitialize]
-        //public void Setup()
-        //{
-        //    // Add mock data to in-memory database
-        //    var mockDataInitializer = new MockDataInitializer(_context, _userManagerMock.Object);
-        //    mockDataInitializer.Initialize();
+        [TestMethod]
+        public async Task Get_BreederBrandById_ShouldReturnCorrectBreederBrand()
+        {
+            // Arrange
+            var breederBrand = _context.BreederBrands.First();
+            var breederBrandId = breederBrand.Id;
 
-        //    _context.SaveChanges();
-        //}
+            // Act
+            var result = await _breederBrandService.Get_BreederBrandById(breederBrandId);
 
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(breederBrandId, result.Id);
+        }
 
-        //[TestCleanup]
-        //public void Cleanup()
-        //{
-        //    _context.Database.EnsureDeleted();
-        //    _context.Dispose();
-        //}
+        [TestMethod]
+        public async Task Get_BreederBrandByUserId_ShouldReturnCorrectBreederBrand()
+        {
+            // Arrange
+            var breederBrand = _context.BreederBrands.First();
+            var userId = breederBrand.UserId;
 
-        //[TestMethod]
-        //public async Task Get_BreederBrandByBreederRegNo_ShouldReturnCorrectBreederBrand()
-        //{
-        //    // Arrange
-        //    var idasId = "IdasId";
-        //    var idasBreederBrand = _context.BreederBrands.First(bb => bb.UserId == idasId);
-        //    //var otherBreederBrand = _context.BreederBrands.First(bb => bb.UserId != idasId);
+            // Act
+            var result = await _breederBrandService.Get_BreederBrandByUserId(userId);
 
-        //    Console.WriteLine($"BreederBrand.Id: {idasBreederBrand.Id}\nBreederBrand.UserId: {idasBreederBrand.UserId}\nUser.Name: {idasBreederBrand.User.FirstName}"); 
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(userId, result.UserId);
+        }
+               
 
-        //    // Act
-        //    //var result = await _bbService.Get_BreederBrandByUserId(idasId);
-        //    var result = await _bbService.Get_BreederBrandById(1);
-        //    //var result = await _bbService.Get_BreederBrandById(1);
+        [TestMethod]
+        public async Task Update_BreederBrand_ShouldUpdateBreederBrand()
+        {
+            // Arrange
+            var breederBrand = _context.BreederBrands.First();
+            breederBrand.BreederBrandName = "Updated Name";
 
-        //    // Assert
-        //    Assert.IsNotNull(result);
-        //    Assert.AreEqual(idasBreederBrand.UserId, result.UserId);
-        //    Assert.AreEqual(idasBreederBrand.BreederBrandName, result.BreederBrandName);
-        //}
+            // Act
+            await _breederBrandService.Update_BreederBrand(breederBrand);
+            var updatedBreederBrand = await _breederBrandService.Get_BreederBrandById(breederBrand.Id);
+
+            // Assert
+            Assert.IsNotNull(updatedBreederBrand);
+            Assert.AreEqual("Updated Name", updatedBreederBrand.BreederBrandName);
+        }
+
+        [TestMethod]
+        public async Task Delete_BreederBrand_ShouldDeleteBreederBrand()
+        {
+            // Arrange
+            var breederBrand = _context.BreederBrands.First();
+            var breederBrandId = breederBrand.Id;
+
+            // Act
+            await _breederBrandService.Delete_BreederBrand(breederBrandId);
+            var deletedBreederBrand = await _breederBrandService.Get_BreederBrandById(breederBrandId);
+
+            // Assert
+            Assert.IsNull(deletedBreederBrand);
+        }
     }
 }

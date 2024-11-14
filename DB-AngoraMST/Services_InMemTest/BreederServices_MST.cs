@@ -35,19 +35,7 @@ namespace DB_AngoraMST.Services_InMemTest
             // Initialize BreederService with all required parameters
             _breederService = new BreederServices(breederRepository);
         }
-
-        [TestInitialize]
-        public void Setup()
-        {
-            // Add mock data to in-memory database
-            var mockUsersWithRoles = MockUsers.GetMockUsersWithRoles();
-            foreach (var mockUserWithRole in mockUsersWithRoles)
-            {
-                _context.Users.Add(mockUserWithRole.User);
-                _context.SaveChanges();
-            }
-        }
-
+        
         [TestCleanup]
         public void Cleanup()
         {
@@ -83,6 +71,8 @@ namespace DB_AngoraMST.Services_InMemTest
 
             // Act
             var actualUser = await _breederService.Get_BreederByBreederRegNo(breederRegNo);
+
+            Console.WriteLine($"ExpectedUser: {expectedUser.FirstName}\nActualUser: {actualUser.FirstName}");
 
             // Assert
             Assert.IsNotNull(actualUser);

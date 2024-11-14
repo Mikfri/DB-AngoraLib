@@ -11,8 +11,8 @@ namespace DB_AngoraLib.Services.RoleService
 {
     public interface IRoleService
     {
-        Task AddSpecialPermissionToUser(string userId, string claimValue);
+        //Task AddSpecialPermissionToUser(string userId, string claimValue);
         Task<User_RolesAndClaimsDTO> GetUserRolesAndClaims(string userId);
-        Task RemoveSpecialPermissionFromUser(string userId, string claimValue);
+        //Task RemoveSpecialPermissionFromUser(string userId, string claimValue);
     }
 }

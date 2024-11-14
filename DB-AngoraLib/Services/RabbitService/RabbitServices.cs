@@ -56,20 +56,14 @@ namespace DB_AngoraLib.Services.RabbitService
                 NickName = newRabbitDTO.NickName,
                 Race = newRabbitDTO.Race,
                 Color = newRabbitDTO.Color,
-                //ApprovedRaceColorCombination          // Ikke nødvendig, dictionary, automatisk udregnet
                 DateOfBirth = newRabbitDTO.DateOfBirth,
                 DateOfDeath = newRabbitDTO.DateOfDeath,
-                //IsJuvenile = newRabbitDto.IsJuvenile, // Ikke nødvendig, automatisk udregnet - evt frontend udregning?
                 Gender = newRabbitDTO.Gender,
                 ForSale = newRabbitDTO.ForSale,
                 ForBreeding = newRabbitDTO.ForBreeding,
 
                 FatherId_Placeholder = newRabbitDTO.Father_EarCombId,
                 MotherId_Placeholder = newRabbitDTO.Mother_EarCombId,
-                //Father = await GetRabbit_ByEarCombIdAsync(newRabbitDto.Father_EarCombId),
-                //Mother = await GetRabbit_ByEarCombIdAsync(newRabbitDto.Mother_EarCombId),
-                //Father_EarCombId = newRabbitDto.Father_EarCombId,
-                //Mother_EarCombId = newRabbitDto.Mother_EarCombId,
             };
             newRabbit.ValidateRabbit();
             //_validatorService.ValidateRabbit(newRabbit);
@@ -133,15 +127,19 @@ namespace DB_AngoraLib.Services.RabbitService
                 .ToList();
         }
 
-        public async Task<List<Rabbit>> Get_AllRabbits_ByBreederRegNo(string breederRegNo)
+        public async Task<List<Rabbit_PreviewDTO>> Get_AllRabbits_ByBreederRegNo(string breederRegNo)
         {
             var user = await _breederService.Get_BreederByBreederRegNo(breederRegNo);
             if (user == null)
             {
-                return null;
+                return new List<Rabbit_PreviewDTO>(); // Returner en tom liste i stedet for null
             }
-            var rabbits = await _dbRepository.GetAllObjectsAsync();
-            return rabbits.Where(rabbit => rabbit.OwnerId == user.Id).ToList();
+
+            // Brug GetAll_RabbitsOwned_Filtered metoden til at hente kaninerne
+            var filter = new Rabbit_FilteredRequestDTO(); // Du kan tilføje filtreringskriterier her, hvis nødvendigt
+            var rabbits = await _breederService.GetAll_RabbitsOwned_Filtered(user.Id, filter);
+
+            return rabbits;
         }
 
 
@@ -353,7 +351,7 @@ namespace DB_AngoraLib.Services.RabbitService
 
             if (!hasPermissionToDeleteAll && (!hasPermissionToDeleteOwn || userId != rabbitToDelete.OwnerId))
             {
-                throw new InvalidOperationException("Du har ikke tilladelse til denne handling");
+                throw new InvalidOperationException("Du har ikke rettigheder til at slette kaniner, du ikke ejer");
             }
 
             // Create a new Rabbit_PreviewDTO and copy properties from rabbitToDelete

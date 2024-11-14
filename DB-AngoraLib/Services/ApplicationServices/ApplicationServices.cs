@@ -110,20 +110,10 @@ namespace DB_AngoraLib.Services.ApplicationServices
                         BreederRegNo = application.RequestedBreederRegNo
                     };
                 }
-                else
+                else // TODO: Se om else blokken kan fjernes
                 {
                     breeder.BreederRegNo = application.RequestedBreederRegNo;
                 }
-
-                // ELLER dette istedet for: Tilføj Breeder-specifikke data
-                //var breeder = user as Breeder;
-                //if (breeder == null)
-                //{
-                //    throw new Exception("Kunne ikke caste brugeren til typen 'Breeder'");
-                //}
-
-                //breeder.BreederRegNo = application.RequestedBreederRegNo;
-
 
                 // Gem ændringerne
                 var updateResult = await _userManager.UpdateAsync(breeder);
@@ -133,7 +123,7 @@ namespace DB_AngoraLib.Services.ApplicationServices
                 }
 
                 // Tildel Breeder rollen
-                var addToRoleResult = await _userManager.AddToRoleAsync(breeder, "Breeder");
+                var addToRoleResult = await _userManager.AddToRoleAsync(breeder, "BreederBasic");
                 if (!addToRoleResult.Succeeded)
                 {
                     throw new Exception("Brugerollen 'Breeder' kunne ikke tildeles");

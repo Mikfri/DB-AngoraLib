@@ -30,15 +30,10 @@ namespace DB_AngoraLib.Services.BreederBrandService
             var user = await _accountServices.Get_UserById(userId);
             if (user == null) throw new Exception("User not found");
 
-            // Forsøg at caste User til Breeder
-            var breeder = user as Breeder;
-            if (breeder == null) throw new Exception("User is not a Breeder");
-
             var breederBrand = new BreederBrand
             {
-                UserId = breeder.Id,
-                BreederBrandOwner = breeder,
-                BreederBrandName = $"{breeder.LastName}'s kaninavl",
+                UserId = user.Id,
+                BreederBrandName = $"{user.LastName}'s kaninavl",
                 BreederBrandDescription = null,
                 BreederBrandLogo = null
             };

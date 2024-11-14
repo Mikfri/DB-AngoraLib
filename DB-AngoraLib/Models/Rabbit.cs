@@ -126,7 +126,6 @@ namespace DB_AngoraLib.Models
             }
         }
 
-
         public string LeftEarId
         {
             get => leftEarId;
