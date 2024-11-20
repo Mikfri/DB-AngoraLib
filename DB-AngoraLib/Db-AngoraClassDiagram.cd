@@ -1,0 +1,105 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="DB_AngoraLib.Models.Breeder">
+    <Position X="1.25" Y="5.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAgAAAAAQAABAABgQAAAAAEAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Breeder.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DB_AngoraLib.Models.Rabbit">
+    <Position X="5.25" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>UBAoIAAYAAjAiTCAJBAIAAAAAAQSQAEIARmBgAAIoAg=</HashCode>
+      <FileName>Models\Rabbit.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DB_AngoraLib.Models.User">
+    <Position X="1.25" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAEACAAIAAAAJAAAAAAAAAAAAAAADAACAAAAAAAg=</HashCode>
+      <FileName>Models\User.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DB_AngoraLib.Services.AccountService.AccountServices" BaseTypeListCollapsed="true">
+    <Position X="3.25" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAABAAgAAAAAAAAAAAAAAAwAAIAAAAIAAABgAAAkAA=</HashCode>
+      <FileName>Services\AccountService\AccountServices.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="DB_AngoraLib.Services.BreederService.BreederServices" BaseTypeListCollapsed="true">
+    <Position X="3.25" Y="7" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAQAAEAAAAAAAIAAAAAAAQIAgEAACAEAAAAAAAA=</HashCode>
+      <FileName>Services\BreederService\BreederServices.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="DB_AngoraLib.Services.RabbitService.RabbitServices" BaseTypeListCollapsed="true">
+    <Position X="9" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>0AAABIAAEIIgAgAAAMAAAgEAAAAEAIAAAQgCAEAQAAA=</HashCode>
+      <FileName>Services\RabbitService\RabbitServices.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Interface Name="DB_AngoraLib.Services.AccountService.IAccountService" Collapsed="true">
+    <Position X="3.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAABAAAAAAAAAAAAAAAAAAwAAIAAAAIAAABgAAAkAA=</HashCode>
+      <FileName>Services\AccountService\IAccountService.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="DB_AngoraLib.Services.BreederService.IBreederService" Collapsed="true">
+    <Position X="3.75" Y="6.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAQAAEAAAAAAAIAAAAAAAQIAgAAAAAEAAAAAAAA=</HashCode>
+      <FileName>Services\BreederService\IBreederService.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="DB_AngoraLib.Services.RabbitService.IRabbitService" Collapsed="true">
+    <Position X="9.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>kAAAAAAAAIIAAgAAAIAAAAEAAAAAAAAAAQgCAEAQAAA=</HashCode>
+      <FileName>Services\RabbitService\IRabbitService.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Enum Name="DB_AngoraLib.Models.IsPublic">
+    <Position X="7" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAIACAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Rabbit.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="DB_AngoraLib.Models.Gender" Collapsed="true">
+    <Position X="7" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAQAAAAAAAAAAAACAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Rabbit.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="DB_AngoraLib.Models.Race" Collapsed="true">
+    <Position X="7" Y="4" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gEAAAAABAAAAogAABAEAQAGAAAAAAAAAQABAgAhABAA=</HashCode>
+      <FileName>Models\Rabbit.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="DB_AngoraLib.Models.Color" Collapsed="true">
+    <Position X="7" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>kAAgQAAACgQAglCABAghCGCETAAAAAACYBAAQJIAQAA=</HashCode>
+      <FileName>Models\Rabbit.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="DB_AngoraLib.Models.Pattern" Collapsed="true">
+    <Position X="7" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AMAAIAAABAAAAAQAAAEAAAAAAAABAIgAAAAAAIAACAA=</HashCode>
+      <FileName>Models\Rabbit.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

@@ -280,16 +280,16 @@ namespace DB_AngoraLib.Models
         public void ValidateLeftEarId()
         {
 
-            Regex threeToFiveNumbersDigit = new Regex(@"^\d{3,5}$"); // 3-5 numeriske tal
+            Regex threeToSixNumbersDigit = new Regex(@"^\d{3,6}$"); // 3-6 numeriske tal
 
             if (string.IsNullOrEmpty(leftEarId))
             {
                 throw new ArgumentNullException("Kanin.Id: Feldtet skal udfyldes");
             }
 
-            if (!threeToFiveNumbersDigit.IsMatch(leftEarId))
+            if (!threeToSixNumbersDigit.IsMatch(leftEarId))
             {
-                throw new ArgumentException("Kanin.Id, skal være imellem 3 og 5 numeriske tal");
+                throw new ArgumentException("Kanin.Id, skal være imellem 3 og 6 numeriske tal");
             }
         }
 
@@ -298,7 +298,7 @@ namespace DB_AngoraLib.Models
         {
             if (!Enum.IsDefined(typeof(Gender), Gender))
             {
-                throw new ArgumentException("Kanin.Køn: Vælg et gyldigt køn (Han/Hun)");
+                throw new ArgumentException("Kanin.Køn: Vælg et gyldigt køn. Buck(han) eller Doe(hun)");
             }
         }
 
@@ -311,7 +311,7 @@ namespace DB_AngoraLib.Models
                 return;
             }
 
-            Regex parentIdPattern = new Regex(@"^\d{4}-\d{3,5}$");
+            Regex parentIdPattern = new Regex(@"^\d{4}-\d{3,6}$");
 
             if (!string.IsNullOrEmpty(FatherId_Placeholder) && !parentIdPattern.IsMatch(FatherId_Placeholder))
             {

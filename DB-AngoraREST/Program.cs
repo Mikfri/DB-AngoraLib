@@ -227,7 +227,9 @@ builder.Services.AddCors(options =>
     options.AddPolicy(name: "MyAllowSpecificOrigins",
     policy =>
     {
-        policy.WithOrigins("https://localhost:7276") // Erstat med den korrekte oprindelse for Swagger UI
+        policy
+        .AllowAnyOrigin() // Tillad alle oprindelser. Erstat med WithOrigins() for istedet at specificere en oprindelse
+        //.WithOrigins("https://localhost:7276") // Erstat med den korrekte oprindelse for Swagger UI
         .AllowAnyHeader()
         .AllowAnyMethod()
         .AllowCredentials(); // Tillad credentials såsom cookies, autorisation headers eller TLS klient certifikater
