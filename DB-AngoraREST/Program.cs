@@ -228,8 +228,8 @@ builder.Services.AddCors(options =>
     policy =>
     {
         policy
-        .AllowAnyOrigin() // Tillad alle oprindelser. Erstat med WithOrigins() for istedet at specificere en oprindelse
-        //.WithOrigins("https://localhost:7276") // Erstat med den korrekte oprindelse for Swagger UI
+        //.AllowAnyOrigin() // Tillad alle oprindelser. Erstat med WithOrigins() for istedet at specificere en oprindelse
+        .WithOrigins("https://localhost:7276", "https://localhost:3000") // Erstat med den korrekte oprindelse for Swagger UI
         .AllowAnyHeader()
         .AllowAnyMethod()
         .AllowCredentials(); // Tillad credentials såsom cookies, autorisation headers eller TLS klient certifikater

@@ -10,7 +10,7 @@ env:
   PROJECT_FILE: DB-AngoraREST/DB-AngoraREST.csproj     # Sti til projektfilen
   AZURE_WEBAPP_NAME: DB-Angora                         # Navn på Azure Web App
   AZURE_WEBAPP_PACKAGE_PATH: DB-AngoraREST\publish     # Output-sti til den buildede pakke
-  CONFIGURATION: Debug                               # Debug/Release
+  CONFIGURATION: Debug                                 # Debug/Release
   DOTNET_CORE_VERSION: 8.0.x                           # .NET Core SDK version
   WORKING_DIRECTORY: .                                 # Sti til roden af applikationsmappen
   ASPNETCORE_ENVIRONMENT: Development                  # Development, Staging, Production (Development giver mest debug info)
@@ -25,21 +25,17 @@ jobs:
       - uses: actions/checkout@v4
   
       - name: Cache NuGet packages            # Cacher NuGet-pakker for at fremskynde byggetiden
-        uses: actions/cache@v3
+        uses: actions/cache@v4                # Opdateret fra cache@3 til cache@v4
         with:
           path: ~/.nuget/packages
           key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
-
-
-      - name: List files in working directory # For at minde migselv om pathingen..
-        run: dir
 
       - name: Setup .NET SDK                  # Sætter .NET SDK op til den definerede version
         uses: actions/setup-dotnet@v4                       
         with:
           dotnet-version: ${{ env.DOTNET_CORE_VERSION }}
 
-      - name: Restore dependencies            # Gendanner afhængigheder til hele løsningen
+      - name: Restore Dependencies            # Gendanner afhængigheder til hele løsningen
         run: dotnet restore ${{ env.SOLUTION_FILE }}
 
       - name: Build                           # Bygger hele løsningen
@@ -55,7 +51,7 @@ jobs:
           path: '**/test_results.trx'
           reporter: dotnet-trx 
 
-      - name: Publish application             # Publicerer applikationen
+      - name: Publish Application             # Publicerer applikationen
         run: dotnet publish ${{ env.PROJECT_FILE }} --configuration ${{ env.CONFIGURATION }} --output "${{ env.AZURE_WEBAPP_PACKAGE_PATH }}"
         
       - name: Publish Artifacts               # Upload af bygget webapp
@@ -69,7 +65,7 @@ jobs:
     needs: build
     steps:
 
-      - name: Download artifact from build job 
+      - name: Download Artifact from build job 
         uses: actions/download-artifact@v4
         with:
           name: webapp
