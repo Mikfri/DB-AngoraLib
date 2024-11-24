@@ -5,6 +5,8 @@ VisualStudioVersion = 17.9.34728.123
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DB-AngoraREST", "DB-AngoraREST\DB-AngoraREST.csproj", "{F3C5EF58-5F40-41F6-BB6A-E461F1E309E4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DB-AngoraLib", "DB-AngoraLib\DB-AngoraLib.csproj", "{A3FD55A6-B4F2-445E-85F3-EFBE5EEAE134}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{F3C5EF58-5F40-41F6-BB6A-E461F1E309E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F3C5EF58-5F40-41F6-BB6A-E461F1E309E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F3C5EF58-5F40-41F6-BB6A-E461F1E309E4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A3FD55A6-B4F2-445E-85F3-EFBE5EEAE134}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A3FD55A6-B4F2-445E-85F3-EFBE5EEAE134}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A3FD55A6-B4F2-445E-85F3-EFBE5EEAE134}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A3FD55A6-B4F2-445E-85F3-EFBE5EEAE134}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

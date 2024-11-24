@@ -32,9 +32,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Reference Include="DB-AngoraLib">
-	    <HintPath>..\DB-AngoraLib\bin\Debug\net8.0\DB-AngoraLib.dll</HintPath>
-	  </Reference>
+		<ProjectReference Include="..\DB-AngoraLib\DB-AngoraLib.csproj" />
 	</ItemGroup>
+	
+	
 
 </Project>
