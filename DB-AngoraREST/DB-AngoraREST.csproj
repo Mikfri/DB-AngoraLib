@@ -31,13 +31,10 @@
 		<PackageReference Include="Swashbuckle.AspNetCore.Filters" Version="8.0.2" />
 	</ItemGroup>
 
-	<!--<ItemGroup>
+	<ItemGroup>
 	  <Reference Include="DB-AngoraLib">
 	    <HintPath>..\DB-AngoraLib\bin\Debug\net8.0\DB-AngoraLib.dll</HintPath>
 	  </Reference>
-	</ItemGroup>-->
-	<ItemGroup>
-		<ProjectReference Include="..\DB-AngoraLib\DB-AngoraLib.csproj" />
 	</ItemGroup>
 
 </Project>
