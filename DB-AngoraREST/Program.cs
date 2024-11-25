@@ -145,7 +145,6 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 {
     options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
     options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve; // Soerger for at refence-loop kan haandteres, som er tilf�ldet for Rabbit_PedigreeDTO
-
 });
 
 builder.Services.AddEndpointsApiExplorer(); // Swagger API-dokumentation (///<summary> over dine API end-points vises i UI)

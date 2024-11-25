@@ -3,10 +3,10 @@ using DB_AngoraLib.Repository;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Security.Cryptography;
@@ -46,7 +46,7 @@ namespace DB_AngoraLib.Services.TokenService
         }
 
 
-        public async Task<JwtSecurityToken> GenerateAccessToken(User user)
+        public async Task<string> GenerateAccessToken(User user)
         {
             var keyString = _configuration["Jwt:Key"];
             var issuer = _configuration["Jwt:Issuer"];
@@ -55,14 +55,20 @@ namespace DB_AngoraLib.Services.TokenService
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(keyString));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-            var claimsList = new List<Claim>();
-
-            // Tilføjer UserClaims til token claims
-            var userClaims = await _userManager.GetClaimsAsync(user);
-            claimsList.AddRange(userClaims);
+            var claimsList = new List<Claim>
+            {
+                // Tilføjer bruger ID claim
+                new Claim(ClaimTypes.NameIdentifier, user.Id)
+            };
+            
+            var userRoles = await _userManager.GetRolesAsync(user);
+            // Tilføjer brugerens roller som claims
+            foreach (var role in userRoles)
+            {
+                claimsList.Add(new Claim(ClaimTypes.Role, role));
+            }
 
             //Tilføjer RoleClaims til token claims
-            var userRoles = await _userManager.GetRolesAsync(user);
             foreach (var roleName in userRoles)
             {
                 var role = await _roleManager.FindByNameAsync(roleName);
@@ -70,31 +76,26 @@ namespace DB_AngoraLib.Services.TokenService
                 claimsList.AddRange(roleClaims);
             }
 
-            // Tilføjer brugerens roller som claims
-            foreach (var role in userRoles)
+            // Tilføjer UserClaims til token claims
+            var userClaims = await _userManager.GetClaimsAsync(user);
+            claimsList.AddRange(userClaims);
+
+            var now = DateTime.UtcNow;
+
+            // Vi kan enten bruge SecurityTokenDescriptor som før
+            var tokenDescriptor = new SecurityTokenDescriptor
             {
-                claimsList.Add(new Claim(ClaimTypes.Role, role));
-            }
+                Subject = new ClaimsIdentity(claimsList),
+                Expires = now.AddHours(1),
+                IssuedAt = now,
+                NotBefore = now,
+                Issuer = issuer,
+                Audience = audience,
+                SigningCredentials = creds
+            };
 
-            // Tilføj standard claims
-            var iat = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
-
-            claimsList.Add(new Claim(ClaimTypes.NameIdentifier, user.Id));
-            claimsList.Add(new Claim(ClaimTypes.Name, $"{user.FirstName} {user.LastName}"));
-            claimsList.Add(new Claim(ClaimTypes.Email, user.Email));
-            claimsList.Add(new Claim(JwtRegisteredClaimNames.Iat, iat.ToString(), ClaimValueTypes.Integer64));
-
-            var expires = DateTime.UtcNow.AddHours(1);
-
-            var token = new JwtSecurityToken(
-                issuer: issuer,
-                audience: audience,
-                claims: claimsList,
-                notBefore: DateTime.UtcNow,
-                expires: expires,
-                signingCredentials: creds);
-
-            return token;
+            var tokenHandler = new JsonWebTokenHandler();
+            return tokenHandler.CreateToken(tokenDescriptor);
         }
 
         public string GenerateRefreshToken()

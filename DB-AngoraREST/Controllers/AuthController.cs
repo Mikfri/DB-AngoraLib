@@ -38,7 +38,7 @@ namespace DB_AngoraREST.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpPost("Login")]
-        public async Task<IActionResult> Login(Login_RequestDTO loginDTO)
+        public async Task<ActionResult<Login_ResponseDTO>> Login(Login_RequestDTO loginDTO)
         {
             try
             {

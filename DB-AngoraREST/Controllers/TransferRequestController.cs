@@ -20,7 +20,6 @@ namespace DB_AngoraREST.Controllers
         }
 
         //--------------------: POST :--------------------
-
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -64,7 +63,7 @@ namespace DB_AngoraREST.Controllers
 
         [HttpPost("Respond/{transferId}")]
         [Authorize(Roles = "Admin, Breeder, Moderator")]
-        public async Task<IActionResult> RespondToTransferRequest(int transferId, [FromBody] TransferRequest_ResponseDTO responseDTO)
+        public async Task<ActionResult<TransferRequest_ContractDTO>> RespondToTransferRequest(int transferId, [FromBody] TransferRequest_ResponseDTO responseDTO)
         {
             try
             {
