@@ -50,25 +50,20 @@ namespace DB_AngoraLib.Services.SigninService
             if (result.Succeeded)
             {
                 var user = await _userManager.FindByNameAsync(loginRequestDTO.UserName);
-                // Brug TokenServices til at generere tokens
+                // AccessToken er nu direkte en string
                 var accessToken = await _tokenService.GenerateAccessToken(user);
                 var refreshToken = _tokenService.GenerateRefreshToken();
 
-                // Opdater brugerens refresh token i databasen med den videregivne IP-adresse
                 await _tokenService.UpdateRefreshTokenForUser(user, refreshToken, userIP);
 
-                var tokenHandler = new JwtSecurityTokenHandler();
-                var writtenAccessToken = tokenHandler.WriteToken(accessToken);
-
+                // Ikke længere behov for JwtSecurityTokenHandler
                 loginResponseDTO.UserName = user.UserName;
-                loginResponseDTO.AccessToken = writtenAccessToken;
-                loginResponseDTO.ExpiryDate = accessToken.ValidTo;
+                loginResponseDTO.AccessToken = accessToken; // Direkte brug af string
+                                                            // Vi skal parse token for at få ValidTo - eller måske ændre DTO'en til ikke at include ExpiryDate
                 loginResponseDTO.RefreshToken = refreshToken;
 
-                // Gem access token og refresh token ved hjælp af SaveUserTokenAsync
-                await _tokenService.SaveUserTokenAsync(user.Id, "CustomProvider", "access_token", writtenAccessToken);
+                await _tokenService.SaveUserTokenAsync(user.Id, "CustomProvider", "access_token", accessToken);
                 await _tokenService.SaveUserTokenAsync(user.Id, "CustomProvider", "refresh_token", refreshToken);
-
             }
             else
             {
@@ -138,27 +133,18 @@ namespace DB_AngoraLib.Services.SigninService
                 return null; // Refresh token matcher ikke eller er ikke fundet
             }
 
-            // Valider det gemte refresh token her (f.eks. tjek udløb, tilbagekaldelse osv.)
-
-            // Generer et nyt access token og et nyt refresh token
+            // AccessToken er nu direkte en string
             var newAccessToken = await _tokenService.GenerateAccessToken(user);
             var newRefreshToken = _tokenService.GenerateRefreshToken();
-
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var writtenAccessToken = tokenHandler.WriteToken(newAccessToken);
-
             // Opdater det gemte refresh token med det nye refresh token
             await _tokenService.SaveUserTokenAsync(user.Id, "CustomProvider", "refresh_token", newRefreshToken);
-
             // Returner det nye access token og refresh token
             return new Token_ResponseDTO
             {
-                AccessToken = writtenAccessToken,
+                AccessToken = newAccessToken, // Direkte brug af string
                 RefreshToken = newRefreshToken
             };
         }
-
-
 
 
         //---------------------------------------: EXTERNAL LOGIN :---------------------------------------
@@ -180,24 +166,20 @@ namespace DB_AngoraLib.Services.SigninService
             var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor: true);
             if (result.Succeeded)
             {
-                // Brugeren er allerede registreret med denne eksterne udbyder
+                // Brugeren er allerede registreret, så vi udsteder et nyt Bearer Token
                 var user = await _userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
                 // Udsted dit eget Bearer Token for brugeren
                 var accessToken = await _tokenService.GenerateAccessToken(user);
-
-                var tokenHandler = new JwtSecurityTokenHandler();
-                var writtenAccessToken = tokenHandler.WriteToken(accessToken);
-
                 var refreshToken = _tokenService.GenerateRefreshToken();
+
                 await _tokenService.UpdateRefreshTokenForUser(user, refreshToken, "Brugerens IP");
 
                 // Returner dit eget token til brugeren
                 return new Login_ResponseDTO
                 {
                     UserName = user.UserName,
-                    AccessToken = writtenAccessToken,
+                    AccessToken = accessToken, // Direkte brug af string
                     RefreshToken = refreshToken,
-                    // Sæt andre nødvendige felter
                 };
             }
             else
@@ -225,99 +207,17 @@ namespace DB_AngoraLib.Services.SigninService
 
                 // Udsted dit eget Bearer Token for brugeren
                 var accessToken = await _tokenService.GenerateAccessToken(user);
-
-                var tokenHandler = new JwtSecurityTokenHandler();
-                var writtenAccessToken = tokenHandler.WriteToken(accessToken);
-
                 var refreshToken = _tokenService.GenerateRefreshToken();
+
                 await _tokenService.UpdateRefreshTokenForUser(user, refreshToken, "Brugerens IP");
 
-                // Returner dit eget token til brugeren
                 return new Login_ResponseDTO
                 {
                     UserName = user.UserName,
-                    AccessToken = writtenAccessToken,
+                    AccessToken = accessToken, // Direkte brug af string
                     RefreshToken = refreshToken,
-                    // Sæt andre nødvendige felter
                 };
             }
         }
-
-        //public async Task<string> ExternalLoginCallback2(string returnUrl = null, string remoteError = null)
-        //{
-        //    if (remoteError != null)
-        //    {
-        //        // Håndter fejl fra den eksterne udbyder
-        //        throw new Exception($"Error from external provider: {remoteError}");
-        //    }
-
-        //    var info = await _signInManager.GetExternalLoginInfoAsync();
-        //    if (info == null)
-        //    {
-        //        throw new Exception("Error loading external login information.");
-        //    }
-
-        //    // Forsøg at logge ind med den eksterne udbyder
-        //    var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor: true);
-        //    if (result.Succeeded)
-        //    {
-        //        // Brugeren er allerede registreret med denne eksterne udbyder
-        //        var user = await _userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
-        //        var accessToken = info.AuthenticationTokens.FirstOrDefault(t => t.Name == "access_token")?.Value;
-
-        //        if (!string.IsNullOrEmpty(accessToken))
-        //        {
-        //            // Gem access token i databasen
-        //            await _tokenService.SaveUserTokenAsync(user.Id, info.LoginProvider, "access_token", accessToken);
-        //        }
-
-        //        return await GenerateAndReturnToken(user, returnUrl);
-        //    }
-        //    else
-        //    {
-        //        // Brugeren er ikke registreret, så vi skal oprette en ny bruger
-        //        var email = info.Principal.FindFirstValue(ClaimTypes.Email);
-        //        if (email == null)
-        //        {
-        //            // Håndter scenarier, hvor e-mail ikke er tilgængelig
-        //            throw new Exception("Email not found.");
-        //        }
-
-        //        var user = new User { UserName = email, Email = email };
-        //        var createUserResult = await _userManager.CreateAsync(user);
-        //        if (!createUserResult.Succeeded)
-        //        {
-        //            throw new Exception("Failed to create user.");
-        //        }
-
-        //        var addLoginResult = await _userManager.AddLoginAsync(user, info);
-        //        if (!addLoginResult.Succeeded)
-        //        {
-        //            throw new Exception("Failed to add external login.");
-        //        }
-
-        //        await _signInManager.SignInAsync(user, isPersistent: false);
-        //        return await GenerateAndReturnToken(user, returnUrl);
-        //    }
-        //}
-
-        //private async Task<string> GenerateAndReturnToken(User user, string returnUrl)
-        //{
-        //    var accessToken = await _tokenService.GenerateAccessToken(user);
-        //    var refreshToken = _tokenService.GenerateRefreshToken();
-        //    await _tokenService.UpdateRefreshTokenForUser(user, refreshToken, "Brugerens IP"); // Erstat "Brugerens IP" med den faktiske IP
-
-        //    var tokenHandler = new JwtSecurityTokenHandler();
-        //    var accessToken_ToString = tokenHandler.WriteToken(accessToken);
-
-        //    // Her kan du vælge at returnere token direkte, omdirigere brugeren med token som en parameter, eller en anden metode
-        //    // For eksempel, for en SPA, kan du returnere en URL med tokenet som en query parameter
-        //    // For denne demonstration returnerer vi bare tokenet som en string
-        //    return accessToken_ToString;
-        //}
-
-
-
-
     }
 }
