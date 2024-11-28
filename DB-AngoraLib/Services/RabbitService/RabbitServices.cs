@@ -17,13 +17,11 @@ namespace DB_AngoraLib.Services.RabbitService
     {
         private readonly IGRepository<Rabbit> _dbRepository;
         private readonly IBreederService _breederService;
-        private readonly Rabbit_Validator _validatorService;
 
-        public RabbitServices(IGRepository<Rabbit> dbRepository, IBreederService breederService, Rabbit_Validator validatorService)
+        public RabbitServices(IGRepository<Rabbit> dbRepository, IBreederService breederService)
         {
             _dbRepository = dbRepository;
             _breederService = breederService;
-            _validatorService = validatorService;
         }
 
         public RabbitServices() { }
@@ -320,7 +318,7 @@ namespace DB_AngoraLib.Services.RabbitService
                 // Copy all non-null properties from updatedRabbit to rabbitToUpdate
                 HelperServices.CopyPropertiesTo(rabbit_updateDTO, rabbit_InDB);
 
-                _validatorService.ValidateRabbit(rabbit_InDB);
+                //_validatorService.ValidateRabbit(rabbit_InDB);
                 await _dbRepository.UpdateObjectAsync(rabbit_InDB);
             }
 
@@ -342,7 +340,7 @@ namespace DB_AngoraLib.Services.RabbitService
         {
             var hasPermissionToDeleteOwn = userClaims.Any(c => c.Type == "Rabbit:Delete" && c.Value == "Own");
             var hasPermissionToDeleteAll = userClaims.Any(c => c.Type == "Rabbit:Delete" && c.Value == "Any");
-            
+
             var rabbitToDelete = await Get_Rabbit_ByEarCombId(earCombId);
             if (rabbitToDelete == null)
             {
@@ -354,8 +352,28 @@ namespace DB_AngoraLib.Services.RabbitService
                 throw new InvalidOperationException("Du har ikke rettigheder til at slette kaniner, du ikke ejer");
             }
 
-            // Create a new Rabbit_PreviewDTO and copy properties from rabbitToDelete
+            // Fjern referencer til faren
+            var childrenWithThisFatherList = await _dbRepository.GetDbSet()
+                .Where(r => r.Father_EarCombId == earCombId)
+                .ToListAsync();
+            foreach (var child in childrenWithThisFatherList)
+            {
+                child.Father_EarCombId = null;
+            }
 
+            // Fjern referencer til moren
+            var childrenWithThisMother = await _dbRepository.GetDbSet()
+                .Where(r => r.Mother_EarCombId == earCombId)
+                .ToListAsync();
+            foreach (var child in childrenWithThisMother)
+            {
+                child.Mother_EarCombId = null;
+            }
+
+            await _dbRepository.UpdateObjectsListAsync(childrenWithThisFatherList);
+            await _dbRepository.UpdateObjectsListAsync(childrenWithThisMother);
+
+            // Slet kaninen
             await _dbRepository.DeleteObjectAsync(rabbitToDelete);
 
             return new Rabbit_PreviewDTO()
@@ -446,34 +464,36 @@ namespace DB_AngoraLib.Services.RabbitService
 
             if (gender == Gender.Buck)
             {
-                var maleChildrenList = await _dbRepository.GetDbSet()
+                var childrenWithFatherList = await _dbRepository.GetDbSet()
                     .Where(r => r.FatherId_Placeholder == earCombId)
                     .ToListAsync();
 
-                foreach (var child in maleChildrenList)
+                foreach (var child in childrenWithFatherList)
                 {
                     child.Father_EarCombId = earCombId;
                     rabbitsToUpdateList.Add(child);
+                    _dbRepository.UpdateObjectAsync(child);
                 }
             }
             else if (gender == Gender.Doe)
             {
-                var femaleChildrenList = await _dbRepository.GetDbSet()
+                var childrenWithMotherList = await _dbRepository.GetDbSet()
                     .Where(r => r.MotherId_Placeholder == earCombId)
                     .ToListAsync();
 
-                foreach (var child in femaleChildrenList)
+                foreach (var child in childrenWithMotherList)
                 {
                     child.Mother_EarCombId = earCombId;
                     rabbitsToUpdateList.Add(child);
+                    _dbRepository.UpdateObjectAsync(child);
                 }
             }
 
             // Gem kun ændringerne, hvis der er nogen rabbits at opdatere
-            if (rabbitsToUpdateList.Any())
-            {
-                await _dbRepository.SaveObjectsList(rabbitsToUpdateList);
-            }
+            //if (rabbitsToUpdateList.Any())
+            //{
+            //    await _dbRepository.SaveObjectsList(rabbitsToUpdateList);
+            //}
         }
 
 

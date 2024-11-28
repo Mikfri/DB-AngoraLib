@@ -44,7 +44,7 @@ namespace DB_AngoraMST.Services_InMemTest
         }
 
         //---------------------------------: GET TESTS :---------------------------------
-        [TestMethod]
+        [TestMethod]    // INTEGRATIONS TEST 
         public async Task GetAllBreedersAsync_TEST()
         {
             // Arrange

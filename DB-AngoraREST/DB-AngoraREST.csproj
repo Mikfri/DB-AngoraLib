@@ -27,7 +27,7 @@
 		<PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="8.2.1" />
 		<PackageReference Include="Serilog.AspNetCore" Version="8.0.3" />
 		<PackageReference Include="Serilog.Sinks.ApplicationInsights" Version="4.0.0" />
-		<PackageReference Include="Swashbuckle.AspNetCore" Version="7.0.0" />
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="7.1.0" />
 		<PackageReference Include="Swashbuckle.AspNetCore.Filters" Version="8.0.2" />
 	</ItemGroup>
 
@@ -39,8 +39,6 @@
 
 	<!--<ItemGroup>
 		<ProjectReference Include="..\DB-AngoraLib\DB-AngoraLib.csproj" />
-	</ItemGroup>-->
-	
-	
+	</ItemGroup>-->	
 
 </Project>

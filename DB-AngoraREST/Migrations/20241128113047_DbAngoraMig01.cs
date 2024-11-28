@@ -288,14 +288,12 @@ namespace DB_AngoraREST.Migrations
                         name: "FK_Rabbits_Rabbits_Father_EarCombId",
                         column: x => x.Father_EarCombId,
                         principalTable: "Rabbits",
-                        principalColumn: "EarCombId",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "EarCombId");
                     table.ForeignKey(
                         name: "FK_Rabbits_Rabbits_Mother_EarCombId",
                         column: x => x.Mother_EarCombId,
                         principalTable: "Rabbits",
-                        principalColumn: "EarCombId",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "EarCombId");
                 });
 
             migrationBuilder.CreateTable(
@@ -455,14 +453,14 @@ namespace DB_AngoraREST.Migrations
                 columns: new[] { "Id", "AccessFailedCount", "BreederRegNo", "City", "ConcurrencyStamp", "Email", "EmailConfirmed", "FirstName", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "RoadNameAndNo", "SecurityStamp", "TwoFactorEnabled", "UserName", "UserType", "ZipCode" },
                 values: new object[,]
                 {
-                    { "IdasId", 0, "5095", "Kirke Såby", "04b0b697-0571-409a-80e3-8af2f03f27fa", "IdaFriborg87@gmail.com", false, "Ida", "Friborg", false, null, "IDAFRIBORG87@GMAIL.COM", "IDAFRIBORG87@GMAIL.COM", "AQAAAAIAAYagAAAAEC2oYXdnF2JruSIPYu4ygIyo0Br2MwQL9LqUZAN5ijb3vkS9j13UN60gGJhw7CwlhA==", "27586455", false, "Fynsvej 14", "9d29a2e5-7757-421a-bf9f-2e9efe87d93e", false, "IdaFriborg87@gmail.com", "Breeder", 4060 },
-                    { "MajasId", 0, "5053", "Benløse", "cc6d4e1a-e0a6-43b8-afa1-c2029026e3b5", "MajaJoensen89@gmail.com", false, "Maja", "Hulstrøm", false, null, "MAJAJOENSEN89@GMAIL.COM", "MAJAJOENSEN89@GMAIL.COM", "AQAAAAIAAYagAAAAEIx708LqyZ538Cudzn2QuNitAflHNJ2QYYtBCoNmjzKMdivc61YbByMsZDdvAbJ8nw==", "28733085", false, "Sletten 4", "f597fabe-8c4c-49d2-9bf5-78ce3d506889", false, "MajaJoensen89@gmail.com", "Breeder", 4100 }
+                    { "IdasId", 0, "5095", "Kirke Såby", "eafdb919-62c8-4e91-93df-6a4725096e5f", "IdaFriborg87@gmail.com", false, "Ida", "Friborg", false, null, "IDAFRIBORG87@GMAIL.COM", "IDAFRIBORG87@GMAIL.COM", "AQAAAAIAAYagAAAAEPqoaXFyeXi0xzvghv5aCym1E4gZBN0+bONtgxyO6yaCOA87UU7p7Y7rkByeWw8a0w==", "27586455", false, "Fynsvej 14", "59c8cf98-6dee-476e-b6a2-049592525ca2", false, "IdaFriborg87@gmail.com", "Breeder", 4060 },
+                    { "MajasId", 0, "5053", "Benløse", "1309437f-b8ec-45bf-b065-813cc50f9f33", "MajaJoensen89@gmail.com", false, "Maja", "Hulstrøm", false, null, "MAJAJOENSEN89@GMAIL.COM", "MAJAJOENSEN89@GMAIL.COM", "AQAAAAIAAYagAAAAECmcKl6TTN2oulpdFoif+ZeY1WtdgQu9hQPvt0G/dqulCvmZ9xsiChjbbEzURT2phA==", "28733085", false, "Sletten 4", "b23a5d16-d4de-4f9f-bdb7-d789ee63ddfe", false, "MajaJoensen89@gmail.com", "Breeder", 4100 }
                 });
 
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "City", "ConcurrencyStamp", "Email", "EmailConfirmed", "FirstName", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "RoadNameAndNo", "SecurityStamp", "TwoFactorEnabled", "UserName", "UserType", "ZipCode" },
-                values: new object[] { "MikkelsId", 0, "Kirke Såby", "acbba9fd-fc9a-4ec3-999b-2bae3cf366e4", "Mikk.fri@gmail.com", false, "Mikkel", "Friborg", false, null, "MIKK.FRI@GMAIL.COM", "MIKK.FRI@GMAIL.COM", "AQAAAAIAAYagAAAAEAYAziIySPUS4VduiIrjKCvCWe0NGu5Kj4I2d91zgqtoclHFJ/e6EAyS2YkddGJybQ==", "81183394", false, "Fynsvej 14", "6ebdb4a7-d7ea-4337-baf7-5ec67725b1c2", false, "Mikk.fri@gmail.com", "User", 4060 });
+                values: new object[] { "MikkelsId", 0, "Kirke Såby", "04ea0371-36d9-4edc-8205-f2f0efe22d76", "Mikk.fri@gmail.com", false, "Mikkel", "Friborg", false, null, "MIKK.FRI@GMAIL.COM", "MIKK.FRI@GMAIL.COM", "AQAAAAIAAYagAAAAECsKixMcu+LGYWijTXFLwlLZhzIPZgr7Xwr5apg4UGWHcVqQjb/XQFuAc3qLHjC7aw==", "81183394", false, "Fynsvej 14", "9993a79d-2279-4175-b66e-fe1b842e04b1", false, "Mikk.fri@gmail.com", "User", 4060 });
 
             migrationBuilder.InsertData(
                 table: "AspNetRoleClaims",
@@ -529,28 +527,28 @@ namespace DB_AngoraREST.Migrations
                     { "M63-2104", 24, new DateOnly(2023, 5, 22), null, "M63-085", null, 1, 0, 0, "2104", "M63-164", null, "Ortovi", null, "MajasId", 17, "M63" },
                     { "M63-3102", 19, new DateOnly(2023, 9, 23), null, "M63-0204", null, 1, 0, 0, "3102", "M63-0000", null, "Xådda", null, "MajasId", 17, "M63" },
                     { "V23-023", 4, new DateOnly(2020, 4, 10), new DateOnly(2024, 4, 23), null, null, 0, 0, 1, "023", null, null, "Aslan", null, "MajasId", 17, "V23" },
-                    { "5053-0123", 6, new DateOnly(2023, 5, 30), null, null, "4977-206", 0, 0, 0, "0123", null, "4977-213", "Pichu", "MajasId", "MajasId", 17, "5053" },
-                    { "5053-0223", 16, new DateOnly(2023, 5, 30), null, null, "4977-206", 1, 0, 0, "0223", null, "4977-213", "Chinchou", "MajasId", "MajasId", 17, "5053" },
-                    { "5053-0323", 15, new DateOnly(2023, 8, 17), new DateOnly(2023, 12, 18), null, "4977-206", 0, 0, 1, "0323", null, "4977-213", "Hunter", "MajasId", "MajasId", 17, "5053" },
-                    { "5053-0423", 15, new DateOnly(2023, 5, 30), null, null, "4977-206", 0, 0, 0, "0423", null, "4977-213", "Gastly", "MajasId", "MajasId", 17, "5053" },
-                    { "5053-0523", 6, new DateOnly(2023, 8, 17), null, null, "4977-206", 0, 0, 1, "0523", null, "4977-213", "Charizard", "MajasId", "MajasId", 17, "5053" },
-                    { "5053-0623", 19, new DateOnly(2023, 8, 17), null, null, "4977-206", 0, 0, 0, "0623", null, "4977-213", "Karla", "MajasId", "MajasId", 17, "5053" },
-                    { "5053-0723", 21, new DateOnly(2023, 10, 15), null, null, "4977-206", 1, 1, 1, "0723", null, "4977-315", "Sandshrew", "MajasId", "MajasId", 17, "5053" },
-                    { "5053-0823", 27, new DateOnly(2023, 10, 15), null, null, "4977-206", 1, 0, 0, "0823", null, "4977-315", "Pepsi", "MajasId", "MajasId", 17, "5053" },
-                    { "5053-0923", 26, new DateOnly(2023, 10, 15), null, null, "4977-206", 1, 0, 1, "0923", null, "4977-315", "Cola", "MajasId", "MajasId", 17, "5053" },
-                    { "5053-1023", 21, new DateOnly(2023, 10, 15), null, null, "4977-206", 0, 1, 0, "1023", null, "4977-315", "Marabou", "MajasId", "MajasId", 17, "5053" },
-                    { "5095-002", 16, new DateOnly(2020, 6, 12), new DateOnly(2022, 7, 22), null, null, 0, 0, 0, "002", null, "5095-001", "Sov", "IdasId", "IdasId", 0, "5095" },
-                    { "5095-003", 28, new DateOnly(2020, 3, 12), new DateOnly(2023, 11, 3), null, null, 0, 0, 0, "003", null, "5095-001", "Smørklat Smør", "IdasId", "IdasId", 0, "5095" },
-                    { "5053-0124", 6, new DateOnly(2024, 4, 1), null, "V23-023", null, 0, 0, 1, "0124", null, "5053-0423", "Rollo Darminatan", "MajasId", "MajasId", 17, "5053" },
-                    { "5053-0224", 18, new DateOnly(2024, 4, 18), null, null, "5053-0723", 0, 0, 0, "0224", null, "M63-3102", "Chokolade", "MajasId", "MajasId", 17, "5053" },
-                    { "5053-0324", 18, new DateOnly(2024, 4, 18), null, null, "5053-0723", 0, 0, 1, "0324", null, "M63-3102", "Beartic", "MajasId", "MajasId", 17, "5053" },
-                    { "5053-0524", 21, new DateOnly(2024, 4, 18), null, null, "5053-0723", 0, 0, 1, "0524", null, "M63-3102", "Metchi", "MajasId", "MajasId", 17, "5053" },
-                    { "5053-0724", 19, new DateOnly(2024, 4, 18), null, null, "5053-0723", 0, 0, 1, "0724", null, "M63-3102", "Dewgong", "MajasId", "MajasId", 17, "5053" },
-                    { "5053-10724", 18, new DateOnly(2024, 4, 18), null, null, "5053-0723", 0, 0, 0, "10724", null, "M63-3102", "Ice Beam", "MajasId", "MajasId", 17, "5053" },
-                    { "5095-0124", 27, new DateOnly(2024, 5, 7), null, "V23-023", null, 1, 0, 1, "0124", null, "5053-0223", "Aron", "IdasId", "IdasId", 17, "5095" },
-                    { "5095-0224", 6, new DateOnly(2024, 5, 7), null, "V23-023", null, 1, 1, 0, "0224", null, "5053-0223", "Azelf", "IdasId", "IdasId", 17, "5095" },
-                    { "5095-0324", 6, new DateOnly(2024, 5, 7), null, "V23-023", null, 0, 0, 1, "0324", null, "5053-0223", "Arcanine", "IdasId", "IdasId", 17, "5095" },
-                    { "5095-0624", 5, new DateOnly(2024, 5, 7), null, "V23-023", null, 0, 0, 0, "0624", null, "5053-0223", "Articuno", "IdasId", "IdasId", 17, "5095" }
+                    { "5053-0123", 6, new DateOnly(2023, 5, 30), null, "4977-206", "4977-206", 0, 0, 0, "0123", "4977-213", "4977-213", "Pichu", "MajasId", "MajasId", 17, "5053" },
+                    { "5053-0223", 16, new DateOnly(2023, 5, 30), null, "4977-206", "4977-206", 1, 0, 0, "0223", "4977-213", "4977-213", "Chinchou", "MajasId", "MajasId", 17, "5053" },
+                    { "5053-0323", 15, new DateOnly(2023, 8, 17), new DateOnly(2023, 12, 18), "4977-206", "4977-206", 0, 0, 1, "0323", "4977-213", "4977-213", "Hunter", "MajasId", "MajasId", 17, "5053" },
+                    { "5053-0423", 15, new DateOnly(2023, 5, 30), null, "4977-206", "4977-206", 0, 0, 0, "0423", "4977-213", "4977-213", "Gastly", "MajasId", "MajasId", 17, "5053" },
+                    { "5053-0523", 6, new DateOnly(2023, 8, 17), null, "4977-206", "4977-206", 0, 0, 1, "0523", "4977-213", "4977-213", "Charizard", "MajasId", "MajasId", 17, "5053" },
+                    { "5053-0623", 19, new DateOnly(2023, 8, 17), null, "4977-206", "4977-206", 0, 0, 0, "0623", "4977-213", "4977-213", "Karla", "MajasId", "MajasId", 17, "5053" },
+                    { "5053-0723", 21, new DateOnly(2023, 10, 15), null, "4977-206", "4977-206", 1, 1, 1, "0723", "4977-315", "4977-315", "Sandshrew", "MajasId", "MajasId", 17, "5053" },
+                    { "5053-0823", 27, new DateOnly(2023, 10, 15), null, "4977-206", "4977-206", 1, 0, 0, "0823", "4977-315", "4977-315", "Pepsi", "MajasId", "MajasId", 17, "5053" },
+                    { "5053-0923", 26, new DateOnly(2023, 10, 15), null, "4977-206", "4977-206", 1, 0, 1, "0923", "4977-315", "4977-315", "Cola", "MajasId", "MajasId", 17, "5053" },
+                    { "5053-1023", 21, new DateOnly(2023, 10, 15), null, "4977-206", "4977-206", 0, 1, 0, "1023", "4977-315", "4977-315", "Marabou", "MajasId", "MajasId", 17, "5053" },
+                    { "5095-002", 16, new DateOnly(2020, 6, 12), new DateOnly(2022, 7, 22), null, null, 0, 0, 0, "002", "5095-001", "5095-001", "Sov", "IdasId", "IdasId", 0, "5095" },
+                    { "5095-003", 28, new DateOnly(2020, 3, 12), new DateOnly(2023, 11, 3), null, null, 0, 0, 0, "003", "5095-001", "5095-001", "Smørklat Smør", "IdasId", "IdasId", 0, "5095" },
+                    { "5053-0124", 6, new DateOnly(2024, 4, 1), null, "V23-023", "V23-023", 0, 0, 1, "0124", "5053-0423", "5053-0423", "Rollo Darminatan", "MajasId", "MajasId", 17, "5053" },
+                    { "5053-0224", 18, new DateOnly(2024, 4, 18), null, "5053-0723", "5053-0723", 0, 0, 0, "0224", "M63-3102", "M63-3102", "Chokolade", "MajasId", "MajasId", 17, "5053" },
+                    { "5053-0324", 18, new DateOnly(2024, 4, 18), null, "5053-0723", "5053-0723", 0, 0, 1, "0324", "M63-3102", "M63-3102", "Beartic", "MajasId", "MajasId", 17, "5053" },
+                    { "5053-0524", 21, new DateOnly(2024, 4, 18), null, "5053-0723", "5053-0723", 0, 0, 1, "0524", "M63-3102", "M63-3102", "Metchi", "MajasId", "MajasId", 17, "5053" },
+                    { "5053-0724", 19, new DateOnly(2024, 4, 18), null, "5053-0723", "5053-0723", 0, 0, 1, "0724", "M63-3102", "M63-3102", "Dewgong", "MajasId", "MajasId", 17, "5053" },
+                    { "5053-10724", 18, new DateOnly(2024, 4, 18), null, "5053-0723", "5053-0723", 0, 0, 0, "10724", "M63-3102", "M63-3102", "Ice Beam", "MajasId", "MajasId", 17, "5053" },
+                    { "5095-0124", 27, new DateOnly(2024, 5, 7), null, "V23-023", "V23-023", 0, 1, 1, "0124", "5053-0223", "5053-0223", "Aron", "IdasId", "IdasId", 17, "5095" },
+                    { "5095-0224", 6, new DateOnly(2024, 5, 7), null, "V23-023", "V23-023", 0, 1, 0, "0224", "5053-0223", "5053-0223", "Azelf", "IdasId", "IdasId", 17, "5095" },
+                    { "5095-0324", 6, new DateOnly(2024, 5, 7), null, "V23-023", "V23-023", 0, 0, 1, "0324", "5053-0223", "5053-0223", "Arcanine", "IdasId", "IdasId", 17, "5095" },
+                    { "5095-0624", 5, new DateOnly(2024, 5, 7), null, "V23-023", "V23-023", 0, 0, 0, "0624", "5053-0223", "5053-0223", "Articuno", "IdasId", "IdasId", 17, "5095" }
                 });
 
             migrationBuilder.CreateIndex(

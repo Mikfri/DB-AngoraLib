@@ -44,7 +44,7 @@ jobs:
       - name: Test                            # Kører testene for alle testprojekter i løsningen
         run: dotnet test ${{ env.SOLUTION_FILE }} --configuration ${{ env.CONFIGURATION }} --no-build --logger "trx;LogFileName=test_results.trx"
         
-      - name: Publish Test Results
+      - name: Publish Test Results            # Publicerer testresultaterne
         uses: dorny/test-reporter@v1
         with:
           name: Test Results

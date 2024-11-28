@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using System.Text.Json.Serialization;
+using System.Text.Json;
 
 namespace DB_AngoraREST.Controllers
 {
@@ -113,7 +115,7 @@ namespace DB_AngoraREST.Controllers
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [HttpGet("Pedigree/{earCombId}")]
         [Authorize(Roles = "Admin, Moderator, BreederPremium, BreederBasic")] // Juster adgangskontrollen efter behov
-        public async Task<ActionResult<Rabbit_PedigreeDTO>> GetRabbitPedigree(string earCombId)
+        public async Task<IActionResult> GetRabbitPedigree(string earCombId)
         {
             try
             {
@@ -124,7 +126,20 @@ namespace DB_AngoraREST.Controllers
                     return NotFound(new { message = $"Pedigree for rabbit with EarCombId '{earCombId}' not found." });
                 }
 
-                return Ok(rabbitPedigree);
+                var options = new JsonSerializerOptions
+                {
+                    ReferenceHandler = ReferenceHandler.Preserve,
+                    WriteIndented = true
+                };
+                options.Converters.Add(new JsonStringEnumConverter());
+
+                var json = JsonSerializer.Serialize(rabbitPedigree, options);
+                return new ContentResult
+                {
+                    Content = json,
+                    ContentType = "application/json",
+                    StatusCode = StatusCodes.Status200OK
+                };
             }
             catch (Exception ex) // Overvej at fange mere specifikke undtagelser, hvis det er muligt
             {
@@ -140,9 +155,9 @@ namespace DB_AngoraREST.Controllers
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [HttpGet("TestParingPedigree")]
         [Authorize(Roles = "Admin, Moderator, BreederPremium, BreederBasic")]
-        public async Task<ActionResult<Rabbit_PedigreeDTO>> GetRabbitTestParingPedigree(
-        [FromQuery] string fatherEarCombId,
-        [FromQuery] string motherEarCombId)
+        public async Task<IActionResult> GetRabbitTestParingPedigree(
+            [FromQuery] string fatherEarCombId,
+            [FromQuery] string motherEarCombId)
         {
             try
             {
@@ -153,7 +168,20 @@ namespace DB_AngoraREST.Controllers
                     return NotFound(new { message = "Pedigree could not be generated for the provided ear comb IDs." });
                 }
 
-                return Ok(pedigree);
+                var options = new JsonSerializerOptions
+                {
+                    ReferenceHandler = ReferenceHandler.Preserve,
+                    WriteIndented = true
+                };
+                options.Converters.Add(new JsonStringEnumConverter());
+
+                var json = JsonSerializer.Serialize(pedigree, options);
+                return new ContentResult
+                {
+                    Content = json,
+                    ContentType = "application/json",
+                    StatusCode = StatusCodes.Status200OK
+                };
             }
             catch (ArgumentException ex)
             {

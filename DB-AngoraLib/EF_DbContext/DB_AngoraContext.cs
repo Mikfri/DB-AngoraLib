@@ -82,7 +82,7 @@ namespace DB_AngoraLib.EF_DbContext
                 .WithMany(r => r.FatheredChildren)
                 .HasForeignKey(r => r.Father_EarCombId)
                 .IsRequired(false)
-                .OnDelete(DeleteBehavior.Restrict); // Prevent cascade delete
+                .OnDelete(DeleteBehavior.NoAction); // No action on delete
 
             // Configure Foreign Key for Rabbit -> Rabbit (Mother)
             modelBuilder.Entity<Rabbit>()
@@ -90,7 +90,7 @@ namespace DB_AngoraLib.EF_DbContext
                 .WithMany(r => r.MotheredChildren)
                 .HasForeignKey(r => r.Mother_EarCombId)
                 .IsRequired(false)
-                .OnDelete(DeleteBehavior.Restrict); // Prevent cascade delete
+                .OnDelete(DeleteBehavior.NoAction); // No action on delete
 
             modelBuilder.Entity<Trimming>()
                 .HasOne(t => t.Rabbit)

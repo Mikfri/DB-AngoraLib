@@ -25,10 +25,8 @@ namespace DB_AngoraMST.Services_InMemTest
     [TestClass]
     public class RabbitServices_MST
     {
-
         private IRabbitService _rabbitService;
-        private Mock<IBreederService> _breederServiceMock;
-        private Mock<Rabbit_Validator> _validatorServiceMock;
+        private IBreederService _breederService;
         private DB_AngoraContext _context;
 
         public RabbitServices_MST()
@@ -41,42 +39,13 @@ namespace DB_AngoraMST.Services_InMemTest
             _context = new DB_AngoraContext(options);
             _context.Database.EnsureCreated();
 
-            // Mock dependencies
-            _breederServiceMock = new Mock<IBreederService>();
-            _validatorServiceMock = new Mock<Rabbit_Validator>();
+            // Initialize BreederService with in-memory context
+            var breederRepository = new GRepository<Breeder>(_context);
+            _breederService = new BreederServices(breederRepository);
 
-            // Setup Moq for IBreederService
-            // MOQ OPSÆTNING: Get_BreederByBreederRegNo
-            _breederServiceMock.Setup(service => service.Get_BreederByBreederRegNo(It.IsAny<string>()))
-                .ReturnsAsync((string breederRegNo) => _context.Users.OfType<Breeder>().FirstOrDefault(b => b.BreederRegNo == breederRegNo));
-            
-            // MOQ OPSÆTNING: GetAll_RabbitsOwned_Filtered
-            _breederServiceMock.Setup(service => service.GetAll_RabbitsOwned_Filtered(It.IsAny<string>(), It.IsAny<Rabbit_FilteredRequestDTO>()))
-                .ReturnsAsync((string userId, Rabbit_FilteredRequestDTO filter) =>
-                {
-                    var user = _context.Users.OfType<Breeder>().FirstOrDefault(b => b.Id == userId);
-                    if (user == null) return new List<Rabbit_PreviewDTO>();
-
-                    var rabbits = _context.Rabbits
-                        .Where(r => r.OwnerId == userId)
-                        .Select(r => new Rabbit_PreviewDTO
-                        {
-                            EarCombId = r.EarCombId,
-                            NickName = r.NickName,
-                            Race = r.Race,
-                            Color = r.Color,
-                            Gender = r.Gender,
-                            UserOwner = r.UserOwner != null ? $"{r.UserOwner.FirstName} {r.UserOwner.LastName}" : null,
-                            UserOrigin = r.UserOrigin != null ? $"{r.UserOrigin.FirstName} {r.UserOrigin.LastName}" : null,
-                        })
-                        .ToList();
-
-                    return rabbits;
-                });
-
-            // Initialize RabbitServices with mocked dependencies
-            var repository = new GRepository<Rabbit>(_context);
-            _rabbitService = new RabbitServices(repository, _breederServiceMock.Object, _validatorServiceMock.Object);
+            // Initialize RabbitServices with actual BreederService
+            var rabbitRepository = new GRepository<Rabbit>(_context);
+            _rabbitService = new RabbitServices(rabbitRepository, _breederService);
         }
 
         [TestCleanup]
