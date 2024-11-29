@@ -189,7 +189,7 @@ namespace DB_AngoraLib.Services.RabbitService
 
         public async Task<Rabbit_ProfileDTO> Get_Rabbit_Profile(string userId, string earCombId, IList<Claim> userClaims)
         {
-            var rabbit = await Get_Rabbit_ByEarCombId(earCombId);
+            var rabbit = await Get_Rabbit_ByEarCombId_IncludingUserRelations(earCombId);
             var hasPermissionToGetAnyRabbit = userClaims.Any(
                 c => c.Type == "Rabbit:Read" && c.Value == "Any");
 
@@ -209,6 +209,9 @@ namespace DB_AngoraLib.Services.RabbitService
                 };
 
                 HelperServices.CopyProperties_FromAndTo(rabbit, rabbitProfileDTO);
+                rabbitProfileDTO.OriginId = rabbit.UserOrigin != null ? $"{rabbit.UserOrigin.FirstName} {rabbit.UserOrigin.LastName}" : null;
+                rabbitProfileDTO.OwnerId = rabbit.UserOwner != null ? $"{rabbit.UserOwner.FirstName} {rabbit.UserOwner.LastName}" : null;
+
                 return rabbitProfileDTO;
             }
             return null;
@@ -355,10 +358,20 @@ namespace DB_AngoraLib.Services.RabbitService
 
             if (hasPermissionToUpdateAll || (hasPermissionToUpdateOwn && userId == rabbit_InDB.OwnerId))
             {
-                // Copy all non-null properties from updatedRabbit to rabbitToUpdate
-                HelperServices.CopyProperties_FromAndTo(rabbit_updateDTO, rabbit_InDB, allowNulls: true);
+                // Overfør alle properties fra Rabbit_UpdateDTO til rabbit_InDB
+                rabbit_InDB.NickName = rabbit_updateDTO.NickName;
+                rabbit_InDB.Race = rabbit_updateDTO.Race;
+                rabbit_InDB.Color = rabbit_updateDTO.Color;
+                rabbit_InDB.DateOfBirth = rabbit_updateDTO.DateOfBirth;
+                rabbit_InDB.DateOfDeath = rabbit_updateDTO.DateOfDeath;
+                rabbit_InDB.Gender = rabbit_updateDTO.Gender;
+                rabbit_InDB.ForSale = rabbit_updateDTO.ForSale;
+                rabbit_InDB.ForBreeding = rabbit_updateDTO.ForBreeding;
+                rabbit_InDB.FatherId_Placeholder = rabbit_updateDTO.FatherId_Placeholder;
+                rabbit_InDB.MotherId_Placeholder = rabbit_updateDTO.MotherId_Placeholder;
 
-                //_validatorService.ValidateRabbit(rabbit_InDB);
+                rabbit_InDB.ValidateRabbit();
+
                 await _dbRepository.UpdateObjectAsync(rabbit_InDB);
             }
 
