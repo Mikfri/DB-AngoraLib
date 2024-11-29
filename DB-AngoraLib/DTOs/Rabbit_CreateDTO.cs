@@ -49,9 +49,9 @@ namespace DB_AngoraLib.DTOs
         public IsPublic ForBreeding { get; init; }
 
         //[RegularExpression(@"^\d{4}-\d{3,5}$", ErrorMessage = "Kanin.ForældreId: Skal være i formatet RightEarId-LeftEarId (f.eks. 5095-021)")]
-        public string? Father_EarCombId { get; init; }
+        public string? FatherId_Placeholder{ get; init; }
 
         //[RegularExpression(@"^\d{4}-\d{3,5}$", ErrorMessage = "Kanin.ForældreId: Skal være i formatet RightEarId-LeftEarId (f.eks. 5095-021)")]
-        public string? Mother_EarCombId { get; init; }
+        public string? MotherId_Placeholder { get; init; }
     }
 }

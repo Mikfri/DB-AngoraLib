@@ -39,7 +39,7 @@ namespace DB_AngoraLib.Services.AccountService
         public async Task<Register_ResponseDTO> Register_BasicUserAsync(Register_CreateBasicUserDTO newUserDTO)
         {
             var newUser = new User();
-            newUserDTO.CopyPropertiesTo(newUser);
+            HelperServices.CopyProperties_FromAndTo(newUserDTO, newUser);
             newUser.UserName = newUserDTO.Email;
 
             var result = await _userManager.CreateAsync(newUser, newUserDTO.Password);
@@ -52,7 +52,7 @@ namespace DB_AngoraLib.Services.AccountService
 
             if (result.Succeeded)
             {
-                await _userManager.AddToRoleAsync(newUser, "Guest");
+                await _userManager.AddToRoleAsync(newUser, "UserBasicFree");
 
                 var token = await _userManager.GenerateEmailConfirmationTokenAsync(newUser);
                 await Send_EmailConfirm_ToUser(newUser.Id, token);

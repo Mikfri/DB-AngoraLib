@@ -24,10 +24,6 @@ namespace DB_AngoraLib.Services.RabbitService
             _breederService = breederService;
         }
 
-        public RabbitServices() { }
-
-
-
         //---------------------: ADD
         /// <summary>
         /// Tilføjer en Rabbit til den nuværende bruger og tilføjer den til Collectionen
@@ -60,8 +56,8 @@ namespace DB_AngoraLib.Services.RabbitService
                 ForSale = newRabbitDTO.ForSale,
                 ForBreeding = newRabbitDTO.ForBreeding,
 
-                FatherId_Placeholder = newRabbitDTO.Father_EarCombId,
-                MotherId_Placeholder = newRabbitDTO.Mother_EarCombId,
+                FatherId_Placeholder = newRabbitDTO.FatherId_Placeholder,
+                MotherId_Placeholder = newRabbitDTO.MotherId_Placeholder,
             };
             newRabbit.ValidateRabbit();
             //_validatorService.ValidateRabbit(newRabbit);
@@ -81,7 +77,7 @@ namespace DB_AngoraLib.Services.RabbitService
 
             // Create a new RabbitDTO and copy properties from newRabbit
             var newRabbit_ProfileDTO = new Rabbit_ProfileDTO();
-            HelperServices.CopyPropertiesTo(newRabbit, newRabbit_ProfileDTO);
+            HelperServices.CopyProperties_FromAndTo(newRabbit, newRabbit_ProfileDTO);
 
             return newRabbit_ProfileDTO;
         }
@@ -97,9 +93,43 @@ namespace DB_AngoraLib.Services.RabbitService
         {
             var rabbits = await _dbRepository.GetDbSet()
                 .AsNoTracking()
+                .Include(rabbit => rabbit.UserOwner) // Include the owner of the rabbit
                 .Where(rabbit =>
-                rabbit.ForSale == IsPublic.Ja &&
-                rabbit.DateOfDeath == null)
+                    rabbit.ForSale == IsPublic.Ja &&
+                    rabbit.DateOfDeath == null)
+                .ToListAsync();
+
+            return rabbits
+                .Where(rabbit =>
+                    (filter.RightEarId == null || rabbit.RightEarId == filter.RightEarId) // Vi vil kunne søge på hvor den kommer fra!
+                    && (filter.NickName == null || rabbit.NickName == filter.NickName)    // hvorfor søge på navn?
+                    && (filter.Race == null || rabbit.Race == filter.Race)
+                    && (filter.Color == null || rabbit.Color == filter.Color)
+                    && (filter.Gender == null || rabbit.Gender == filter.Gender)
+                    && (filter.IsJuvenile == null || rabbit.IsJuvenile == filter.IsJuvenile)
+                    && (filter.ApprovedRaceColorCombination == null || rabbit.ApprovedRaceColorCombination == filter.ApprovedRaceColorCombination))
+
+                .Select(rabbit => new Rabbit_PreviewDTO
+                {
+                    EarCombId = rabbit.EarCombId,
+                    NickName = rabbit.NickName,
+                    Race = rabbit.Race,
+                    Color = rabbit.Color,
+                    Gender = rabbit.Gender,
+                    UserOwner = rabbit.UserOwner != null ? $"{rabbit.UserOwner.FirstName} {rabbit.UserOwner.LastName}" : null,
+                    UserOrigin = rabbit.UserOrigin != null ? $"{rabbit.UserOrigin.FirstName} {rabbit.UserOrigin.LastName}" : null,
+                })
+                .ToList();
+        }
+
+        public async Task<List<Rabbit_PreviewDTO>> Get_AllRabbits_Forbreeding_Filtered(Rabbit_ForbreedingFilterDTO filter)
+        {
+            var rabbits = await _dbRepository.GetDbSet()
+                .AsNoTracking()
+                .Include(rabbit => rabbit.UserOwner) // Include the owner of the rabbit
+                .Where(rabbit =>
+                    rabbit.ForBreeding == IsPublic.Ja &&
+                    rabbit.DateOfDeath == null)
                 .ToListAsync();
 
             return rabbits
@@ -178,7 +208,7 @@ namespace DB_AngoraLib.Services.RabbitService
                     Children = await Get_Rabbit_ChildCollection(earCombId),
                 };
 
-                HelperServices.CopyPropertiesTo(rabbit, rabbitProfileDTO);
+                HelperServices.CopyProperties_FromAndTo(rabbit, rabbitProfileDTO);
                 return rabbitProfileDTO;
             }
             return null;
@@ -271,6 +301,16 @@ namespace DB_AngoraLib.Services.RabbitService
 
         public async Task<Rabbit_PedigreeDTO> Get_RabbitTestParingPedigree(string fatherEarCombId, string motherEarCombId)
         {
+            if (string.IsNullOrEmpty(fatherEarCombId))
+            {
+                throw new ArgumentNullException(nameof(fatherEarCombId), "Father EarCombId cannot be null or empty.");
+            }
+
+            if (string.IsNullOrEmpty(motherEarCombId))
+            {
+                throw new ArgumentNullException(nameof(motherEarCombId), "Mother EarCombId cannot be null or empty.");
+            }
+
             var father = await Get_Rabbit_ByEarCombId_IncludingUserRelations(fatherEarCombId);
             var mother = await Get_Rabbit_ByEarCombId_IncludingUserRelations(motherEarCombId);
 
@@ -316,7 +356,7 @@ namespace DB_AngoraLib.Services.RabbitService
             if (hasPermissionToUpdateAll || (hasPermissionToUpdateOwn && userId == rabbit_InDB.OwnerId))
             {
                 // Copy all non-null properties from updatedRabbit to rabbitToUpdate
-                HelperServices.CopyPropertiesTo(rabbit_updateDTO, rabbit_InDB);
+                HelperServices.CopyProperties_FromAndTo(rabbit_updateDTO, rabbit_InDB, allowNulls: true);
 
                 //_validatorService.ValidateRabbit(rabbit_InDB);
                 await _dbRepository.UpdateObjectAsync(rabbit_InDB);
@@ -326,7 +366,7 @@ namespace DB_AngoraLib.Services.RabbitService
 
             // Create a new Rabbit_ProfileDTO and copy properties from updatedRabbit
             var rabbit_ProfileDTO = new Rabbit_ProfileDTO();
-            HelperServices.CopyPropertiesTo(rabbit_InDB, rabbit_ProfileDTO);
+            HelperServices.CopyProperties_FromAndTo(rabbit_InDB, rabbit_ProfileDTO);
 
             return rabbit_ProfileDTO; // Return the updated rabbit as a Rabbit_ProfileDTO
         }
@@ -472,7 +512,7 @@ namespace DB_AngoraLib.Services.RabbitService
                 {
                     child.Father_EarCombId = earCombId;
                     rabbitsToUpdateList.Add(child);
-                    _dbRepository.UpdateObjectAsync(child);
+                    await _dbRepository.UpdateObjectAsync(child);
                 }
             }
             else if (gender == Gender.Doe)
@@ -485,7 +525,7 @@ namespace DB_AngoraLib.Services.RabbitService
                 {
                     child.Mother_EarCombId = earCombId;
                     rabbitsToUpdateList.Add(child);
-                    _dbRepository.UpdateObjectAsync(child);
+                    await _dbRepository.UpdateObjectAsync(child);
                 }
             }
 

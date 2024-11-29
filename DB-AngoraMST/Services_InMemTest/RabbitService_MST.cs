@@ -71,7 +71,7 @@ namespace DB_AngoraMST.Services_InMemTest
                 DateOfDeath = null,
                 Gender = Gender.Doe,
                 ForSale = IsPublic.Nej,
-                Father_EarCombId = "5050-188",
+                FatherId_Placeholder = "5050-188",
             };
             var existingRabbit = await _context.Rabbits.FirstAsync();
             Assert.IsNotNull(existingRabbit);
@@ -79,14 +79,13 @@ namespace DB_AngoraMST.Services_InMemTest
             var currentUser = await _context.Users.FirstAsync();
             Assert.IsNotNull(currentUser);
 
-
             // Act
             await _rabbitService.AddRabbit_ToMyCollection(currentUser.Id, newUniqRabbit);
 
             // Assert
             var addedRabbit = await _context.Rabbits.FirstOrDefaultAsync(r => r.RightEarId == newUniqRabbit.RightEarId && r.LeftEarId == newUniqRabbit.LeftEarId);
             Assert.IsNotNull(addedRabbit);
-            Assert.AreEqual("5050-188", newUniqRabbit.Father_EarCombId);
+            Assert.AreEqual("5050-188", newUniqRabbit.FatherId_Placeholder);
 
             // Act & Assert
             var existingRabbitDto = new Rabbit_CreateDTO { RightEarId = existingRabbit.RightEarId, LeftEarId = existingRabbit.LeftEarId };
