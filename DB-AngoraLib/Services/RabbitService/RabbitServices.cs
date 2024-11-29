@@ -189,7 +189,13 @@ namespace DB_AngoraLib.Services.RabbitService
 
         public async Task<Rabbit_ProfileDTO> Get_Rabbit_Profile(string userId, string earCombId, IList<Claim> userClaims)
         {
-            var rabbit = await Get_Rabbit_ByEarCombId_IncludingUserRelations(earCombId);
+            var rabbit = await _dbRepository
+                .GetDbSet()
+                //.AsNoTracking() // Tilføjer AsNoTracking for bedre ydeevne
+                .Include(r => r.UserOrigin)
+                .Include(r => r.UserOwner)
+                .FirstOrDefaultAsync(r => r.EarCombId == earCombId);
+
             var hasPermissionToGetAnyRabbit = userClaims.Any(
                 c => c.Type == "Rabbit:Read" && c.Value == "Any");
 
@@ -209,8 +215,8 @@ namespace DB_AngoraLib.Services.RabbitService
                 };
 
                 HelperServices.CopyProperties_FromAndTo(rabbit, rabbitProfileDTO);
-                rabbitProfileDTO.OriginId = rabbit.UserOrigin != null ? $"{rabbit.UserOrigin.FirstName} {rabbit.UserOrigin.LastName}" : null;
-                rabbitProfileDTO.OwnerId = rabbit.UserOwner != null ? $"{rabbit.UserOwner.FirstName} {rabbit.UserOwner.LastName}" : null;
+                rabbitProfileDTO.OriginFullName = rabbit.UserOrigin != null ? $"{rabbit.UserOrigin.FirstName} {rabbit.UserOrigin.LastName}" : null;
+                rabbitProfileDTO.OwnerFullName = rabbit.UserOwner != null ? $"{rabbit.UserOwner.FirstName} {rabbit.UserOwner.LastName}" : null;
 
                 return rabbitProfileDTO;
             }

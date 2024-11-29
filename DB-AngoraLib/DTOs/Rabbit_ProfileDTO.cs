@@ -20,8 +20,8 @@ namespace DB_AngoraLib.DTOs
 
         public string? NickName { get; init; }
 
-        public string? OriginId { get; set; }   // set, så vi kan overskrive efter CopyProperties_FromAndTo
-        public string? OwnerId { get; set; }    // set, så vi kan overskrive efter CopyProperties_FromAndTo
+        public string? OriginFullName { get; set; }   // set, så vi kan overskrive efter CopyProperties_FromAndTo
+        public string? OwnerFullName { get; set; }    // set, så vi kan overskrive efter CopyProperties_FromAndTo
 
         public Race? Race { get; init; }
         public Color? Color { get; init; }
