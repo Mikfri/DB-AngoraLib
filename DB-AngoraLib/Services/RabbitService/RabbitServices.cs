@@ -102,7 +102,6 @@ namespace DB_AngoraLib.Services.RabbitService
             return rabbits
                 .Where(rabbit =>
                     (filter.RightEarId == null || rabbit.RightEarId == filter.RightEarId) // Vi vil kunne søge på hvor den kommer fra!
-                    && (filter.NickName == null || rabbit.NickName == filter.NickName)    // hvorfor søge på navn?
                     && (filter.Race == null || rabbit.Race == filter.Race)
                     && (filter.Color == null || rabbit.Color == filter.Color)
                     && (filter.Gender == null || rabbit.Gender == filter.Gender)
@@ -135,7 +134,6 @@ namespace DB_AngoraLib.Services.RabbitService
             return rabbits
                 .Where(rabbit =>
                     (filter.RightEarId == null || rabbit.RightEarId == filter.RightEarId) // Vi vil kunne søge på hvor den kommer fra!
-                    && (filter.NickName == null || rabbit.NickName == filter.NickName)    // hvorfor søge på navn?
                     && (filter.Race == null || rabbit.Race == filter.Race)
                     && (filter.Color == null || rabbit.Color == filter.Color)
                     && (filter.Gender == null || rabbit.Gender == filter.Gender)

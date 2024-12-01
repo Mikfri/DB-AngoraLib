@@ -11,7 +11,7 @@ namespace DB_AngoraLib.DTOs
     {
         public string? RightEarId { get; init; }
         //public string? LeftEarId { get; init; } // Hvorfor sq en bruger kunne søge på dette??
-        public string? NickName { get; init; }
+        //public string? NickName { get; init; }
         public Race? Race { get; init; }
         public Color? Color { get; init; }
         public Gender? Gender { get; init; }

@@ -216,42 +216,19 @@ namespace DB_AngoraREST.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpGet("Forsale")]
         public async Task<ActionResult<List<Rabbit_PreviewDTO>>> GetAllRabbits_ForsaleFiltered(
-        [FromQuery] string rightEarId = null,
-        [FromQuery] string nickName = null,
-        [FromQuery] string race = null,
-        [FromQuery] string color = null,
-        [FromQuery] string gender = null,
-        [FromQuery] bool? isJuvenile = null,
-        [FromQuery] bool? approvedRaceColorCombination = null)
+            [FromQuery] string rightEarId = null,
+            [FromQuery] Race? race = null,
+            [FromQuery] Color? color = null,
+            [FromQuery] Gender? gender = null,
+            [FromQuery] bool? isJuvenile = null,
+            [FromQuery] bool? approvedRaceColorCombination = null)
         {
-            Race? raceEnum = null;
-            if (!string.IsNullOrEmpty(race))
-            {
-                Enum.TryParse(race, out Race parsedRace);
-                raceEnum = parsedRace;
-            }
-
-            Color? colorEnum = null;
-            if (!string.IsNullOrEmpty(color))
-            {
-                Enum.TryParse(color, out Color parsedColor);
-                colorEnum = parsedColor;
-            }
-
-            Gender? genderEnum = null;
-            if (!string.IsNullOrEmpty(gender))
-            {
-                Enum.TryParse(gender, out Gender parsedGender);
-                genderEnum = parsedGender;
-            }
-
             var filter = new Rabbit_ForsaleFilterDTO
             {
                 RightEarId = rightEarId,
-                NickName = nickName,
-                Race = raceEnum,
-                Color = colorEnum,
-                Gender = genderEnum,
+                Race = race,
+                Color = color,
+                Gender = gender,
                 IsJuvenile = isJuvenile,
                 ApprovedRaceColorCombination = approvedRaceColorCombination
             };
@@ -267,46 +244,30 @@ namespace DB_AngoraREST.Controllers
             }
         }
 
+
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpGet("Forbreeding")]
         public async Task<ActionResult<List<Rabbit_PreviewDTO>>> GetAllRabbits_ForbreedingFiltered(
-        [FromQuery] string rightEarId = null,
-        [FromQuery] string nickName = null,
-        [FromQuery] string race = null,
-        [FromQuery] string color = null,
-        [FromQuery] string gender = null,
-        [FromQuery] bool? isJuvenile = null,
-        [FromQuery] bool? approvedRaceColorCombination = null)
+            [FromQuery] string rightEarId = null,
+            [FromQuery] Race? race = null,
+            [FromQuery] Color? color = null,
+            [FromQuery] Gender? gender = null,
+            [FromQuery] bool? isJuvenile = null,
+            [FromQuery] bool? approvedRaceColorCombination = null)
         {
-            Race? raceEnum = null;
-            if (!string.IsNullOrEmpty(race))
+            if (!ModelState.IsValid)
             {
-                Enum.TryParse(race, out Race parsedRace);
-                raceEnum = parsedRace;
-            }
-
-            Color? colorEnum = null;
-            if (!string.IsNullOrEmpty(color))
-            {
-                Enum.TryParse(color, out Color parsedColor);
-                colorEnum = parsedColor;
-            }
-
-            Gender? genderEnum = null;
-            if (!string.IsNullOrEmpty(gender))
-            {
-                Enum.TryParse(gender, out Gender parsedGender);
-                genderEnum = parsedGender;
+                var errors = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage));
+                return BadRequest(new { errors });
             }
 
             var filter = new Rabbit_ForbreedingFilterDTO
             {
                 RightEarId = rightEarId,
-                NickName = nickName,
-                Race = raceEnum,
-                Color = colorEnum,
-                Gender = genderEnum,
+                Race = race,
+                Color = color,
+                Gender = gender,
                 IsJuvenile = isJuvenile,
                 ApprovedRaceColorCombination = approvedRaceColorCombination
             };
@@ -321,6 +282,7 @@ namespace DB_AngoraREST.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
+
 
 
         //-------------------------------: PUT
