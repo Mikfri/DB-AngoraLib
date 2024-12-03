@@ -94,8 +94,8 @@ namespace DB_AngoraLib.SeededData
             var roleClaims = new List<IdentityRoleClaim<string>>
             {
                 // Admin Claims
-                new IdentityRoleClaim<string> { Id = 1, RoleId = "1", ClaimType = "User:Read", ClaimValue = "Any" },
-                new IdentityRoleClaim<string> { Id = 2, RoleId = "1", ClaimType = "User:Create", ClaimValue = "Any" },
+                new IdentityRoleClaim<string> { Id = 1, RoleId = "1", ClaimType = "User:Create", ClaimValue = "Any" },
+                new IdentityRoleClaim<string> { Id = 2, RoleId = "1", ClaimType = "User:Read", ClaimValue = "Any" },
                 new IdentityRoleClaim<string> { Id = 3, RoleId = "1", ClaimType = "User:Update", ClaimValue = "Any" },
                 new IdentityRoleClaim<string> { Id = 4, RoleId = "1", ClaimType = "User:Delete", ClaimValue = "Any" },
                 new IdentityRoleClaim<string> { Id = 5, RoleId = "1", ClaimType = "Rabbit:Create", ClaimValue = "Any" },
@@ -108,6 +108,10 @@ namespace DB_AngoraLib.SeededData
                 new IdentityRoleClaim<string> { Id = 10, RoleId = "2", ClaimType = "Rabbit:Read", ClaimValue = "Any" },
                 new IdentityRoleClaim<string> { Id = 11, RoleId = "2", ClaimType = "Rabbit:Update", ClaimValue = "Any" },
                 new IdentityRoleClaim<string> { Id = 12, RoleId = "2", ClaimType = "Rabbit:Delete", ClaimValue = "Any" },
+                new IdentityRoleClaim<string> { Id = 23, RoleId = "2", ClaimType = "User:Read", ClaimValue = "Any" },
+                new IdentityRoleClaim<string> { Id = 24, RoleId = "2", ClaimType = "User:Update", ClaimValue = "Any" },
+                new IdentityRoleClaim<string> { Id = 25, RoleId = "2", ClaimType = "User:Create", ClaimValue = "Own" },
+                new IdentityRoleClaim<string> { Id = 26, RoleId = "2", ClaimType = "User:Delete", ClaimValue = "Own" },
 
                 // BreederPremium Claims
                 new IdentityRoleClaim<string> { Id = 13, RoleId = "3", ClaimType = "Rabbit:Create", ClaimValue = "Own" },
@@ -115,16 +119,25 @@ namespace DB_AngoraLib.SeededData
                 new IdentityRoleClaim<string> { Id = 15, RoleId = "3", ClaimType = "Rabbit:Update", ClaimValue = "Own" },
                 new IdentityRoleClaim<string> { Id = 16, RoleId = "3", ClaimType = "Rabbit:Delete", ClaimValue = "Own" },
                 new IdentityRoleClaim<string> { Id = 17, RoleId = "3", ClaimType = "Rabbit:ImageCount", ClaimValue = "3" },
+                new IdentityRoleClaim<string> { Id = 27, RoleId = "3", ClaimType = "User:Read", ClaimValue = "Own" },
+                new IdentityRoleClaim<string> { Id = 28, RoleId = "3", ClaimType = "User:Update", ClaimValue = "Own" },
+                new IdentityRoleClaim<string> { Id = 29, RoleId = "3", ClaimType = "User:Create", ClaimValue = "Own" },
+                new IdentityRoleClaim<string> { Id = 30, RoleId = "3", ClaimType = "User:Delete", ClaimValue = "Own" },
 
                 // BreederBasic Claims
                 new IdentityRoleClaim<string> { Id = 18, RoleId = "4", ClaimType = "Rabbit:Create", ClaimValue = "Own" },
                 new IdentityRoleClaim<string> { Id = 19, RoleId = "4", ClaimType = "Rabbit:Read", ClaimValue = "Own" },
                 new IdentityRoleClaim<string> { Id = 20, RoleId = "4", ClaimType = "Rabbit:Update", ClaimValue = "Own" },
                 new IdentityRoleClaim<string> { Id = 21, RoleId = "4", ClaimType = "Rabbit:Delete", ClaimValue = "Own" },
-                new IdentityRoleClaim<string> { Id = 22, RoleId = "4", ClaimType = "Rabbit:ImageCount", ClaimValue = "1" }
+                new IdentityRoleClaim<string> { Id = 22, RoleId = "4", ClaimType = "Rabbit:ImageCount", ClaimValue = "1" },
+                new IdentityRoleClaim<string> { Id = 31, RoleId = "4", ClaimType = "User:Read", ClaimValue = "Own" },
+                new IdentityRoleClaim<string> { Id = 32, RoleId = "4", ClaimType = "User:Update", ClaimValue = "Own" },
+                new IdentityRoleClaim<string> { Id = 33, RoleId = "4", ClaimType = "User:Create", ClaimValue = "Own" },
+                new IdentityRoleClaim<string> { Id = 34, RoleId = "4", ClaimType = "User:Delete", ClaimValue = "Own" }
             };
 
             modelBuilder.Entity<IdentityRoleClaim<string>>().HasData(roleClaims);
+
 
             // Seed Rabbits
             var rabbits = MockRabbits.GetMockRabbits();

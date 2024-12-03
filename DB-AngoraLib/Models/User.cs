@@ -24,11 +24,15 @@ namespace DB_AngoraLib.Models
         public string RoadNameAndNo { get; set; }
         public int ZipCode { get; set; }
         public string City { get; set; }
-        
+        public string? ProfilePic { get; set; } // Path or URI to the profile picture
+
+
         [NotMapped]
         public string Password { get; set; }    // hack: For vi via MockUsers kan sætte password uden at det bliver hashet
 
         public virtual ICollection<Favorite> Favorites { get; set; }
+        public virtual ICollection<Photo> Photos { get; set; }
+
         public virtual ICollection<ApplicationBreeder> BreederApplications { get; set; }
         public virtual ICollection<RefreshToken> RefreshTokens { get; set; }
 

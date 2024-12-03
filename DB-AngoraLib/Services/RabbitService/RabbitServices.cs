@@ -60,7 +60,6 @@ namespace DB_AngoraLib.Services.RabbitService
                 MotherId_Placeholder = newRabbitDTO.MotherId_Placeholder,
             };
             newRabbit.ValidateRabbit();
-            //_validatorService.ValidateRabbit(newRabbit);
 
             var existingRabbit = await Get_Rabbit_ByEarCombId($"{newRabbit.RightEarId}-{newRabbit.LeftEarId}");
             if (existingRabbit != null)
@@ -70,6 +69,8 @@ namespace DB_AngoraLib.Services.RabbitService
 
 
             await _dbRepository.AddObjectAsync(newRabbit); // Add the new rabbit to the database
+
+
 
             await UserOriginFK_SetupAsync(newRabbit);
             await ParentsFK_SetupAsync(newRabbit);

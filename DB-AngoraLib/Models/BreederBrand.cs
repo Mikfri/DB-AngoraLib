@@ -9,6 +9,7 @@ namespace DB_AngoraLib.Models
     public class BreederBrand
     {
         public int Id { get; set; }
+
         public string UserId { get; set; }
         public Breeder BreederBrandOwner { get; set; } // Opdateret til at referere til Breeder
 

@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace DB_AngoraREST.Migrations
 {
     /// <inheritdoc />
-    public partial class DbAngoraMig01 : Migration
+    public partial class AngoraMig01 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -37,6 +37,7 @@ namespace DB_AngoraREST.Migrations
                     RoadNameAndNo = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ZipCode = table.Column<int>(type: "int", nullable: false),
                     City = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ProfilePic = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UserType = table.Column<string>(type: "nvarchar(8)", maxLength: 8, nullable: false),
                     BreederRegNo = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -269,7 +270,8 @@ namespace DB_AngoraREST.Migrations
                     FatherId_Placeholder = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Father_EarCombId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     MotherId_Placeholder = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Mother_EarCombId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                    Mother_EarCombId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    ProfilePic = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -328,46 +330,26 @@ namespace DB_AngoraREST.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Image = table.Column<byte[]>(type: "varbinary(max)", nullable: false),
+                    FilePath = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     FileName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ContentType = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    EntityId = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    EntityType = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    RabbitEarCombId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                    UploadDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsProfilePicture = table.Column<bool>(type: "bit", nullable: false),
+                    RabbitId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Photos", x => x.Id);
+                    table.CheckConstraint("CK_Photo_SingleOwner", "([RabbitId] IS NULL AND [UserId] IS NOT NULL) OR ([RabbitId] IS NOT NULL AND [UserId] IS NULL)");
                     table.ForeignKey(
-                        name: "FK_Photos_Rabbits_RabbitEarCombId",
-                        column: x => x.RabbitEarCombId,
-                        principalTable: "Rabbits",
-                        principalColumn: "EarCombId");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Ratings",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    DateRated = table.Column<DateOnly>(type: "date", nullable: false),
-                    EarCombId = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    RabbitRatedEarCombId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    WeightPoint = table.Column<int>(type: "int", nullable: false),
-                    WeightNotice = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    BodyPoint = table.Column<int>(type: "int", nullable: false),
-                    BodyNotice = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    FurPoint = table.Column<int>(type: "int", nullable: false),
-                    FurNotice = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    TotalPoint = table.Column<int>(type: "int", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Ratings", x => x.Id);
+                        name: "FK_Photos_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Ratings_Rabbits_RabbitRatedEarCombId",
-                        column: x => x.RabbitRatedEarCombId,
+                        name: "FK_Photos_Rabbits_RabbitId",
+                        column: x => x.RabbitId,
                         principalTable: "Rabbits",
                         principalColumn: "EarCombId",
                         onDelete: ReferentialAction.Cascade);
@@ -411,7 +393,7 @@ namespace DB_AngoraREST.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Trimmings",
+                name: "Trimming",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -427,9 +409,9 @@ namespace DB_AngoraREST.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Trimmings", x => x.Id);
+                    table.PrimaryKey("PK_Trimming", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Trimmings_Rabbits_RabbitId",
+                        name: "FK_Trimming_Rabbits_RabbitId",
                         column: x => x.RabbitId,
                         principalTable: "Rabbits",
                         principalColumn: "EarCombId",
@@ -450,25 +432,25 @@ namespace DB_AngoraREST.Migrations
 
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
-                columns: new[] { "Id", "AccessFailedCount", "BreederRegNo", "City", "ConcurrencyStamp", "Email", "EmailConfirmed", "FirstName", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "RoadNameAndNo", "SecurityStamp", "TwoFactorEnabled", "UserName", "UserType", "ZipCode" },
+                columns: new[] { "Id", "AccessFailedCount", "BreederRegNo", "City", "ConcurrencyStamp", "Email", "EmailConfirmed", "FirstName", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "ProfilePic", "RoadNameAndNo", "SecurityStamp", "TwoFactorEnabled", "UserName", "UserType", "ZipCode" },
                 values: new object[,]
                 {
-                    { "IdasId", 0, "5095", "Kirke Såby", "b5bf9ada-6cf9-4f7f-a58a-82ceb5724610", "IdaFriborg87@gmail.com", false, "Ida", "Friborg", false, null, "IDAFRIBORG87@GMAIL.COM", "IDAFRIBORG87@GMAIL.COM", "AQAAAAIAAYagAAAAEHofojj11Jz8HINqAlgS75O6x80/x2x3GjZ380HNNUfo0ZAQvwqhqDdBBwd5p/HgsA==", "27586455", false, "Fynsvej 14", "a68c37d2-84a1-4e31-956c-bd391f70a44f", false, "IdaFriborg87@gmail.com", "Breeder", 4060 },
-                    { "MajasId", 0, "5053", "Benløse", "d6823236-39ce-44ff-b717-91a814b0a870", "MajaJoensen89@gmail.com", false, "Maja", "Hulstrøm", false, null, "MAJAJOENSEN89@GMAIL.COM", "MAJAJOENSEN89@GMAIL.COM", "AQAAAAIAAYagAAAAENCMn8W8+sLYt4x0BIZozGuOTqxOnGiy3IX6bCuHJOvONbHdxBmGW6I0u7sfMcC+zw==", "28733085", false, "Sletten 4", "25061780-4cc8-47bb-82ed-e183d2a6a499", false, "MajaJoensen89@gmail.com", "Breeder", 4100 }
+                    { "IdasId", 0, "5095", "Kirke Såby", "578d6628-7dd5-459b-b9e6-335efb9e3805", "IdaFriborg87@gmail.com", false, "Ida", "Friborg", false, null, "IDAFRIBORG87@GMAIL.COM", "IDAFRIBORG87@GMAIL.COM", "AQAAAAIAAYagAAAAEMtvlJHSahmJABUeTWBSct3cn9RlSU5Vh5X2ZB0GJfIZcZKSBzs/WN8v7A9sVTCJjw==", "27586455", false, null, "Fynsvej 14", "509cf922-25db-469d-9d98-66ea72b14ba7", false, "IdaFriborg87@gmail.com", "Breeder", 4060 },
+                    { "MajasId", 0, "5053", "Benløse", "d80f99dd-d4cf-45ae-afa0-1da479a9d68d", "MajaJoensen89@gmail.com", false, "Maja", "Hulstrøm", false, null, "MAJAJOENSEN89@GMAIL.COM", "MAJAJOENSEN89@GMAIL.COM", "AQAAAAIAAYagAAAAECaQMmEGlqOx8KrmWfTnZgPTEBtaVqOoPMszFfpJcUy8Todir6nPaqX6Bu3ElYgK7Q==", "28733085", false, null, "Sletten 4", "2a4a28a0-848b-43d7-9ae8-7d95e02f3554", false, "MajaJoensen89@gmail.com", "Breeder", 4100 }
                 });
 
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
-                columns: new[] { "Id", "AccessFailedCount", "City", "ConcurrencyStamp", "Email", "EmailConfirmed", "FirstName", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "RoadNameAndNo", "SecurityStamp", "TwoFactorEnabled", "UserName", "UserType", "ZipCode" },
-                values: new object[] { "MikkelsId", 0, "Kirke Såby", "37893f79-4c50-4ca2-8950-06b189583d60", "Mikk.fri@gmail.com", false, "Mikkel", "Friborg", false, null, "MIKK.FRI@GMAIL.COM", "MIKK.FRI@GMAIL.COM", "AQAAAAIAAYagAAAAEO9Sx3orp+4S2q2CMR9Zvdt8ltwrxavfRmVFsOZ5/UDotpt0aik7yYzU6WzJCDYbSg==", "81183394", false, "Fynsvej 14", "6974d40b-bffd-4414-926b-335e064be232", false, "Mikk.fri@gmail.com", "User", 4060 });
+                columns: new[] { "Id", "AccessFailedCount", "City", "ConcurrencyStamp", "Email", "EmailConfirmed", "FirstName", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "ProfilePic", "RoadNameAndNo", "SecurityStamp", "TwoFactorEnabled", "UserName", "UserType", "ZipCode" },
+                values: new object[] { "MikkelsId", 0, "Kirke Såby", "c49a0173-450f-43ca-9b73-9b412aabebea", "Mikk.fri@gmail.com", false, "Mikkel", "Friborg", false, null, "MIKK.FRI@GMAIL.COM", "MIKK.FRI@GMAIL.COM", "AQAAAAIAAYagAAAAECQiVthBfYBjIUREklL2aseJEIEXk5sWS+rBFOFIXnos3poVfPLz+KglR10qt9R0jA==", "81183394", false, null, "Fynsvej 14", "35d29d92-a04f-4397-816e-4ece51c585e2", false, "Mikk.fri@gmail.com", "User", 4060 });
 
             migrationBuilder.InsertData(
                 table: "AspNetRoleClaims",
                 columns: new[] { "Id", "ClaimType", "ClaimValue", "RoleId" },
                 values: new object[,]
                 {
-                    { 1, "User:Read", "Any", "1" },
-                    { 2, "User:Create", "Any", "1" },
+                    { 1, "User:Create", "Any", "1" },
+                    { 2, "User:Read", "Any", "1" },
                     { 3, "User:Update", "Any", "1" },
                     { 4, "User:Delete", "Any", "1" },
                     { 5, "Rabbit:Create", "Any", "1" },
@@ -488,7 +470,19 @@ namespace DB_AngoraREST.Migrations
                     { 19, "Rabbit:Read", "Own", "4" },
                     { 20, "Rabbit:Update", "Own", "4" },
                     { 21, "Rabbit:Delete", "Own", "4" },
-                    { 22, "Rabbit:ImageCount", "1", "4" }
+                    { 22, "Rabbit:ImageCount", "1", "4" },
+                    { 23, "User:Read", "Any", "2" },
+                    { 24, "User:Update", "Any", "2" },
+                    { 25, "User:Create", "Own", "2" },
+                    { 26, "User:Delete", "Own", "2" },
+                    { 27, "User:Read", "Own", "3" },
+                    { 28, "User:Update", "Own", "3" },
+                    { 29, "User:Create", "Own", "3" },
+                    { 30, "User:Delete", "Own", "3" },
+                    { 31, "User:Read", "Own", "4" },
+                    { 32, "User:Update", "Own", "4" },
+                    { 33, "User:Create", "Own", "4" },
+                    { 34, "User:Delete", "Own", "4" }
                 });
 
             migrationBuilder.InsertData(
@@ -512,43 +506,43 @@ namespace DB_AngoraREST.Migrations
 
             migrationBuilder.InsertData(
                 table: "Rabbits",
-                columns: new[] { "EarCombId", "Color", "DateOfBirth", "DateOfDeath", "FatherId_Placeholder", "Father_EarCombId", "ForBreeding", "ForSale", "Gender", "LeftEarId", "MotherId_Placeholder", "Mother_EarCombId", "NickName", "OriginId", "OwnerId", "Race", "RightEarId" },
+                columns: new[] { "EarCombId", "Color", "DateOfBirth", "DateOfDeath", "FatherId_Placeholder", "Father_EarCombId", "ForBreeding", "ForSale", "Gender", "LeftEarId", "MotherId_Placeholder", "Mother_EarCombId", "NickName", "OriginId", "OwnerId", "ProfilePic", "Race", "RightEarId" },
                 values: new object[,]
                 {
-                    { "3658-0819", 24, new DateOnly(2019, 5, 31), new DateOnly(2023, 1, 31), null, null, 0, 0, 0, "0819", null, null, "Karina", null, "MajasId", 0, "3658" },
-                    { "4398-3020", 28, new DateOnly(2022, 7, 22), null, null, null, 1, 0, 1, "3020", null, null, "Douglas", null, "MajasId", 10, "4398" },
-                    { "4640-105", 13, new DateOnly(2021, 4, 5), null, null, null, 1, 0, 1, "105", null, null, "Ingolf", null, "IdasId", 0, "4640" },
-                    { "4640-120", 16, new DateOnly(2021, 5, 11), new DateOnly(2023, 11, 3), null, null, 0, 0, 0, "120", null, null, "Mulan", null, "IdasId", 0, "4640" },
-                    { "4977-206", 15, new DateOnly(2022, 2, 2), new DateOnly(2024, 4, 5), "M63-044", null, 0, 0, 1, "206", "M63-989", null, "Dario", null, "MajasId", 17, "4977" },
-                    { "4977-213", 6, new DateOnly(2022, 3, 24), null, "M63-125", null, 1, 0, 0, "213", "M63-155", null, "Frida", null, "MajasId", 17, "4977" },
-                    { "4977-315", 15, new DateOnly(2023, 1, 13), new DateOnly(2024, 4, 15), "4977-205", null, 0, 0, 0, "315", "13-232", null, "Miranda", null, "MajasId", 17, "4977" },
-                    { "5053-0120", 28, new DateOnly(2020, 3, 25), new DateOnly(2021, 5, 31), null, null, 0, 0, 0, "0120", null, null, "Ulla", "MajasId", "MajasId", 0, "5053" },
-                    { "5095-001", 18, new DateOnly(2019, 2, 27), new DateOnly(2024, 4, 13), null, null, 0, 0, 0, "001", null, null, "Kaliba", "IdasId", "IdasId", 0, "5095" },
-                    { "M63-2104", 24, new DateOnly(2023, 5, 22), null, "M63-085", null, 1, 0, 0, "2104", "M63-164", null, "Ortovi", null, "MajasId", 17, "M63" },
-                    { "M63-3102", 19, new DateOnly(2023, 9, 23), null, "M63-0204", null, 1, 0, 0, "3102", "M63-0000", null, "Xådda", null, "MajasId", 17, "M63" },
-                    { "V23-023", 4, new DateOnly(2020, 4, 10), new DateOnly(2024, 4, 23), null, null, 0, 0, 1, "023", null, null, "Aslan", null, "MajasId", 17, "V23" },
-                    { "5053-0123", 6, new DateOnly(2023, 5, 30), null, "4977-206", "4977-206", 0, 0, 0, "0123", "4977-213", "4977-213", "Pichu", "MajasId", "MajasId", 17, "5053" },
-                    { "5053-0223", 16, new DateOnly(2023, 5, 30), null, "4977-206", "4977-206", 1, 0, 0, "0223", "4977-213", "4977-213", "Chinchou", "MajasId", "MajasId", 17, "5053" },
-                    { "5053-0323", 15, new DateOnly(2023, 8, 17), new DateOnly(2023, 12, 18), "4977-206", "4977-206", 0, 0, 1, "0323", "4977-213", "4977-213", "Hunter", "MajasId", "MajasId", 17, "5053" },
-                    { "5053-0423", 15, new DateOnly(2023, 5, 30), null, "4977-206", "4977-206", 0, 0, 0, "0423", "4977-213", "4977-213", "Gastly", "MajasId", "MajasId", 17, "5053" },
-                    { "5053-0523", 6, new DateOnly(2023, 8, 17), null, "4977-206", "4977-206", 0, 0, 1, "0523", "4977-213", "4977-213", "Charizard", "MajasId", "MajasId", 17, "5053" },
-                    { "5053-0623", 19, new DateOnly(2023, 8, 17), null, "4977-206", "4977-206", 0, 0, 0, "0623", "4977-213", "4977-213", "Karla", "MajasId", "MajasId", 17, "5053" },
-                    { "5053-0723", 21, new DateOnly(2023, 10, 15), null, "4977-206", "4977-206", 1, 1, 1, "0723", "4977-315", "4977-315", "Sandshrew", "MajasId", "MajasId", 17, "5053" },
-                    { "5053-0823", 27, new DateOnly(2023, 10, 15), null, "4977-206", "4977-206", 1, 0, 0, "0823", "4977-315", "4977-315", "Pepsi", "MajasId", "MajasId", 17, "5053" },
-                    { "5053-0923", 26, new DateOnly(2023, 10, 15), null, "4977-206", "4977-206", 1, 0, 1, "0923", "4977-315", "4977-315", "Cola", "MajasId", "MajasId", 17, "5053" },
-                    { "5053-1023", 21, new DateOnly(2023, 10, 15), null, "4977-206", "4977-206", 0, 1, 0, "1023", "4977-315", "4977-315", "Marabou", "MajasId", "MajasId", 17, "5053" },
-                    { "5095-002", 16, new DateOnly(2020, 6, 12), new DateOnly(2022, 7, 22), null, null, 0, 0, 0, "002", "5095-001", "5095-001", "Sov", "IdasId", "IdasId", 0, "5095" },
-                    { "5095-003", 28, new DateOnly(2020, 3, 12), new DateOnly(2023, 11, 3), null, null, 0, 0, 0, "003", "5095-001", "5095-001", "Smørklat Smør", "IdasId", "IdasId", 0, "5095" },
-                    { "5053-0124", 6, new DateOnly(2024, 4, 1), null, "V23-023", "V23-023", 0, 0, 1, "0124", "5053-0423", "5053-0423", "Rollo Darminatan", "MajasId", "MajasId", 17, "5053" },
-                    { "5053-0224", 18, new DateOnly(2024, 4, 18), null, "5053-0723", "5053-0723", 0, 0, 0, "0224", "M63-3102", "M63-3102", "Chokolade", "MajasId", "MajasId", 17, "5053" },
-                    { "5053-0324", 18, new DateOnly(2024, 4, 18), null, "5053-0723", "5053-0723", 0, 0, 1, "0324", "M63-3102", "M63-3102", "Beartic", "MajasId", "MajasId", 17, "5053" },
-                    { "5053-0524", 21, new DateOnly(2024, 4, 18), null, "5053-0723", "5053-0723", 0, 0, 1, "0524", "M63-3102", "M63-3102", "Metchi", "MajasId", "MajasId", 17, "5053" },
-                    { "5053-0724", 19, new DateOnly(2024, 4, 18), null, "5053-0723", "5053-0723", 0, 0, 1, "0724", "M63-3102", "M63-3102", "Dewgong", "MajasId", "MajasId", 17, "5053" },
-                    { "5053-10724", 18, new DateOnly(2024, 4, 18), null, "5053-0723", "5053-0723", 0, 0, 0, "10724", "M63-3102", "M63-3102", "Ice Beam", "MajasId", "MajasId", 17, "5053" },
-                    { "5095-0124", 27, new DateOnly(2024, 5, 7), null, "V23-023", "V23-023", 0, 1, 1, "0124", "5053-0223", "5053-0223", "Aron", "IdasId", "IdasId", 17, "5095" },
-                    { "5095-0224", 6, new DateOnly(2024, 5, 7), null, "V23-023", "V23-023", 0, 1, 0, "0224", "5053-0223", "5053-0223", "Azelf", "IdasId", "IdasId", 17, "5095" },
-                    { "5095-0324", 6, new DateOnly(2024, 5, 7), null, "V23-023", "V23-023", 0, 0, 1, "0324", "5053-0223", "5053-0223", "Arcanine", "IdasId", "IdasId", 17, "5095" },
-                    { "5095-0624", 5, new DateOnly(2024, 5, 7), null, "V23-023", "V23-023", 0, 0, 0, "0624", "5053-0223", "5053-0223", "Articuno", "IdasId", "IdasId", 17, "5095" }
+                    { "3658-0819", 24, new DateOnly(2019, 5, 31), new DateOnly(2023, 1, 31), null, null, 0, 0, 0, "0819", null, null, "Karina", null, "MajasId", null, 0, "3658" },
+                    { "4398-3020", 28, new DateOnly(2022, 7, 22), null, null, null, 1, 0, 1, "3020", null, null, "Douglas", null, "MajasId", null, 10, "4398" },
+                    { "4640-105", 13, new DateOnly(2021, 4, 5), null, null, null, 1, 0, 1, "105", null, null, "Ingolf", null, "IdasId", null, 0, "4640" },
+                    { "4640-120", 16, new DateOnly(2021, 5, 11), new DateOnly(2023, 11, 3), null, null, 0, 0, 0, "120", null, null, "Mulan", null, "IdasId", null, 0, "4640" },
+                    { "4977-206", 15, new DateOnly(2022, 2, 2), new DateOnly(2024, 4, 5), "M63-044", null, 0, 0, 1, "206", "M63-989", null, "Dario", null, "MajasId", null, 17, "4977" },
+                    { "4977-213", 6, new DateOnly(2022, 3, 24), null, "M63-125", null, 1, 0, 0, "213", "M63-155", null, "Frida", null, "MajasId", null, 17, "4977" },
+                    { "4977-315", 15, new DateOnly(2023, 1, 13), new DateOnly(2024, 4, 15), "4977-205", null, 0, 0, 0, "315", "13-232", null, "Miranda", null, "MajasId", null, 17, "4977" },
+                    { "5053-0120", 28, new DateOnly(2020, 3, 25), new DateOnly(2021, 5, 31), null, null, 0, 0, 0, "0120", null, null, "Ulla", "MajasId", "MajasId", null, 0, "5053" },
+                    { "5095-001", 18, new DateOnly(2019, 2, 27), new DateOnly(2024, 4, 13), null, null, 0, 0, 0, "001", null, null, "Kaliba", "IdasId", "IdasId", null, 0, "5095" },
+                    { "M63-2104", 24, new DateOnly(2023, 5, 22), null, "M63-085", null, 1, 0, 0, "2104", "M63-164", null, "Ortovi", null, "MajasId", null, 17, "M63" },
+                    { "M63-3102", 19, new DateOnly(2023, 9, 23), null, "M63-0204", null, 1, 0, 0, "3102", "M63-0000", null, "Xådda", null, "MajasId", null, 17, "M63" },
+                    { "V23-023", 4, new DateOnly(2020, 4, 10), new DateOnly(2024, 4, 23), null, null, 0, 0, 1, "023", null, null, "Aslan", null, "MajasId", null, 17, "V23" },
+                    { "5053-0123", 6, new DateOnly(2023, 5, 30), null, "4977-206", "4977-206", 0, 0, 0, "0123", "4977-213", "4977-213", "Pichu", "MajasId", "MajasId", null, 17, "5053" },
+                    { "5053-0223", 16, new DateOnly(2023, 5, 30), null, "4977-206", "4977-206", 1, 0, 0, "0223", "4977-213", "4977-213", "Chinchou", "MajasId", "MajasId", null, 17, "5053" },
+                    { "5053-0323", 15, new DateOnly(2023, 8, 17), new DateOnly(2023, 12, 18), "4977-206", "4977-206", 0, 0, 1, "0323", "4977-213", "4977-213", "Hunter", "MajasId", "MajasId", null, 17, "5053" },
+                    { "5053-0423", 15, new DateOnly(2023, 5, 30), null, "4977-206", "4977-206", 0, 0, 0, "0423", "4977-213", "4977-213", "Gastly", "MajasId", "MajasId", null, 17, "5053" },
+                    { "5053-0523", 6, new DateOnly(2023, 8, 17), null, "4977-206", "4977-206", 0, 0, 1, "0523", "4977-213", "4977-213", "Charizard", "MajasId", "MajasId", null, 17, "5053" },
+                    { "5053-0623", 19, new DateOnly(2023, 8, 17), null, "4977-206", "4977-206", 0, 0, 0, "0623", "4977-213", "4977-213", "Karla", "MajasId", "MajasId", null, 17, "5053" },
+                    { "5053-0723", 21, new DateOnly(2023, 10, 15), null, "4977-206", "4977-206", 1, 1, 1, "0723", "4977-315", "4977-315", "Sandshrew", "MajasId", "MajasId", null, 17, "5053" },
+                    { "5053-0823", 27, new DateOnly(2023, 10, 15), null, "4977-206", "4977-206", 1, 0, 0, "0823", "4977-315", "4977-315", "Pepsi", "MajasId", "MajasId", null, 17, "5053" },
+                    { "5053-0923", 26, new DateOnly(2023, 10, 15), null, "4977-206", "4977-206", 1, 0, 1, "0923", "4977-315", "4977-315", "Cola", "MajasId", "MajasId", null, 17, "5053" },
+                    { "5053-1023", 21, new DateOnly(2023, 10, 15), null, "4977-206", "4977-206", 0, 1, 0, "1023", "4977-315", "4977-315", "Marabou", "MajasId", "MajasId", null, 17, "5053" },
+                    { "5095-002", 16, new DateOnly(2020, 6, 12), new DateOnly(2022, 7, 22), null, null, 0, 0, 0, "002", "5095-001", "5095-001", "Sov", "IdasId", "IdasId", null, 0, "5095" },
+                    { "5095-003", 28, new DateOnly(2020, 3, 12), new DateOnly(2023, 11, 3), null, null, 0, 0, 0, "003", "5095-001", "5095-001", "Smørklat Smør", "IdasId", "IdasId", null, 0, "5095" },
+                    { "5053-0124", 6, new DateOnly(2024, 4, 1), null, "V23-023", "V23-023", 0, 0, 1, "0124", "5053-0423", "5053-0423", "Rollo Darminatan", "MajasId", "MajasId", null, 17, "5053" },
+                    { "5053-0224", 18, new DateOnly(2024, 4, 18), null, "5053-0723", "5053-0723", 0, 0, 0, "0224", "M63-3102", "M63-3102", "Chokolade", "MajasId", "MajasId", null, 17, "5053" },
+                    { "5053-0324", 18, new DateOnly(2024, 4, 18), null, "5053-0723", "5053-0723", 0, 0, 1, "0324", "M63-3102", "M63-3102", "Beartic", "MajasId", "MajasId", null, 17, "5053" },
+                    { "5053-0524", 21, new DateOnly(2024, 4, 18), null, "5053-0723", "5053-0723", 0, 0, 1, "0524", "M63-3102", "M63-3102", "Metchi", "MajasId", "MajasId", null, 17, "5053" },
+                    { "5053-0724", 19, new DateOnly(2024, 4, 18), null, "5053-0723", "5053-0723", 0, 0, 1, "0724", "M63-3102", "M63-3102", "Dewgong", "MajasId", "MajasId", null, 17, "5053" },
+                    { "5053-10724", 18, new DateOnly(2024, 4, 18), null, "5053-0723", "5053-0723", 0, 0, 0, "10724", "M63-3102", "M63-3102", "Ice Beam", "MajasId", "MajasId", null, 17, "5053" },
+                    { "5095-0124", 27, new DateOnly(2024, 5, 7), null, "V23-023", "V23-023", 0, 1, 1, "0124", "5053-0223", "5053-0223", "Aron", "IdasId", "IdasId", null, 17, "5095" },
+                    { "5095-0224", 6, new DateOnly(2024, 5, 7), null, "V23-023", "V23-023", 0, 1, 0, "0224", "5053-0223", "5053-0223", "Azelf", "IdasId", "IdasId", null, 17, "5095" },
+                    { "5095-0324", 6, new DateOnly(2024, 5, 7), null, "V23-023", "V23-023", 0, 0, 1, "0324", "5053-0223", "5053-0223", "Arcanine", "IdasId", "IdasId", null, 17, "5095" },
+                    { "5095-0624", 5, new DateOnly(2024, 5, 7), null, "V23-023", "V23-023", 0, 0, 0, "0624", "5053-0223", "5053-0223", "Articuno", "IdasId", "IdasId", null, 17, "5095" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -614,9 +608,14 @@ namespace DB_AngoraREST.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Photos_RabbitEarCombId",
+                name: "IX_Photos_RabbitId",
                 table: "Photos",
-                column: "RabbitEarCombId");
+                column: "RabbitId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Photos_UserId",
+                table: "Photos",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Rabbits_Father_EarCombId",
@@ -639,11 +638,6 @@ namespace DB_AngoraREST.Migrations
                 column: "OwnerId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Ratings_RabbitRatedEarCombId",
-                table: "Ratings",
-                column: "RabbitRatedEarCombId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_RefreshTokens_UserId",
                 table: "RefreshTokens",
                 column: "UserId");
@@ -664,8 +658,8 @@ namespace DB_AngoraREST.Migrations
                 column: "RecipentId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Trimmings_RabbitId",
-                table: "Trimmings",
+                name: "IX_Trimming_RabbitId",
+                table: "Trimming",
                 column: "RabbitId");
         }
 
@@ -703,16 +697,13 @@ namespace DB_AngoraREST.Migrations
                 name: "Photos");
 
             migrationBuilder.DropTable(
-                name: "Ratings");
-
-            migrationBuilder.DropTable(
                 name: "RefreshTokens");
 
             migrationBuilder.DropTable(
                 name: "TransferRequests");
 
             migrationBuilder.DropTable(
-                name: "Trimmings");
+                name: "Trimming");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");

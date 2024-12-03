@@ -185,6 +185,8 @@ namespace DB_AngoraLib.Models
         public string? Mother_EarCombId { get; set; }
         public Rabbit? Mother { get; set; }
 
+        public string? ProfilePic { get; set; } // Path or URI to the profile picture
+
         public virtual ICollection<Rabbit> MotheredChildren { get; set; } // Er altid null hvis, Rabbit er far/Han
         public virtual ICollection<Rabbit> FatheredChildren { get; set; } // Er altid null hvis, Rabbit er mor/Hun
         public virtual ICollection<Photo> Photos { get; set; }

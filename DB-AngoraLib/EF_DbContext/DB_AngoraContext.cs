@@ -91,6 +91,25 @@ namespace DB_AngoraLib.EF_DbContext
                 .HasForeignKey(r => r.Mother_EarCombId)
                 .IsRequired(false)
                 .OnDelete(DeleteBehavior.NoAction); // No action on delete
+            
+            modelBuilder.Entity<Photo>(entity =>
+            {
+                entity.HasOne(p => p.Rabbit)
+                    .WithMany(r => r.Photos)
+                    .HasForeignKey(p => p.RabbitId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(p => p.User)
+                    .WithMany(u => u.Photos)
+                    .HasForeignKey(p => p.UserId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                // Modern approach til at sikre at et foto kun har én ejer
+                entity.ToTable(tb => tb.HasCheckConstraint(
+                    name: "CK_Photo_SingleOwner",
+                    sql: "([RabbitId] IS NULL AND [UserId] IS NOT NULL) OR ([RabbitId] IS NOT NULL AND [UserId] IS NULL)"
+                ));
+            });
 
             modelBuilder.Entity<Trimming>()
                 .HasOne(t => t.Rabbit)
@@ -142,11 +161,11 @@ namespace DB_AngoraLib.EF_DbContext
         public DbSet<ApplicationBreeder> BreederApplications { get; set; }
         public DbSet<BreederBrand> BreederBrands { get; set; }
         public DbSet<Rabbit> Rabbits { get; set; }
-        public DbSet<Trimming> Trimmings { get; set; }
+        //public DbSet<Trimming> Trimmings { get; set; }
         public DbSet<RefreshToken> RefreshTokens { get; set; }
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<TransferRequst> TransferRequests { get; set; }
-        public DbSet<Rating> Ratings { get; set; }
+        //public DbSet<Rating> Ratings { get; set; }
         public DbSet<Photo> Photos { get; set; }
     }
 }

@@ -1,9 +1,9 @@
 name: Build and deploy .NET Core application to Web App DB-Angora
 
-on:
-  push:
-    branches:
-      - master
+# on:
+#   push:
+#     branches:
+#       - master
 
 env:
   SOLUTION_FILE: DB-AngoraLib.sln                      # Navnet på løsningsfilen

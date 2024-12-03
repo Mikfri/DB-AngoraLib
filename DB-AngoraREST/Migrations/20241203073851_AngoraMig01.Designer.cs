@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DB_AngoraREST.Migrations
 {
     [DbContext(typeof(DB_AngoraContext))]
-    [Migration("20241129224755_DbAngoraMig01")]
-    partial class DbAngoraMig01
+    [Migration("20241203073851_AngoraMig01")]
+    partial class AngoraMig01
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -172,34 +172,36 @@ namespace DB_AngoraREST.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("ContentType")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("EntityId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("EntityType")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("FileName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<byte[]>("Image")
+                    b.Property<string>("FilePath")
                         .IsRequired()
-                        .HasColumnType("varbinary(max)");
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("RabbitEarCombId")
+                    b.Property<bool>("IsProfilePicture")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("RabbitId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("UploadDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("RabbitEarCombId");
+                    b.HasIndex("RabbitId");
 
-                    b.ToTable("Photos");
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Photos", t =>
+                        {
+                            t.HasCheckConstraint("CK_Photo_SingleOwner", "([RabbitId] IS NULL AND [UserId] IS NOT NULL) OR ([RabbitId] IS NOT NULL AND [UserId] IS NULL)");
+                        });
                 });
 
             modelBuilder.Entity("DB_AngoraLib.Models.Rabbit", b =>
@@ -249,6 +251,9 @@ namespace DB_AngoraREST.Migrations
 
                     b.Property<string>("OwnerId")
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ProfilePic")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Race")
                         .HasColumnType("int");
@@ -876,53 +881,6 @@ namespace DB_AngoraREST.Migrations
                         });
                 });
 
-            modelBuilder.Entity("DB_AngoraLib.Models.Rating", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("BodyNotice")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("BodyPoint")
-                        .HasColumnType("int");
-
-                    b.Property<DateOnly>("DateRated")
-                        .HasColumnType("date");
-
-                    b.Property<string>("EarCombId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FurNotice")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("FurPoint")
-                        .HasColumnType("int");
-
-                    b.Property<string>("RabbitRatedEarCombId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int?>("TotalPoint")
-                        .HasColumnType("int");
-
-                    b.Property<string>("WeightNotice")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("WeightPoint")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("RabbitRatedEarCombId");
-
-                    b.ToTable("Ratings");
-                });
-
             modelBuilder.Entity("DB_AngoraLib.Models.RefreshToken", b =>
                 {
                     b.Property<int>("Id")
@@ -1042,7 +1000,7 @@ namespace DB_AngoraREST.Migrations
 
                     b.HasIndex("RabbitId");
 
-                    b.ToTable("Trimmings");
+                    b.ToTable("Trimming");
                 });
 
             modelBuilder.Entity("DB_AngoraLib.Models.User", b =>
@@ -1099,6 +1057,9 @@ namespace DB_AngoraREST.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
 
+                    b.Property<string>("ProfilePic")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("RoadNameAndNo")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -1143,7 +1104,7 @@ namespace DB_AngoraREST.Migrations
                             Id = "MikkelsId",
                             AccessFailedCount = 0,
                             City = "Kirke Såby",
-                            ConcurrencyStamp = "37893f79-4c50-4ca2-8950-06b189583d60",
+                            ConcurrencyStamp = "c49a0173-450f-43ca-9b73-9b412aabebea",
                             Email = "Mikk.fri@gmail.com",
                             EmailConfirmed = false,
                             FirstName = "Mikkel",
@@ -1151,11 +1112,11 @@ namespace DB_AngoraREST.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "MIKK.FRI@GMAIL.COM",
                             NormalizedUserName = "MIKK.FRI@GMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEO9Sx3orp+4S2q2CMR9Zvdt8ltwrxavfRmVFsOZ5/UDotpt0aik7yYzU6WzJCDYbSg==",
+                            PasswordHash = "AQAAAAIAAYagAAAAECQiVthBfYBjIUREklL2aseJEIEXk5sWS+rBFOFIXnos3poVfPLz+KglR10qt9R0jA==",
                             PhoneNumber = "81183394",
                             PhoneNumberConfirmed = false,
                             RoadNameAndNo = "Fynsvej 14",
-                            SecurityStamp = "6974d40b-bffd-4414-926b-335e064be232",
+                            SecurityStamp = "35d29d92-a04f-4397-816e-4ece51c585e2",
                             TwoFactorEnabled = false,
                             UserName = "Mikk.fri@gmail.com",
                             ZipCode = 4060
@@ -1249,14 +1210,14 @@ namespace DB_AngoraREST.Migrations
                         new
                         {
                             Id = 1,
-                            ClaimType = "User:Read",
+                            ClaimType = "User:Create",
                             ClaimValue = "Any",
                             RoleId = "1"
                         },
                         new
                         {
                             Id = 2,
-                            ClaimType = "User:Create",
+                            ClaimType = "User:Read",
                             ClaimValue = "Any",
                             RoleId = "1"
                         },
@@ -1332,6 +1293,34 @@ namespace DB_AngoraREST.Migrations
                         },
                         new
                         {
+                            Id = 23,
+                            ClaimType = "User:Read",
+                            ClaimValue = "Any",
+                            RoleId = "2"
+                        },
+                        new
+                        {
+                            Id = 24,
+                            ClaimType = "User:Update",
+                            ClaimValue = "Any",
+                            RoleId = "2"
+                        },
+                        new
+                        {
+                            Id = 25,
+                            ClaimType = "User:Create",
+                            ClaimValue = "Own",
+                            RoleId = "2"
+                        },
+                        new
+                        {
+                            Id = 26,
+                            ClaimType = "User:Delete",
+                            ClaimValue = "Own",
+                            RoleId = "2"
+                        },
+                        new
+                        {
                             Id = 13,
                             ClaimType = "Rabbit:Create",
                             ClaimValue = "Own",
@@ -1367,6 +1356,34 @@ namespace DB_AngoraREST.Migrations
                         },
                         new
                         {
+                            Id = 27,
+                            ClaimType = "User:Read",
+                            ClaimValue = "Own",
+                            RoleId = "3"
+                        },
+                        new
+                        {
+                            Id = 28,
+                            ClaimType = "User:Update",
+                            ClaimValue = "Own",
+                            RoleId = "3"
+                        },
+                        new
+                        {
+                            Id = 29,
+                            ClaimType = "User:Create",
+                            ClaimValue = "Own",
+                            RoleId = "3"
+                        },
+                        new
+                        {
+                            Id = 30,
+                            ClaimType = "User:Delete",
+                            ClaimValue = "Own",
+                            RoleId = "3"
+                        },
+                        new
+                        {
                             Id = 18,
                             ClaimType = "Rabbit:Create",
                             ClaimValue = "Own",
@@ -1398,6 +1415,34 @@ namespace DB_AngoraREST.Migrations
                             Id = 22,
                             ClaimType = "Rabbit:ImageCount",
                             ClaimValue = "1",
+                            RoleId = "4"
+                        },
+                        new
+                        {
+                            Id = 31,
+                            ClaimType = "User:Read",
+                            ClaimValue = "Own",
+                            RoleId = "4"
+                        },
+                        new
+                        {
+                            Id = 32,
+                            ClaimType = "User:Update",
+                            ClaimValue = "Own",
+                            RoleId = "4"
+                        },
+                        new
+                        {
+                            Id = 33,
+                            ClaimType = "User:Create",
+                            ClaimValue = "Own",
+                            RoleId = "4"
+                        },
+                        new
+                        {
+                            Id = 34,
+                            ClaimType = "User:Delete",
+                            ClaimValue = "Own",
                             RoleId = "4"
                         });
                 });
@@ -1520,7 +1565,7 @@ namespace DB_AngoraREST.Migrations
                             Id = "IdasId",
                             AccessFailedCount = 0,
                             City = "Kirke Såby",
-                            ConcurrencyStamp = "b5bf9ada-6cf9-4f7f-a58a-82ceb5724610",
+                            ConcurrencyStamp = "578d6628-7dd5-459b-b9e6-335efb9e3805",
                             Email = "IdaFriborg87@gmail.com",
                             EmailConfirmed = false,
                             FirstName = "Ida",
@@ -1528,11 +1573,11 @@ namespace DB_AngoraREST.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "IDAFRIBORG87@GMAIL.COM",
                             NormalizedUserName = "IDAFRIBORG87@GMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEHofojj11Jz8HINqAlgS75O6x80/x2x3GjZ380HNNUfo0ZAQvwqhqDdBBwd5p/HgsA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEMtvlJHSahmJABUeTWBSct3cn9RlSU5Vh5X2ZB0GJfIZcZKSBzs/WN8v7A9sVTCJjw==",
                             PhoneNumber = "27586455",
                             PhoneNumberConfirmed = false,
                             RoadNameAndNo = "Fynsvej 14",
-                            SecurityStamp = "a68c37d2-84a1-4e31-956c-bd391f70a44f",
+                            SecurityStamp = "509cf922-25db-469d-9d98-66ea72b14ba7",
                             TwoFactorEnabled = false,
                             UserName = "IdaFriborg87@gmail.com",
                             ZipCode = 4060,
@@ -1543,7 +1588,7 @@ namespace DB_AngoraREST.Migrations
                             Id = "MajasId",
                             AccessFailedCount = 0,
                             City = "Benløse",
-                            ConcurrencyStamp = "d6823236-39ce-44ff-b717-91a814b0a870",
+                            ConcurrencyStamp = "d80f99dd-d4cf-45ae-afa0-1da479a9d68d",
                             Email = "MajaJoensen89@gmail.com",
                             EmailConfirmed = false,
                             FirstName = "Maja",
@@ -1551,11 +1596,11 @@ namespace DB_AngoraREST.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "MAJAJOENSEN89@GMAIL.COM",
                             NormalizedUserName = "MAJAJOENSEN89@GMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAENCMn8W8+sLYt4x0BIZozGuOTqxOnGiy3IX6bCuHJOvONbHdxBmGW6I0u7sfMcC+zw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAECaQMmEGlqOx8KrmWfTnZgPTEBtaVqOoPMszFfpJcUy8Todir6nPaqX6Bu3ElYgK7Q==",
                             PhoneNumber = "28733085",
                             PhoneNumberConfirmed = false,
                             RoadNameAndNo = "Sletten 4",
-                            SecurityStamp = "25061780-4cc8-47bb-82ed-e183d2a6a499",
+                            SecurityStamp = "2a4a28a0-848b-43d7-9ae8-7d95e02f3554",
                             TwoFactorEnabled = false,
                             UserName = "MajaJoensen89@gmail.com",
                             ZipCode = 4100,
@@ -1598,9 +1643,19 @@ namespace DB_AngoraREST.Migrations
 
             modelBuilder.Entity("DB_AngoraLib.Models.Photo", b =>
                 {
-                    b.HasOne("DB_AngoraLib.Models.Rabbit", null)
+                    b.HasOne("DB_AngoraLib.Models.Rabbit", "Rabbit")
                         .WithMany("Photos")
-                        .HasForeignKey("RabbitEarCombId");
+                        .HasForeignKey("RabbitId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("DB_AngoraLib.Models.User", "User")
+                        .WithMany("Photos")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("Rabbit");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("DB_AngoraLib.Models.Rabbit", b =>
@@ -1630,17 +1685,6 @@ namespace DB_AngoraREST.Migrations
                     b.Navigation("UserOrigin");
 
                     b.Navigation("UserOwner");
-                });
-
-            modelBuilder.Entity("DB_AngoraLib.Models.Rating", b =>
-                {
-                    b.HasOne("DB_AngoraLib.Models.Rabbit", "RabbitRated")
-                        .WithMany()
-                        .HasForeignKey("RabbitRatedEarCombId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("RabbitRated");
                 });
 
             modelBuilder.Entity("DB_AngoraLib.Models.RefreshToken", b =>
@@ -1756,6 +1800,8 @@ namespace DB_AngoraREST.Migrations
                     b.Navigation("BreederApplications");
 
                     b.Navigation("Favorites");
+
+                    b.Navigation("Photos");
 
                     b.Navigation("RefreshTokens");
                 });
