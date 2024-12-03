@@ -76,7 +76,7 @@ builder.Services.AddDbContext<DB_AngoraContext>(options =>
     var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
     if (builder.Environment.IsProduction())
     {
-        connectionString = builder.Configuration["AZURE_SQL_CONNECTION_STRING"];
+        //connectionString = builder.Configuration["AZURE_SQL_CONNECTION_STRING"];
 
         if (string.IsNullOrEmpty(connectionString))
         {
