@@ -6,9 +6,9 @@ name: Build and deploy .NET Core application to Web App DB-Angora
 #       - master
 
 env:
-  SOLUTION_FILE: DB-AngoraLib.sln                      # Navnet på løsningsfilen
+  SOLUTION_FILE: DB-AngoraLib.sln                      # Navnet pÃ¥ lÃ¸sningsfilen
   PROJECT_FILE: DB-AngoraREST/DB-AngoraREST.csproj     # Sti til projektfilen
-  AZURE_WEBAPP_NAME: DB-Angora                         # Navn på Azure Web App
+  AZURE_WEBAPP_NAME: DB-Angora                         # Navn pÃ¥ Azure Web App
   AZURE_WEBAPP_PACKAGE_PATH: DB-AngoraREST\publish     # Output-sti til den buildede pakke
   CONFIGURATION: Debug                                 # Debug/Release
   DOTNET_CORE_VERSION: 8.0.x                           # .NET Core SDK version
@@ -30,18 +30,18 @@ jobs:
           path: ~/.nuget/packages
           key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
 
-      - name: Setup .NET SDK                  # Sætter .NET SDK op til den definerede version
+      - name: Setup .NET SDK                  # SÃ¦tter .NET SDK op til den definerede version
         uses: actions/setup-dotnet@v4                       
         with:
           dotnet-version: ${{ env.DOTNET_CORE_VERSION }}
 
-      - name: Restore Dependencies            # Gendanner afhængigheder til hele løsningen
+      - name: Restore Dependencies            # Gendanner afhÃ¦ngigheder til hele lÃ¸sningen
         run: dotnet restore ${{ env.SOLUTION_FILE }}
 
-      - name: Build                           # Bygger hele løsningen
+      - name: Build                           # Bygger hele lÃ¸sningen
         run: dotnet build ${{ env.SOLUTION_FILE }} --configuration ${{ env.CONFIGURATION }} --no-restore
 
-      - name: Test                            # Kører testene for alle testprojekter i løsningen
+      - name: Test                            # KÃ¸rer testene for alle testprojekter i lÃ¸sningen
         run: dotnet test ${{ env.SOLUTION_FILE }} --configuration ${{ env.CONFIGURATION }} --no-build --logger "trx;LogFileName=test_results.trx"
         
       - name: Publish Test Results            # Publicerer testresultaterne
