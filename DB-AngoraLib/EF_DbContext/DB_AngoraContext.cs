@@ -20,16 +20,7 @@ namespace DB_AngoraLib.EF_DbContext
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            #region IdentityUser PK setup - syntaks
-            ////------------------- PK SETUP -------------------
-            //// Irellevant, da IdentityUser allerede selv sætter disse op
-            //// Configure primary key for IdentityUser
-            //modelBuilder.Entity<IdentityUserClaim<string>>().HasKey(p => p.Id);
-            //modelBuilder.Entity<IdentityUserLogin<string>>().HasKey(p => new { p.LoginProvider, p.ProviderKey });
-            //modelBuilder.Entity<IdentityUserRole<string>>().HasKey(p => new { p.UserId, p.RoleId });
-            //modelBuilder.Entity<IdentityUserToken<string>>().HasKey(p => new { p.UserId, p.LoginProvider, p.Name });
-            //modelBuilder.Entity<IdentityRoleClaim<string>>().HasKey(p => p.Id);
-            #endregion
+            //------------------- PK SETUP -------------------
 
             modelBuilder.Entity<User>()
                 .HasDiscriminator<string>("UserType")

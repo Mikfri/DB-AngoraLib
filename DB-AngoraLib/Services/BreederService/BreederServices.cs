@@ -25,7 +25,7 @@ namespace DB_AngoraLib.Services.BreederService
             return (await _breederRepository.GetAllObjectsAsync()).ToList();
         }
 
-        public async Task<Breeder?> Get_BreederById(string userId)
+        public async Task<Breeder?> Get_BreederById(string userId)  // overflødig da vi har Get_UserById?
         {
             return await _breederRepository.GetObject_ByStringKEYAsync(userId);
         }

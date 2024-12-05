@@ -94,7 +94,7 @@ namespace DB_AngoraREST.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [HttpGet("Profile/{earCombId}")]
-        [Authorize(Roles = "Admin, Moderator, BreederPremium, BreederBasic")]
+        //[Authorize(Roles = "Admin, Moderator, BreederPremium, BreederBasic")]
         public async Task<ActionResult<Rabbit_ProfileDTO>> GetRabbit_ProfileByEarTags(string earCombId)
         {
             var currentUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
