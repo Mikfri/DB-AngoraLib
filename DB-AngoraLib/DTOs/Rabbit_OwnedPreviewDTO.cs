@@ -8,15 +8,9 @@ using System.Threading.Tasks;
 
 namespace DB_AngoraLib.DTOs
 {
-    /// <summary>
-    /// Indeholder alle properties for en Rabbit, som en User skal kunne se
-    /// </summary>
-    public record Rabbit_ProfileDTO
+    public record Rabbit_OwnedPreviewDTO
     {
         public string EarCombId { get; init; }
-
-        //public string? RightEarId { get; init; }
-        //public string? LeftEarId { get; init; } 
 
         public string? NickName { get; init; }
 
@@ -48,11 +42,6 @@ namespace DB_AngoraLib.DTOs
 
         [DataType(DataType.ImageUrl)]
         public string? ProfilePicture { get; init; }
-
-        //public Rabbit_PedigreeDTO Pedigree { get; init; }
-        public List<Photo_DTO> ?Photos { get; init; }
-        public List<Rabbit_ChildPreviewDTO> ?Children { get; init; }
-
 
     }
 }

@@ -30,6 +30,6 @@ namespace DB_AngoraLib.DTOs
         [DataType(DataType.Text)]
         public string BreederBrandDescription { get; init; }
 
-        public List<Rabbit_PreviewDTO> RabbitsForSaleOrBreeding { get; init; } = new List<Rabbit_PreviewDTO>();
+        public List<Rabbit_ForSalePreviewDTO> RabbitsForSaleOrBreeding { get; init; } = new List<Rabbit_ForSalePreviewDTO>();
     }
 }

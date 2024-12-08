@@ -55,6 +55,7 @@ namespace DB_AngoraLib.Services.RabbitService
                 Gender = newRabbitDTO.Gender,
                 ForSale = newRabbitDTO.ForSale,
                 ForBreeding = newRabbitDTO.ForBreeding,
+                //ProfilePicture = newRabbitDTO.ProfilePicture,
 
                 FatherId_Placeholder = newRabbitDTO.FatherId_Placeholder,
                 MotherId_Placeholder = newRabbitDTO.MotherId_Placeholder,
@@ -90,39 +91,62 @@ namespace DB_AngoraLib.Services.RabbitService
             return rabbits.ToList();
         }
 
-        public async Task<List<Rabbit_PreviewDTO>> Get_AllRabbits_Forsale_Filtered(Rabbit_ForsaleFilterDTO filter)
+        public async Task<List<Rabbit_ForSalePreviewDTO>> Get_AllRabbits_Forsale_Filtered(Rabbit_ForsaleFilterDTO filter)
         {
-            var rabbits = await _dbRepository.GetDbSet()
+            var query = _dbRepository.GetDbSet()
                 .AsNoTracking()
-                .Include(rabbit => rabbit.UserOwner) // Include the owner of the rabbit
+                .Include(rabbit => rabbit.UserOwner)
                 .Where(rabbit =>
                     rabbit.ForSale == IsPublic.Ja &&
-                    rabbit.DateOfDeath == null)
-                .ToListAsync();
+                    rabbit.DateOfDeath == null &&
+                    (filter.RightEarId == null || rabbit.RightEarId == filter.RightEarId) &&
+                    (filter.Race == null || rabbit.Race == filter.Race) &&
+                    (filter.Color == null || rabbit.Color == filter.Color) &&
+                    (filter.Gender == null || rabbit.Gender == filter.Gender) &&
+                    (filter.BornAfter == null || rabbit.DateOfBirth >= filter.BornAfter)
+                );
 
-            return rabbits
-                .Where(rabbit =>
-                    (filter.RightEarId == null || rabbit.RightEarId == filter.RightEarId) // Vi vil kunne søge på hvor den kommer fra!
-                    && (filter.Race == null || rabbit.Race == filter.Race)
-                    && (filter.Color == null || rabbit.Color == filter.Color)
-                    && (filter.Gender == null || rabbit.Gender == filter.Gender)
-                    && (filter.IsJuvenile == null || rabbit.IsJuvenile == filter.IsJuvenile)
-                    && (filter.ApprovedRaceColorCombination == null || rabbit.ApprovedRaceColorCombination == filter.ApprovedRaceColorCombination))
+            if (filter.MinZipCode.HasValue && filter.MaxZipCode.HasValue)
+            {
+                query = query.Where(rabbit =>
+                    rabbit.UserOwner != null &&
+                    rabbit.UserOwner.ZipCode >= filter.MinZipCode.Value &&
+                    rabbit.UserOwner.ZipCode <= filter.MaxZipCode.Value
+                );
+            }
+            else if (filter.MinZipCode.HasValue)
+            {
+                query = query.Where(rabbit =>
+                    rabbit.UserOwner != null &&
+                    rabbit.UserOwner.ZipCode >= filter.MinZipCode.Value
+                );
+            }
+            else if (filter.MaxZipCode.HasValue)
+            {
+                query = query.Where(rabbit =>
+                    rabbit.UserOwner != null &&
+                    rabbit.UserOwner.ZipCode <= filter.MaxZipCode.Value
+                );
+            }
 
-                .Select(rabbit => new Rabbit_PreviewDTO
+            var rabbits = await query
+                .Select(rabbit => new Rabbit_ForSalePreviewDTO
                 {
                     EarCombId = rabbit.EarCombId,
                     NickName = rabbit.NickName,
+                    DateOfBirth = rabbit.DateOfBirth,
                     Race = rabbit.Race,
                     Color = rabbit.Color,
                     Gender = rabbit.Gender,
+                    ProfilePicture = rabbit.ProfilePicture,
                     UserOwner = rabbit.UserOwner != null ? $"{rabbit.UserOwner.FirstName} {rabbit.UserOwner.LastName}" : null,
-                    UserOrigin = rabbit.UserOrigin != null ? $"{rabbit.UserOrigin.FirstName} {rabbit.UserOrigin.LastName}" : null,
                 })
-                .ToList();
+                .ToListAsync();
+
+            return rabbits;
         }
 
-        public async Task<List<Rabbit_PreviewDTO>> Get_AllRabbits_Forbreeding_Filtered(Rabbit_ForbreedingFilterDTO filter)
+        public async Task<List<Rabbit_ForSalePreviewDTO>> Get_AllRabbits_Forbreeding_Filtered(Rabbit_ForbreedingFilterDTO filter)
         {
             var rabbits = await _dbRepository.GetDbSet()
                 .AsNoTracking()
@@ -141,7 +165,7 @@ namespace DB_AngoraLib.Services.RabbitService
                     && (filter.IsJuvenile == null || rabbit.IsJuvenile == filter.IsJuvenile)
                     && (filter.ApprovedRaceColorCombination == null || rabbit.ApprovedRaceColorCombination == filter.ApprovedRaceColorCombination))
 
-                .Select(rabbit => new Rabbit_PreviewDTO
+                .Select(rabbit => new Rabbit_ForSalePreviewDTO
                 {
                     EarCombId = rabbit.EarCombId,
                     NickName = rabbit.NickName,
@@ -149,21 +173,21 @@ namespace DB_AngoraLib.Services.RabbitService
                     Color = rabbit.Color,
                     Gender = rabbit.Gender,
                     UserOwner = rabbit.UserOwner != null ? $"{rabbit.UserOwner.FirstName} {rabbit.UserOwner.LastName}" : null,
-                    UserOrigin = rabbit.UserOrigin != null ? $"{rabbit.UserOrigin.FirstName} {rabbit.UserOrigin.LastName}" : null,
+                    //UserOrigin = rabbit.UserOrigin != null ? $"{rabbit.UserOrigin.FirstName} {rabbit.UserOrigin.LastName}" : null,
                 })
                 .ToList();
         }
 
-        public async Task<List<Rabbit_PreviewDTO>> Get_AllRabbits_ByBreederRegNo(string breederRegNo)
+        public async Task<List<Rabbit_OwnedPreviewDTO>> Get_AllRabbits_ByBreederRegNo(string breederRegNo)
         {
             var user = await _breederService.Get_BreederByBreederRegNo(breederRegNo);
             if (user == null)
             {
-                return new List<Rabbit_PreviewDTO>(); // Returner en tom liste i stedet for null
+                return new List<Rabbit_OwnedPreviewDTO>(); // Returner en tom liste i stedet for null
             }
 
             // Brug GetAll_RabbitsOwned_Filtered metoden til at hente kaninerne
-            var filter = new Rabbit_FilteredRequestDTO(); // Du kan tilføje filtreringskriterier her, hvis nødvendigt
+            var filter = new Rabbit_OwnedFilterDTO(); // Du kan tilføje filtreringskriterier her, hvis nødvendigt
             var rabbits = await _breederService.GetAll_RabbitsOwned_Filtered(user.Id, filter);
 
             return rabbits;
@@ -394,7 +418,7 @@ namespace DB_AngoraLib.Services.RabbitService
 
 
         //---------------------: DELETE
-        public async Task<Rabbit_PreviewDTO> DeleteRabbit_RBAC(string userId, string earCombId, IList<Claim> userClaims)
+        public async Task<Rabbit_OwnedPreviewDTO> DeleteRabbit_RBAC(string userId, string earCombId, IList<Claim> userClaims)
         {
             var hasPermissionToDeleteOwn = userClaims.Any(c => c.Type == "Rabbit:Delete" && c.Value == "Own");
             var hasPermissionToDeleteAll = userClaims.Any(c => c.Type == "Rabbit:Delete" && c.Value == "Any");
@@ -434,15 +458,16 @@ namespace DB_AngoraLib.Services.RabbitService
             // Slet kaninen
             await _dbRepository.DeleteObjectAsync(rabbitToDelete);
 
-            return new Rabbit_PreviewDTO()
+            return new Rabbit_OwnedPreviewDTO()
             {
                 EarCombId = rabbitToDelete.EarCombId,
                 NickName = rabbitToDelete.NickName,
                 Race = rabbitToDelete.Race,
                 Color = rabbitToDelete.Color,
                 Gender = rabbitToDelete.Gender,
-                UserOwner = rabbitToDelete.UserOwner != null ? $"{rabbitToDelete.UserOwner.FirstName} {rabbitToDelete.UserOwner.LastName}" : null,
-                UserOrigin = rabbitToDelete.UserOrigin != null ? $"{rabbitToDelete.UserOrigin.FirstName} {rabbitToDelete.UserOrigin.LastName}" : null,
+                ProfilePicture = rabbitToDelete.ProfilePicture,
+                //UserOwner = rabbitToDelete.UserOwner != null ? $"{rabbitToDelete.UserOwner.FirstName} {rabbitToDelete.UserOwner.LastName}" : null,
+                //UserOrigin = rabbitToDelete.UserOrigin != null ? $"{rabbitToDelete.UserOrigin.FirstName} {rabbitToDelete.UserOrigin.LastName}" : null,
             };
         }
 

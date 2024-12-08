@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace DB_AngoraLib.DTOs
 {
-    public record Rabbit_FilteredRequestDTO
+    public record Rabbit_OwnedFilterDTO
     {
         public bool? OnlyDeceased { get; init; }
 
@@ -20,10 +20,10 @@ namespace DB_AngoraLib.DTOs
         public Gender? Gender { get; init; }
 
         [DataType(DataType.Date)]
-        public DateOnly? FromDateOfBirth { get; init; }
+        public DateOnly? BornAfter { get; init; }
 
         [DataType(DataType.Date)]
-        public DateOnly? FromDateOfDeath { get; init; }
+        public DateOnly? DeathAfter { get; init; }
 
         public string? FatherId_Placeholder { get; init; }
         public string? MotherId_Placeholder { get; init; }

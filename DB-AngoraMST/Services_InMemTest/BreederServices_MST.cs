@@ -87,10 +87,10 @@ namespace DB_AngoraMST.Services_InMemTest
             var race = Race.Satin_Angora;
             var dateOfBirth = new DateOnly(2024, 3, 1);
 
-            var filter = new Rabbit_FilteredRequestDTO
+            var filter = new Rabbit_OwnedFilterDTO
             {
                 Race = race,
-                FromDateOfBirth = dateOfBirth,
+                BornAfter = dateOfBirth,
                 OnlyDeceased = false
             };
 
@@ -103,7 +103,7 @@ namespace DB_AngoraMST.Services_InMemTest
 
              // Filtrer mockUserRabbitCollection baseret på DateOfBirth
             var filteredMockUserRabbitCollection = mockUserRabbitCollection
-                .Where(rabbit => rabbit.DateOfBirth >= filter.FromDateOfBirth)
+                .Where(rabbit => rabbit.DateOfBirth >= filter.BornAfter)
                 .ToList();
 
 
@@ -124,7 +124,7 @@ namespace DB_AngoraMST.Services_InMemTest
 
             // Check that the number of rabbits in the result matches the expected number
             var allRabbits = await _context.Rabbits.ToListAsync();
-            var expectedRabbitCount = allRabbits.Count(rabbit => rabbit.OwnerId == userId && rabbit.Race == race && rabbit.DateOfBirth >= filter.FromDateOfBirth);
+            var expectedRabbitCount = allRabbits.Count(rabbit => rabbit.OwnerId == userId && rabbit.Race == race && rabbit.DateOfBirth >= filter.BornAfter);
 
             Assert.AreEqual(expectedRabbitCount, filteredRabbitCollection.Count);
             Console.WriteLine($"\nExpected: {expectedRabbitCount}, Actual: {filteredRabbitCollection.Count}");

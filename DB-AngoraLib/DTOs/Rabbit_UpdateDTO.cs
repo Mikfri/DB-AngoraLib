@@ -28,6 +28,9 @@ namespace DB_AngoraLib.DTOs
         public IsPublic ForSale { get; init; }
         public IsPublic ForBreeding { get; init; }
 
+        [DataType(DataType.ImageUrl)]
+        public string? ProfilePicture { get; init; }
+
         public string? FatherId_Placeholder { get; init; }
         public string? MotherId_Placeholder { get; init; }
     }

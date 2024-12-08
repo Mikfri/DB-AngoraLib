@@ -215,7 +215,7 @@ namespace DB_AngoraREST.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpGet("Forsale")]
-        public async Task<ActionResult<List<Rabbit_PreviewDTO>>> GetAllRabbits_ForsaleFiltered(
+        public async Task<ActionResult<List<Rabbit_ForSalePreviewDTO>>> GetAllRabbits_ForsaleFiltered(
             [FromQuery] string rightEarId = null,
             [FromQuery] Race? race = null,
             [FromQuery] Color? color = null,
@@ -229,8 +229,8 @@ namespace DB_AngoraREST.Controllers
                 Race = race,
                 Color = color,
                 Gender = gender,
-                IsJuvenile = isJuvenile,
-                ApprovedRaceColorCombination = approvedRaceColorCombination
+                //IsJuvenile = isJuvenile,
+                //ApprovedRaceColorCombination = approvedRaceColorCombination
             };
 
             try
@@ -248,7 +248,7 @@ namespace DB_AngoraREST.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpGet("Forbreeding")]
-        public async Task<ActionResult<List<Rabbit_PreviewDTO>>> GetAllRabbits_ForbreedingFiltered(
+        public async Task<ActionResult<List<Rabbit_ForSalePreviewDTO>>> GetAllRabbits_ForbreedingFiltered(
             [FromQuery] string rightEarId = null,
             [FromQuery] Race? race = null,
             [FromQuery] Color? color = null,
@@ -320,7 +320,7 @@ namespace DB_AngoraREST.Controllers
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [Authorize(Policy = "DeleteRabbit")]
         [HttpDelete("Delete/{earCombId}")]
-        public async Task<ActionResult<Rabbit_PreviewDTO>> DeleteRabbit(string earCombId)
+        public async Task<ActionResult<Rabbit_ForSalePreviewDTO>> DeleteRabbit(string earCombId)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var userClaims = User.Claims.ToList();

@@ -1,6 +1,7 @@
 ﻿using DB_AngoraLib.DTOs;
 using DB_AngoraLib.Models;
 using DB_AngoraLib.Repository;
+using DB_AngoraLib.Services.HelperService;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -48,8 +49,14 @@ namespace DB_AngoraLib.Services.BreederService
         }
 
         //-----------: BREEDER ICOLLECTIONs
-        public async Task<List<Rabbit_PreviewDTO>> GetAll_RabbitsOwned_Filtered(
-          string userId, Rabbit_FilteredRequestDTO filter)
+        /// <summary>
+        /// Finder en brugers kaniner ud fra brugerens Id og filtrere på dem baseret på en filter DTO
+        /// </summary>
+        /// <param name="userId"> Brugerens GUID </param>
+        /// <param name="filter"> Diverse properties fra Rabbit </param>
+        /// <returns></returns>
+        public async Task<List<Rabbit_OwnedPreviewDTO>> GetAll_RabbitsOwned_Filtered(   //GetAllRabbitsInfold_OwnedFiltered
+          string userId, Rabbit_OwnedFilterDTO filter)
         {
 
             var query = _breederRepository.GetDbSet()
@@ -61,7 +68,6 @@ namespace DB_AngoraLib.Services.BreederService
                 .Where(u => u.Id == userId)
                 .SelectMany(u => u.RabbitsOwned)
                 .AsQueryable();
-
 
 
             // Filtrer baseret på død/levende status
@@ -92,10 +98,10 @@ namespace DB_AngoraLib.Services.BreederService
                 query = query.Where(r => r.Color == filter.Color.Value);
             if (filter.Gender.HasValue)
                 query = query.Where(r => r.Gender == filter.Gender.Value);
-            if (filter.FromDateOfBirth.HasValue)
-                query = query.Where(r => r.DateOfBirth > filter.FromDateOfBirth.Value);
-            if (filter.FromDateOfDeath.HasValue)
-                query = query.Where(r => r.DateOfDeath.HasValue && r.DateOfDeath > filter.FromDateOfDeath.Value);
+            if (filter.BornAfter.HasValue)
+                query = query.Where(r => r.DateOfBirth > filter.BornAfter.Value);
+            if (filter.DeathAfter.HasValue)
+                query = query.Where(r => r.DateOfDeath.HasValue && r.DateOfDeath > filter.DeathAfter.Value);
 
             // Håndter IsJuvenile
             if (filter.IsJuvenile.HasValue)
@@ -130,53 +136,39 @@ namespace DB_AngoraLib.Services.BreederService
 
             var queryRabbitsList = await query.ToListAsync();
 
-            var rabbitPreviewDTOsList = queryRabbitsList.Select(rabbit => new Rabbit_PreviewDTO
-            {
-                EarCombId = rabbit.EarCombId,
-                NickName = rabbit.NickName,
-                Race = rabbit.Race,
-                Color = rabbit.Color,
-                Gender = rabbit.Gender,
-                UserOwner = rabbit.UserOwner != null ? $"{rabbit.UserOwner.FirstName} {rabbit.UserOwner.LastName}" : null,
-                UserOrigin = rabbit.UserOrigin != null ? $"{rabbit.UserOrigin.FirstName} {rabbit.UserOrigin.LastName}" : null,
-            }).ToList();
-
-            return rabbitPreviewDTOsList;
-        }
-
-        public async Task<List<Rabbit_PreviewDTO>> GetAll_Rabbits_FromMyFold(string userId)
-        {
-            var userWithRabbitsLinked = await _breederRepository.GetDbSet()
-                .AsNoTracking()
-                .Include(u => u.RabbitsLinked)
-                    .ThenInclude(rabbit => rabbit.UserOwner)
-                .FirstOrDefaultAsync(u => u.Id == userId);
-
-            if (userWithRabbitsLinked == null)
-            {
-                Console.WriteLine("User not found");
-                return new List<Rabbit_PreviewDTO>();
-            }
-
-            if (userWithRabbitsLinked.RabbitsLinked.Count < 1)
-            {
-                Console.WriteLine("No linked rabbits found in collection");
-                return new List<Rabbit_PreviewDTO>();
-            }
-
-            return userWithRabbitsLinked.RabbitsLinked
-                .Select(rabbit => new Rabbit_PreviewDTO
+            var rabbitOwnedPreviewDTOsList = queryRabbitsList
+                .Select(rabbit =>
                 {
-                    EarCombId = rabbit.EarCombId,
-                    NickName = rabbit.NickName,
-                    Race = rabbit.Race,
-                    Color = rabbit.Color,
-                    Gender = rabbit.Gender,
-                    UserOwner = rabbit.UserOwner != null ? $"{rabbit.UserOwner.FirstName} {rabbit.UserOwner.LastName}" : null,
-                    UserOrigin = rabbit.UserOrigin != null ? $"{rabbit.UserOrigin.FirstName} {rabbit.UserOrigin.LastName}" : null,
+                    var rabbitDTO = new Rabbit_OwnedPreviewDTO();
+                    rabbit.CopyProperties_FromAndTo(rabbitDTO);
+                    return rabbitDTO;
                 })
                 .ToList();
+
+            return rabbitOwnedPreviewDTOsList;
         }
+
+        public async Task<List<Rabbit_OwnedPreviewDTO>> GetAll_RabbitsLinked(string userId)    //GetAllRabbitsFromfold_NotOwned
+        {
+            var rabbitsNotOwned = await _breederRepository.GetDbSet()
+                .AsNoTracking()
+                .Where(b => b.Id == userId)
+                .SelectMany(b => b.RabbitsLinked)
+                .Where(r => r.OwnerId != userId)
+                .ToListAsync();
+
+            var rabbitOwnedPreviewDTOsList = rabbitsNotOwned
+                .Select(rabbit =>
+                {
+                    var rabbitDTO = new Rabbit_OwnedPreviewDTO();
+                    rabbit.CopyProperties_FromAndTo(rabbitDTO);
+                    return rabbitDTO;
+                })
+                .ToList();
+
+            return rabbitOwnedPreviewDTOsList;
+        }
+
 
         //-----------: TransferRequests
         public async Task<List<TransferRequest_ReceivedDTO>> GetAll_TransferRequests_Received(

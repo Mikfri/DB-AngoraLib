@@ -15,14 +15,14 @@ namespace DB_AngoraLib.DTOs
         public string Email { get; init; }
         public string Password { get; init; }
 
-        //[DataType(DataType.PhoneNumber)]
+        [DataType(DataType.PhoneNumber)]
         public string Phone { get; init; }
 
         public string FirstName { get; init; }
         public string LastName { get; init; }
         public string RoadNameAndNo { get; init; }
 
-        //[DataType(DataType.PostalCode)]
+        [DataType(DataType.PostalCode)]
         public int ZipCode { get; init; }
 
         public string City { get; init; }

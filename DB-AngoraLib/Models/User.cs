@@ -24,7 +24,7 @@ namespace DB_AngoraLib.Models
         public string RoadNameAndNo { get; set; }
         public int ZipCode { get; set; }
         public string City { get; set; }
-        public string? ProfilePic { get; set; } // Path or URI to the profile picture
+        public string? ProfilePicture { get; set; } // Path or URI to the profile picture
 
 
         [NotMapped]

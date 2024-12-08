@@ -26,7 +26,7 @@ namespace DB_AngoraREST.Controllers
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
         [HttpPost("Create")]
-        [Authorize(Roles = "Admin, Breeder, Moderator")]
+        [Authorize(Roles = "Admin, Moderator, BreederPremium, BreederBasic")]
         public async Task<ActionResult<TransferRequest_ContractDTO>> Create_TransferRequest([FromBody] TransferRequest_CreateDTO createTransferDTO)
         {
             try
@@ -62,7 +62,7 @@ namespace DB_AngoraREST.Controllers
         }
 
         [HttpPost("Respond/{transferId}")]
-        [Authorize(Roles = "Admin, Breeder, Moderator")]
+        [Authorize(Roles = "Admin, Moderator, BreederPremium, BreederBasic")]
         public async Task<ActionResult<TransferRequest_ContractDTO>> RespondToTransferRequest(int transferId, [FromBody] TransferRequest_ResponseDTO responseDTO)
         {
             try
@@ -104,7 +104,7 @@ namespace DB_AngoraREST.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [HttpGet("Get/{transferId}")]
-        [Authorize(Roles = "Admin, Breeder, Moderator")]
+        [Authorize(Roles = "Admin, Moderator, BreederPremium, BreederBasic")]
         public async Task<ActionResult<TransferRequest_ContractDTO>> Get_TransferContract(int transferId)
         {
             try
@@ -141,7 +141,7 @@ namespace DB_AngoraREST.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [HttpDelete("Delete/{transferRequestId}")]
-        [Authorize(Roles = "Admin, Breeder, Moderator")]
+        [Authorize(Roles = "Admin, Moderator, BreederPremium, BreederBasic")]
         public async Task<ActionResult<TransferRequest_PreviewDTO>> Delete_TransferRequest(int transferRequestId)
         {
             try

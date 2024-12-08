@@ -65,15 +65,13 @@ namespace DB_AngoraLib.Services.FavoriteService
                         var rabbit = await _rabbitRepository.GetObject_ByStringKEYAsync(favorite.ItemId);
                         if (rabbit != null)
                         {
-                            favoriteItems.Add(new Rabbit_PreviewDTO
+                            favoriteItems.Add(new Rabbit_ForSalePreviewDTO
                             {
                                 EarCombId = rabbit.EarCombId,
                                 NickName = rabbit.NickName,
                                 Race = rabbit.Race,
                                 Color = rabbit.Color,
                                 Gender = rabbit.Gender,
-                                UserOwner = rabbit.UserOwner?.UserName,
-                                UserOrigin = rabbit.UserOrigin?.UserName
                             });
                         }
                     }

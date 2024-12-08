@@ -125,7 +125,7 @@ public class PhotoService : IPhotoService
             await _photoRepository.UpdateObjectAsync(photo);
 
             // Opdater kaninens ProfilePic
-            rabbit.ProfilePic = photo.FilePath;
+            rabbit.ProfilePicture = photo.FilePath;
             await _rabbitRepository.UpdateObjectAsync(rabbit);
         }
         else if (userId is not null)
@@ -148,7 +148,7 @@ public class PhotoService : IPhotoService
             await _photoRepository.UpdateObjectAsync(photo);
 
             // Opdater brugerens ProfilePic
-            user.ProfilePic = photo.FilePath;
+            user.ProfilePicture = photo.FilePath;
             await _userRepository.UpdateObjectAsync(user);
         }
         else
