@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace DB_AngoraREST.Migrations
 {
     /// <inheritdoc />
-    public partial class AngoraMig01 : Migration
+    public partial class DbAngoraMig01 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -37,7 +37,7 @@ namespace DB_AngoraREST.Migrations
                     RoadNameAndNo = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ZipCode = table.Column<int>(type: "int", nullable: false),
                     City = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ProfilePic = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ProfilePicture = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UserType = table.Column<string>(type: "nvarchar(8)", maxLength: 8, nullable: false),
                     BreederRegNo = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -271,7 +271,7 @@ namespace DB_AngoraREST.Migrations
                     Father_EarCombId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     MotherId_Placeholder = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Mother_EarCombId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    ProfilePic = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    ProfilePicture = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -432,17 +432,17 @@ namespace DB_AngoraREST.Migrations
 
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
-                columns: new[] { "Id", "AccessFailedCount", "BreederRegNo", "City", "ConcurrencyStamp", "Email", "EmailConfirmed", "FirstName", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "ProfilePic", "RoadNameAndNo", "SecurityStamp", "TwoFactorEnabled", "UserName", "UserType", "ZipCode" },
+                columns: new[] { "Id", "AccessFailedCount", "BreederRegNo", "City", "ConcurrencyStamp", "Email", "EmailConfirmed", "FirstName", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "ProfilePicture", "RoadNameAndNo", "SecurityStamp", "TwoFactorEnabled", "UserName", "UserType", "ZipCode" },
                 values: new object[,]
                 {
-                    { "IdasId", 0, "5095", "Kirke Såby", "578d6628-7dd5-459b-b9e6-335efb9e3805", "IdaFriborg87@gmail.com", false, "Ida", "Friborg", false, null, "IDAFRIBORG87@GMAIL.COM", "IDAFRIBORG87@GMAIL.COM", "AQAAAAIAAYagAAAAEMtvlJHSahmJABUeTWBSct3cn9RlSU5Vh5X2ZB0GJfIZcZKSBzs/WN8v7A9sVTCJjw==", "27586455", false, null, "Fynsvej 14", "509cf922-25db-469d-9d98-66ea72b14ba7", false, "IdaFriborg87@gmail.com", "Breeder", 4060 },
-                    { "MajasId", 0, "5053", "Benløse", "d80f99dd-d4cf-45ae-afa0-1da479a9d68d", "MajaJoensen89@gmail.com", false, "Maja", "Hulstrøm", false, null, "MAJAJOENSEN89@GMAIL.COM", "MAJAJOENSEN89@GMAIL.COM", "AQAAAAIAAYagAAAAECaQMmEGlqOx8KrmWfTnZgPTEBtaVqOoPMszFfpJcUy8Todir6nPaqX6Bu3ElYgK7Q==", "28733085", false, null, "Sletten 4", "2a4a28a0-848b-43d7-9ae8-7d95e02f3554", false, "MajaJoensen89@gmail.com", "Breeder", 4100 }
+                    { "IdasId", 0, "5095", "Kirke Såby", "7162fe08-82f4-479b-8af6-56b0207a3598", "IdaFriborg87@gmail.com", false, "Ida", "Friborg", false, null, "IDAFRIBORG87@GMAIL.COM", "IDAFRIBORG87@GMAIL.COM", "AQAAAAIAAYagAAAAEMPAksbzhCD8xGXu2vvCka5pm62m/UXTOTb2xiALy3LkdSwj6U7/XFffj+sOeSsJKg==", "27586455", false, null, "Fynsvej 14", "0aa99fe6-f5bd-464b-a85a-0be5a1a971fa", false, "IdaFriborg87@gmail.com", "Breeder", 4060 },
+                    { "MajasId", 0, "5053", "Benløse", "8abc1678-90fc-406b-868d-6f1047031adb", "MajaJoensen89@gmail.com", false, "Maja", "Hulstrøm", false, null, "MAJAJOENSEN89@GMAIL.COM", "MAJAJOENSEN89@GMAIL.COM", "AQAAAAIAAYagAAAAEMBl+6FuWEn5eEj3u1xtbW0V7FTwjPFA48jTK/Zngw94PUztABOQz5oBC7MkUey2UA==", "28733085", false, null, "Sletten 4", "012a53a2-a398-4f74-9bda-ce09f33845f3", false, "MajaJoensen89@gmail.com", "Breeder", 4100 }
                 });
 
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
-                columns: new[] { "Id", "AccessFailedCount", "City", "ConcurrencyStamp", "Email", "EmailConfirmed", "FirstName", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "ProfilePic", "RoadNameAndNo", "SecurityStamp", "TwoFactorEnabled", "UserName", "UserType", "ZipCode" },
-                values: new object[] { "MikkelsId", 0, "Kirke Såby", "c49a0173-450f-43ca-9b73-9b412aabebea", "Mikk.fri@gmail.com", false, "Mikkel", "Friborg", false, null, "MIKK.FRI@GMAIL.COM", "MIKK.FRI@GMAIL.COM", "AQAAAAIAAYagAAAAECQiVthBfYBjIUREklL2aseJEIEXk5sWS+rBFOFIXnos3poVfPLz+KglR10qt9R0jA==", "81183394", false, null, "Fynsvej 14", "35d29d92-a04f-4397-816e-4ece51c585e2", false, "Mikk.fri@gmail.com", "User", 4060 });
+                columns: new[] { "Id", "AccessFailedCount", "City", "ConcurrencyStamp", "Email", "EmailConfirmed", "FirstName", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "ProfilePicture", "RoadNameAndNo", "SecurityStamp", "TwoFactorEnabled", "UserName", "UserType", "ZipCode" },
+                values: new object[] { "MikkelsId", 0, "Kirke Såby", "a264e965-a3d2-49d1-b79c-471f5e9199d4", "Mikk.fri@gmail.com", false, "Mikkel", "Friborg", false, null, "MIKK.FRI@GMAIL.COM", "MIKK.FRI@GMAIL.COM", "AQAAAAIAAYagAAAAECeiiohmaEf+pkTKHWMKAgj+tqXU6zVMvEr7jIrXujJzrKLCSax4ivwEL5j4mTzjNA==", "81183394", false, null, "Fynsvej 14", "cd39fc9b-878c-4f69-9020-515584c95c61", false, "Mikk.fri@gmail.com", "User", 4060 });
 
             migrationBuilder.InsertData(
                 table: "AspNetRoleClaims",
@@ -506,7 +506,7 @@ namespace DB_AngoraREST.Migrations
 
             migrationBuilder.InsertData(
                 table: "Rabbits",
-                columns: new[] { "EarCombId", "Color", "DateOfBirth", "DateOfDeath", "FatherId_Placeholder", "Father_EarCombId", "ForBreeding", "ForSale", "Gender", "LeftEarId", "MotherId_Placeholder", "Mother_EarCombId", "NickName", "OriginId", "OwnerId", "ProfilePic", "Race", "RightEarId" },
+                columns: new[] { "EarCombId", "Color", "DateOfBirth", "DateOfDeath", "FatherId_Placeholder", "Father_EarCombId", "ForBreeding", "ForSale", "Gender", "LeftEarId", "MotherId_Placeholder", "Mother_EarCombId", "NickName", "OriginId", "OwnerId", "ProfilePicture", "Race", "RightEarId" },
                 values: new object[,]
                 {
                     { "3658-0819", 24, new DateOnly(2019, 5, 31), new DateOnly(2023, 1, 31), null, null, 0, 0, 0, "0819", null, null, "Karina", null, "MajasId", null, 0, "3658" },

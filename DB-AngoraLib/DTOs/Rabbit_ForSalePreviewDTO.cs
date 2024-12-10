@@ -12,7 +12,7 @@ namespace DB_AngoraLib.DTOs
     /// En DTO for Rabbit, som kun indeholder de mest nødvendige properties,
     /// for at en kunde kan danne overblik over en potentiel kanin til køb.
     /// </summary>
-    public record Rabbit_ForSalePreviewDTO
+    public record Rabbit_ForsalePreviewDTO
     {
         public string EarCombId { get; init; }
         public string? NickName { get; init; }
@@ -23,6 +23,11 @@ namespace DB_AngoraLib.DTOs
         public Race Race { get; set; }
         public Color Color { get; set; }
         public Gender Gender { get; set; }
+
+        [DataType(DataType.PostalCode)]
+        public int ZipCode { get; init; }
+
+        public string City { get; init; }
 
         [DataType(DataType.ImageUrl)]
         public string? ProfilePicture { get; init; }

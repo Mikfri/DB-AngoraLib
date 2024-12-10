@@ -65,7 +65,7 @@ namespace DB_AngoraLib.Services.FavoriteService
                         var rabbit = await _rabbitRepository.GetObject_ByStringKEYAsync(favorite.ItemId);
                         if (rabbit != null)
                         {
-                            favoriteItems.Add(new Rabbit_ForSalePreviewDTO
+                            favoriteItems.Add(new Rabbit_ForsalePreviewDTO
                             {
                                 EarCombId = rabbit.EarCombId,
                                 NickName = rabbit.NickName,

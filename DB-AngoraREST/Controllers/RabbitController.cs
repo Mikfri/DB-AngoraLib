@@ -213,76 +213,24 @@ namespace DB_AngoraREST.Controllers
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [HttpGet("Forsale")]
-        public async Task<ActionResult<List<Rabbit_ForSalePreviewDTO>>> GetAllRabbits_ForsaleFiltered(
-            [FromQuery] string rightEarId = null,
-            [FromQuery] Race? race = null,
-            [FromQuery] Color? color = null,
-            [FromQuery] Gender? gender = null,
-            [FromQuery] bool? isJuvenile = null,
-            [FromQuery] bool? approvedRaceColorCombination = null)
+        public async Task<ActionResult<List<Rabbit_ForsalePreviewDTO>>> GetFilteredRabbitsForSale([FromQuery] Rabbit_ForsaleFilterDTO filter)
         {
-            var filter = new Rabbit_ForsaleFilterDTO
-            {
-                RightEarId = rightEarId,
-                Race = race,
-                Color = color,
-                Gender = gender,
-                //IsJuvenile = isJuvenile,
-                //ApprovedRaceColorCombination = approvedRaceColorCombination
-            };
-
-            try
-            {
-                var filteredRabbits = await _rabbitService.Get_AllRabbits_Forsale_Filtered(filter);
-                return Ok(filteredRabbits);
-            }
-            catch (InvalidOperationException ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
+            var rabbits = await _rabbitService.Get_AllRabbits_Forsale_Filtered(filter);
+            return Ok(rabbits);
         }
 
 
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpGet("Forbreeding")]
-        public async Task<ActionResult<List<Rabbit_ForSalePreviewDTO>>> GetAllRabbits_ForbreedingFiltered(
-            [FromQuery] string rightEarId = null,
-            [FromQuery] Race? race = null,
-            [FromQuery] Color? color = null,
-            [FromQuery] Gender? gender = null,
-            [FromQuery] bool? isJuvenile = null,
-            [FromQuery] bool? approvedRaceColorCombination = null)
+        public async Task<ActionResult<List<Rabbit_ForbreedingPreviewDTO>>> GetAllRabbits_ForbreedingFiltered([FromQuery] Rabbit_ForbreedingFilterDTO filter)
         {
-            if (!ModelState.IsValid)
-            {
-                var errors = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage));
-                return BadRequest(new { errors });
-            }
-
-            var filter = new Rabbit_ForbreedingFilterDTO
-            {
-                RightEarId = rightEarId,
-                Race = race,
-                Color = color,
-                Gender = gender,
-                IsJuvenile = isJuvenile,
-                ApprovedRaceColorCombination = approvedRaceColorCombination
-            };
-
-            try
-            {
-                var filteredRabbits = await _rabbitService.Get_AllRabbits_Forbreeding_Filtered(filter);
-                return Ok(filteredRabbits);
-            }
-            catch (InvalidOperationException ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
+            var rabbits = await _rabbitService.Get_AllRabbits_Forbreeding_Filtered(filter);
+            return Ok(rabbits);
         }
-
 
 
         //-------------------------------: PUT
@@ -320,7 +268,7 @@ namespace DB_AngoraREST.Controllers
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [Authorize(Policy = "DeleteRabbit")]
         [HttpDelete("Delete/{earCombId}")]
-        public async Task<ActionResult<Rabbit_ForSalePreviewDTO>> DeleteRabbit(string earCombId)
+        public async Task<ActionResult<Rabbit_OwnedPreviewDTO>> DeleteRabbit(string earCombId)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var userClaims = User.Claims.ToList();
