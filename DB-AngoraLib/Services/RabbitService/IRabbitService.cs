@@ -1,11 +1,6 @@
 ﻿using DB_AngoraLib.DTOs;
 using DB_AngoraLib.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DB_AngoraLib.Services.RabbitService
 {
@@ -19,7 +14,6 @@ namespace DB_AngoraLib.Services.RabbitService
         Task<List<Rabbit_ForbreedingPreviewDTO>> Get_AllRabbits_Forbreeding_Filtered(Rabbit_ForbreedingFilterDTO filter);
 
         Task<Rabbit> Get_Rabbit_ByEarCombId(string earCombId);
-        //Task<Rabbit> Get_Rabbit_ByEarCombId_IncludingUserRelations(string earCombId);
         Task<Rabbit_ProfileDTO> Get_Rabbit_Profile(string userId, string earCombId, IList<Claim> userClaims);
         Task<List<Rabbit_ChildPreviewDTO>> Get_Rabbit_ChildCollection(string earCombId);
         Task<Rabbit_PedigreeDTO> Get_RabbitPedigree(string earCombId/*, int maxGeneration*/);

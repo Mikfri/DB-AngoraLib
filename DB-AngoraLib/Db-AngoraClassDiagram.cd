@@ -10,14 +10,14 @@
   <Class Name="DB_AngoraLib.Models.Rabbit">
     <Position X="5.25" Y="1.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>UBAoIAAYAAjAiTCAJBAIAAAAAAQSQAEIARmBgAAIoAg=</HashCode>
+      <HashCode>UBAoIAAYAAjAiTCAJBAIAAAAAAQSQAEIBRmBgAAIoAg=</HashCode>
       <FileName>Models\Rabbit.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="DB_AngoraLib.Models.User">
-    <Position X="1.25" Y="1.75" Width="1.5" />
+    <Position X="1.25" Y="0.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAEACAAIAAAAJAAAAAAAAAAAAAAADAACAAAAAAAg=</HashCode>
+      <HashCode>AAAAAEACAAIAACAJAAAAAAAAAAAAAAADBACAAAAAAAg=</HashCode>
       <FileName>Models\User.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -27,46 +27,52 @@
       <HashCode>AAAABAAgAAAAAAAAAAAAAAAwAAIAAAAIAAABgAAAkAA=</HashCode>
       <FileName>Services\AccountService\AccountServices.cs</FileName>
     </TypeIdentifier>
-    <Lollipop Position="0.2" Collapsed="true" />
+    <Lollipop Position="0.2" />
   </Class>
   <Class Name="DB_AngoraLib.Services.BreederService.BreederServices" BaseTypeListCollapsed="true">
-    <Position X="3.25" Y="7" Width="1.5" />
+    <Position X="3.25" Y="7.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAQAAEAAAAAAAIAAAAAAAQIAgEAACAEAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAEAAAAAAAIAAAAAAAQIAgEAACAEAAAAAAIA=</HashCode>
       <FileName>Services\BreederService\BreederServices.cs</FileName>
     </TypeIdentifier>
-    <Lollipop Position="0.2" Collapsed="true" />
+    <Lollipop Position="0.2" />
   </Class>
   <Class Name="DB_AngoraLib.Services.RabbitService.RabbitServices" BaseTypeListCollapsed="true">
     <Position X="9" Y="2.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>0AAABIAAEIIgAgAAAMAAAgEAAAAEAIAAAQgCAEAQAAA=</HashCode>
+      <HashCode>0AAAAIAAEIIgAgAAAMAAAgEAAAAMAIAAAQgCAEAQAAA=</HashCode>
       <FileName>Services\RabbitService\RabbitServices.cs</FileName>
     </TypeIdentifier>
-    <Lollipop Position="0.2" Collapsed="true" />
+    <Lollipop Position="0.2" />
   </Class>
-  <Interface Name="DB_AngoraLib.Services.AccountService.IAccountService" Collapsed="true">
-    <Position X="3.5" Y="1.5" Width="1.5" />
+  <Interface Name="DB_AngoraLib.Services.AccountService.IAccountService">
+    <Position X="3.25" Y="1.25" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
     <TypeIdentifier>
       <HashCode>AAAABAAAAAAAAAAAAAAAAAAwAAIAAAAIAAABgAAAkAA=</HashCode>
       <FileName>Services\AccountService\IAccountService.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Interface Name="DB_AngoraLib.Services.BreederService.IBreederService" Collapsed="true">
-    <Position X="3.75" Y="6.25" Width="1.5" />
+    <Position X="3.25" Y="6.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAQAAEAAAAAAAIAAAAAAAQIAgAAAAAEAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAEAAAAAAAIAAAAAAAQIAgAAAAAEAAAAAAIA=</HashCode>
       <FileName>Services\BreederService\IBreederService.cs</FileName>
     </TypeIdentifier>
   </Interface>
-  <Interface Name="DB_AngoraLib.Services.RabbitService.IRabbitService" Collapsed="true">
-    <Position X="9.25" Y="1.5" Width="1.5" />
+  <Interface Name="DB_AngoraLib.Services.RabbitService.IRabbitService">
+    <Position X="9" Y="1" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
     <TypeIdentifier>
-      <HashCode>kAAAAAAAAIIAAgAAAIAAAAEAAAAAAAAAAQgCAEAQAAA=</HashCode>
+      <HashCode>kAAAAAAAAIIAAgAAAIAAAAEAAAAIAAAAAQgCAEAQAAA=</HashCode>
       <FileName>Services\RabbitService\IRabbitService.cs</FileName>
     </TypeIdentifier>
   </Interface>
-  <Enum Name="DB_AngoraLib.Models.IsPublic">
+  <Enum Name="DB_AngoraLib.Models.IsPublic" Collapsed="true">
     <Position X="7" Y="4.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAIACAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
