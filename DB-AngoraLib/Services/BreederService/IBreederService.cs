@@ -16,9 +16,9 @@ namespace DB_AngoraLib.Services.BreederService
         Task<Breeder?> Get_BreederByBreederRegNo(string breederRegNo);
 
         //------------------------: ICOLLECTIONS
-        Task<List<Rabbit_OwnedPreviewDTO>> GetAll_RabbitsOwned_Filtered(
+        Task<List<Rabbit_PreviewDTO>> GetAll_RabbitsOwned_Filtered(
           string userId, Rabbit_OwnedFilterDTO filter);
-        Task<List<Rabbit_OwnedPreviewDTO>> GetAll_RabbitsLinked(
+        Task<List<Rabbit_PreviewDTO>> GetAll_RabbitsLinked(
             string userId);
 
         Task<List<TransferRequest_ReceivedDTO>> GetAll_TransferRequests_Received(

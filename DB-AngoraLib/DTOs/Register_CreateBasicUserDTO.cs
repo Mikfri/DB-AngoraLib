@@ -12,7 +12,10 @@ namespace DB_AngoraLib.DTOs
     /// </summary>
     public record Register_CreateBasicUserDTO
     {
+        [DataType(DataType.EmailAddress)]
         public string Email { get; init; }
+
+        [DataType(DataType.Password)]
         public string Password { get; init; }
 
         [DataType(DataType.PhoneNumber)]

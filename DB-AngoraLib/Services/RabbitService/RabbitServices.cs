@@ -194,12 +194,12 @@ namespace DB_AngoraLib.Services.RabbitService
         }
 
 
-        public async Task<List<Rabbit_OwnedPreviewDTO>> Get_AllRabbits_ByBreederRegNo(string breederRegNo)
+        public async Task<List<Rabbit_PreviewDTO>> Get_AllRabbits_ByBreederRegNo(string breederRegNo)
         {
             var user = await _breederService.Get_BreederByBreederRegNo(breederRegNo);
             if (user == null)
             {
-                return new List<Rabbit_OwnedPreviewDTO>(); // Returner en tom liste i stedet for null
+                return new List<Rabbit_PreviewDTO>(); // Returner en tom liste i stedet for null
             }
 
             // Brug GetAll_RabbitsOwned_Filtered metoden til at hente kaninerne
@@ -226,6 +226,15 @@ namespace DB_AngoraLib.Services.RabbitService
             return await _dbRepository.GetObject_ByStringKEYAsync(earCombId);
         }
 
+
+        /// <summary>
+        /// Henter en kanins profil, med flere detaljer, som kun ejeren eller en bruger med de rette claims kan se.
+        /// Kigger også efter om dens forældre, oprindelige ejer, og børn findes i systemet.
+        /// </summary>
+        /// <param name="userId"> User GUID </param>
+        /// <param name="earCombId"> Kaninens Id </param>
+        /// <param name="userClaims"> Liste af Role- og UserClaims </param>
+        /// <returns> Kaninen, dens børn, Useren for hvor den blev født, User fra hvem ejer den </returns>
         public async Task<Rabbit_ProfileDTO> Get_Rabbit_Profile(string userId, string earCombId, IList<Claim> userClaims)
         {
             var rabbit = await _dbRepository
@@ -235,9 +244,6 @@ namespace DB_AngoraLib.Services.RabbitService
                 .Include(r => r.UserOwner)
                 .FirstOrDefaultAsync(r => r.EarCombId == earCombId);
 
-            var hasPermissionToGetAnyRabbit = userClaims.Any(
-                c => c.Type == "Rabbit:Read" && c.Value == "Any");
-
             if (rabbit == null)
             {
                 return null;
@@ -246,7 +252,10 @@ namespace DB_AngoraLib.Services.RabbitService
             await ParentsFK_SetupAsync(rabbit);
             await UserOriginFK_SetupAsync(rabbit);
 
-            if (rabbit.ForSale == IsPublic.Ja || rabbit.OwnerId == userId || hasPermissionToGetAnyRabbit)
+            var hasPermissionToGetAnyRabbit = userClaims.Any(c => c.Type == "Rabbit:Read" && c.Value == "Any");
+            var hasPermissionToGetOwnRabbit = userClaims.Any(c => c.Type == "Rabbit:Read" && c.Value == "Own");
+
+            if (hasPermissionToGetAnyRabbit || rabbit.OwnerId == userId || (hasPermissionToGetOwnRabbit && rabbit.ForBreeding == IsPublic.Ja))
             {
                 var rabbitProfileDTO = new Rabbit_ProfileDTO
                 {
@@ -258,6 +267,51 @@ namespace DB_AngoraLib.Services.RabbitService
                 rabbitProfileDTO.OwnerFullName = rabbit.UserOwner != null ? $"{rabbit.UserOwner.FirstName} {rabbit.UserOwner.LastName}" : null;
 
                 return rabbitProfileDTO;
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Henter en kanins salgsprofil, med begrænsede data om kaninen og kontakt oplysninger på ejeren.
+        /// </summary>
+        /// <param name="earCombId"></param>
+        /// <returns></returns>
+        public async Task<Rabbit_ForsaleProfileDTO> Get_Rabbit_ForsaleProfile(string earCombId)
+        {
+            var rabbit = await _dbRepository
+                .GetDbSet()
+                .AsNoTracking() // Tilføjer AsNoTracking for bedre ydeevne
+                .Include(r => r.UserOwner)
+                .FirstOrDefaultAsync(r => r.EarCombId == earCombId);
+
+
+            if (rabbit == null)
+            {
+                return null;
+            }
+
+            if (rabbit.ForSale == IsPublic.Ja)
+            {
+                var rabbitForsaleProfileDTO = new Rabbit_ForsaleProfileDTO
+                {
+                    Photos = rabbit.Photos?.Select(photo => new Photo_DTO
+                    {
+                        Id = photo.Id,
+                        FilePath = photo.FilePath,
+                        FileName = photo.FileName,
+                        UploadDate = photo.UploadDate,
+                        RabbitId = photo.RabbitId,
+                        //UserId = photo.UserId,
+                        IsProfilePicture = photo.IsProfilePicture
+                    }).ToList()
+                };
+
+                HelperServices.CopyProperties_FromAndTo(rabbit, rabbitForsaleProfileDTO);
+                rabbitForsaleProfileDTO.OwnerFullName = rabbit.UserOwner != null ? $"{rabbit.UserOwner.FirstName} {rabbit.UserOwner.LastName}" : null;
+                rabbitForsaleProfileDTO.OwnerPhoneNumber = rabbit.UserOwner != null ? rabbit.UserOwner.PhoneNumber : null;
+                rabbitForsaleProfileDTO.OwnerEmail = rabbit.UserOwner != null ? rabbit.UserOwner.Email : null;
+
+                return rabbitForsaleProfileDTO;
             }
             return null;
         }
@@ -430,11 +484,8 @@ namespace DB_AngoraLib.Services.RabbitService
         }
 
 
-
-
-
         //---------------------: DELETE
-        public async Task<Rabbit_OwnedPreviewDTO> DeleteRabbit_RBAC(string userId, string earCombId, IList<Claim> userClaims)
+        public async Task<Rabbit_PreviewDTO> DeleteRabbit_RBAC(string userId, string earCombId, IList<Claim> userClaims)
         {
             var hasPermissionToDeleteOwn = userClaims.Any(c => c.Type == "Rabbit:Delete" && c.Value == "Own");
             var hasPermissionToDeleteAll = userClaims.Any(c => c.Type == "Rabbit:Delete" && c.Value == "Any");
@@ -474,7 +525,7 @@ namespace DB_AngoraLib.Services.RabbitService
             // Slet kaninen
             await _dbRepository.DeleteObjectAsync(rabbitToDelete);
 
-            return new Rabbit_OwnedPreviewDTO()
+            return new Rabbit_PreviewDTO()
             {
                 EarCombId = rabbitToDelete.EarCombId,
                 NickName = rabbitToDelete.NickName,
@@ -597,8 +648,8 @@ namespace DB_AngoraLib.Services.RabbitService
 
 
         /// <summary>
-        /// Opdaterer Rabbit.OriginId baseret på Rabbit.RightEarId og User.BreederRegNo
-        /// </summary>
+        /// Opdaterer Rabbit.OriginId baseret på om der kan findes en avler med tilsvarende avlernummer
+        /// som kaninens RightEarId        /// 
         /// <param name="rabbit"></param>
         /// <returns></returns>
         private async Task UserOriginFK_SetupAsync(Rabbit rabbit)

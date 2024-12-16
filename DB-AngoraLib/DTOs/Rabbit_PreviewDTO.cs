@@ -8,14 +8,14 @@ using System.Threading.Tasks;
 
 namespace DB_AngoraLib.DTOs
 {
-    public record Rabbit_OwnedPreviewDTO
+    public record Rabbit_PreviewDTO
     {
         public string EarCombId { get; init; }
 
         public string? NickName { get; init; }
 
-        public string? OriginFullName { get; set; }   // set, så vi kan overskrive efter CopyProperties_FromAndTo
-        public string? OwnerFullName { get; set; }    // set, så vi kan overskrive efter CopyProperties_FromAndTo
+        public string? OriginFullName { get; set; }   // "{set;}", så vi kan overskrive efter CopyProperties_FromAndTo
+        public string? OwnerFullName { get; set; }    // "{set;}", så vi kan overskrive efter CopyProperties_FromAndTo
 
         public Race? Race { get; init; }
         public Color? Color { get; init; }

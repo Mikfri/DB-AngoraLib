@@ -110,6 +110,22 @@ namespace DB_AngoraREST.Controllers
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [HttpGet("ForsaleProfile/{earCombId}")]
+        public async Task<ActionResult<Rabbit_ForsaleProfileDTO>> GetRabbit_ForsaleProfileByEarTags(string earCombId)
+        {
+            var rabbitForsaleProfile = await _rabbitService.Get_Rabbit_ForsaleProfile(earCombId);
+
+            if (rabbitForsaleProfile == null)
+            {
+                return NotFound(new { message = $"Rabbit with EarCombId '{earCombId}' not found or not for sale." });
+            }
+
+            return Ok(rabbitForsaleProfile);
+        }
+
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -268,7 +284,7 @@ namespace DB_AngoraREST.Controllers
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [Authorize(Policy = "DeleteRabbit")]
         [HttpDelete("Delete/{earCombId}")]
-        public async Task<ActionResult<Rabbit_OwnedPreviewDTO>> DeleteRabbit(string earCombId)
+        public async Task<ActionResult<Rabbit_PreviewDTO>> DeleteRabbit(string earCombId)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var userClaims = User.Claims.ToList();

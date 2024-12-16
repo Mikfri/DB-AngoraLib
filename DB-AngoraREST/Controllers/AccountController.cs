@@ -102,7 +102,7 @@ namespace DB_AngoraREST.Controllers
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [HttpGet("Rabbits_Owned")]
         [Authorize(Roles = "Admin, Moderator, BreederPremium, BreederBasic")]
-        public async Task<ActionResult<List<Rabbit_OwnedPreviewDTO>>> GetMyFilteredRabbits([FromQuery] Rabbit_OwnedFilterDTO filter)
+        public async Task<ActionResult<List<Rabbit_PreviewDTO>>> GetMyFilteredRabbits([FromQuery] Rabbit_OwnedFilterDTO filter)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var rabbits = await _breederService.GetAll_RabbitsOwned_Filtered(userId, filter);
@@ -114,7 +114,7 @@ namespace DB_AngoraREST.Controllers
         [ProducesResponseType(StatusCodes.Status403Forbidden)]    // Forbidden, hvis brugeren ikke har adgang til ressourcen
         [HttpGet("Rabbits_Linked")]
         [Authorize(Roles = "Admin, Moderator, BreederPremium, BreederBasic")]
-        public async Task<ActionResult<List<Rabbit_OwnedPreviewDTO>>> GetRabbitsFromMyFold()
+        public async Task<ActionResult<List<Rabbit_PreviewDTO>>> GetRabbitsFromMyFold()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             Console.WriteLine($"Getting rabbits for user with ID: {userId}");

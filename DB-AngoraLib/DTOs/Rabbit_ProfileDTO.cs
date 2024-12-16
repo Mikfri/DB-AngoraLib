@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace DB_AngoraLib.DTOs
 {
     /// <summary>
-    /// Indeholder alle properties for en Rabbit, som en User skal kunne se
+    /// Indeholder alle properties som en kanin avler er interesseret i at se.
     /// </summary>
     public record Rabbit_ProfileDTO
     {
@@ -52,7 +52,5 @@ namespace DB_AngoraLib.DTOs
         //public Rabbit_PedigreeDTO Pedigree { get; init; }
         public List<Photo_DTO> ?Photos { get; init; }
         public List<Rabbit_ChildPreviewDTO> ?Children { get; init; }
-
-
     }
 }

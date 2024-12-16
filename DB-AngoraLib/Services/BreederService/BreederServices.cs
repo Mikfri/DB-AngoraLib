@@ -50,7 +50,7 @@ namespace DB_AngoraLib.Services.BreederService
         /// <param name="userId"> Brugerens GUID </param>
         /// <param name="filter"> Diverse properties fra Rabbit </param>
         /// <returns></returns>
-        public async Task<List<Rabbit_OwnedPreviewDTO>> GetAll_RabbitsOwned_Filtered(   //GetAllRabbitsInfold_OwnedFiltered
+        public async Task<List<Rabbit_PreviewDTO>> GetAll_RabbitsOwned_Filtered(   //GetAllRabbitsInfold_OwnedFiltered
           string userId, Rabbit_OwnedFilterDTO filter)
         {
 
@@ -134,7 +134,7 @@ namespace DB_AngoraLib.Services.BreederService
             var rabbitOwnedPreviewDTOsList = queryRabbitsList
                 .Select(rabbit =>
                 {
-                    var rabbitDTO = new Rabbit_OwnedPreviewDTO();
+                    var rabbitDTO = new Rabbit_PreviewDTO();
                     rabbit.CopyProperties_FromAndTo(rabbitDTO);
                     return rabbitDTO;
                 })
@@ -143,7 +143,7 @@ namespace DB_AngoraLib.Services.BreederService
             return rabbitOwnedPreviewDTOsList;
         }
 
-        public async Task<List<Rabbit_OwnedPreviewDTO>> GetAll_RabbitsLinked(string userId)    //GetAllRabbitsFromfold_NotOwned
+        public async Task<List<Rabbit_PreviewDTO>> GetAll_RabbitsLinked(string userId)    //GetAllRabbitsFromfold_NotOwned
         {
             var rabbitsNotOwned = await _breederRepository.GetDbSet()
                 .AsNoTracking()
@@ -155,7 +155,7 @@ namespace DB_AngoraLib.Services.BreederService
             var rabbitOwnedPreviewDTOsList = rabbitsNotOwned
                 .Select(rabbit =>
                 {
-                    var rabbitDTO = new Rabbit_OwnedPreviewDTO();
+                    var rabbitDTO = new Rabbit_PreviewDTO();
                     rabbit.CopyProperties_FromAndTo(rabbitDTO);
                     return rabbitDTO;
                 })
