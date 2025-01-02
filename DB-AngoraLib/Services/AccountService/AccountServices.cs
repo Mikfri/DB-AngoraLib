@@ -90,8 +90,8 @@ namespace DB_AngoraLib.Services.AccountService
 
         public async Task<User_ProfileDTO> Get_User_Profile(string userId, string userProfileId, IList<Claim> userClaims)
         {
-            var user = await Get_UserById(userId);
-            if (user == null)
+            var userProfile = await Get_UserById(userProfileId);
+            if (userProfile == null)
             {
                 return null;
             }
@@ -99,27 +99,27 @@ namespace DB_AngoraLib.Services.AccountService
             var hasPermissionToGetAnyUser = userClaims.Any(
                 c => c.Type == "User:Read" && c.Value == "Any");
 
-            if (user.Id != userProfileId && !hasPermissionToGetAnyUser)
+            if (userId != userProfileId && !hasPermissionToGetAnyUser)
             {
                 throw new UnauthorizedAccessException("You do not have permission to access this profile.");
             }
 
-            var userProfile = new User_ProfileDTO
+            var userProfileDTO = new User_ProfileDTO
             {
-                BreederRegNo = (user is Breeder breeder) ? breeder.BreederRegNo : null, // Set BreederRegNo if user is a Breeder
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                RoadNameAndNo = user.RoadNameAndNo,
-                ZipCode = user.ZipCode,
-                City = user.City,
-                Email = user.Email,
-                Phone = user.PhoneNumber
+                BreederRegNo = (userProfile is Breeder breeder) ? breeder.BreederRegNo : null, // Set BreederRegNo if user is a Breeder
+                FirstName = userProfile.FirstName,
+                LastName = userProfile.LastName,
+                RoadNameAndNo = userProfile.RoadNameAndNo,
+                ZipCode = userProfile.ZipCode,
+                City = userProfile.City,
+                Email = userProfile.Email,
+                Phone = userProfile.PhoneNumber
             };
 
-            return userProfile;
+            return userProfileDTO;
         }
+               
 
-        
 
         //---------------------------------: EMAIL METHODS :-------------------------------
         public async Task Send_EmailConfirm_ToUser(string userId, string token)

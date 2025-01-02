@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DB_AngoraREST.Migrations
 {
     [DbContext(typeof(DB_AngoraContext))]
-    [Migration("20241210124957_DbAngoraMig01")]
+    [Migration("20241227115915_DbAngoraMig01")]
     partial class DbAngoraMig01
     {
         /// <inheritdoc />
@@ -135,6 +135,47 @@ namespace DB_AngoraREST.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Favorite");
+                });
+
+            modelBuilder.Entity("DB_AngoraLib.Models.Message", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("RabbitEarCombId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ReceiverId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("SenderId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RabbitEarCombId");
+
+                    b.HasIndex("ReceiverId");
+
+                    b.HasIndex("SenderId");
+
+                    b.ToTable("Message");
                 });
 
             modelBuilder.Entity("DB_AngoraLib.Models.Notification", b =>
@@ -1104,7 +1145,7 @@ namespace DB_AngoraREST.Migrations
                             Id = "MikkelsId",
                             AccessFailedCount = 0,
                             City = "Kirke Såby",
-                            ConcurrencyStamp = "a264e965-a3d2-49d1-b79c-471f5e9199d4",
+                            ConcurrencyStamp = "bc3a685d-5ca4-4b95-a818-f5ccc738575c",
                             Email = "Mikk.fri@gmail.com",
                             EmailConfirmed = false,
                             FirstName = "Mikkel",
@@ -1112,11 +1153,11 @@ namespace DB_AngoraREST.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "MIKK.FRI@GMAIL.COM",
                             NormalizedUserName = "MIKK.FRI@GMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAECeiiohmaEf+pkTKHWMKAgj+tqXU6zVMvEr7jIrXujJzrKLCSax4ivwEL5j4mTzjNA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEKFKN8WEsVTDdYQ+loHscNBxuF9OZdVLPYsgfbLpg55qD6TAeu+a1W+kHLdBLO1DhA==",
                             PhoneNumber = "81183394",
                             PhoneNumberConfirmed = false,
                             RoadNameAndNo = "Fynsvej 14",
-                            SecurityStamp = "cd39fc9b-878c-4f69-9020-515584c95c61",
+                            SecurityStamp = "59b68ae7-8c43-45a9-832a-b1f31d7e3cfa",
                             TwoFactorEnabled = false,
                             UserName = "Mikk.fri@gmail.com",
                             ZipCode = 4060
@@ -1565,7 +1606,7 @@ namespace DB_AngoraREST.Migrations
                             Id = "IdasId",
                             AccessFailedCount = 0,
                             City = "Kirke Såby",
-                            ConcurrencyStamp = "7162fe08-82f4-479b-8af6-56b0207a3598",
+                            ConcurrencyStamp = "1fd28816-37a0-46cf-b464-bed29a636acc",
                             Email = "IdaFriborg87@gmail.com",
                             EmailConfirmed = false,
                             FirstName = "Ida",
@@ -1573,11 +1614,11 @@ namespace DB_AngoraREST.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "IDAFRIBORG87@GMAIL.COM",
                             NormalizedUserName = "IDAFRIBORG87@GMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEMPAksbzhCD8xGXu2vvCka5pm62m/UXTOTb2xiALy3LkdSwj6U7/XFffj+sOeSsJKg==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEKTAtavLzRAhBALO+iWIB9jtCF0JjtPDVCUCpYzzZKBnDuF+721Yn0DvKtv2m07Dsw==",
                             PhoneNumber = "27586455",
                             PhoneNumberConfirmed = false,
                             RoadNameAndNo = "Fynsvej 14",
-                            SecurityStamp = "0aa99fe6-f5bd-464b-a85a-0be5a1a971fa",
+                            SecurityStamp = "861e230a-12e8-4e9d-b9e4-ca44da9c8bab",
                             TwoFactorEnabled = false,
                             UserName = "IdaFriborg87@gmail.com",
                             ZipCode = 4060,
@@ -1588,7 +1629,7 @@ namespace DB_AngoraREST.Migrations
                             Id = "MajasId",
                             AccessFailedCount = 0,
                             City = "Benløse",
-                            ConcurrencyStamp = "8abc1678-90fc-406b-868d-6f1047031adb",
+                            ConcurrencyStamp = "824000f9-ebf8-4d70-8009-18e9dc163a43",
                             Email = "MajaJoensen89@gmail.com",
                             EmailConfirmed = false,
                             FirstName = "Maja",
@@ -1596,11 +1637,11 @@ namespace DB_AngoraREST.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "MAJAJOENSEN89@GMAIL.COM",
                             NormalizedUserName = "MAJAJOENSEN89@GMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEMBl+6FuWEn5eEj3u1xtbW0V7FTwjPFA48jTK/Zngw94PUztABOQz5oBC7MkUey2UA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEFInGeIdy6IJeOPem+lBOyfZgGKjzN4b4ywKK/QntS2353gfZe2ZvigDJj8GhFN4Wg==",
                             PhoneNumber = "28733085",
                             PhoneNumberConfirmed = false,
                             RoadNameAndNo = "Sletten 4",
-                            SecurityStamp = "012a53a2-a398-4f74-9bda-ce09f33845f3",
+                            SecurityStamp = "b4baa0f4-2b85-4f33-b7e4-d6e4b649b891",
                             TwoFactorEnabled = false,
                             UserName = "MajaJoensen89@gmail.com",
                             ZipCode = 4100,
@@ -1639,6 +1680,33 @@ namespace DB_AngoraREST.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("DB_AngoraLib.Models.Message", b =>
+                {
+                    b.HasOne("DB_AngoraLib.Models.Rabbit", "Rabbit")
+                        .WithMany()
+                        .HasForeignKey("RabbitEarCombId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DB_AngoraLib.Models.User", "Receiver")
+                        .WithMany()
+                        .HasForeignKey("ReceiverId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("DB_AngoraLib.Models.User", "Sender")
+                        .WithMany()
+                        .HasForeignKey("SenderId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Rabbit");
+
+                    b.Navigation("Receiver");
+
+                    b.Navigation("Sender");
                 });
 
             modelBuilder.Entity("DB_AngoraLib.Models.Photo", b =>

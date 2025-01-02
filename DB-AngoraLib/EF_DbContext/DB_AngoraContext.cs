@@ -82,7 +82,7 @@ namespace DB_AngoraLib.EF_DbContext
                 .HasForeignKey(r => r.Mother_EarCombId)
                 .IsRequired(false)
                 .OnDelete(DeleteBehavior.NoAction); // No action on delete
-            
+
             modelBuilder.Entity<Photo>(entity =>
             {
                 entity.HasOne(p => p.Rabbit)
@@ -139,6 +139,24 @@ namespace DB_AngoraLib.EF_DbContext
                 .WithMany(rt => rt.RabbitTransfers_Received)
                 .HasForeignKey(rt => rt.RecipentId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+
+            modelBuilder.Entity<Message>()
+                .HasOne(m => m.Sender)
+                .WithMany()
+                .HasForeignKey(m => m.SenderId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Message>()
+                .HasOne(m => m.Receiver)
+                .WithMany()
+                .HasForeignKey(m => m.ReceiverId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Message>()
+                .HasOne(m => m.Rabbit)
+                .WithMany()
+                .HasForeignKey(m => m.RabbitEarCombId);
 
             // Konfigurer RefreshToken relationen
             modelBuilder.Entity<RefreshToken>()

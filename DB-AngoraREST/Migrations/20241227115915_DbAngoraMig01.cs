@@ -325,6 +325,42 @@ namespace DB_AngoraREST.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Message",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    SenderId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    RabbitEarCombId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ReceiverId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsRead = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Message", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Message_AspNetUsers_ReceiverId",
+                        column: x => x.ReceiverId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Message_AspNetUsers_SenderId",
+                        column: x => x.SenderId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Message_Rabbits_RabbitEarCombId",
+                        column: x => x.RabbitEarCombId,
+                        principalTable: "Rabbits",
+                        principalColumn: "EarCombId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Photos",
                 columns: table => new
                 {
@@ -435,14 +471,14 @@ namespace DB_AngoraREST.Migrations
                 columns: new[] { "Id", "AccessFailedCount", "BreederRegNo", "City", "ConcurrencyStamp", "Email", "EmailConfirmed", "FirstName", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "ProfilePicture", "RoadNameAndNo", "SecurityStamp", "TwoFactorEnabled", "UserName", "UserType", "ZipCode" },
                 values: new object[,]
                 {
-                    { "IdasId", 0, "5095", "Kirke Såby", "7162fe08-82f4-479b-8af6-56b0207a3598", "IdaFriborg87@gmail.com", false, "Ida", "Friborg", false, null, "IDAFRIBORG87@GMAIL.COM", "IDAFRIBORG87@GMAIL.COM", "AQAAAAIAAYagAAAAEMPAksbzhCD8xGXu2vvCka5pm62m/UXTOTb2xiALy3LkdSwj6U7/XFffj+sOeSsJKg==", "27586455", false, null, "Fynsvej 14", "0aa99fe6-f5bd-464b-a85a-0be5a1a971fa", false, "IdaFriborg87@gmail.com", "Breeder", 4060 },
-                    { "MajasId", 0, "5053", "Benløse", "8abc1678-90fc-406b-868d-6f1047031adb", "MajaJoensen89@gmail.com", false, "Maja", "Hulstrøm", false, null, "MAJAJOENSEN89@GMAIL.COM", "MAJAJOENSEN89@GMAIL.COM", "AQAAAAIAAYagAAAAEMBl+6FuWEn5eEj3u1xtbW0V7FTwjPFA48jTK/Zngw94PUztABOQz5oBC7MkUey2UA==", "28733085", false, null, "Sletten 4", "012a53a2-a398-4f74-9bda-ce09f33845f3", false, "MajaJoensen89@gmail.com", "Breeder", 4100 }
+                    { "IdasId", 0, "5095", "Kirke Såby", "1fd28816-37a0-46cf-b464-bed29a636acc", "IdaFriborg87@gmail.com", false, "Ida", "Friborg", false, null, "IDAFRIBORG87@GMAIL.COM", "IDAFRIBORG87@GMAIL.COM", "AQAAAAIAAYagAAAAEKTAtavLzRAhBALO+iWIB9jtCF0JjtPDVCUCpYzzZKBnDuF+721Yn0DvKtv2m07Dsw==", "27586455", false, null, "Fynsvej 14", "861e230a-12e8-4e9d-b9e4-ca44da9c8bab", false, "IdaFriborg87@gmail.com", "Breeder", 4060 },
+                    { "MajasId", 0, "5053", "Benløse", "824000f9-ebf8-4d70-8009-18e9dc163a43", "MajaJoensen89@gmail.com", false, "Maja", "Hulstrøm", false, null, "MAJAJOENSEN89@GMAIL.COM", "MAJAJOENSEN89@GMAIL.COM", "AQAAAAIAAYagAAAAEFInGeIdy6IJeOPem+lBOyfZgGKjzN4b4ywKK/QntS2353gfZe2ZvigDJj8GhFN4Wg==", "28733085", false, null, "Sletten 4", "b4baa0f4-2b85-4f33-b7e4-d6e4b649b891", false, "MajaJoensen89@gmail.com", "Breeder", 4100 }
                 });
 
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "City", "ConcurrencyStamp", "Email", "EmailConfirmed", "FirstName", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "ProfilePicture", "RoadNameAndNo", "SecurityStamp", "TwoFactorEnabled", "UserName", "UserType", "ZipCode" },
-                values: new object[] { "MikkelsId", 0, "Kirke Såby", "a264e965-a3d2-49d1-b79c-471f5e9199d4", "Mikk.fri@gmail.com", false, "Mikkel", "Friborg", false, null, "MIKK.FRI@GMAIL.COM", "MIKK.FRI@GMAIL.COM", "AQAAAAIAAYagAAAAECeiiohmaEf+pkTKHWMKAgj+tqXU6zVMvEr7jIrXujJzrKLCSax4ivwEL5j4mTzjNA==", "81183394", false, null, "Fynsvej 14", "cd39fc9b-878c-4f69-9020-515584c95c61", false, "Mikk.fri@gmail.com", "User", 4060 });
+                values: new object[] { "MikkelsId", 0, "Kirke Såby", "bc3a685d-5ca4-4b95-a818-f5ccc738575c", "Mikk.fri@gmail.com", false, "Mikkel", "Friborg", false, null, "MIKK.FRI@GMAIL.COM", "MIKK.FRI@GMAIL.COM", "AQAAAAIAAYagAAAAEKFKN8WEsVTDdYQ+loHscNBxuF9OZdVLPYsgfbLpg55qD6TAeu+a1W+kHLdBLO1DhA==", "81183394", false, null, "Fynsvej 14", "59b68ae7-8c43-45a9-832a-b1f31d7e3cfa", false, "Mikk.fri@gmail.com", "User", 4060 });
 
             migrationBuilder.InsertData(
                 table: "AspNetRoleClaims",
@@ -608,6 +644,21 @@ namespace DB_AngoraREST.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Message_RabbitEarCombId",
+                table: "Message",
+                column: "RabbitEarCombId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Message_ReceiverId",
+                table: "Message",
+                column: "ReceiverId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Message_SenderId",
+                table: "Message",
+                column: "SenderId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Photos_RabbitId",
                 table: "Photos",
                 column: "RabbitId");
@@ -689,6 +740,9 @@ namespace DB_AngoraREST.Migrations
 
             migrationBuilder.DropTable(
                 name: "Favorite");
+
+            migrationBuilder.DropTable(
+                name: "Message");
 
             migrationBuilder.DropTable(
                 name: "Notifications");

@@ -17,6 +17,13 @@ namespace DB_AngoraLib.Models
         Buck,   // 1,  NiceToHave: ♀    1.0
     }
 
+    public enum Environment
+    {
+        Indendørs,
+        Udendørs,
+        Indedørs_og_udendørs,
+    }
+
     public enum Race
     {
         Angora,
@@ -171,6 +178,9 @@ namespace DB_AngoraLib.Models
                 return ageInWeeks >= 8 && ageInWeeks <= 14;
             }
         }
+
+        //public bool LitterTrained { get; set; }
+
         public DateOnly? DateOfDeath { get; set; }
         
         public Gender Gender { get; set; }
