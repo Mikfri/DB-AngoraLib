@@ -13,7 +13,7 @@ namespace DB_AngoraLib.Models
         public string SenderId { get; set; }
         public virtual User Sender { get; set; }
 
-        public string RabbitEarCombId { get; set; }
+        public string RabbitId { get; set; }
         public virtual Rabbit Rabbit { get; set; }
 
         public string ReceiverId { get; set; }

@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
   <Class Name="DB_AngoraLib.Models.Breeder">
-    <Position X="1.25" Y="5.25" Width="1.5" />
+    <Position X="1.25" Y="4.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAgAAAAAQAABAABgQAAAAAEAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Models\Breeder.cs</FileName>
@@ -22,7 +22,7 @@
     </TypeIdentifier>
   </Class>
   <Class Name="DB_AngoraLib.Services.AccountService.AccountServices" BaseTypeListCollapsed="true">
-    <Position X="3.25" Y="2.5" Width="1.5" />
+    <Position X="3.25" Y="1.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAABAAgAAAAAAAAAAAAAAAwAAIAAAAIAAABgAAAkAA=</HashCode>
       <FileName>Services\AccountService\AccountServices.cs</FileName>
@@ -30,7 +30,7 @@
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="DB_AngoraLib.Services.BreederService.BreederServices" BaseTypeListCollapsed="true">
-    <Position X="3.25" Y="7.5" Width="1.5" />
+    <Position X="3.25" Y="6.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAEAAAAAAAIAAAAAAAQIAgEAACAEAAAAAAIA=</HashCode>
       <FileName>Services\BreederService\BreederServices.cs</FileName>
@@ -40,13 +40,13 @@
   <Class Name="DB_AngoraLib.Services.RabbitService.RabbitServices" BaseTypeListCollapsed="true">
     <Position X="9" Y="2.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>0AAAAIAAEIIgAgAAAMAAAgEAAAAMAIAAAQgCAEAQAAA=</HashCode>
+      <HashCode>0AAAAIAAEIIgAgAAAMAAAwEAAAAMAIAAAQgCAEAQAAA=</HashCode>
       <FileName>Services\RabbitService\RabbitServices.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
   <Interface Name="DB_AngoraLib.Services.AccountService.IAccountService">
-    <Position X="3.25" Y="1.25" Width="1.5" />
+    <Position X="3.25" Y="0.5" Width="1.5" />
     <Compartments>
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
@@ -56,7 +56,7 @@
     </TypeIdentifier>
   </Interface>
   <Interface Name="DB_AngoraLib.Services.BreederService.IBreederService" Collapsed="true">
-    <Position X="3.25" Y="6.5" Width="1.5" />
+    <Position X="3.25" Y="5.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAEAAAAAAAIAAAAAAAQIAgAAAAAEAAAAAAIA=</HashCode>
       <FileName>Services\BreederService\IBreederService.cs</FileName>
@@ -68,7 +68,7 @@
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>kAAAAAAAAIIAAgAAAIAAAAEAAAAIAAAAAQgCAEAQAAA=</HashCode>
+      <HashCode>kAAAAAAAAIIAAgAAAIAAAQEAAAAIAAAAAQgCAEAQAAA=</HashCode>
       <FileName>Services\RabbitService\IRabbitService.cs</FileName>
     </TypeIdentifier>
   </Interface>

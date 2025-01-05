@@ -83,6 +83,26 @@ namespace DB_AngoraLib.EF_DbContext
                 .IsRequired(false)
                 .OnDelete(DeleteBehavior.NoAction); // No action on delete
 
+            // Rabbit og SaleDetails relation
+            modelBuilder.Entity<Rabbit>()
+                .HasOne(r => r.SaleDetails)
+                .WithOne(sd => sd.Rabbit)
+                .HasForeignKey<SaleDetails>(sd => sd.RabbitId)
+                .IsRequired(false);
+
+            // Wool og SaleDetails relation
+            modelBuilder.Entity<Wool>()
+                .HasOne(w => w.SaleDetails)
+                .WithOne(sd => sd.Wool)
+                .HasForeignKey<SaleDetails>(sd => sd.WoolId)
+                .IsRequired(false);
+
+            // Constraint for at sikre kun én fremmednøgle er sat
+            modelBuilder.Entity<SaleDetails>()
+                .HasCheckConstraint("CK_SaleDetails_OnlyOneForeignKey",
+                    "((RabbitEarCombId IS NOT NULL AND WoolId IS NULL) OR (RabbitEarCombId IS NULL AND WoolId IS NOT NULL))");
+
+
             modelBuilder.Entity<Photo>(entity =>
             {
                 entity.HasOne(p => p.Rabbit)
@@ -100,7 +120,9 @@ namespace DB_AngoraLib.EF_DbContext
                     name: "CK_Photo_SingleOwner",
                     sql: "([RabbitId] IS NULL AND [UserId] IS NOT NULL) OR ([RabbitId] IS NOT NULL AND [UserId] IS NULL)"
                 ));
-            });
+            }); 
+
+            // Constraint for at sikre kun én fremmednøgle er sat
 
             modelBuilder.Entity<Trimming>()
                 .HasOne(t => t.Rabbit)
@@ -156,7 +178,7 @@ namespace DB_AngoraLib.EF_DbContext
             modelBuilder.Entity<Message>()
                 .HasOne(m => m.Rabbit)
                 .WithMany()
-                .HasForeignKey(m => m.RabbitEarCombId);
+                .HasForeignKey(m => m.RabbitId);
 
             // Konfigurer RefreshToken relationen
             modelBuilder.Entity<RefreshToken>()
@@ -170,7 +192,9 @@ namespace DB_AngoraLib.EF_DbContext
         public DbSet<ApplicationBreeder> BreederApplications { get; set; }
         public DbSet<BreederBrand> BreederBrands { get; set; }
         public DbSet<Rabbit> Rabbits { get; set; }
-        //public DbSet<Trimming> Trimmings { get; set; }
+        public DbSet<Trimming> Trimmings { get; set; }
+        public DbSet<Wool> Wool { get; set; }
+        public DbSet<SaleDetails> SaleDetails { get; set; }
         public DbSet<RefreshToken> RefreshTokens { get; set; }
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<TransferRequst> TransferRequests { get; set; }

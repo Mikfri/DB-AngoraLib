@@ -17,6 +17,9 @@ namespace DB_AngoraLib.Models
         public double WoolWeight { get; set; }
         public string? WoolDescription { get; set; }
 
+        public SaleDetails? SaleDetails { get; set; }
+
+
         public Wool() { }
     }
 }

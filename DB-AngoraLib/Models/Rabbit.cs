@@ -150,6 +150,8 @@ namespace DB_AngoraLib.Models
         public string? OwnerId { get; set; }
         public Breeder? UserOwner { get; set; } // public virtual -> lazy loading (færre DB requests)
 
+        public SaleDetails? SaleDetails { get; set; }
+
         public string? NickName { get; set; }
         public Race Race { get; set; }
         public Color Color { get; set; }
